@@ -1,0 +1,20 @@
+[
+    {
+        "branch_name": "달빛요양원",
+        "corporation_name": "달빛복지재단",
+        "owner_name": "홍길동",
+        "address": "경기도 고양시 일산동구"
+    },
+    {
+        "branch_name": "행복요양원",
+        "corporation_name": "행복케어",
+        "owner_name": "김철수",
+        "address": "서울특별시 강서구"
+    },
+    {
+        "branch_name": "A요양원",
+        "corporation_name": "이동식",
+        "owner_name": "박",
+        "address": "ㅇㅇㅇ"
+    }
+]
