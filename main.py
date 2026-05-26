@@ -162,7 +162,8 @@ class MainWindow(QMainWindow):
 
         return page
 
-asdad
+pass
+
 app = QApplication(sys.argv)
 
 window = MainWindow()
