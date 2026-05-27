@@ -14,6 +14,9 @@ from PySide6.QtWidgets import (
 )
 
 from ui.pages.branch_list import BranchPage
+from ui.pages.login_tool import LoginTool
+from ui.pages.document_tool import DocumentTool
+from ui.pages.federation_tool import FederationTool
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -40,133 +43,42 @@ class MainWindow(QMainWindow):
         self.menu = QListWidget()
 
         self.menu.addItem("지점 목록")
+        self.menu.addItem("로그인툴")
+        self.menu.addItem("문서작성툴")
+        self.menu.addItem("공단툴")
 
         layout.addWidget(self.menu)
-        # self.menu_widget = QWidget()
-        # self.menu_widget.setFixedWidth(240)
-        # self.menu_widget.setStyleSheet("""
-        #     background-color: #2b2d31;
-        # """)
-
-        # menu_layout = QVBoxLayout()
-        # menu_layout.setContentsMargins(10, 20, 10, 20)
-        # menu_layout.setSpacing(10)
-
-        # self.menu_widget.setLayout(menu_layout)
-
-        # # ===== 타이틀 =====
-        # title = QLabel("업무 관리 시스템")
-        # title.setStyleSheet("""
-        #     color: white;
-        #     font-size: 20px;
-        #     font-weight: bold;
-        #     padding: 10px;
-        # """)
-
-        # menu_layout.addWidget(title)
-
-        # # ===== 메뉴 리스트 =====
-        # self.menu_list = QListWidget()
-
-        # self.menu_list.setStyleSheet("""
-        #     QListWidget {
-        #         background-color: transparent;
-        #         border: none;
-        #         color: white;
-        #         font-size: 15px;
-        #     }
-
-        #     QListWidget::item {
-        #         padding: 14px;
-        #         border-radius: 8px;
-        #     }
-
-        #     QListWidget::item:selected {
-        #         background-color: #4c8bf5;
-        #     }
-
-        #     QListWidget::item:hover {
-        #         background-color: #3a3d42;
-        #     }
-        # """)
-
-        # menus = [
-        #     "공단 감시",
-        #     "공단 편의",
-        #     "문서 작성",
-        #     "웹 로그인",
-        #     "설정",
-        #     "각종목록",
-        # ]
-
-        # for menu in menus:
-        #     item = QListWidgetItem(menu)
-        #     self.menu_list.addItem(item)
-
-        # menu_layout.addWidget(self.menu_list)
 
         # =========================================================
-        # 우측 페이지 영역
-        # =========================================================
-        self.stack = QStackedWidget()
-
-        # self.stack.addWidget(self.create_page("공단 감시 페이지"))
-        # self.stack.addWidget(self.create_page("공단 편의 페이지"))
-        # self.stack.addWidget(self.create_page("문서 작성 페이지"))
-        # self.stack.addWidget(self.create_page("웹 로그인 페이지"))
-        # self.stack.addWidget(self.create_page("설정 페이지"))
-        # self.stack.addWidget(self.create_page("각종 목록 페이지"))
-
-        # =========================================================
-        # 페이지 추가
+        # 우측 콘텐츠 (페이지)
         # =========================================================
 
+        self.stacked_widget = QStackedWidget()
+
+        # 각 페이지 추가
         self.branch_page = BranchPage()
+        self.login_page = LoginTool()
+        self.document_page = DocumentTool()
+        self.federation_page = FederationTool()
 
-        self.stack.addWidget(self.branch_page)
+        self.stacked_widget.addWidget(self.branch_page)
+        self.stacked_widget.addWidget(self.login_page)
+        self.stacked_widget.addWidget(self.document_page)
+        self.stacked_widget.addWidget(self.federation_page)
 
-        
-        # ===== 메뉴 클릭 이벤트 =====
-        # self.menu_list.currentRowChanged.connect(
-        #     self.stack.setCurrentIndex
-        # )
+        layout.addWidget(self.stacked_widget)
 
-        # self.menu_list.setCurrentRow(0)
-        self.menu.currentRowChanged.connect(
-            self.stack.setCurrentIndex
-        )
+        # 메뉴 선택 이벤트 연결
+        self.menu.itemClicked.connect(self.on_menu_clicked)
 
-        self.menu.setCurrentRow(0)
+    def on_menu_clicked(self, item):
+        """메뉴 아이템을 클릭했을 때 호출"""
+        index = self.menu.row(item)
+        self.stacked_widget.setCurrentIndex(index)
 
 
-        # =========================================================
-        # 레이아웃 추가
-        # =========================================================
-        layout.addWidget(self.stack)
-
-    def create_page(self, text):
-        page = QWidget()
-
-        layout = QVBoxLayout()
-        page.setLayout(layout)
-
-        label = QLabel(text)
-        label.setAlignment(Qt.AlignCenter)
-
-        label.setStyleSheet("""
-            font-size: 28px;
-            font-weight: bold;
-        """)
-
-        layout.addWidget(label)
-
-        return page
-
-pass
-
-app = QApplication(sys.argv)
-
-window = MainWindow()
-window.show()
-
-app.exec()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()

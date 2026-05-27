@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -17,16 +18,29 @@ from PySide6.QtWidgets import (
 
 
 class BranchDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, branch_data=None):
         super().__init__(parent)
-        self.setWindowTitle("지점 추가")
+        self.setWindowTitle("지점 추가" if branch_data is None else "지점 수정")
 
+        self.organization_code_edit = QLineEdit()
+        self.organization_name_edit = QLineEdit()
         self.branch_name_edit = QLineEdit()
         self.corporation_name_edit = QLineEdit()
         self.owner_name_edit = QLineEdit()
         self.address_edit = QLineEdit()
 
+        # 기존 데이터가 있으면 채우기
+        if branch_data:
+            self.organization_code_edit.setText(branch_data.get("organization_code", ""))
+            self.organization_name_edit.setText(branch_data.get("organization_name", ""))
+            self.branch_name_edit.setText(branch_data.get("branch_name", ""))
+            self.corporation_name_edit.setText(branch_data.get("corporation_name", ""))
+            self.owner_name_edit.setText(branch_data.get("owner_name", ""))
+            self.address_edit.setText(branch_data.get("address", ""))
+
         form_layout = QFormLayout()
+        form_layout.addRow("기관기호:", self.organization_code_edit)
+        form_layout.addRow("기관명:", self.organization_name_edit)
         form_layout.addRow("지점명:", self.branch_name_edit)
         form_layout.addRow("법인명:", self.corporation_name_edit)
         form_layout.addRow("대표자명:", self.owner_name_edit)
@@ -43,6 +57,8 @@ class BranchDialog(QDialog):
 
     def get_data(self):
         return {
+            "organization_code": self.organization_code_edit.text().strip(),
+            "organization_name": self.organization_name_edit.text().strip(),
             "branch_name": self.branch_name_edit.text().strip(),
             "corporation_name": self.corporation_name_edit.text().strip(),
             "owner_name": self.owner_name_edit.text().strip(),
@@ -56,6 +72,7 @@ class BranchPage(QWidget):
         super().__init__()
 
         self.data_file = Path(__file__).resolve().parents[2] / "data" / "branches.json"
+        self.selected_row = -1
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -66,13 +83,13 @@ class BranchPage(QWidget):
         button_layout = QHBoxLayout()
 
         add_button = QPushButton("추가")
-        edit_button = QPushButton("수정")
-        delete_button = QPushButton("삭제")
+        self.edit_button = QPushButton("수정")
+        self.delete_button = QPushButton("삭제")
         refresh_button = QPushButton("새로고침")
 
         button_layout.addWidget(add_button)
-        button_layout.addWidget(edit_button)
-        button_layout.addWidget(delete_button)
+        button_layout.addWidget(self.edit_button)
+        button_layout.addWidget(self.delete_button)
         button_layout.addWidget(refresh_button)
 
         button_layout.addStretch()
@@ -84,15 +101,23 @@ class BranchPage(QWidget):
         # =================================================
         self.table = QTableWidget()
 
-        self.table.setColumnCount(5)
+        self.table.setColumnCount(6)
 
         self.table.setHorizontalHeaderLabels([
-            "연번",
+            "기관기호",
+            "기관명",
             "지점명",
             "법인명",
             "대표자명",
             "주소",
         ])
+
+        # 행 전체 선택 모드 설정
+        self.table.setSelectionBehavior(self.table.SelectionBehavior.SelectRows)
+        self.table.setSelectionMode(self.table.SelectionMode.SingleSelection)
+        
+        # 테이블 셀 읽기 전용 설정
+        self.table.setEditTriggers(self.table.EditTrigger.NoEditTriggers)
 
         layout.addWidget(self.table)
 
@@ -100,7 +125,12 @@ class BranchPage(QWidget):
         # 버튼 이벤트 연결
         # =================================================
         add_button.clicked.connect(self.add_branch)
+        self.edit_button.clicked.connect(self.edit_branch)
+        self.delete_button.clicked.connect(self.delete_branch)
         refresh_button.clicked.connect(self.load_data)
+        
+        # 테이블 행 선택 이벤트
+        self.table.itemClicked.connect(self.on_row_selected)
 
         # =================================================
         # 데이터 로드
@@ -115,14 +145,20 @@ class BranchPage(QWidget):
         with open(self.data_file, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
+    def on_row_selected(self):
+        """행이 선택되었을 때 호출"""
+        self.selected_row = self.table.currentRow()
+
     def add_branch(self):
         dialog = BranchDialog(self)
         if dialog.exec() != QDialog.Accepted:
             return
 
         new_branch = dialog.get_data()
-        if not all(new_branch.values()):
-            QMessageBox.warning(self, "입력 오류", "모든 항목을 입력해주세요.")
+        
+        # 지점명과 법인명 필수 입력 확인
+        if not new_branch["branch_name"] or not new_branch["corporation_name"]:
+            QMessageBox.warning(self, "입력 오류", "지점명과 법인명은 필수 입력 항목입니다.")
             return
 
         data = self._load_data()
@@ -131,14 +167,86 @@ class BranchPage(QWidget):
         self.load_data()
         self.table.selectRow(self.table.rowCount() - 1)
 
+    def edit_branch(self):
+        """선택된 행 수정"""
+        if self.selected_row < 0:
+            QMessageBox.warning(self, "선택 오류", "수정할 항목을 선택해주세요.")
+            return
+
+        data = self._load_data()
+        branch_data = data[self.selected_row]
+        
+        dialog = BranchDialog(self, branch_data)
+        if dialog.exec() != QDialog.Accepted:
+            return
+
+        updated_data = dialog.get_data()
+        
+        # 지점명과 법인명 필수 입력 확인
+        if not updated_data["branch_name"] or not updated_data["corporation_name"]:
+            QMessageBox.warning(self, "입력 오류", "지점명과 법인명은 필수 입력 항목입니다.")
+            return
+
+        data[self.selected_row] = updated_data
+        self._save_data(data)
+        self.load_data()
+        self.table.selectRow(self.selected_row)
+
+    def delete_branch(self):
+        """선택된 행 삭제"""
+        if self.selected_row < 0:
+            QMessageBox.warning(self, "선택 오류", "삭제할 항목을 선택해주세요.")
+            return
+
+        # 삭제 확인 팝업
+        reply = QMessageBox.question(self, "삭제 확인", "삭제하시겠습니까?", 
+                                     QMessageBox.Yes | QMessageBox.No)
+        if reply != QMessageBox.Yes:
+            return
+
+        data = self._load_data()
+        del data[self.selected_row]
+        self._save_data(data)
+        self.load_data()
+
     def load_data(self):
         data = self._load_data()
 
         self.table.setRowCount(len(data))
 
         for row, item in enumerate(data):
-            self.table.setItem(row, 0, QTableWidgetItem(str(row + 1)))
-            self.table.setItem(row, 1, QTableWidgetItem(item["branch_name"]))
-            self.table.setItem(row, 2, QTableWidgetItem(item["corporation_name"]))
-            self.table.setItem(row, 3, QTableWidgetItem(item["owner_name"]))
-            self.table.setItem(row, 4, QTableWidgetItem(item["address"]))
+            # 기관기호
+            org_code_item = QTableWidgetItem(item.get("organization_code", ""))
+            org_code_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            org_code_item.setFlags(org_code_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 0, org_code_item)
+            
+            # 기관명
+            org_name_item = QTableWidgetItem(item.get("organization_name", ""))
+            org_name_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            org_name_item.setFlags(org_name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 1, org_name_item)
+            
+            # 지점명
+            branch_item = QTableWidgetItem(item["branch_name"])
+            branch_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            branch_item.setFlags(branch_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 2, branch_item)
+            
+            # 법인명
+            corp_item = QTableWidgetItem(item["corporation_name"])
+            corp_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            corp_item.setFlags(corp_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 3, corp_item)
+            
+            # 대표자명
+            owner_item = QTableWidgetItem(item["owner_name"])
+            owner_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            owner_item.setFlags(owner_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 4, owner_item)
+            
+            # 주소
+            address_item = QTableWidgetItem(item["address"])
+            address_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            address_item.setFlags(address_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 5, address_item)
