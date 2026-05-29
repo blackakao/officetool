@@ -1,11 +1,14 @@
 [
     {
-        "organization_code": "",
-        "organization_name": "",
-        "branch_name": "행복요양원",
-        "corporation_name": "행복케어",
-        "owner_name": "김철수",
-        "address": "서울특별시 강서구"
+        "organization_code": "14161000183",
+        "organization_name": "행복한요양원",
+        "branch_name": "분당점",
+        "corporation_name": "주식회사 분당시니어",
+        "owner_name": "이찬재",
+        "address": "경기도 광주시 오포읍 대명대길 38-8",
+        "login_type": "케어포",
+        "login_id": "이찬재",
+        "login_password": "*wkdtnakst1"
     },
     {
         "organization_code": "",
@@ -28,14 +31,6 @@
         "organization_name": "",
         "branch_name": "2지점",
         "corporation_name": "2법인",
-        "owner_name": "",
-        "address": ""
-    },
-    {
-        "organization_code": "",
-        "organization_name": "",
-        "branch_name": "3지점",
-        "corporation_name": "3법인",
         "owner_name": "",
         "address": ""
     },

@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -9,12 +10,16 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTableWidget,
     QTableWidgetItem,
+    QComboBox,
     QDialog,
     QLineEdit,
     QFormLayout,
     QDialogButtonBox,
     QMessageBox,
 )
+
+
+LOGIN_TYPES = ["케어포", "롱텀"]
 
 
 class BranchDialog(QDialog):
@@ -28,6 +33,14 @@ class BranchDialog(QDialog):
         self.corporation_name_edit = QLineEdit()
         self.owner_name_edit = QLineEdit()
         self.address_edit = QLineEdit()
+        self.login_type_combo = QComboBox()
+        self.login_id_edit = QLineEdit()
+        self.login_password_edit = QLineEdit()
+
+        self.setMinimumWidth(760)
+        self.login_type_combo.addItems(LOGIN_TYPES)
+        self.login_password_edit.setEchoMode(QLineEdit.Normal)
+        self.login_password_edit.setValidator(QRegularExpressionValidator(r"[A-Za-z0-9]*"))
 
         # 기존 데이터가 있으면 채우기
         if branch_data:
@@ -37,6 +50,13 @@ class BranchDialog(QDialog):
             self.corporation_name_edit.setText(branch_data.get("corporation_name", ""))
             self.owner_name_edit.setText(branch_data.get("owner_name", ""))
             self.address_edit.setText(branch_data.get("address", ""))
+            self.login_type_combo.setCurrentText(branch_data.get("login_type", LOGIN_TYPES[0]))
+            self.login_id_edit.setText(branch_data.get("login_id", branch_data.get("owner_name", "")))
+            self.login_password_edit.setText(branch_data.get("login_password", ""))
+        else:
+            self.login_type_combo.setCurrentText(LOGIN_TYPES[0])
+            self.login_id_edit.setText("")
+            self.login_password_edit.setText("")
 
         form_layout = QFormLayout()
         form_layout.addRow("기관기호:", self.organization_code_edit)
@@ -45,6 +65,9 @@ class BranchDialog(QDialog):
         form_layout.addRow("법인명:", self.corporation_name_edit)
         form_layout.addRow("대표자명:", self.owner_name_edit)
         form_layout.addRow("주소:", self.address_edit)
+        form_layout.addRow("로그인 유형:", self.login_type_combo)
+        form_layout.addRow("로그인 아이디:", self.login_id_edit)
+        form_layout.addRow("로그인 비밀번호:", self.login_password_edit)
 
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
@@ -63,6 +86,9 @@ class BranchDialog(QDialog):
             "corporation_name": self.corporation_name_edit.text().strip(),
             "owner_name": self.owner_name_edit.text().strip(),
             "address": self.address_edit.text().strip(),
+            "login_type": self.login_type_combo.currentText(),
+            "login_id": self.login_id_edit.text().strip(),
+            "login_password": self.login_password_edit.text(),
         }
 
 
@@ -85,12 +111,10 @@ class BranchPage(QWidget):
         add_button = QPushButton("추가")
         self.edit_button = QPushButton("수정")
         self.delete_button = QPushButton("삭제")
-        refresh_button = QPushButton("새로고침")
 
         button_layout.addWidget(add_button)
         button_layout.addWidget(self.edit_button)
         button_layout.addWidget(self.delete_button)
-        button_layout.addWidget(refresh_button)
 
         button_layout.addStretch()
 
@@ -127,7 +151,6 @@ class BranchPage(QWidget):
         add_button.clicked.connect(self.add_branch)
         self.edit_button.clicked.connect(self.edit_branch)
         self.delete_button.clicked.connect(self.delete_branch)
-        refresh_button.clicked.connect(self.load_data)
         
         # 테이블 행 선택 이벤트
         self.table.itemClicked.connect(self.on_row_selected)
@@ -148,6 +171,24 @@ class BranchPage(QWidget):
     def on_row_selected(self):
         """행이 선택되었을 때 호출"""
         self.selected_row = self.table.currentRow()
+
+    def on_login_tool_changed(self, row):
+        """로그인툴 콤보 변경 시 로그인 정보 팝업을 엽니다."""
+        data = self._load_data()
+        if row < 0 or row >= len(data):
+            return
+
+        branch_data = data[row]
+        dialog = BranchDialog(self, branch_data)
+        if dialog.exec() != QDialog.Accepted:
+            self.load_data()
+            return
+
+        updated_data = dialog.get_data()
+        data[row] = updated_data
+        self._save_data(data)
+        self.load_data()
+        self.table.selectRow(row)
 
     def add_branch(self):
         dialog = BranchDialog(self)
@@ -215,6 +256,8 @@ class BranchPage(QWidget):
         self.table.setRowCount(len(data))
 
         for row, item in enumerate(data):
+            login_type = item.get("login_type", LOGIN_TYPES[0])
+
             # 기관기호
             org_code_item = QTableWidgetItem(item.get("organization_code", ""))
             org_code_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -250,3 +293,4 @@ class BranchPage(QWidget):
             address_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             address_item.setFlags(address_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.table.setItem(row, 5, address_item)
+

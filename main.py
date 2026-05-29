@@ -15,8 +15,11 @@ from PySide6.QtWidgets import (
 
 from ui.pages.branch_list import BranchPage
 from ui.pages.login_tool import LoginTool
+from ui.pages.login_log import LoginLogPage
 from ui.pages.document_tool import DocumentTool
 from ui.pages.federation_tool import FederationTool
+from ui.pages.labor_cost_ratio_page import LaborCostRatioPage
+from ui.pages.service_fee_page import ServiceFeePage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -44,11 +47,15 @@ class MainWindow(QMainWindow):
 
         self.menu.addItem("지점 목록")
         self.menu.addItem("로그인툴")
+        self.menu.addItem("로그인 로그")
         self.menu.addItem("문서작성툴")
         self.menu.addItem("공단툴")
+        self.menu.addItem("연도별 장기요양인건비 비율")
+        self.menu.addItem("연도별 장기요양 수가")
 
         layout.addWidget(self.menu)
-
+        layout.setStretch(0, 1)
+        
         # =========================================================
         # 우측 콘텐츠 (페이지)
         # =========================================================
@@ -58,15 +65,22 @@ class MainWindow(QMainWindow):
         # 각 페이지 추가
         self.branch_page = BranchPage()
         self.login_page = LoginTool()
+        self.login_log_page = LoginLogPage()
         self.document_page = DocumentTool()
         self.federation_page = FederationTool()
+        self.labor_cost_ratio_page = LaborCostRatioPage()
+        self.service_fee_page = ServiceFeePage()
 
         self.stacked_widget.addWidget(self.branch_page)
         self.stacked_widget.addWidget(self.login_page)
+        self.stacked_widget.addWidget(self.login_log_page)
         self.stacked_widget.addWidget(self.document_page)
         self.stacked_widget.addWidget(self.federation_page)
+        self.stacked_widget.addWidget(self.labor_cost_ratio_page)
+        self.stacked_widget.addWidget(self.service_fee_page)
 
         layout.addWidget(self.stacked_widget)
+        layout.setStretch(1, 3)
 
         # 메뉴 선택 이벤트 연결
         self.menu.itemClicked.connect(self.on_menu_clicked)
