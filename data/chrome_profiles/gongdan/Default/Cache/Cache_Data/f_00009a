@@ -1,0 +1,980 @@
+(function()
+{
+    return function()
+    {
+        if (!this._is_form)
+            return;
+        
+        var obj = null;
+        
+        this.on_create = function()
+        {
+            this.set_name("frameWork");
+            this.set_titletext("공통업무화면");
+            this.set_cssclass("frm_bizFrame");
+            if (Form == this.constructor)
+            {
+                this._setFormPosition(1046,610);
+            }
+            
+            // Object(Dataset, ExcelExportObject) Initialize
+            obj = new Dataset("ds_functionSearch", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"INQUIRY_AUTH\" type=\"STRING\" size=\"1\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_functionButton", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"SEQ\" type=\"INT\" size=\"256\"/><Column id=\"TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"BUTTON_ID\" type=\"STRING\" size=\"256\"/><Column id=\"SCREEN_AUTH\" type=\"STRING\" size=\"256\"/><Column id=\"USER_AUTH\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"BUTTON_ID\">btn_screenSave</Col><Col id=\"SEQ\">0</Col><Col id=\"SCREEN_AUTH\">Y</Col><Col id=\"TYPE\">1</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_help</Col><Col id=\"SEQ\">1</Col><Col id=\"SCREEN_AUTH\">Y</Col><Col id=\"TYPE\">1</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_bookmark</Col><Col id=\"SEQ\">2</Col><Col id=\"SCREEN_AUTH\">Y</Col><Col id=\"TYPE\">1</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_escape</Col><Col id=\"SEQ\">3</Col><Col id=\"SCREEN_AUTH\">Y</Col><Col id=\"TYPE\">1</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_clear</Col><Col id=\"SEQ\">4</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_insert</Col><Col id=\"SEQ\">5</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_delete</Col><Col id=\"SEQ\">6</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_save</Col><Col id=\"SEQ\">7</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_excel</Col><Col id=\"SEQ\">8</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_print</Col><Col id=\"SEQ\">9</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row><Row><Col id=\"BUTTON_ID\">btn_close</Col><Col id=\"SEQ\">10</Col><Col id=\"SCREEN_AUTH\">N</Col><Col id=\"TYPE\">2</Col><Col id=\"USER_AUTH\">Y</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_help", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CAPTION\" type=\"STRING\" size=\"256\"/><Column id=\"DATA\" type=\"STRING\" size=\"256\"/><Column id=\"LEVEL\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CAPTION\">동영상도움말</Col><Col id=\"DATA\">1</Col><Col id=\"LEVEL\">0</Col></Row><Row><Col id=\"DATA\">2</Col><Col id=\"CAPTION\">온라인도움말</Col><Col id=\"LEVEL\">0</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_tzlog", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_scprint", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"PGM_ID\" type=\"STRING\" size=\"32\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_scresult", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"PGM_ID\" type=\"STRING\" size=\"32\"/><Column id=\"INDI_INFO_RDN_RSTR_YN\" type=\"STRING\" size=\"32\"/><Column id=\"INDI_INFO_DATST_NM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+            
+            // UI Components Initialize
+            obj = new PopupMenu("pmnu_help","1288","64","220","100",null,null,null,null,null,null,this);
+            obj.set_innerdataset("ds_help");
+            obj.set_idcolumn("DATA");
+            obj.set_captioncolumn("CAPTION");
+            obj.set_levelcolumn("LEVEL");
+            this.addChild(obj.name, obj);
+
+            obj = new Div("_div_bizFrameMain","12","49",null,null,"12","7",null,null,null,null,this);
+            obj.set_taborder("0");
+            obj.getSetter("padding").set("0 0 0 0");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_bizTitle","12","5","140","31",null,null,"140",null,null,null,this);
+            obj.set_cssclass("sta_WF_title1");
+            obj.set_taborder("1");
+            obj.set_fittocontents("width");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_guideLine","12","40",null,"1","12",null,null,null,null,null,this);
+            obj.set_background("#adadad");
+            obj.set_taborder("2");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static05","12","0","15","40",null,null,null,null,null,null,this);
+            obj.set_text("40");
+            obj.set_visible("false");
+            obj.set_background("#ff000033");
+            obj.getSetter("align").set("center middle");
+            obj.set_taborder("3");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static00","611","0","319","9",null,null,null,null,null,null,this);
+            obj.set_text("9");
+            obj.set_visible("false");
+            obj.getSetter("align").set("center middle");
+            obj.set_taborder("4");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static01","0","51","12","480",null,null,null,null,null,null,this);
+            obj.set_text("12");
+            obj.set_visible("false");
+            obj.set_background("#ff000033");
+            obj.getSetter("align").set("center middle");
+            obj.set_taborder("5");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static04","68","0","300","11",null,null,null,null,null,null,this);
+            obj.set_text("12");
+            obj.set_visible("false");
+            obj.getSetter("align").set("center middle");
+            obj.set_taborder("6");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_bizTitleid","sta_bizTitle:15","5","170","31",null,null,null,null,null,null,this);
+            obj.set_cssclass("sta_WF_pagenid");
+            obj.set_taborder("7");
+            obj.set_visible("false");
+            obj.set_text("bizTitleid");
+            obj.set_fittocontents("none");
+            this.addChild(obj.name, obj);
+
+            obj = new Div("div_emptyFocus","3","8","1","22",null,null,null,null,null,null,this);
+            obj.set_taborder("8");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_bizTitleNavi",null,"8","300","31","11",null,null,null,null,null,this);
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_WF_pagenid");
+            obj.set_taborder("9");
+            obj.set_visible("false");
+            obj.set_text("bizTitleNavi");
+            obj.set_textAlign("right");
+            obj.set_verticalAlign("middle");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static02","1034","12","12","480",null,null,null,null,null,null,this);
+            obj.set_text("12");
+            obj.set_visible("false");
+            obj.getSetter("align").set("center middle");
+            obj.set_taborder("10");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Div("div_functionButton",null,"9","491","26","11",null,null,null,null,null,this);
+            obj.set_taborder("11");
+            obj.set_visible("false");
+            obj.set_border("0 none #808080ff");
+            obj.getSetter("padding").set("0 0 0 0");
+            obj.set_formscrollbartype("none none");
+            obj.set_formscrolltype("none");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_save","315","0","42","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("18");
+            obj.set_text("저장");
+            obj.getSetter("functionName").set("fn_save");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_excel","359","0","42","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("19");
+            obj.set_text("엑셀");
+            obj.getSetter("functionName").set("fn_excel");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_print","403","0","42","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("20");
+            obj.set_text("인쇄");
+            obj.getSetter("functionName").set("fn_print");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_clear","169","0","56","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("21");
+            obj.set_text("초기화");
+            obj.getSetter("functionName").set("fn_clear");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_bookmarkDel","103","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("22");
+            obj.set_cssclass("btn_WF_delbookmark");
+            obj.set_tooltiptext("삭제");
+            obj.set_visible("false");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_maininfo","7","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("23");
+            obj.set_cssclass("btn_WF_maninfo");
+            obj.set_tooltiptext("담당자 정보");
+            obj.set_visible("false");
+            obj.set_text("");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_help","71","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("24");
+            obj.set_cssclass("btn_WF_help");
+            obj.set_tooltiptext("도움말");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_bookmark","103","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("25");
+            obj.set_cssclass("btn_WF_addbookmark");
+            obj.set_tooltiptext("즐겨찾기");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_return","135","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("26");
+            obj.set_cssclass("btn_WF_winin");
+            obj.set_tooltiptext("Page In");
+            obj.set_visible("false");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_escape","135","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("27");
+            obj.set_cssclass("btn_WF_winalone");
+            obj.set_tooltiptext("화면탈출");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_insert","227","0","42","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("28");
+            obj.set_text("입력");
+            obj.getSetter("functionName").set("fn_insert");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_delete","271","0","42","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("29");
+            obj.set_text("삭제");
+            obj.getSetter("functionName").set("fn_delete");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_close","447","0","42","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("30");
+            obj.set_text("닫기");
+            obj.getSetter("functionName").set("fn_close");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_screenSave","39","0","30","22",null,null,null,null,null,null,this.div_functionButton.form);
+            obj.set_taborder("31");
+            obj.set_cssclass("btn_WF_print");
+            obj.set_tooltiptext("화면인쇄");
+            this.div_functionButton.addChild(obj.name, obj);
+
+            obj = new Button("btn_fault","1081","9","58","22",null,null,null,null,null,null,this);
+            obj.set_taborder("12");
+            obj.set_text("결함등록");
+            obj.getSetter("functionName").set("fn_close");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_pass","1142","9","42","22",null,null,null,null,null,null,this);
+            obj.set_taborder("13");
+            obj.set_text("Pass");
+            obj.getSetter("functionName").set("fn_close");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_qna","1187","9","58","22",null,null,null,null,null,null,this);
+            obj.set_taborder("14");
+            obj.set_text("Q&A");
+            obj.getSetter("functionName").set("fn_close");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            // Layout Functions
+            //-- Default Layout : this
+            obj = new Layout("default","",this._adjust_width,this._adjust_height,this,function(p){});
+            this.addLayout(obj.name, obj);
+            
+            // BindItem Information
+
+        };
+        
+        this.loadPreloadList = function()
+        {
+
+        };
+        
+        // User Script
+        this.registerScript("frameWork.xfdl", function() {
+        /**
+        *  @MenuPath    frame_main > frameWork
+        *  @FileName 	frameWork.xfdl
+        *  @Creator 	consulting
+        *  @CreateDate 	2018.08.20
+        *  @Desction
+        ************** 소스 수정 이력 ***********************************************
+        *  date          		Modifier                Description
+        *******************************************************************************
+        *  2018.08.20     	    나종식            	    Conversion
+        *  2026.01.18			김양일					메뉴에서 개인정보포함여부 체크하여 팝업 처리
+        *******************************************************************************
+        */
+
+        /************************************************************************************************
+         * FORM 변수 선언 영역
+         ************************************************************************************************/
+        this.objApp = nexacro.getApplication();
+        this.fv_bThisFrameIn = false;
+
+        this.fv_bPageFlag = false;
+        this.fv_sPreOpenStatus = "maximize";
+
+        // this.fv_objBizframeTitleBtn;
+        // this.fv_sFunctionButtonPosition;
+        // this.fv_nFunctionButtonWidth;
+        // this.fv_pmsqPopCnt = 0;
+
+        // 상수 세팅
+        this._bizFrm;		//공통 form
+        this._workFrm;		//biz div에 속한 업무form
+        this._bizInfo;		//form호출 정보(argument)
+        this._helpgbn;
+        /***********************************************************************************************
+        * FORM EVENT 영역(onload)
+        /***********************************************************************************************/
+        /**
+         * form onload 함수
+         */
+        this.frameWork_onload = function(obj,e)
+        {
+        	//this.resetScroll();
+        	var nIndex = obj.addEventHandler('onkeyup' ,this.cfn_formOnkeyup, obj);
+
+        	this._bizFrm  = obj;
+        	this._workFrm = this._div_bizFrameMain.form;
+        	this._bizInfo = this.getOwnerFrame()._bizInfo;
+        //trace("_bizInfo===="+this._bizInfo+":::::winid==="+this.getOwnerFrame().name);
+
+        	//this.divTitle.form.set_scrollbartype("none");
+
+        	if(this._bizInfo.menuUrl.indexOf(".xfdl") < 0) {
+        		this._bizInfo.menuUrl = this._bizInfo.menuUrl + ".xfdl";
+        	}
+
+        	this._div_bizFrameMain.set_url(this._bizInfo.menuUrl);
+        	this.sta_bizTitle.set_text(this._bizInfo.menuText);
+        	this.set_titletext(this._bizInfo.menuText);
+
+        	if(!this.gfn_isNull(this._bizInfo.programId)) {
+        		this.sta_bizTitleid.set_text(this._bizInfo.programId);
+        		this.sta_bizTitleid.set_visible(true);
+        	}
+
+        	if(!this.gfn_isNull(this._bizInfo.menuDesc)){
+        		this.sta_bizTitleNavi.set_text(this._bizInfo.menuDesc);
+        	}
+
+        	if(!this.gfn_isNull(this._bizInfo.menuDesc)) {
+        		this.sta_bizTitleNavi.set_text(this._bizInfo.menuDesc);
+        		this.sta_bizTitleNavi.set_tooltiptext(this._bizInfo.menuDesc);
+
+        		var sTxt = this._bizInfo.menuDesc;
+
+        		if(sTxt.length > 20) {
+        			sTxt = sTxt.substr(0,20) + "...";
+        			this.sta_bizTitleNavi.set_text(sTxt);
+        		}
+        		this.sta_bizTitleNavi.set_visible(true);
+        	}
+
+        	// form로딩시 화면에 표시할 page URL 설정
+        	this._div_bizFrameMain.set_url(this._bizInfo.menuUrl);
+
+        	this.resetScroll();
+        };
+
+        /**
+         * frameWork_onactivate event
+         */
+        this.frameWork_onactivate = function(obj,e)
+        {
+        //trace("frameWork_onactivate>>>>>>>");
+        	//오픈전 if 문삭제
+        	//TouchEnWeb
+        //   	if ( this.objApp.av_sSvrType == "PROD" || this.objApp.av_sSvrType == "DEV" ) {	// || av_sSvrType == "TEST" || av_sSvrType == "DEV" || av_sSvrType == "LOCAL"
+        //   		if(this.parent.openstatus == "maximize") {
+        //   			this.objApp.av_oHiddenFrame.form.fn_TouchEn(this._bizInfo.webDrm);
+        //   		} else {
+        //   			this.objApp.av_oHiddenFrame.form.fn_TouchEn(this._bizInfo.webDrm);
+        //   		}
+        //   	}
+        //trace("	this.fv_bPageFlag===="+this.fv_bPageFlag+"::::this._bizInfo.screenId==="+this._bizInfo.screenId);
+        	//mdi tab sync
+        	this.objApp.av_oBottomFrame.form.fn_syncTabpage(this._bizInfo.screenId);
+
+        	//left menu sync
+        	this.objApp.av_oLeftFrame.form.fn_syncLeftMenu(this._bizInfo.menuId);
+        };
+
+        /**
+         * form_onclose event
+         */
+        this.frameWork_onclose = function(obj,e)
+        {
+        // 	var objApp = nexacro.getApplication();
+        // 	try
+        // 	{
+        // //  		trace("workFrame_onclose : " + e.fromobject.name);
+        // //  		trace("workFrame_onclose  e.fromobject: " + e.fromobject);
+        //
+        // 		if (e.fromobject == "[object Form]")
+        // 		{
+        // 			if ( e.fromobject.parent == "[object TabpageControl]" ) return;
+        // 			//trace("e.fromobject.parent==="+e.fromobject.parent);
+        //
+        // 			obj._div_bizFrameMain.set_url("");
+        // 			var winId = obj.getOwnerFrame().name;
+        // 			if (objApp.av_sCloseAll == "N" && obj.fv_bPageFlag == false) {
+        // 				//열린tabpage삭제
+        // 				objApp.av_oBottomFrame.form.fn_deleteOpenedTab(winId);
+        //
+        // 				//열린창ds삭제
+        // 				obj.gfn_delOpenMenuDs(winId);
+        // 			}
+        // 		}
+        // 	}
+        // 	catch(e)
+        // 	{
+        //
+        // 	}
+        };
+        this.frameWork_onbeforeclose = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        	try
+        	{
+        //  		trace("workFrame_onclose : " + e.fromobject.name);
+        //  		trace("workFrame_onclose  e.fromobject: " + e.fromobject);
+
+        		if (e.fromobject == "[object Form]")
+        		{
+        			if ( e.fromobject.parent == "[object TabpageControl]" ) return;
+        			//trace("e.fromobject.parent==="+e.fromobject.parent);
+
+        			obj._div_bizFrameMain.set_url("");
+        			var winId = obj.getOwnerFrame().name;
+        			if (objApp.av_sCloseAll == "N" && obj.fv_bPageFlag == false) {
+        				//열린tabpage삭제
+        				objApp.av_oBottomFrame.form.fn_deleteOpenedTab(winId);
+
+        				//열린창ds삭제
+        				obj.gfn_delOpenMenuDs(winId);
+        			}
+        		}
+        	}
+        	catch(e)
+        	{
+
+        	}
+        };
+
+        /**
+         * form_onsize event
+         */
+        this.frameWork_onsize = function(obj,e)
+        {
+        	this.resetScroll();
+        };
+
+        /**
+         * form_onkeydown event
+        */
+
+
+        /************************************************************************************************
+         * CALLBACK 콜백 처리부분(Transaction, Popup)
+         ************************************************************************************************/
+        this.fn_callBack = function(sSvcId,nErrCd,sErrMsg)
+        {
+            //trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            //trace(">>>>> " + this.name + ".fn_callBack = function(" + sSvcId + ", " + nErrCd + ", " + sErrMsg + ")");
+            //trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+            if (sSvcId == "printhelpScreen") {
+        		this.fn_postPrintScreen();
+            }
+            else if (sSvcId == "selectScreen") {
+        		this.fn_postselectScreen();
+            }
+            else if (sSvcId == "selecthelp") {
+        		this.fn_postSelecthelp();
+            }
+
+        	return;
+        };
+        /************************************************************************************************
+         * CRUD 및 TRANSACTION 서비스 호출 처리
+         ************************************************************************************************/
+        this.fn_printScreen = function(){
+
+        	this.ds_tzlog.clearData();
+        	this.ds_tzlog.addRow();
+        	this.ds_tzlog.copyData(this._workFrm.ds_cond,true);
+
+        	// nexacro.getApplication().mainframe.fv_inqDataCnt = 10;  // 26.01.29 : 프린트스크린은 카운트를 가져올 수 없음.
+
+        	var sSvcId			= "printhelpScreen";
+        	var sPath  			= "t/z/001/printScreen.do";
+        	var sInputDsName 	= "ds_tzlog=ds_tzlog";
+        	var sOutputDsName 	= "ds_tzlog=ds_tzlog";
+        	var sArg 			= "";
+        	var oPreArgs  		= [];
+        	var sCallback 		= "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        }
+        this.fn_prePrintScreen = function() {
+        	return true;
+        }
+        this.fn_postPrintScreen = function() {
+        	//trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            //trace(">>>>> " + this.name + ".fn_postPrintScreen = function()");
+            //trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        	// 화면인쇄사유
+        	var objApp = nexacro.getApplication();
+        	objApp.mainframe.fv_indiInfInqRsnCd = "";
+        	objApp.mainframe.fv_busi24Log = "";
+        	objApp.gds_userInfo.setColumn(0, "INDI_INFO_INQ_RSN_CD", "");
+        	objApp.gds_userInfo.setColumn(0, "BUSI_LOG_CONTN", "");
+        }
+
+        this.fn_Selecthelp = function(){
+
+        	this.ds_tzlog.clearData();
+        	this.ds_tzlog.addRow();
+        	this.ds_tzlog.copyData(this._workFrm.ds_cond,true);
+
+        	var sSvcId			= "selecthelp";
+        	var sPath  			= "t/z/001/printScreen.do";
+        	var sInputDsName 	= "ds_tzlog=ds_tzlog";
+        	var sOutputDsName 	= "ds_tzlog=ds_tzlog";
+        	var sArg 			= "";
+        	var oPreArgs  		= [];
+        	var sCallback 		= "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        }
+        this.fn_preSelecthelp = function() {
+
+        	var objApp = nexacro.getApplication();
+        	objApp.mainframe.fv_indiInfInqRsnCd = this._helpgbn;
+        	objApp.mainframe.fv_busi24Log 		= "도움말";
+        	objApp.mainframe.fv_inqDataCnt   = 1; //1건
+
+        	return true;
+        }
+        this.fn_postSelecthelp = function() {
+        	//trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            //trace(">>>>> " + this.name + ".fn_postPrintScreen = function()");
+            //trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        	var objApp = nexacro.getApplication();
+        	objApp.mainframe.fv_indiInfInqRsnCd = "";
+        	objApp.mainframe.fv_busi24Log = "";
+        	objApp.gds_userInfo.setColumn(0, "INDI_INFO_INQ_RSN_CD", "");
+        	objApp.gds_userInfo.setColumn(0, "BUSI_LOG_CONTN", "");
+        }
+
+        /************************************************************************************************
+         * 사용자 FUNCTION 영역
+         ************************************************************************************************/
+        this.cfn_close = function()
+        {
+        	//전체 닫기인 경우 체크 pass
+        	if (this.objApp.av_sCloseAll != "Y") {
+        		// 변경된 데이터셋 체크후 닫기
+        		var bRtn = this.gfn_isUpdatedDataset(this._div_bizFrameMain.form);
+        //trace("bRtn==="+bRtn);
+        		if(!bRtn) return;
+
+        		var sConfirm = "";	// close / cancel
+        		// Form 또는 탭에서 종료 할 경우 작동함.
+        		if ((this._workFrm) && (this._workFrm["fn_beforeClose"] != undefined)) {
+        			sConfirm = this._workFrm.fn_beforeClose();
+
+        			if (sConfirm == "cancel") {
+        				return;
+        			}
+        		}
+        	}
+
+        	//웹캡쳐 방지 통테에서만 사용
+        	//오픈전 if 문삭제
+        // 	if ( nexacro.getApplication().av_sSvrType == "PROD" || nexacro.getApplication().av_sSvrType == "TEST" ) {
+        // 		nexacro.getApplication().av_oHiddenFrame.form.fn_TouchEn("N");
+        // 	}
+
+        	this.close();
+        };
+
+        /************************************************************************************************
+         * 공통버튼 이벤트 영역
+         ************************************************************************************************/
+        /*--------------------------------------------------------------------------------------*
+         * div_functionButton_btn_maininfo_onclick
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_maininfo_onclick = function(obj,e)
+        {
+        	this.alert("준비중입니다.");
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * div_functionButton_btn_screenSave_onclick
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_screenSave_onclick = function(obj,e)
+        {
+        	this.fn_selectScreen();
+        };
+
+        this.fn_selectScreen = function()
+        {
+        	this.ds_scprint.clearData();
+        	this.ds_scprint.addRow();
+        	this.ds_scprint.setColumn(0, "PGM_ID", this._bizInfo.programId);
+
+        	var sSvcId			= "selectScreen";
+        	var sPath  			= "t/z/001/selectScreen.do";
+        	var sInputDsName 	= "ds_scprint=ds_scprint";
+        	var sOutputDsName 	= "ds_scresult=ds_scresult";
+        	var sArg 			= "";
+        	var oPreArgs  		= [];
+        	var sCallback 		= "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+        this.fn_preselectScreen = function() {
+        	return true;
+        }
+        this.fn_postselectScreen = function() {
+
+        	// 화면인쇄시 개인정보 사유 입력 팝업 대상 체크(2026.01.18.)
+        	var objApp = nexacro.getApplication();
+        	var sCheckData = this.ds_scresult.getColumn(0,"INDI_INFO_RDN_RSTR_YN"); // 개인정보유무 컬럼
+        	var sCheckDataSetList = this.ds_scresult.getColumn(0,"INDI_INFO_DATST_NM"); // 개인정보 데이터셋
+        	var sCheckDataSet = "";
+
+        	var objForm = this._div_bizFrameMain.form; // 화면명
+        	var arrObj = objForm.objects; // 화면 오브젝트(데이터셋) 전체
+        	var cnt = 0;
+
+        	if(sCheckData == "Y" && sCheckDataSetList != "undefined"){ // 개인정보유무 컬럼 Y
+        	  sCheckDataSet = sCheckDataSetList.split(","); // 구분자(,) 분할
+        		for(var i=0; i<arrObj.length; i++) { // 데이터셋
+        		 for(var j=0; j<sCheckDataSet.length; j++){ // 개인정보 데이터셋
+        			if (arrObj[i] instanceof Dataset) {
+        				// 일치 시 건수 합계
+        				if(arrObj[i].name == sCheckDataSet[j]) cnt = cnt + arrObj[i].rowcount;
+        			}
+        		  }
+        		}
+        	}
+
+        	 // 개인정보 미해당 or 0건
+        	if(sCheckData != "Y" || cnt == 0){
+        		objApp.mainframe.fv_indiInfInqRsnCd = "";
+        		objApp.mainframe.fv_busi24Log 		= "화면인쇄(개인정보미해당)";
+        		objApp.mainframe.fv_inqDataCnt   = 0; //0건
+
+        		var nMaxHeight;
+        		var nWidth;
+        		try
+        		{
+        			nMaxHeight = this._div_bizFrameMain.form.formMaxHeight;
+        		}catch(e){}
+
+        		if(!this.gfn_isNull(nMaxHeight))
+        		{
+        			var nHeight = this.height;
+        			this.set_height(this._div_bizFrameMain.form.formMaxHeight+44 +12);
+        			nWidth = this.width;
+        			this.set_width(1046);
+        			this.resetScroll();
+        			// 출력
+        			var rtn = system.print(this, false);
+        			this.set_height(nHeight);
+        			this.set_width(nWidth);
+        			this.resetScroll();
+        		}
+        		else
+        		{
+        			var rtn = system.print(this, false);
+        		}
+
+        		this.fn_printScreen(); //화면인쇄 로그 업무로그 (TZ20) 저장
+
+        		if(rtn) {
+        			this.alert("출력되었습니다.");
+        		}
+        	}else{  // 개인정보 해당 - 사유등록 팝업
+        		this.fn_uz_screenSaveChk();
+        	}
+        }
+
+        /*--------------------------------------------------------------------------------------*
+         * Help
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_help_onclick = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        	var sUserType = objApp.gds_userInfo.getColumn(0,"USER_TYPE");
+
+         	if(sUserType != "20A" && sUserType != "20B" && sUserType != "20D")
+        	{
+        		this.fn_openOnlineHelp();
+        	}
+        	else
+        	{
+         		var nX = this.div_functionButton.getOffsetLeft();
+         		var nY = this.div_functionButton.getOffsetTop() + obj.getOffsetHeight() + 2;
+
+         		this.pmnu_help.trackPopupByComponent(obj , nX, nY);
+        	}
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Bookmark
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_bookmark_onclick = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        //	if ( bfn_getUserInfo().userType == "20A" ) {
+        		objApp.gds_qukMenu.deleteRow(objApp.gds_qukMenu.findRow( "MENU_ID", "NPC09000570" ));
+        		objApp.gds_qukMenu.deleteRow(objApp.gds_qukMenu.findRow( "MENU_ID", "np00000000067" ));
+        //	}
+
+        	var sPopId		= "nptz820p01";
+        	var sScrId		= "nptz820p01";
+        	var sArgs    = {initValue:{pgmId:this._bizInfo.programId,menuId:this._bizInfo.menuId,pgmUrl:this._bizInfo.menuUrl,pgmNm:this._bizInfo.menuText }};
+        	var nWidth		= 700
+        	var nHeight		= 365;
+        	var bIsModal	= true;
+        	var bVscrollbar = true;
+
+        	this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+
+        	//cfn_setQuickMenuIcon();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Bookmark Delete
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_bookmarkDel_onclick = function(obj,e)
+        {
+        	this.alert("준비중입니다.");
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 페이지 out
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_escape_onclick = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        	//trace("페이지 out");
+        	objApp.av_oHiddenFrame.form.fn_pageOutScreen(this);
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 페이지 in
+         *--------------------------------------------------------------------------------------*/
+        this.div_functionButton_btn_return_onclick = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        	//trace("페이지 in");
+        	objApp.av_oHiddenFrame.form.fn_pageInScreen(this);
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 공통버튼 클릭시 공통함수 호출
+         *--------------------------------------------------------------------------------------*/
+        this.cfn_commonButton_onclick = function(obj,e)
+        {
+        	var rtn;
+        	if(obj.functionName == "fn_close"){
+        		if(!this.gfn_isNull(this._div_bizFrameMain.form.lookup(obj.functionName))) {
+        			rtn = eval("this._div_bizFrameMain.form." + obj.functionName + "()");
+        			if(rtn) this.cfn_close();
+        		} else {
+        			this.cfn_close();
+        		}
+        	} else {
+        		if(!this.gfn_isNull(this._div_bizFrameMain.form.lookup(obj.functionName))) {
+
+        			eval("this._div_bizFrameMain.form." + obj.functionName + "()");
+        		} else {
+        			trace("===============================================================");
+        			trace(obj.functionName + "() 함수가 존재하지 않습니다. 추가하세요");
+        			trace("===============================================================");
+        		}
+        	}
+        };
+
+        this.btnTest_onclick = function(obj,e)
+        {
+        	var rtn = this.gfn_msgShow(this,"변경된 데이터가 존재합니다.\n현재선택한 작업을 \n계속해서 진행하시겠습니까?",null,"C");
+        	//this.alert("rtn==="+rtn);
+        	if ( rtn ) {
+        		this.cfn_close();
+        	}
+        };
+
+        //Help 아이콘 팝업
+        this.pmnu_help_onmenuclick = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        	var sUserType = objApp.gds_userInfo.getColumn(0,"USER_TYPE");
+        	var sUrl	  = objApp.gv_helpUrl;
+        	this._helpgbn = e.id;
+        	this.fn_Selecthelp();
+
+        	// 동영상 도움말
+        	if(e.id == "1") {
+
+        		// 장기요양기관
+        		if(sUserType == "20A")
+        		{
+        			sUrl += "context_01.html?tcode=" + this._bizInfo.programId;
+        		}
+
+        		// 복지용구 공급업체
+        		else if(sUserType == "20B")
+        		{
+        			sUrl += "context_02.html?tcode=" + this._bizInfo.programId;
+        		}
+
+        		// 등급판정 위원회
+        		else if(sUserType == "20D")
+        		{
+        			sUrl += "context_03.html?tcode=" + this._bizInfo.programId;
+        		}
+
+        		system.execBrowser(sUrl);
+
+        	// 온라인 도움말
+        	} else {
+        		this.fn_openOnlineHelp();
+        	}
+        };
+
+        this.fn_openOnlineHelp = function()
+        {
+        	var objSvc = nexacro.getEnvironment().services["svcUrl"];
+        	//var sPassUrl 	= nexacro.getApplication().gv_webUrl + "/xtran/jsp/helpSolution.jsp?TCODE=" + this._bizInfo.programId;
+        	var sPassUrl 	=  objSvc.url + "/xtran/jsp/helpSolution.jsp?TCODE=" + this._bizInfo.programId;
+
+        	var sPopId 		= "온라인 도움말";
+        	var sScrNm 		= this._bizInfo.menuText + "(" + this._bizInfo.programId + ") - 온라인 도움말";
+        	var sUrl 		= "frame_common::comWebBrowser.xfdl";
+        	var nWidth 		= 900;
+        	var nHeight 	= 800;
+        	var sArgs   	= {pUrl:sPassUrl};
+        	var bIsModal 	= false;
+        	var bVscrollbar	= true;
+        	this.gfn_showPopupByURL(this, sPopId, sScrNm, sUrl, nWidth, nHeight, sArgs, bIsModal, bVscrollbar, -1, -1, true);
+        };
+
+        this.fn_uz_screenSaveChk = function()
+        {
+        	var sPopId		= "nptz001p01";
+        	var sScrId		= "nptz001p01";
+        	var sArgs		= "";
+        	var nWidth		= 490;
+        	var nHeight		= 330;
+        	var bIsModal	= true;
+        	var bVscrollbar = true;
+
+        	this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        }
+
+        this.fn_popupCallback = function (sFrameid,sVarRtn)
+        {
+        	//trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            //trace(">>>>> " + this.name + ".fn_popupCallback = function (" + sFrameid + ", " + sVarRtn + ")");
+            //trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+        	if( sFrameid == "nptz001p01" && sVarRtn == "CLOSEONLY" ) {
+        		return;
+        	}else if( sFrameid == "nptz001p01" && this._variant == "[object Object]" ) {
+        		//화면인쇄 사유
+        		var objApp = nexacro.getApplication();
+        		//objApp.mainframe.fv_indiInfInqRsnCd = this._variant.rdnRsn;
+        		objApp.mainframe.fv_indiInfInqRsnCd = "90001"; // 화면 레포트인쇄 구분
+        		objApp.mainframe.fv_busi24Log 		= this._variant.edt_rdnRsn;
+        		objApp.mainframe.fv_inqDataCnt   = 0; // 건수 파악 불가 초기화
+
+        		var nMaxHeight;
+        		var nWidth;
+        		try
+        		{
+        			nMaxHeight = this._div_bizFrameMain.form.formMaxHeight;
+        		}catch(e){}
+
+        		if(!this.gfn_isNull(nMaxHeight))
+        		{
+        			var nHeight = this.height;
+        			this.set_height(this._div_bizFrameMain.form.formMaxHeight+44 +12);
+        			nWidth = this.width;
+        			this.set_width(1046);
+        			this.resetScroll();
+        			// 출력
+        			var rtn = system.print(this, false);
+        			this.set_height(nHeight);
+        			this.set_width(nWidth);
+        			this.resetScroll();
+        		}
+        		else
+        		{
+        			var rtn = system.print(this, false);
+        		}
+
+        		this.fn_printScreen(); //화면인쇄 로그 업무로그 (TZ20) 저장
+
+        		if(rtn) {
+        			this.alert("출력되었습니다.");
+        		}
+        	}
+        }
+        });
+        
+        // Regist UI Components Event
+        this.on_initEvent = function()
+        {
+            this.addEventHandler("onclose",this.frameWork_onclose,this);
+            this.addEventHandler("onload",this.frameWork_onload,this);
+            this.addEventHandler("onactivate",this.frameWork_onactivate,this);
+            this.addEventHandler("onsize",this.frameWork_onsize,this);
+            this.addEventHandler("onbeforeclose",this.frameWork_onbeforeclose,this);
+            this.pmnu_help.addEventHandler("onmenuclick",this.pmnu_help_onmenuclick,this);
+            this.div_functionButton.form.btn_save.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_excel.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_print.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_clear.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_bookmarkDel.addEventHandler("onclick",this.div_functionButton_btn_bookmarkDel_onclick,this);
+            this.div_functionButton.form.btn_maininfo.addEventHandler("onclick",this.div_functionButton_btn_maininfo_onclick,this);
+            this.div_functionButton.form.btn_help.addEventHandler("onclick",this.div_functionButton_btn_help_onclick,this);
+            this.div_functionButton.form.btn_bookmark.addEventHandler("onclick",this.div_functionButton_btn_bookmark_onclick,this);
+            this.div_functionButton.form.btn_return.addEventHandler("onclick",this.div_functionButton_btn_return_onclick,this);
+            this.div_functionButton.form.btn_escape.addEventHandler("onclick",this.div_functionButton_btn_escape_onclick,this);
+            this.div_functionButton.form.btn_insert.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_delete.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_close.addEventHandler("onclick",this.cfn_commonButton_onclick,this);
+            this.div_functionButton.form.btn_screenSave.addEventHandler("onclick",this.div_functionButton_btn_screenSave_onclick,this);
+            this.btn_fault.addEventHandler("onclick",this.btn_fault_onclick,this);
+            this.btn_pass.addEventHandler("onclick",this.btn_pass_onclick,this);
+            this.btn_qna.addEventHandler("onclick",this.btn_qna_onclick,this);
+        };
+
+        this.loadIncludeScript("frameWork.xfdl");
+        this.loadPreloadList();
+        
+        // Remove Reference
+        obj = null;
+    };
+}
+)();

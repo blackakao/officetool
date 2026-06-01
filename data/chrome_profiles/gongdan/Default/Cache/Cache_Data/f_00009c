@@ -1,0 +1,796 @@
+(function()
+{
+    return function()
+    {
+        if (!this._is_form)
+            return;
+        
+        var obj = null;
+        
+        this.on_create = function()
+        {
+            this.set_name("singleCalendar");
+            this.set_titletext("달력");
+            this.set_scrolltype("none");
+            if (Form == this.constructor)
+            {
+                this._setFormPosition(443,520);
+            }
+            
+            // Object(Dataset, ExcelExportObject) Initialize
+
+            
+            // UI Components Initialize
+            obj = new Calendar("cal_begin","0","0","100","22",null,null,null,null,null,null,this);
+            obj.set_taborder("0");
+            obj.set_dateformat("yyyy-MM-dd");
+            obj.set_type("spin");
+            obj.set_cssclass("cal_WF");
+            obj.set_autoselect("true");
+            obj.set_autoskip("true");
+            obj.set_buttonsize("-10");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_calOpen","78","0","20","22",null,null,null,null,null,null,this);
+            obj.set_taborder("1");
+            obj.set_cssclass("btn_calDrop");
+            obj.set_tabstop("false");
+            this.addChild(obj.name, obj);
+
+            obj = new PopupDiv("pdiv_dayCalendar","2","47","193","199",null,null,null,null,null,null,this);
+            obj.set_text("PopupDiv00");
+            obj.set_visible("false");
+            obj.set_cssclass("pdiv_solo_BG");
+            obj.getSetter("taborder").set("3");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static01","236","0","201","34",null,null,null,null,null,null,this.pdiv_dayCalendar.form);
+            obj.set_visible("false");
+            obj.set_background("#678abdff");
+            obj.set_color("#ffffffff");
+            obj.set_padding("0 0 0 0");
+            obj.set_font("bold 9 Tahoma");
+            this.pdiv_dayCalendar.addChild(obj.name, obj);
+
+            obj = new Calendar("cal_from","0","1","188","196",null,null,null,null,null,null,this.pdiv_dayCalendar.form);
+            obj.set_taborder("23");
+            obj.set_type("monthonly");
+            obj.set_cssclass("cal_POP");
+            obj.set_innerdataset("gds_holiday");
+            obj.set_datecolumn("DT");
+            obj.set_textcolorcolumn("HOL_COLOR");
+            obj.set_background("transparent");
+            this.pdiv_dayCalendar.addChild(obj.name, obj);
+
+            obj = new Button("btn_daySelect","364","4","32","24",null,null,null,null,null,null,this.pdiv_dayCalendar.form);
+            obj.set_taborder("24");
+            obj.set_text("선택");
+            obj.set_visible("false");
+            this.pdiv_dayCalendar.addChild(obj.name, obj);
+
+            obj = new Button("btn_dayClose","400","4","32","24",null,null,null,null,null,null,this.pdiv_dayCalendar.form);
+            obj.set_taborder("25");
+            obj.set_text("닫기");
+            obj.set_visible("false");
+            this.pdiv_dayCalendar.addChild(obj.name, obj);
+
+            obj = new Calendar("cal_begin","241","7","90","20",null,null,null,null,null,null,this.pdiv_dayCalendar.form);
+            obj.set_taborder("26");
+            obj.set_readonly("true");
+            obj.set_dateformat("yyyy-MM-dd");
+            obj.set_cssclass("cal_POP_edittype");
+            obj.set_visible("false");
+            obj.set_buttonsize("0");
+            obj.getSetter("align").set("center middle");
+            this.pdiv_dayCalendar.addChild(obj.name, obj);
+
+            obj = new Button("btn_today","339","4","24","24",null,null,null,null,null,null,this.pdiv_dayCalendar.form);
+            obj.set_taborder("27");
+            obj.set_text("T");
+            obj.set_visible("false");
+            this.pdiv_dayCalendar.addChild(obj.name, obj);
+
+            obj = new PopupDiv("pdiv_monthCalendar","1","303","200","200",null,null,null,null,null,null,this);
+            obj.set_text("PopupDiv00");
+            obj.set_cssclass("pdiv_solo_BG");
+            obj.set_visible("false");
+            obj.getSetter("taborder").set("2");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_monthSelect","295","4","32","24",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_taborder("0");
+            obj.set_text("선택");
+            obj.set_visible("false");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Button("btn_monthClose","331","4","32","24",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_taborder("1");
+            obj.set_text("닫기");
+            obj.set_visible("false");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Calendar("cal_begin","201","6","66","20",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_taborder("2");
+            obj.set_dateformat("yyyy-MM");
+            obj.set_editformat("yyyy-MM");
+            obj.set_cssclass("cal_POP_edittype");
+            obj.set_visible("false");
+            obj.set_buttonsize("0");
+            obj.getSetter("align").set("center middle");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Spin("spi_sYear","65","4","67","20",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_taborder("3");
+            obj.set_cssclass("spin_cal");
+            obj.set_value("2014");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month2","51","34","46","51",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>FEB</fc></fs>\n2");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("FEB");
+            obj.getSetter("userdata").set("02");
+            obj.getSetter("monthText").set("FEB");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month1","4","34","47","51",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>JAN</fc></fs>\n1");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("JAN");
+            obj.getSetter("userdata").set("01");
+            obj.getSetter("monthText").set("JAN");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month3","98","34","46","51",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>MAR</fc></fs>\n3");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("MAR");
+            obj.getSetter("userdata").set("03");
+            obj.getSetter("monthText").set("MAR");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month4","145","34","46","51",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>APR</fc></fs>\n4");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("APR");
+            obj.getSetter("userdata").set("04");
+            obj.getSetter("monthText").set("APR");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month7","98","86","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>JULY</fc></fs>\n7");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("JULY");
+            obj.getSetter("userdata").set("07");
+            obj.getSetter("monthText").set("JULY");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month8","145","86","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>AUG</fc></fs>\n8");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("AUG");
+            obj.getSetter("userdata").set("08");
+            obj.getSetter("monthText").set("AUG");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month6","51","86","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>JUNE</fc></fs>\n6");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("JUNE");
+            obj.getSetter("userdata").set("06");
+            obj.getSetter("monthText").set("JUNE");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month5","4","86","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>MAY</fc></fs>\n5");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("MAY");
+            obj.getSetter("userdata").set("05");
+            obj.getSetter("monthText").set("MAY");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month11","98","136","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>NOV</fc></fs>\n11");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("NOV");
+            obj.getSetter("userdata").set("11");
+            obj.getSetter("monthText").set("NOV");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month12","145","136","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>DEC</fc></fs>\n12");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("DEC");
+            obj.getSetter("userdata").set("12");
+            obj.getSetter("monthText").set("DEC");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month10","51","136","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>OCT</fc></fs>\n10");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("OCT");
+            obj.getSetter("userdata").set("10");
+            obj.getSetter("monthText").set("OCT");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            obj = new Static("sta_month9","4","136","46","49",null,null,null,null,null,null,this.pdiv_monthCalendar.form);
+            obj.set_text("<fs v=\'8\'><fc v=\'#b1bdcb\'>SEP</fc></fs>\n9");
+            obj.set_usedecorate("true");
+            obj.set_cssclass("sta_cal_month");
+            obj.set_tooltiptext("SEP");
+            obj.getSetter("userdata").set("09");
+            obj.getSetter("monthText").set("SEP");
+            this.pdiv_monthCalendar.addChild(obj.name, obj);
+
+            // Layout Functions
+            //-- Default Layout : this
+            obj = new Layout("default","",this._adjust_width,this._adjust_height,this,function(p){});
+            this.addLayout(obj.name, obj);
+            
+            // BindItem Information
+
+        };
+        
+        this.loadPreloadList = function()
+        {
+
+        };
+        
+        // User Script
+        this.registerScript("singleCalendar.xfdl", function() {
+
+        /*=============================   Program description   ================================*
+         * Form ID     : singleCalendar.xadl
+         * Form Desc.  : singleCalendar
+         * Author      : 황규철
+         * Create Date : 2014.06.30
+         * readme 	   : 임의 변경시 발생하는 문제에 관련해서, 해당 개발자가 책임지지 않습니다.
+         * Change History
+         *--------------------------------------------------------------------------------------*
+         * 수정일 / 이름 / 사유
+         *--------------------------------------------------------------------------------------*
+         * 2014.06.30 / 황규철 / 신규
+         *======================================================================================*/
+
+
+        /*======================================================================================*
+         * 0.외부참조 선언
+         *======================================================================================*/
+
+
+        /*======================================================================================*
+         * 1.Variable Area
+         *======================================================================================*/
+         this._caltype;
+         this._binddataset;
+         this._datecolumn;
+         this._requiredmark;
+         this._readonly;
+         this._notNull;
+         this._beforeYear;
+
+         this._minDate;
+         this._maxDate;
+
+         this.oParentForm;
+
+        /*======================================================================================*
+         * 2.Form Area
+         *======================================================================================*/
+        /*--------------------------------------------------------------------------------------*
+         * Method : singleCalendar_onload
+         * Desc   : 달력 로드
+         *--------------------------------------------------------------------------------------*/
+        this.singleCalendar_onload = function(obj,e)
+        {
+        	var oParentDiv = this.parent;
+        	this.oParentForm = oParentDiv.parent;
+
+        	//설정 초기화
+        	this._caltype           = this.gfn_nvl(oParentDiv._caltype,"");
+        	this._binddataset		= this.gfn_nvl(oParentDiv._binddataset,"");
+        	this._datecolumn     	= this.gfn_nvl(oParentDiv._datecolumn,"");
+        	this._requiredmark		= this.gfn_nvl(oParentDiv._requiredmark,"");
+        	this._readonly			= this.gfn_nvl(oParentDiv._readonly,"");
+        	this._notNull			= this.gfn_nvl(oParentDiv._notNull,"");
+        	this._beforeYear		= this.gfn_nvl(oParentDiv._beforeYear,"");
+
+        	this._minDate			= this.gfn_nvl(oParentDiv._minDate,"19000101");
+        	this._maxDate			= this.gfn_nvl(oParentDiv._maxDate,"29001231");
+
+        	if(!this.fn_isNull(oParentDiv.validate))
+        	{
+        		this.cal_begin.validate = oParentDiv.validate;
+        	}
+
+        	if(this.fn_isNull(this._caltype))
+        	{
+        		this._caltype = "D";
+        	}
+
+        	this.fn_calendarInit();
+        	this.fn_calendarInitValue();
+        	this.fn_checkProperties();
+
+        	if(!this.fn_isNull(this._binddataset) && !this.fn_isNull(this._datecolumn))
+        	{
+        		this.fn_bindCalendar();
+        	}
+
+        	this.cal_begin.set_cssclass(this.cal_begin.cssclass + "," + this._requiredmark);
+
+        	if(this._readonly == "true") {
+        		this.cal_begin.set_readonly(true);
+        		this.btn_calOpen.set_enable(false);
+        	}
+
+        	this.fn_setStyle(this);
+        };
+
+        this.singleCalendar_onkillfocus = function(obj,e) {
+        	this.fn_checkMixMax(this.cal_begin.value);
+        };
+
+        this.fn_checkMixMax = function(sDate)
+        {
+        	if ( this.fn_isNull(sDate) ) return true;
+
+        	if(!this.fn_isNull(this._minDate) || !this.fn_isNull(this._maxDate)) {
+        		if(this._caltype == "D") {
+        			if(sDate < this._minDate || sDate > this._maxDate) {
+        				this.alert("허용범위 : [" + this._minDate + " ~ " + this._maxDate + "]\n\n입력한 날짜가 허용범위를 벗어났습니다");
+        				this.fn_dayCalendarOpen();
+        				return false;
+        			}
+        		} else {
+        			var sValue = (sDate).toString().substr(0,6);
+        			var minDate = (this._minDate).toString().substr(0,6);
+        			var maxDate = (this._maxDate).toString().substr(0,6);
+        			if(sValue < minDate || sValue > maxDate) {
+        				this.alert("허용범위 : [" + minDate + " ~ " + maxDate + "]\n\n입력한 날짜가 허용범위를 벗어났습니다");
+        				this.fn_monthCalendarOpen();
+        				return false;
+        			}
+        		}
+        	}
+
+        	return true;
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_calendarInit()
+         * Desc   : 초기화
+         *--------------------------------------------------------------------------------------*/
+        this.fn_calendarInit = function()
+        {
+        	if(this._caltype == "D") {
+        		this.cal_begin.set_dateformat("yyyy-MM-dd");
+        		this.cal_begin.set_editformat("yyyy-MM-dd");
+        	} else {
+        		this.cal_begin.set_dateformat("yyyy-MM");
+        		this.cal_begin.set_editformat("yyyy-MM");
+        	}
+
+        	if(this._readonly == "true") {
+        		this.cal_begin.set_readonly(true);
+        		this.btn_calOpen.set_enable(false);
+        	} else {
+        		this.cal_begin.set_readonly(false);
+        		this.btn_calOpen.set_enable(true);
+        	}
+
+        };
+
+        this.fn_calendarInitValue = function()
+        {
+        	this.cal_begin.set_value(this.fn_getToday());
+        };
+
+
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_setStyle
+         * Desc   : style 및 position 셋팅
+         *--------------------------------------------------------------------------------------*/
+        this.fn_setStyle = function(oForm)
+        {
+        	var nHeight = this.getOffsetHeight();
+        	var nWidth = this.getOffsetWidth();
+        	var nBtnWidth = this.btn_calOpen.getOffsetWidth();
+
+
+        	this.cal_begin.setOffsetHeight(nHeight);
+        	this.cal_begin.setOffsetWidth(nWidth);
+
+        	this.btn_calOpen.setOffsetHeight(nHeight);
+        	this.btn_calOpen.setOffsetLeft(nWidth -this.btn_calOpen.getOffsetWidth());
+        	this.btn_calOpen.setOffsetWidth(nBtnWidth);
+        };
+
+        /*======================================================================================*
+         * 3.Transaction Area
+         *======================================================================================*/
+
+
+        /*======================================================================================*
+         * 4.User function Area
+         *======================================================================================*/
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_checkProperties
+         * Desc   : 바인딩 관련 Properties 체크
+         *--------------------------------------------------------------------------------------*/
+        this.fn_checkProperties = function()
+        {
+        	if(!this.fn_isNull(this._binddataset))
+        	{
+        		if(this.fn_isNull(this._datecolumn)) trace("_datecolumn을(를) 입력하세요");
+        	}
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_isNull
+         * Desc   : Null 체크
+         *--------------------------------------------------------------------------------------*/
+        this.fn_isNull = function(sValue)
+        {
+        	if( new String(sValue).valueOf() == "undefined")
+        		return true;
+        	if( sValue == null )
+        		return true;
+        	if( ("x"+sValue == "xNaN") && ( new String(sValue.length).valueOf() == "undefined" ) )
+        		return true;
+        	if( sValue.length == 0 )
+        		return true;
+        	return false;
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_bindCalendar
+         * Desc   : 바인딩 셋팅
+         *--------------------------------------------------------------------------------------*/
+        this.fn_bindCalendar = function()
+        {
+        	var oBindBegin = new BindItem("bind_beginDate", "cal_begin", "value", this._binddataset, this._datecolumn);
+        	this.addChild("bind_beginDate", oBindBegin);
+        	oBindBegin.bind();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_getToday
+         * Desc   : 오늘날짜 구하기
+         *--------------------------------------------------------------------------------------*/
+        this.fn_getToday = function()
+        {
+        	var objDate = new Date();
+        	var strToday  = objDate.getFullYear().toString();
+        		strToday += (objDate.getMonth()+1).toString().padLeft(2, "0");
+        		strToday += objDate.getDate().toString().padLeft(2, "0");
+        	return strToday ;
+        };
+
+        /*======================================================================================*
+         * 5.Event Area
+         *======================================================================================*/
+        /*--------------------------------------------------------------------------------------*
+         * Method : btn_calOpen_onclick
+         * Desc   : 달력열기
+         *--------------------------------------------------------------------------------------*/
+        this.btn_calOpen_onclick = function(obj,e)
+        {
+        	if(this._caltype == "D") {
+        		this.fn_dayCalendarOpen();
+        	} else if (this._caltype == "M") {
+        		this.fn_monthCalendarOpen();
+        	} else {
+        		trace("_caltype이 잘못지정 되었습니다. \n_caltype : D (일력)\n_caltype : M (월력)");
+        		trace("파일을 Refresh 하세요");
+        	}
+        	this.cal_begin.setFocus();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_dayCalendarOpen
+         * Desc   : 일력열기
+         *--------------------------------------------------------------------------------------*/
+        this.fn_dayCalendarOpen = function()
+        {
+        	if(this.fn_isNull(this.cal_begin.value)) {
+        		if(this.fn_isNull(this._beforeYear)) {
+        			this.pdiv_dayCalendar.form.cal_from.set_value(this.fn_getToday());
+        		} else {
+        			if(!nexacro.isNumeric(this._beforeYear)) {
+        				trace("_beforeYear Properties는 0 이상의 정수를 입력하세요");
+        				this.pdiv_dayCalendar.form.cal_from.set_value(this.fn_getToday());
+        			} else {
+        				var nBeforeYear 					= nexacro.toNumber(this._beforeYear);
+        				var nBeforeMonth 					= nBeforeYear * 12;
+        				this.pdiv_dayCalendar.form.cal_from.set_value(this.gfn_addMonth(this.fn_getToday(),- nBeforeMonth));
+        			}
+        		}
+        	} else {
+        		this.pdiv_dayCalendar.form.cal_begin.set_value(this.cal_begin.value);
+        		this.pdiv_dayCalendar.form.cal_from.set_value(this.cal_begin.value);
+        	}
+
+         	var nX = 0;
+         	var nY = this.cal_begin.getOffsetHeight();
+        	this.pdiv_dayCalendar.trackPopupByComponent(this.cal_begin, nX, nY);
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : fn_monthCalendarOpen
+         * Desc   : 월력열기
+         *--------------------------------------------------------------------------------------*/
+        this.fn_monthCalendarOpen = function()
+        {
+
+        	if(this.fn_isNull(this.cal_begin.value)) {
+        		if(this.fn_isNull(this._beforeYear)) {
+        			var sYYYYMMDD = this.fn_getToday();
+        		} else {
+        			if(!nexacro.isNumeric(this._beforeYear)) {
+        				trace("_beforeYear Properties는 0 이상의 정수를 입력하세요");
+        				var sYYYYMMDD = this.fn_getToday();
+        			} else {
+        				var nBeforeYear 	= nexacro.toNumber(this._beforeYear);
+        				var nBeforeMonth 	= nBeforeYear * 12;
+        				var sYYYYMMDD = this.gfn_addMonth(this.fn_getToday(),- nBeforeMonth);
+        			}
+        		}
+        	} else {
+        		var sYYYYMMDD = this.cal_begin.value;
+        	}
+
+        	var sYear	= new String(sYYYYMMDD).substr(0,4);
+
+        	var sYear	= new String(sYYYYMMDD).substr(0,4);
+        	this.pdiv_monthCalendar.form.cal_begin.set_value(sYYYYMMDD);
+        	this.pdiv_monthCalendar.form.spi_sYear.set_value(sYear);
+
+        	this.fn_setSelectClass(this.pdiv_monthCalendar,new String(sYYYYMMDD).substr(4,2));
+
+         	var nX = 0;
+         	var nY = this.cal_begin.getOffsetHeight();
+        	this.pdiv_monthCalendar.trackPopupByComponent(this.cal_begin, nX, nY);
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_dayCalendar_cal_from_onchanged
+         * Desc   : 일력클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_dayCalendar_cal_from_onchanged = function(obj,e)
+        {
+
+        	if(!this.fn_checkMixMax(obj.value)) return;
+
+        	this.pdiv_dayCalendar.form.cal_begin.set_value(obj.value);
+        	this.cal_begin.set_value(this.pdiv_dayCalendar.form.cal_from.value);
+        	this.pdiv_dayCalendar.closePopup();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_dayCalendar_btn_today_onclick
+         * Desc   : 일력 Today 클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_dayCalendar_btn_today_onclick = function(obj,e)
+        {
+        	this.pdiv_dayCalendar.form.cal_begin.set_value(this.fn_getToday());
+        	this.pdiv_dayCalendar.form.cal_from.set_value(this.fn_getToday());
+        };
+
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_dayCalendar_btn_daySelect_onclick
+         * Desc   : 일력 선택 클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_dayCalendar_btn_daySelect_onclick = function(obj,e)
+        {
+        	this.cal_begin.set_value(this.pdiv_dayCalendar.form.cal_begin.value);
+        	this.pdiv_dayCalendar.closePopup();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_dayCalendar_btn_dayClose_onclick
+         * Desc   : 일력 닫기버튼 클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_dayCalendar_btn_dayClose_onclick = function(obj,e)
+        {
+        	this.pdiv_dayCalendar.closePopup();
+        };
+
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_monthCalendar_sMonth_onclick
+         * Desc   : 월력클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_monthCalendar_sMonth_onclick = function(obj,e)
+        {
+        	if(!this.fn_checkMixMax(this.pdiv_monthCalendar.form.spi_sYear.value + obj.userdata)) return;
+
+        	this.pdiv_monthCalendar.form.cal_begin.set_value(this.pdiv_monthCalendar.form.spi_sYear.value + obj.userdata);
+        	this.cal_begin.set_value(this.pdiv_monthCalendar.form.cal_begin.value);
+        	var sFromDate = this.cal_begin.value;
+
+        	this.fn_setSelectClass(this.pdiv_monthCalendar,obj.userdata);
+
+        	this.pdiv_monthCalendar.closePopup();
+        };
+
+
+
+        this.fn_setSelectClass = function(obj,sMonth)
+        {
+        	var sTargetObjectName = obj.name;
+        	var nMonth = parseInt(sMonth);
+        	var sColor = "#ffffff";
+        	var sSelColor = "#ef5b3e";
+        	var obj;
+        	var objSel;
+        	var sTmp;
+
+        	for(i=1; i<=12; i++)
+        	{
+        		obj = eval("this." + sTargetObjectName + ".form.sta_month" + i);
+        		sTmp = obj.text;
+        		obj.set_text(sTmp.replace(sSelColor,sColor));
+        		obj.set_cssclass("sta_cal_month");
+        	}
+
+        	objSel = eval("this." + sTargetObjectName + ".form.sta_month" + nMonth);
+        	sTmp = objSel.text;
+        	objSel.set_text(sTmp.replace(sColor,sSelColor));
+        	objSel.set_cssclass("sta_cal_month_ON");
+        };
+
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_monthCalendar_btn_monthSelect_onclick
+         * Desc   : 월력 선택버튼 클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_monthCalendar_btn_monthSelect_onclick = function(obj,e)
+        {
+        	this.cal_begin.set_value(this.pdiv_monthCalendar.form.cal_begin.value);
+        	var sFromDate = this.cal_begin.value;
+        	this.pdiv_monthCalendar.closePopup();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Method : pdiv_monthCalendar_btn_monthClose_onclick
+         * Desc   : 월력 닫기버튼 클릭
+         *--------------------------------------------------------------------------------------*/
+        this.pdiv_monthCalendar_btn_monthClose_onclick = function(obj,e)
+        {
+        	this.pdiv_monthCalendar.closePopup();
+        };
+
+
+
+        this.singleCalendar_onsize = function(obj,e)
+        {
+        	this.fn_setStyle(obj);
+        };
+
+        this.cal_begin_onchanged = function(obj,e)
+        {
+        	if(this._notNull == "true"){
+        		if(this.fn_isNull(obj.value)){
+        			obj.set_value(e.prevalue);
+        		}
+        	}
+        };
+
+
+
+        this.Calendar_canchange = function(obj,e)
+        {
+        	if(this._notNull == "true") {
+        		var sDate = e.postvalue+"";
+        		if(!this.fn_isDate(sDate)) {
+        			this.alert("유효한 날짜가 아니거나 필수입력값입니다.");
+        			obj.setFocus();
+        			return false;
+        		}
+        	} else {
+        		var sDate = e.postvalue+"";
+        		if ( this.fn_isNull(sDate) ) return true;
+        	}
+
+        	if(!this.fn_isNull(this._minDate)) {
+        		if(this._caltype == "D") {
+        			if(e.postvalue < this._minDate || e.postvalue > this._maxDate) {
+        				this.alert("허용범위 : [" + this._minDate + " ~ " + this._maxDate + "]\n\n입력한 날짜가 허용범위를 벗어났습니다");
+        				obj.setFocus();
+        				return false;
+        			}
+        		} else {
+
+        			var eValue = new String(e.postvalue).substr(0,6);
+        			var minDate = new String(this._minDate).substr(0,6);
+        			var maxDate = new String(this._maxDate).substr(0,6);
+
+        			if(eValue < minDate || eValue > maxDate) {
+        				this.alert("허용범위 : [" + minDate + " ~ " + maxDate + "]\n\n입력한 날짜가 허용범위를 벗어났습니다");
+        				obj.setFocus();
+        				return false;
+        			}
+        		}
+        	}
+        };
+
+
+        this.fn_isDate = function(sDate) {
+        	var nYear   = parseInt(sDate.substring(0,4), 10);
+        	var nMonth  = parseInt(sDate.substring(4,6), 10);
+        	var nDate   = parseInt(sDate.substring(6,8), 10);
+
+        	if( this.fn_isNull(sDate) )								return false;
+        	if( sDate.length != 8 ) 								return false;
+        	if( nYear < 1800 || nYear > 3000 ) 						return false;
+        	if( nMonth < 1 || nMonth > 12 ) 						return false;
+        	if( nDate < 1 || nDate > this.gfn_getLastDateNum(sDate)) 	return false;
+
+        	return true;
+        };
+
+
+        this.pdiv_dayCalendar_cal_from_ondayclick = function(obj,e)
+        {
+        	if(!this.fn_checkMixMax(obj.value)) return;
+
+        	this.pdiv_dayCalendar.form.cal_begin.set_value(obj.value);
+        	this.cal_begin.set_value(this.pdiv_dayCalendar.form.cal_from.value);
+        	this.pdiv_dayCalendar.closePopup();
+        };
+
+        });
+        
+        // Regist UI Components Event
+        this.on_initEvent = function()
+        {
+            this.addEventHandler("onload",this.singleCalendar_onload,this);
+            this.addEventHandler("onsize",this.singleCalendar_onsize,this);
+            this.addEventHandler("onkillfocus",this.singleCalendar_onkillfocus,this);
+            this.cal_begin.addEventHandler("onkeydown",this.bfn_moveNextTabOrder,this);
+            this.cal_begin.addEventHandler("onchanged",this.cal_begin_onchanged,this);
+            this.cal_begin.addEventHandler("canchange",this.Calendar_canchange,this);
+            this.btn_calOpen.addEventHandler("onclick",this.btn_calOpen_onclick,this);
+            this.pdiv_dayCalendar.form.cal_from.addEventHandler("onchanged",this.pdiv_dayCalendar_cal_from_onchanged,this);
+            this.pdiv_dayCalendar.form.cal_from.addEventHandler("ondayclick",this.pdiv_dayCalendar_cal_from_ondayclick,this);
+            this.pdiv_dayCalendar.form.btn_daySelect.addEventHandler("onclick",this.pdiv_dayCalendar_btn_daySelect_onclick,this);
+            this.pdiv_dayCalendar.form.btn_dayClose.addEventHandler("onclick",this.pdiv_dayCalendar_btn_dayClose_onclick,this);
+            this.pdiv_dayCalendar.form.btn_today.addEventHandler("onclick",this.pdiv_dayCalendar_btn_today_onclick,this);
+            this.pdiv_monthCalendar.form.btn_monthSelect.addEventHandler("onclick",this.pdiv_monthCalendar_btn_monthSelect_onclick,this);
+            this.pdiv_monthCalendar.form.btn_monthClose.addEventHandler("onclick",this.pdiv_monthCalendar_btn_monthClose_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month2.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month1.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month3.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month4.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month7.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month8.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month6.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month5.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month11.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month12.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month10.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+            this.pdiv_monthCalendar.form.sta_month9.addEventHandler("onclick",this.pdiv_monthCalendar_sMonth_onclick,this);
+        };
+
+        this.loadIncludeScript("singleCalendar.xfdl");
+        this.loadPreloadList();
+        
+        // Remove Reference
+        obj = null;
+    };
+}
+)();

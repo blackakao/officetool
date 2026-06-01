@@ -1,0 +1,688 @@
+(function()
+{
+    return function()
+    {
+        if (!this._is_form)
+            return;
+        
+        var obj = null;
+        
+        this.on_create = function()
+        {
+            this.set_name("frameBottom");
+            this.set_titletext("frameBottom");
+            this.set_scrolltype("none");
+            this.set_scrollbartype("none");
+            this.set_cssclass("frm_Bottom");
+            if (Form == this.constructor)
+            {
+                this._setFormPosition(968,26);
+            }
+            
+            // Object(Dataset, ExcelExportObject) Initialize
+            obj = new Dataset("ds_openMenu", this);
+            obj._setContents("<ColumnInfo><Column id=\"screen_id\" type=\"STRING\" size=\"256\"/><Column id=\"screen_idSeq\" type=\"INT\" size=\"256\"/><Column id=\"screen_virtuaMonitor\" type=\"STRING\" size=\"256\"/><Column id=\"screen_menuId\" type=\"STRING\" size=\"256\"/><Column id=\"screen_out\" type=\"STRING\" size=\"1\"/><Column id=\"screen_name\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_zoom", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CODE\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CODE\">200%</Col></Row><Row><Col id=\"CODE\">190%</Col></Row><Row><Col id=\"CODE\">180%</Col></Row><Row><Col id=\"CODE\">170%</Col></Row><Row><Col id=\"CODE\">160%</Col></Row><Row><Col id=\"CODE\">150%</Col></Row><Row><Col id=\"CODE\">140%</Col></Row><Row><Col id=\"CODE\">130%</Col></Row><Row><Col id=\"CODE\">120%</Col></Row><Row><Col id=\"CODE\">110%</Col></Row><Row><Col id=\"CODE\">100%</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+            
+            // UI Components Initialize
+            obj = new Tab("tab_mdi1","0","0",null,"32","321",null,null,null,null,null,this);
+            obj.set_taborder("0");
+            obj.set_tabindex("0");
+            obj.set_cssclass("tab_MDI_set");
+            obj.set_showextrabutton("true");
+            this.addChild(obj.name, obj);
+
+            obj = new Tabpage("tabpage2",this.tab_mdi1);
+            obj.set_text("tabpage2");
+            this.tab_mdi1.addChild(obj.name, obj);
+
+            obj = new Tabpage("tabpage1",this.tab_mdi1);
+            obj.set_text("tabpage1");
+            this.tab_mdi1.addChild(obj.name, obj);
+
+            obj = new PopupDiv("pdiv_openMenu","63","52","250","300",null,null,null,null,null,null,this);
+            obj.set_text("pdiv_openMenu");
+            obj.set_visible("false");
+            obj.getSetter("taborder").set("0");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grd_openMenu","0","0","250","300",null,null,null,null,null,null,this.pdiv_openMenu.form);
+            obj.set_cssclass("grd_WF_list");
+            obj.set_taborder("0");
+            obj.set_binddataset("ds_openMenu");
+            obj.set_autofittype("col");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"30\"/><Column size=\"235\"/></Columns><Rows><Row size=\"30\"/></Rows><Band id=\"body\"><Cell displaytype=\"imagecontrol\" text=\"url('theme://images/ico_dotte.png')\"/><Cell col=\"1\" text=\"bind:screen_name\" textAlign=\"left\"/></Band></Format></Formats>");
+            this.pdiv_openMenu.addChild(obj.name, obj);
+
+            obj = new Static("sta_systemInfo",null,"5","62","19","64",null,null,null,null,null,this);
+            obj.set_text("시스템 부하");
+            obj.set_cssclass("sta_TF_System");
+            obj.set_taborder("1");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_traffic1d",null,"4","21","20","42",null,null,null,null,null,this);
+            obj.set_cssclass("sta_TF_Grayico");
+            obj.set_taborder("2");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static07",null,"5","1","16","257",null,null,null,null,null,this);
+            obj.set_text("Static07");
+            obj.set_cssclass("sta_TabLine");
+            obj.set_taborder("3");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_openLIst",null,"3","21","20","287",null,null,null,null,null,this);
+            obj.set_taborder("4");
+            obj.set_cssclass("btn_MDI_list");
+            obj.set_tooltiptext("전체리스트");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_allClose",null,"3","21","20","265",null,null,null,null,null,this);
+            obj.set_taborder("5");
+            obj.set_cssclass("btn_MDI_close");
+            obj.set_tooltiptext("전체닫기");
+            this.addChild(obj.name, obj);
+
+            obj = new Combo("cbo_zoom","636","63","67","20",null,null,null,null,null,null,this);
+            obj.set_taborder("6");
+            obj.set_innerdataset("ds_zoom");
+            obj.set_codecolumn("CODE");
+            obj.set_datacolumn("CODE");
+            obj.set_cssclass("BF_list");
+            obj.set_visible("false");
+            obj.set_text("100%");
+            obj.set_value("100%");
+            obj.set_index("10");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static00",null,"5","1","16","229",null,null,null,null,null,this);
+            obj.set_text("Static07");
+            obj.set_cssclass("sta_TabLine");
+            obj.set_taborder("7");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static08",null,"5","1","16","313",null,null,null,null,null,this);
+            obj.set_text("Static07");
+            obj.set_cssclass("sta_TabLine");
+            obj.set_taborder("8");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static09",null,"5","1","16","132",null,null,null,null,null,this);
+            obj.set_text("Static07");
+            obj.set_cssclass("sta_TabLine");
+            obj.set_taborder("9");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("Button00","533","6","20","20",null,null,null,null,null,null,this);
+            obj.set_taborder("10");
+            obj.set_cssclass("btn_BF_zoom");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("Button02","555","6","20","20",null,null,null,null,null,null,this);
+            obj.set_taborder("11");
+            obj.set_cssclass("btn_BF_minus");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new PopupDiv("pdiv_arrange","629","28","82","27",null,null,null,null,null,null,this);
+            obj.set_cssclass("div_BF_bg");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_hor","6","3","20","20",null,null,null,null,null,null,this.pdiv_arrange.form);
+            obj.set_taborder("3");
+            obj.set_cssclass("btn_BF_arrange_hor");
+            obj.getSetter("arrangeType").set("vertical");
+            this.pdiv_arrange.addChild(obj.name, obj);
+
+            obj = new Button("btn_ver","31","3","20","20",null,null,null,null,null,null,this.pdiv_arrange.form);
+            obj.set_taborder("4");
+            obj.set_cssclass("btn_BF_arrange_ver");
+            obj.getSetter("arrangeType").set("horizontal");
+            this.pdiv_arrange.addChild(obj.name, obj);
+
+            obj = new Button("btn_grid","56","3","20","20",null,null,null,null,null,null,this.pdiv_arrange.form);
+            obj.set_taborder("5");
+            obj.set_cssclass("btn_BF_arrange_grid");
+            obj.getSetter("arrangeType").set("tilevertical");
+            this.pdiv_arrange.addChild(obj.name, obj);
+
+            obj = new Button("btn_evrmtSetPupOpen",null,"4","94","19","134",null,null,null,null,null,this);
+            obj.set_taborder("19");
+            obj.set_text("출력문제해결");
+            obj.set_cssclass("btn_TF_utilmenu");
+            obj.set_color("#000000");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_traffic2d",null,"4","21","20","23",null,null,null,null,null,this);
+            obj.set_visible("true");
+            obj.set_cssclass("sta_TF_Grayico");
+            obj.set_taborder("20");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_traffic3d",null,"4","21","20","3",null,null,null,null,null,this);
+            obj.set_visible("true");
+            obj.set_cssclass("sta_TF_Grayico");
+            obj.set_taborder("21");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_arrange",null,"3","18","20","234",null,null,null,null,null,this);
+            obj.set_taborder("17");
+            obj.set_cssclass("btn_BF_arrange_max");
+            obj.set_tooltiptext("화면배치");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_traffic3",null,"4","21","20","3",null,null,null,null,null,this);
+            obj.set_visible("false");
+            obj.set_cssclass("sta_TF_Redico");
+            obj.set_taborder("18");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_traffic2",null,"4","21","20","23",null,null,null,null,null,this);
+            obj.set_visible("false");
+            obj.set_cssclass("sta_TF_Yellowico");
+            obj.set_taborder("19");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_traffic1",null,"4","21","20","42",null,null,null,null,null,this);
+            obj.set_cssclass("sta_TF_Greenico");
+            obj.set_taborder("20");
+            this.addChild(obj.name, obj);
+
+            // Layout Functions
+            //-- Default Layout : this
+            obj = new Layout("default","",968,26,this,function(p){});
+            this.addLayout(obj.name, obj);
+            
+            // BindItem Information
+
+        };
+        
+        this.loadPreloadList = function()
+        {
+
+        };
+        
+        // User Script
+        this.registerScript("frameBottom.xfdl", function() {
+        /**
+        *  컨설팅 표준화 작업
+        *  @MenuPath    frame > frameBottom
+        *  @FileName 	frameBottom.xfdl
+        *  @Creator 	consulting
+        *  @CreateDate 	2017.03.09
+        *  @Desction
+        ************** 소스 수정 이력 ***********************************************
+        *  date          		Modifier                Description
+        *******************************************************************************
+        *  2017.03.09     	consulting 	                최초 생성
+        *  2017.10.17     	consulting       	        주석 정비
+        *******************************************************************************
+        */
+
+        /************************************************************************************************
+         * FORM 변수 선언 영역
+         ************************************************************************************************/
+
+        /***********************************************************************************************
+        * FORM EVENT 영역(onload)
+        /***********************************************************************************************/
+        this.form_onload = function(obj,e)
+        {
+        // 	this.gfnFormOnLoad(this);
+        //
+        // 	var str = this.gfnGetDate("time");
+        // 	trace(str);
+        // 	var dd = str.substr(0,8);
+        // 	var year = dd.substr(0,4);
+        // 	var month = dd.substr(4,2);
+        // 	var day = dd.substr(6,2);
+        // 	var hh = str.substr(8,2);
+        // 	var mm = str.substr(10,2);
+        // 	this.Static02.set_text("로그인 시각 : "+year+"-"+month+"-"+day+" "+hh+":"+mm);
+
+        	// 디자인시 생성된 Tabpage 삭제
+        	this.fn_initTabpage(this.tab_mdi1);
+
+        	this.fn_setTraffic(10);
+        };
+        /************************************************************************************************
+        * TRANSACTION 서비스 호출 처리
+        ************************************************************************************************/
+
+        /************************************************************************************************
+         * CALLBACK 콜백 처리부분
+         ************************************************************************************************/
+
+         /************************************************************************************************
+         * 사용자 FUNCTION 영역
+         ************************************************************************************************/
+         /*--------------------------------------------------------------------------------------*
+         * Zoom 실행 => setZoom 지원되지 않는 기능(nexacro17)
+         *--------------------------------------------------------------------------------------*/
+        this.fn_zoom = function(nZoomFactor)
+        {
+
+        }
+         /*--------------------------------------------------------------------------------------*
+         * Tab 초기화
+         *--------------------------------------------------------------------------------------*/
+        this.fn_initTabpage = function(objTab)
+        {
+        	for (var i=(objTab.tabpages.length-1); i>=0; i--) {
+        		objTab.removeTabpage(i);
+        	}
+        };
+
+        this.fn_setTraffic = function(nTraffic)
+        {
+        	if(nTraffic <= 33) {
+        		this.sta_traffic1.set_visible(true);
+
+        		this.sta_traffic2.set_visible(false);
+        		this.sta_traffic2d.set_visible(true);
+
+        		this.sta_traffic3.set_visible(false);
+        		this.sta_traffic3d.set_visible(true);
+
+        	} else if (nTraffic > 34 && nTraffic <= 78) {
+        		this.sta_traffic1.set_visible(true);
+
+        		this.sta_traffic2.set_visible(true);
+        		this.sta_traffic2d.set_visible(false);
+
+        		this.sta_traffic3.set_visible(false);
+        		this.sta_traffic3d.set_visible(true);
+        	} else if (nTraffic > 79) {
+        		this.sta_traffic1.set_visible(true);
+
+        		this.sta_traffic2.set_visible(true);
+        		this.sta_traffic2d.set_visible(false);
+
+        		this.sta_traffic3.set_visible(true);
+        		this.sta_traffic3d.set_visible(false);
+        	} else {
+        		this.sta_traffic1.set_visible(true);
+
+        		this.sta_traffic2.set_visible(false);
+        		this.sta_traffic2d.set_visible(true);
+
+        		this.sta_traffic3.set_visible(false);
+        		this.sta_traffic3d.set_visible(true);
+        	}
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * Tab Sync
+         *--------------------------------------------------------------------------------------*/
+        this.fn_syncTabpage = function(sChildFrameId) {
+        //trace("fn_syncTabpage>>>>>>>>>>sChildFrameId : "+sChildFrameId);
+        	var objTargetMenuTab;
+        	var objApp = nexacro.getApplication();
+        	var nRowPos = objApp.gds_openMenu.findRow("screen_id", sChildFrameId);
+        	if (nRowPos < 0) return;
+
+        	var nStop = this.tab_mdi1.tabpages.length;
+        	for (var i=0; i<nStop; i++) {
+        	//trace("fn_syncTabpage>>>>>>>>>> tabpages name : "+this.tab_mdi1.tabpages[i].name);
+        		if (this.tab_mdi1.tabpages[i].name == sChildFrameId) {
+        			this.tab_mdi1.set_tabindex(i);
+        			break;
+        		}
+        	}
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 선택된 ChildFrame 활성화
+         *--------------------------------------------------------------------------------------*/
+        this.fn_activeChildFrame = function(obj,nTabIndex)
+        {
+        //trace("fn_activeChildFrame  nTabIndex==="+nTabIndex);
+        	var objApp = nexacro.getApplication();
+        	var objPostTabpage = obj.tabpages[nTabIndex];
+        	if (!objPostTabpage) return;
+
+        	var sChildFrameId = objPostTabpage.name;
+        // 	var sPageFlag = objApp.gds_openMenu.lookup("screen_id", sChildFrameId,"screen_out");
+        // 	var objChildFrame;
+        // 	if ( sPageFlag == "Y" ) {
+        // 		objChildFrame = nexacro.getPopupFrames[sChildFrameId];
+        // 	} else {
+        // 		objChildFrame = objApp.av_oWorkFrame.frames[sChildFrameId];
+        // 	}
+        	var objChildFrame = objApp.av_oWorkFrame.frames[sChildFrameId];
+
+        	if (objChildFrame) {
+        		//최소화 상태일때 이전상태로로 변경
+        		var sOpenstatus = objChildFrame.openstatus;
+        		var sPreOpenStatus = objChildFrame.form.fv_sPreOpenStatus;
+        		if ((sOpenstatus == "minimize") && (sPreOpenStatus == "normal")) {
+        			objChildFrame.titlebar.normalbutton.click();
+        		} else if ((sOpenstatus == "minimize") && (sPreOpenStatus == "maximize")) {
+        			objChildFrame.titlebar.maxbutton.click();
+        		}
+
+        	} else {
+        		objChildFrame = nexacro.getPopupFrames(objApp.mainframe)[sChildFrameId];
+        		objChildFrame.setFocus();
+        	}
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 선택된 ChildFrame 닫기
+         *--------------------------------------------------------------------------------------*/
+        this.fn_closeChildFrame = function(sChildFrameId)
+        {
+        //trace("sChildFrameId==="+sChildFrameId);
+        	var objApp = nexacro.getApplication();
+        	var objTargetFrame = objApp.av_oWorkFrame.frames[sChildFrameId];
+        //trace("objTargetFrame==="+objTargetFrame);
+        	if (!objTargetFrame) {
+        		objTargetFrame = nexacro.getPopupFrames(objApp.mainframe)[sChildFrameId];
+        	}
+        	if (!objTargetFrame) return;
+        	var objTargetForm = objTargetFrame.form;
+
+        	//화면캡쳐 정지
+        	//오픈전 if 문삭제
+        	//TouchEnWeb
+        //  	if ( objApp.av_sSvrType == "PROD" || objApp.av_sSvrType == "DEV" ) {	// || av_sSvrType == "TEST" || av_sSvrType == "DEV"  || av_sSvrType == "LOCAL"
+        //  		objApp.av_oHiddenFrame.form.fn_TouchEn("N");
+        //  	}
+
+        	objTargetForm.setFocus();
+        	objTargetForm.cfn_close();
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 선택된 tabpage 닫기
+         *--------------------------------------------------------------------------------------*/
+        this.fn_deleteOpenedTab = function(sChildFrameId)
+        {
+        	var objApp = nexacro.getApplication();
+        	var objTargetMenuTab;
+        	var nRowPos = objApp.gds_openMenu.findRow("screen_id", sChildFrameId);
+        	if (nRowPos > -1) {
+        		var stop = this.tab_mdi1.tabpages.length;
+        		for (var i=0; i<stop; i++) {
+        			if (this.tab_mdi1.tabpages[i].name == sChildFrameId) {
+        				this.tab_mdi1.removeTabpage(i);
+        				break;
+        			}
+        		}
+        	}
+        };
+
+        /*--------------------------------------------------------------------------------------*
+         * 열린화면 탭추가
+         *--------------------------------------------------------------------------------------*/
+        this.fn_insertTab = function(sChildFrameId,sMenuText)
+        {
+        	// 열린화면 탭추가
+        	var nTabPageIndex = this.tab_mdi1.insertTabpage(sChildFrameId, -1, "", sMenuText);
+        };
+
+
+        /*--------------------------------------------------------------------------------------*
+         * 전체 닫기 실행
+         *--------------------------------------------------------------------------------------*/
+        this.fn_allClose = function()
+        {
+        	var objApp = nexacro.getApplication();
+        	var objTargetChild, objTargetForm;
+        	var sChildFrameId, sMdiOutYn;
+        	var nBizCount = objApp.gds_openMenu.getRowCount();
+        	//TabPage, 열린화면 ds삭제는 여기서 실행
+        	objApp.av_sCloseAll = "Y";
+
+        	// 화면 종료 여부 확인
+        	for (var i=nBizCount-1; i>=0; i--) {
+        		sChildFrameId = objApp.gds_openMenu.getColumn(i, "screen_id");
+        		sMdiOutYn     = objApp.gds_openMenu.getColumn(i, "screen_out");
+
+        		if (sMdiOutYn == "Y") {
+        			objTargetChild = nexacro.getPopupFrames(objApp.mainframe)[sChildFrameId];
+        		} else {
+        			objTargetChild = objApp.av_oWorkFrame.frames[sChildFrameId];
+        		}
+
+        		if (!objTargetChild) {
+        			continue;
+        		}
+
+        		objTargetForm = objTargetChild.form._workFrm;
+
+        		if ((objTargetForm != undefined) && (objTargetForm["fn_beforeClose"] != undefined)) {
+        			var rtn = objTargetForm.fn_beforeClose();
+        			if (rtn == "cancel") {
+        				objApp.av_sCloseAll = "N";
+        				return false;
+        			}
+        		}
+        	}
+
+        	// 업무화면 종료
+        	for (var i=nBizCount; i>=0; i--) {
+        		sChildFrameId = objApp.gds_openMenu.getColumn(i, "screen_id");
+        		sMdiOutYn     = objApp.gds_openMenu.getColumn(i, "screen_out");
+        		if (sMdiOutYn == "Y") {
+        			objTargetChild = nexacro.getPopupFrames(objApp.mainframe)[sChildFrameId];
+        		} else {
+        			objTargetChild = objApp.av_oWorkFrame.frames[sChildFrameId];
+        		}
+
+        		if (!objTargetChild) {
+        			continue;
+        		}
+        		objTargetForm = objTargetChild.form;
+        		objTargetForm.setFocus();
+        		objTargetForm.cfn_close();
+        	}
+
+        	if ( objApp.av_oWorkFrame.all.length == 0 ) {
+        		// TabPage 삭제
+        		var nTabpageCount = this.tab_mdi1.getTabpageCount();
+        		for (var i=nTabpageCount-1; i>=0; i--) {
+        			this.tab_mdi1.removeTabpage(i);
+        		}
+
+        		//열린화면 ds 삭제
+        		objApp.gds_openMenu.clearData();
+
+        		objApp.afn_viewIntro(true);
+        	}
+        	objApp.av_sCloseAll = "N";
+        };
+
+
+
+         /************************************************************************************************
+         * 각 COMPONENT 별 EVENT 영역
+         ************************************************************************************************/
+        //전체 닫기
+        this.btn_allClose_onclick = function(obj,e)
+        {
+        	this.fn_allClose();
+        };
+
+        //열린화면 리스트 호출
+        this.btn_openLIst_onclick = function(obj,e)
+        {
+        	var objApp = nexacro.getApplication();
+        	this.ds_openMenu.copyData(objApp.gds_openMenu, true);
+
+        //  	var nX = (0 - this.pdiv_openMenu.getOffsetWidth()) + obj.getOffsetWidth();
+        //  	var nY = (0 - this.pdiv_openMenu.getOffsetHeight() - 30);
+        // trace("nX==="+nX+"::::nY==="+nY);
+        // 	this.pdiv_openMenu.trackPopupByComponent(obj , nX, nY);
+
+        	var nAppWidth  = objApp.mainframe.getOffsetWidth();
+        	var nAppHeight  = objApp.mainframe.getOffsetHeight();
+        	var nPdivWidth = this.pdiv_openMenu.getOffsetWidth();
+        	var nPdivHeight = this.pdiv_openMenu.getOffsetHeight();
+        	var nRight     = obj.right;
+        	var nX = nAppWidth - nPdivWidth - nRight;
+        	var nY = nAppHeight - nPdivHeight - 26;
+
+        	this.pdiv_openMenu.trackPopup(nX, nY);
+        };
+
+        //열린화면 메뉴 선택
+        this.pdiv_openMenu_grd_openMenu_oncellclick = function(obj,e)
+        {
+        	nexacro.getApplication().afn_viewIntro(false);
+        	var sScreenId = this.ds_openMenu.getColumn(e.row,"screen_id");
+        	this.fn_syncTabpage(sScreenId);
+        	this.pdiv_openMenu.closePopup();
+        };
+
+        //mdi탭 클릭시
+        this.tab_mdi_onlbuttonup = function(obj,e)
+        {
+        	if(obj.getTabpageCount() != 0)
+        	{
+        		nexacro.getApplication().afn_viewIntro(false);
+        	}
+        };
+
+        //tabpage 'X'버튼을 누를때 (닫기)
+        this.tab_mdi_onextrabuttonclick = function(obj,e)
+        {
+        	var sChildFrameId = obj.tabpages[e.index].name;
+        	this.fn_closeChildFrame(sChildFrameId);
+        };
+
+        //선택된 tabpage가 변경될때
+        this.tab_mdi_onchanged = function(obj,e)
+        {
+        //trace("tab_mdi_onchanged>>>>>>>>>>>>>>>>>>>>");
+        	var nPostIndex = e.postindex;
+        	if (nPostIndex < 0) return;
+        	nexacro.getApplication().afn_viewIntro(false);
+
+        	this.fn_activeChildFrame(obj, nPostIndex);
+
+        	//선택된 화면 focus주기
+        	this.setTimer(1001, 100);
+        };
+
+        // 선택된 화면 focus주기
+        this.frameBottom_ontimer = function(obj,e)
+        {
+        //trace("frameBottom_ontimer>>>>>>>>>>>>>>>>>>>>");
+        	var objApp = nexacro.getApplication();
+        	var nTimerID = e.timerid;
+        	switch (nTimerID) {
+
+        		// 선택된 화면 focus주기
+        		case 1001 :
+        			obj.killTimer(nTimerID);
+        			var objTabpage = this.tab_mdi1.tabpages[this.tab_mdi1.tabindex];
+        			if (!objTabpage) return;
+        			var sChildFrameId = objTabpage.name;
+
+        			if (objApp.av_oWorkFrame.frames[sChildFrameId]) {
+        				objApp.av_oWorkFrame.frames[sChildFrameId].setFocus();
+        			} else if (nexacro.getPopupFrames(objApp.mainframe)[sChildFrameId]) {
+        				nexacro.getPopupFrames(objApp.mainframe)[sChildFrameId].setFocus();
+        			}
+        			break;
+        	}
+        };
+
+        //window arrange설정 버튼
+        this.btn_arrange_onlbuttonup = function(obj,e)
+        {
+        //  	var nX = (0 - ((this.pdiv_arrange.getOffsetWidth() - obj.getOffsetWidth()) / 2));
+        //  	var nY = (0 - this.pdiv_arrange.getOffsetHeight() - 4);
+        //
+        // 	this.pdiv_arrange.trackPopupByComponent(obj , nX, nY);
+        	var objApp = nexacro.getApplication();
+        	var nAppWidth  = objApp.mainframe.getOffsetWidth();
+        	var nAppHeight  = objApp.mainframe.getOffsetHeight();
+        	var nPdivWidth = this.pdiv_arrange.getOffsetWidth();
+        	var nPdivHeight = this.pdiv_arrange.getOffsetHeight();
+        	var nObjWidth = obj.getOffsetWidth();
+        	var nObjRight = obj.right;
+        	var nX = nAppWidth - (nPdivWidth + nObjWidth)/2 - nObjRight;
+        	var nY = nAppHeight - nPdivHeight - 26;
+
+        	this.pdiv_arrange.trackPopup(nX, nY);
+        };
+
+
+        this.btn_arrange_onclick = function(obj,e){
+        	//오픈전 if 문삭제
+        	//TouchEnWeb
+        	var objApp =  nexacro.getApplication();
+        // 	if ( objApp.av_sSvrType == "PROD" || objApp.av_sSvrType == "DEV" ) {
+        // 		var nRow = objApp.gds_openMenu.findRow("web_drm","Y");
+        // 		if ( nRow >= 0 ) {
+        // 			objApp.av_oHiddenFrame.form.fn_TouchEn("Y");
+        // 		} else {
+        // 			objApp.av_oHiddenFrame.form.fn_TouchEn("N");
+        // 		}
+        // 	}
+         	var objChildFrame;
+        // 	for(i=0; i<objApp.gds_openMenu.rowcount; i++){
+        // 		objChildFrame = objApp.av_oWorkFrame.all[objApp.gds_openMenu.getColumn(i,"screen_id")];
+        // 		objChildFrame.set_border("2 solid #737f94 ");
+        // 		objChildFrame.set_showtitlebar(true);
+        // 	}
+        	var nWorkFrameCnt = objApp.av_oWorkFrame.all.length;
+        	for(i=0; i<nWorkFrameCnt; i++){
+        		objChildFrame = objApp.av_oWorkFrame.all[i];
+        		objChildFrame.set_border("2 solid #737f94 ");
+        		objChildFrame.set_showtitlebar(true);
+        	}
+        	objApp.av_oWorkFrame.arrange(obj.arrangeType);
+        };
+
+        //출력문제 해결 web page
+        this.btn_evrmtSetPupOpen_onclick = function(obj,e)
+        {
+        	system.execBrowser("http://si4n.nhis.or.kr/jpza/Jpza300_m6.jp");
+        };
+
+        });
+        
+        // Regist UI Components Event
+        this.on_initEvent = function()
+        {
+            this.addEventHandler("onload",this.form_onload,this);
+            this.addEventHandler("ontimer",this.frameBottom_ontimer,this);
+            this.tab_mdi1.addEventHandler("onchanged",this.tab_mdi_onchanged,this);
+            this.tab_mdi1.addEventHandler("onextrabuttonclick",this.tab_mdi_onextrabuttonclick,this);
+            this.tab_mdi1.addEventHandler("onlbuttonup",this.tab_mdi_onlbuttonup,this);
+            this.pdiv_openMenu.form.grd_openMenu.addEventHandler("oncellclick",this.pdiv_openMenu_grd_openMenu_oncellclick,this);
+            this.btn_openLIst.addEventHandler("onclick",this.btn_openLIst_onclick,this);
+            this.btn_allClose.addEventHandler("onclick",this.btn_allClose_onclick,this);
+            this.cbo_zoom.addEventHandler("onitemchanged",this.cbo_zoom_onitemchanged,this);
+            this.pdiv_arrange.form.btn_hor.addEventHandler("onclick",this.btn_arrange_onclick,this);
+            this.pdiv_arrange.form.btn_ver.addEventHandler("onclick",this.btn_arrange_onclick,this);
+            this.pdiv_arrange.form.btn_grid.addEventHandler("onclick",this.btn_arrange_onclick,this);
+            this.btn_evrmtSetPupOpen.addEventHandler("onclick",this.btn_evrmtSetPupOpen_onclick,this);
+            this.btn_arrange.addEventHandler("onlbuttonup",this.btn_arrange_onlbuttonup,this);
+        };
+
+        this.loadIncludeScript("frameBottom.xfdl");
+        this.loadPreloadList();
+        
+        // Remove Reference
+        obj = null;
+    };
+}
+)();

@@ -6,9 +6,17 @@
         "corporation_name": "주식회사 분당시니어",
         "owner_name": "이찬재",
         "address": "경기도 광주시 오포읍 대명대길 38-8",
-        "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 분당시니어1",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14128000972",
@@ -17,9 +25,17 @@
         "corporation_name": "주식회사 일산시니어",
         "owner_name": "이찬재",
         "address": "경기도 고양시 일산서구 일현로 47, 7-8층",
-        "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 일산시니어 탄현점",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14111000765",
@@ -28,9 +44,17 @@
         "corporation_name": "주식회사 수원시니어",
         "owner_name": "박은경",
         "address": "경기도 수원시 팔달구 인계로 126",
-        "login_type": "케어포",
-        "login_id": "박은경",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "박은경",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 수원시니어",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14183000182",
@@ -39,9 +63,17 @@
         "corporation_name": "주식회사 장수만세",
         "owner_name": "이샛별",
         "address": "경기도 양평군 용문면 용문산로 107",
-        "login_type": "케어포",
-        "login_id": "이샛별",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이샛별",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 장수만세",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14161000224",
@@ -50,9 +82,17 @@
         "corporation_name": "주식회사 더행복",
         "owner_name": "이찬재",
         "address": "경기도 광주시 오포읍 대명대길 39(능평리 375-5)",
-        "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사더행복2",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14157000438",
@@ -61,9 +101,17 @@
         "corporation_name": "주식회사 경기시니어",
         "owner_name": "이찬재",
         "address": "경기도 김포시 김포한강4로 140(장기동)",
-        "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 경기시니어",
+                "certificate_password": "wkdtnakst1*"
+            }
+        }
     },
     {
         "organization_code": "14183000214",
@@ -72,9 +120,17 @@
         "corporation_name": "주식회사 양평시니어",
         "owner_name": "이샛별",
         "address": "경기도 양평군 청운면 경강로 4741-1",
-        "login_type": "케어포",
-        "login_id": "이샛별",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이샛별",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "(주)양평시니어",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14128001633",
@@ -83,9 +139,17 @@
         "corporation_name": "주식회사 더행복 고양",
         "owner_name": "이찬재",
         "address": "경기도 고양시 일산동구 공릉천로 300-28",
-        "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 더행복고양",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14413000646",
@@ -95,8 +159,16 @@
         "owner_name": "이찬재",
         "address": "충청남도 천안시 서북구 검은들1길 12, 7~9층",
         "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "천안행복한요양원",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14420000352",
@@ -106,8 +178,16 @@
         "owner_name": "이찬재",
         "address": "충청남도 아산시 번영로 143번길 43(권곡동)",
         "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 일산시니어2",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14113000834",
@@ -117,8 +197,16 @@
         "owner_name": "이찬재",
         "address": "경기도 성남시 중원구 시민로6번길 20",
         "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "강남시니어타운",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "11147000548",
@@ -128,8 +216,16 @@
         "owner_name": "이찬재",
         "address": "서울특별시 양천구 곰달래로6길 17-1",
         "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 서울시니어타운",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14159000792",
@@ -139,8 +235,16 @@
         "owner_name": "이찬재",
         "address": "경기도 화성시 정남면 서봉로995번길 13",
         "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 양천시니어",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     },
     {
         "organization_code": "14157000521",
@@ -150,7 +254,15 @@
         "owner_name": "이찬재",
         "address": "경기도 김포시 김포대로 1216번길 161",
         "login_type": "케어포",
-        "login_id": "이찬재",
-        "login_password": "*wkdtnakst1"
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "주식회사 케어플러스3",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     }
 ]

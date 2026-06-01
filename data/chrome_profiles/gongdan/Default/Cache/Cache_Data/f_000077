@@ -1,0 +1,2793 @@
+/**
+*  @FileName    nyg_grid.js
+*  @Creator     consulting
+*  @CreateDate  2017.03.08
+*  @Desction    그리드 관련 함수
+************** 소스 수정 이력 ***********************************************
+*  date                 Modifier                Description
+*******************************************************************************
+*  2017.03.08       consulting                  최초 생성
+*  2018.09.05       나종식                      Conversion
+*******************************************************************************
+*/
+var pForm = nexacro.Form.prototype;
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 초기화 및 기본설정
+//////////////////////////////////////////////////////////////////////////
+/**
+ * @class Grid에 기능 추가
+ * @param {Object} obj  - 대상그리드
+ * @return N/A
+ * @example
+ * this.gfn_setGrid(this.grdMain);
+*/
+pForm.gfn_setGrid = function(objGrid)
+{
+    var objApp = nexacro.getApplication();
+
+    // redraw여부 체크
+    if ( objGrid._draw ) {
+        trace("이미 초기화된 그리드입니다. 확인바랍니다.");
+        return;
+    } else {
+        objGrid._draw = true;
+    }
+
+    //변수 설정(private)
+    objGrid.nHeaderRowSize  = 23;              //지정할 header 사이즈
+    objGrid.nRowSize        = 23;              //지정할 row 사이즈
+    objGrid.arrPrevCellInfo = new Array();     //이전 컬럼 정보
+    objGrid.arrColWidth = new Array();
+    objGrid.arrDeleteRow = new Array();        //삭제된 row 번호를 기억해둠
+    objGrid.CONST_ASC_MARK = "▲";             //ASC
+    objGrid.CONST_DESC_MARK = "▼";            //DESC
+    objGrid.sGridNm     = objGrid.name;        //그리드 이름
+    objGrid.sPopupBMenuID = "_pmenuB_rButton"; //팝업명
+    objGrid.sPopupHMenuID = "_pmenuH_rButton"; //팝업명
+    objGrid.objBizForm    = objGrid.parent;    //화면 폼
+    objGrid.objPopupMenuB;                      //팝업object
+    objGrid.objPopupMenuH;                      //팝업object
+    objGrid.sRunAtB ="";                       //그리드 Body부문 function case문
+    objGrid.sRunAtH ="";                       //그리드 Head부문 function case문
+    //objGrid._draw   = false;                   //Grid 를 다시 그릴지 여부 (처음에 한번 그린다음에 true로 바뀜
+    objGrid._popUpH ="";                       //Head부문 Dataset true/false
+    objGrid._popUpB ="";                       //Head부문 Dataset true/false
+    objGrid._headfilter = "";                  //헤더전체 필터생성
+    objGrid._dsHeadPopupMenu = "";             //팝업데이타셋명
+    objGrid.adsTempXml = new Array();
+    objGrid.bCkfirst = false;
+    objGrid.filterString="";
+    objGrid.dsBind;
+    objGrid.nCellId;
+    objGrid.sDsTemp="";
+    objGrid.aOrgVal = [];
+    //Title Area Object
+    objGrid._gridTitle;
+    objGrid._gridRowCount;
+    objGrid._isFilter = false;
+    objGrid.nStatusCellIdx;
+    objGrid.nCheckCellIdx;
+    //마우스 이벤트용
+    objGrid.eventCol;
+    objGrid.eventCell;
+    objGrid.eventRow;
+    objGrid.filterX;
+    objGrid.filterY;
+//trace("objGrid._isFilter==="+objGrid._isFilter);
+    //변수 설정(public)
+    if ( this.gfn_isNull(objGrid._dsBodyPopupMenu)) objGrid._dsBodyPopupMenu = "";             //팝업데이타셋명
+    if ( this.gfn_isNull(objGrid._rowstatus))       objGrid._rowstatus  = "";                  //상태표시 true/false
+    if ( this.gfn_isNull(objGrid._check))           objGrid._check  = "";                      //_check 가 "true 일때 "CHK" Column 을 추가
+    if ( this.gfn_isNull(objGrid._checkhead))       objGrid._checkhead = true;                 //checkbox 헤더 true/false
+    if ( this.gfn_isNull(objGrid._checkheadevent))  objGrid._checkheadevent = "false";         //checkbox 헤더 클릭시 dataset이벤트 제어(true이면 이벤트실행)
+    if ( this.gfn_isNull(objGrid._sort))            objGrid._sort   = "";                      //헤더정렬 true/false
+    if ( this.gfn_isNull(objGrid._tooltip))         objGrid._tooltip    = "";                  //툴팁 true/false
+    if ( this.gfn_isNull(objGrid._required))        objGrid._required= "";                     //필수 항목 컬럼 a,b,c,d,..
+    if ( this.gfn_isNull(objGrid._multiSort))       objGrid._multiSort = "false";              //멀티정렬
+    if ( this.gfn_isNull(objGrid._filter))          objGrid._filter = "true";                  // 필터
+    if ( this.gfn_isNull(objGrid._hideColumn))      objGrid._hideColumn = "true";              // 컬럼 숨기기
+    if ( this.gfn_isNull(objGrid._fixedColumn))     objGrid._fixedColumn = "true";             // 컬럼 고정
+    if ( this.gfn_isNull(objGrid._autoSelectRowCol)) objGrid._autoSelectRowCol = "";            // 자동 row선택 Key 컬럼 column1,column2,column3....
+    if ( this.gfn_isNull(objGrid._parentGrid))      objGrid._parentGrid       = "";            // 계층관계일 경우,  부모 그리드명
+    if ( this.gfn_isNull(objGrid.objectType))       objGrid.objectType = "gridCommE";
+//trace("objGrid._sort==="+objGrid._sort);
+    //Grid의 binddataset설정
+    var objDs = objGrid.getBindDataset();
+
+    // grid에 바인드된 Dataset이 없는 경우 return;
+    if (this.gfn_isNull(objDs)) {
+        return;
+    }
+    else {
+        // Validation에서 foucus 처리 및 그리드 제어
+        objDs.bindgrid = objGrid;
+    }
+
+    objGrid.set_enableevent(false);
+    objGrid.set_enableredraw(false);
+    objDs.set_enableevent(false);
+
+    //Head 팝업메뉴 dataset생성
+    var sFilter = " levelCol =='0' ";
+    if(objGrid._filter != "true") {
+        sFilter += " && groupCol != 'filter' ";
+    }
+    if(objGrid._hideColumn != "true") {
+        sFilter += " && groupCol != 'hide' ";
+    }
+    if(objGrid._fixedColumn != "true") {
+        sFilter += " && groupCol != 'fix' ";
+    }
+    objApp.gds_gridHeadPopupmenu.set_filterstr("");
+    objApp.gds_gridHeadPopupmenu.set_filterstr(sFilter);
+
+    //Head 팝업메뉴 dataset생성
+    var oDsHeadPopupMenu = new Dataset();
+    objGrid.parent.addChild(objGrid.sGridNm+"_headPopupMenu", oDsHeadPopupMenu);
+    oDsHeadPopupMenu.copyData(objApp.gds_gridHeadPopupmenu, true);
+
+    //Body 팝업메뉴 dataset생성
+    var oDsBodyPopupMenu = new Dataset();
+    objGrid.parent.addChild(objGrid.sGridNm+"_bodyPopupMenu", oDsBodyPopupMenu);
+    oDsBodyPopupMenu.copyData(objApp.gds_gridBodyPopupmenu);
+
+    //Body 팝업메뉴 추가
+    if (objGrid.parent.objects[objGrid._dsBodyPopupMenu] != null) {
+        oDsBodyPopupMenu.appendData(objGrid.parent.objects[objGrid._dsBodyPopupMenu]);
+    }
+
+    if (oDsHeadPopupMenu.rowcount > 0)
+    {
+        objGrid._popUpH = "true";
+    } else {
+        objGrid._popUpH = "fale";
+    }
+
+    if (oDsBodyPopupMenu.rowcount > 0)
+    {
+        objGrid._popUpB = "true";
+    } else {
+        objGrid._popUpB = "fale";
+    }
+
+    if (objGrid._popUpH == "true")
+    {
+        // Head 팝업메뉴
+        objGrid.addEventHandler('onrbuttondown',this._gfn_gridCommE_onrbuttondown, this);           // 우측버튼 이벤트
+        objGrid.objPopupMenuH = this._gfn_gridCommE_createPopupMenu(objGrid, objGrid.sGridNm + objGrid.sPopupHMenuID ,oDsHeadPopupMenu);
+        objGrid.sRunAtH = this._gfn_gridCommE_makePopupMenuEvent(oDsHeadPopupMenu);
+        objGrid.objPopupMenuH.addEventHandler('onmenuclick',this._gfn_gridCommE_objPopupMenuH_onmenuclick, this);
+    }
+
+    if (objGrid._popUpB == "true")
+    {
+        // Body 팝업메뉴
+        objGrid.addEventHandler('onrbuttondown',this._gfn_gridCommE_onrbuttondown, this);           // 우측버튼 이벤트
+        objGrid.objPopupMenuB = this._gfn_gridCommE_createPopupMenu(objGrid, objGrid.sGridNm + objGrid.sPopupBMenuID, oDsBodyPopupMenu);
+        objGrid.sRunAtB = this._gfn_gridCommE_makePopupMenuEvent(oDsBodyPopupMenu);
+//trace("objGrid.sRunAtB==="+objGrid.sRunAtB);
+        objGrid.objPopupMenuB.addEventHandler('onmenuclick',this._gfn_gridCommE_objPopupMenuB_onmenuclick, this);
+    }
+
+    //기본 이벤트 추가
+    objGrid.addEventHandler('oncellclick' ,this._gfn_gridCommE_oncellclick, this);
+    objGrid.addEventHandler('onselectchanged' ,this._gfn_gridCommE_onselectchanged, this);
+
+    //그리드 설정 적용
+    this._gfn_gridCommE_redraw(objGrid);
+};
+
+//그리드 설정적용
+pForm._gfn_gridCommE_redraw = function(objGrid)
+{
+    var objDs = objGrid.getBindDataset();
+
+    // grid에 바인드된 Dataset이 없는 경우 return;
+    if (this.gfn_isNull(objDs)) return;
+
+    objGrid.set_enableevent(false);
+    objGrid.set_enableredraw(false);
+    objDs.set_enableevent(false);
+
+    // Bind Dataset 이벤트 연결
+    objDs.addEventHandler('onrowposchanged' ,this._gfn_gridCommE_bind_dataset_onrowposchanged, this);
+    objDs.addEventHandler('oncolumnchanged' ,this._gfn_gridCommE_bind_dataset_oncolumnchanged, this);
+    objDs.addEventHandler('onrowsetchanged' ,this._gfn_gridCommE_bind_dataset_onrowsetchanged, this);
+    objDs.addEventHandler('onload' ,this._gfn_gridCommE_bind_dataset_onload, this);
+
+    //_ROW_STATUS 는 무조건 추가
+    if (this.gfn_isNull(objDs.getColumnInfo("_ROW_STATUS"))) {
+        objDs.addColumn("_ROW_STATUS", "string");
+    }
+
+    //_ROW_STATUS 초기설정 하기
+    var nOrgRow = objDs.rowposition;
+    for(var i=0; i<objDs.rowcount; i++) {
+        objDs.setColumn(i,"_ROW_STATUS",objDs.getRowType(i));
+    }
+    objDs.set_rowposition(nOrgRow);
+    objDs.applyChange();
+
+    //_check 가 "true 일때 "CHK" Column 을 추가
+    if (objGrid._check=="true") this._gfn_gridCommE_checkboxNoStatusAdd(objGrid, "checkbox");
+
+    //_rowstatus true 일때 상태 Column을 추가
+    if (objGrid._rowstatus=="true") this._gfn_gridCommE_checkboxNoStatusAdd(objGrid, "status");
+
+    //_sort,_check  true일때 headclick event를 연결
+    if (objGrid._sort =="true" || objGrid._check=="true") {
+        objGrid.addEventHandler("onheadclick" ,this._gfn_gridCommE_onheadclick, this);
+        objGrid.addEventHandler("onheaddblclick" ,this._gfn_gridCommE_onheaddblclick, this);
+    }
+
+    //_tooltip true일때  event를 연결
+    if (objGrid._tooltip == "true") {
+        objGrid.addEventHandler('onmousemove' ,this._gfn_gridCommE_onmousemove, this);
+    }
+
+    //keydown 이벤트 추가(Ctrl + C, Ctrl + V)
+    objGrid.addEventHandler('onkeydown' ,this._gfn_gridCommE_onkeydown, this);
+
+    //필수항목 헤더 모양 변경
+    this._gfn_gridCommE_requiredDisplay(objGrid);
+
+    //grid 를 그릴때 checkbox가 1, 0 이 아니라 Y, N 으로 표시되게 변경
+    //this._gfn_gridCommE_checkboxDisplay(objGrid);
+
+    //grid 를 그릴때 headfilter 설정
+    this._gfn_gridCommE_setHeadfilter(objGrid);
+
+    //컬럼 width 기록
+    objGrid.arrColWidth = this._gfn_gridCommE_getColWidth(objGrid);
+
+    objGrid.set_enableevent(true);
+    objGrid.set_enableredraw(true);
+    objDs.set_enableevent(true);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 기능 함수
+//////////////////////////////////////////////////////////////////////////
+/**
+* @desc Grid Sorting하는 함수(Header Sorting여부 표시 포함)
+* @param obj:Grid : Grid Object ( 예 : Grid00 )
+* @param e:GridClickEventInfo : Click Event Object ( Grid Onclick Envent의 Argument e )
+* @return 성공 = true, 실패 = false
+*/
+pForm._gfn_gridCommE_gridSort2 = function(obj, e)
+{
+//trace("_gfn_gridCommE_gridSort2 e.cell==="+e.cell);
+    if (this.gfn_isNull(obj) || this.gfn_isNull(e)) return false;
+
+    var sSortDs = "ds" + obj.name + "Sort";
+    var sortDs = this.gfn_newDataset(sSortDs, obj.parent);
+    var bindDs = obj.getBindDataset();
+    if (bindDs.rowcount == 0) return false;
+
+    if (sortDs.getColCount() == 0) {
+        sortDs.addColumn("head", "string", "255");
+        sortDs.addColumn("set", "string", "255");
+        sortDs.addColumn("mark", "string", "255");
+        sortDs.addColumn("hindex", "string", "255");
+    }
+
+    var nCellIdx = -1;
+    if (obj.getCellCount("head") == obj.getCellCount("body") ) nCellIdx = e.cell;
+    else nCellIdx = e.col;
+
+    var iCellCnt    = obj.getCellCount("head");
+    var aBodyColId  = String(obj.getCellProperty("body", nCellIdx, "text")).split(":"); // e.col : 바인드된 컬럼.
+
+    var sColId      = aBodyColId[1];
+    var iCell       = e.cell;
+    var sHeadText = obj.getCellText( -1, iCell ); //Head(-1) 에 있는 Text 를 가지고
+    var sSortType = sHeadText.substr(sHeadText.length-1); //문자열의 맨마지막 문자를 가지고와서 이미 sort가 되어 있는지
+    var sNewHeadText = "";
+    var sSet         = "";
+
+    if (sSortType == obj.CONST_ASC_MARK) {
+        sNewHeadText = sHeadText.substr(0, sHeadText.length - 1) + obj.CONST_DESC_MARK;
+        sSet         = "-";
+
+    } else if ( sSortType == obj.CONST_DESC_MARK) {
+        sNewHeadText = sHeadText.substr(0, sHeadText.length - 1) + obj.CONST_ASC_MARK;
+        sSet         = "+";
+
+    } else {
+        sNewHeadText = sHeadText+obj.CONST_ASC_MARK;
+        sSet         = "+";
+    }
+
+//trace("   iIndex==="+iIndex+"::::sMark----"+sMark);
+    var nRow = -1;
+    if (obj._multiSort == "true") {
+        if (e.col == e.oldcol) {
+            nRow = sortDs.findRow("hindex",e.cell);
+            if (nRow == -1) nRow = sortDs.addRow();
+        } else {
+            nRow = sortDs.addRow();
+        }
+    } else {
+        if (sortDs.rowcount == 0) {
+            nRow = sortDs.addRow();
+        } else {
+            nRow = 0;
+            var iIndex  = sortDs.getColumn(0, "hindex");
+            if (iIndex >= 0) {
+                var sMark   = sortDs.getColumn(0, "mark");
+                sMark       = sMark.substr(0, sMark.length - 1);
+
+                obj.setCellProperty( "head", iIndex, "text", sMark );
+            }
+        }
+    }
+
+    sortDs.setColumn(nRow, "head"    , sColId       );
+    sortDs.setColumn(nRow, "set"     , sSet         );
+    sortDs.setColumn(nRow, "mark"    , sNewHeadText );
+    sortDs.setColumn(nRow, "hindex" , iCell         );
+//trace("   iCell==="+iCell+"::::::sColId==="+sColId+"::::::sNewHeadText==="+sNewHeadText+"::::::sSet==="+sSet);
+    obj.setCellProperty( "head", iCell, "text", sNewHeadText ); //head cell idx 기준
+
+    //expr 문자 제외
+    var sDisplayType = obj.getCellProperty("body", nCellIdx, "displaytype");
+    //var sDisplayType = obj.getCellProperty("body", e.cell, "displaytype");
+
+    if (sDisplayType == "combo") {
+        bindDs.set_enableevent(false);
+        bindDs.set_updatecontrol(false);
+
+        //sorts에 사용하기 위한 Column 을 추가해둔다.
+        if (bindDs.getColumnInfo( "sort_col" ) != null) {
+            bindDs.deleteColumn("sort_col");
+        }
+        bindDs.addColumn( "sort_col", "string" );
+
+        for(var i=0; i<bindDs.rowcount; i++) {
+            bindDs.setColumn(i, "sort_col", obj.getCellText(i, iCell));
+        }
+        bindDs.set_updatecontrol(true);
+        bindDs.set_enableevent(true);
+        bindDs.set_keystring("S:"+this.gfn_keyString(obj,sortDs,"combo"));
+
+        //default 는 click 한 column id 기준으로 정렬
+    } else {
+//trace("sortDs =="+sortDs.saveXML());
+//trace("sortDs rowcount=="+sortDs.rowcount);
+        bindDs.set_keystring("S:"+this.gfn_keyString(obj,sortDs,"ncombo"));
+    }
+    obj.setCellPos( nCellIdx );
+    return true;
+};
+
+/**
+* @desc Grid Sorting하는 함수 (필터시에만 사용)
+* @param obj:Grid : Grid Object ( 예 : Grid00 )
+* @param e:GridClickEventInfo : Click Event Object ( Grid Onclick Envent의 Argument e )
+* @return 성공 = true, 실패 = false
+*/
+pForm._gfn_gridCommE_gridSort3 = function(obj, e)
+{
+    if (this.gfn_isNull(obj) || this.gfn_isNull(e)) return false;
+
+    var sSortDs = "ds" + obj.name + "Sort";
+    var sortDs = this.gfn_newDataset(sSortDs, obj.parent);
+    var bindDs = obj.getBindDataset();
+    if (bindDs.rowcount == 0) return false;
+
+    if (sortDs.getColCount() == 0) {
+        sortDs.addColumn("head", "string", "255");
+        sortDs.addColumn("set", "string", "255");
+        sortDs.addColumn("mark", "string", "255");
+        sortDs.addColumn("hindex", "string", "255");
+    }
+
+    var nCellIdx = -1;
+    if (obj.getCellCount("head") == obj.getCellCount("body") ) nCellIdx = e.cell;
+    else nCellIdx = e.col;
+
+    var iCellCnt    = obj.getCellCount("head");
+    var aBodyColId  = String(obj.getCellProperty("body", nCellIdx, "text")).split(":"); // e.col : 바인드된 컬럼.
+    var sColId      = aBodyColId[1];
+    var iCell       = e.cell;
+    var sHeadText = obj.getCellText( -1, iCell ); //Head(-1) 에 있는 Text 를 가지고
+    var sSortType = sHeadText.substr(sHeadText.length-1); //문자열의 맨마지막 문자를 가지고와서 이미 sort가 되어 있는지
+    var sNewHeadText = "";
+    var sSet         = "";
+
+
+    if (sSortType == obj.CONST_ASC_MARK) {
+        sNewHeadText = sHeadText.substr(0, sHeadText.length - 1) + obj.CONST_DESC_MARK;
+        sSet         = "-";
+
+    } else if ( sSortType == obj.CONST_DESC_MARK) {
+        sNewHeadText = sHeadText.substr(0, sHeadText.length - 1) + obj.CONST_ASC_MARK;
+        sSet         = "+";
+
+    } else {
+        sNewHeadText = sHeadText+obj.CONST_ASC_MARK;
+        sSet         = "+";
+    }
+
+    var iIndex  = sortDs.getColumn(0, "hindex");
+
+
+    if (iIndex >= 0) {
+        var sMark   = sortDs.getColumn(0, "mark");
+        sMark       = sMark.substr(0, sMark.length - 1);
+
+        obj.setCellProperty( "head", iIndex, "text", sMark );
+    }
+
+
+    if (obj._multiSort == "true") {
+        if (e.col == e.oldcol) {
+            var nRow = sortDs.findRow("hindex",e.cell);
+            if (nRow == -1) nRow = sortDs.addRow();
+        } else {
+            var nRow = sortDs.addRow();
+        }
+    } else {
+        if (sortDs.rowcount == 0) {
+            var nRow = sortDs.addRow();
+        }
+    }
+
+    sortDs.setColumn(nRow, "head"    , sColId       );
+    sortDs.setColumn(nRow, "set"     , sSet         );
+    sortDs.setColumn(nRow, "mark"    , sNewHeadText );
+    sortDs.setColumn(nRow, "hindex" , iCell         );
+
+    //obj.setCellProperty( "head", iCell, "text", sNewHeadText ); //head cell idx 기준
+
+    var objComboDs = eval(obj.getCellProperty( "head", iCell, "combodataset"));
+    var nSrow = objComboDs.findRow("value",sHeadText);
+    objComboDs.setColumn(nSrow,"value",sNewHeadText);
+
+
+    for(var i=0; i<objComboDs.rowcount; i++) {
+        if(i != nSrow) {
+            var sValue = objComboDs.getColumn(i,"value");
+            sValue = sValue.replace(obj.CONST_ASC_MARK,"");
+            sValue = sValue.replace(obj.CONST_DESC_MARK,"");
+            objComboDs.setColumn(i,"value",sValue);
+        }
+    }
+
+//  //expr 문자 제외
+//  var sDisplayType = obj.getCellProperty("body", iCell, "displaytype");
+//  if (String(sDisplayType).indexOf("expr:") != -1) {
+//      sDisplayType = String(sDisplayType).substr( 5 ).replace("currow", "0");
+//      sDisplayType = eval( sDisplayType );
+//  }
+
+    if (sDisplayType == "combo") {
+        bindDs.set_updatecontrol(false);
+        bindDs.set_enableevent(false);
+
+        //sorts에 사용하기 위한 Column 을 추가해둔다.
+        if (bindDs.getColumnInfo( "sort_col" ) != null) {
+            bindDs.deleteColumn("sort_col");
+        }
+        bindDs.addColumn( "sort_col", "string" );
+
+        for(var i=0; i<bindDs.rowcount; i++) {
+            bindDs.setColumn(i, "sort_col", obj.getCellText(i, iCell));
+        }
+        bindDs.set_updatecontrol(true);
+        bindDs.set_enableevent(true);
+        bindDs.set_keystring("S:"+this.gfn_keyString3(obj,sortDs,"combo"));
+
+        //default 는 click 한 column id 기준으로 정렬
+    } else {
+        bindDs.set_keystring("S:"+this.gfn_keyString3(obj,sortDs,"ncombo"));
+    }
+
+    obj.setCellPos( nCellIdx );
+    return true;
+};
+
+//grid 를 그릴때 checkbox가 1, 0 이 아니라 Y, N 으로 표시되게 변경
+pForm._gfn_gridCommE_checkboxDisplay = function (objGrid)
+{
+//  var nCellCount = objGrid.getCellCount("Body");
+//  for(var j = 0; j < nCellCount; j++) {
+//      var sDisplayType = objGrid.getCellProperty( "Body", j, "displaytype" );
+//      if (String(sDisplayType).indexOf("checkbox") != -1) {
+//          var sColName = this.gfn_getBindColNameGrid(objGrid, j);
+//          objGrid.setCellProperty( "Body", j, "expr", "expr:" + sColName + " == \"Y\" ? \"1\" : ( " + sColName + " == \"1\" ? \"1\" : \"0\")" );
+//      }
+//  }
+}
+
+//grid 를 그릴때 headfilter 설정
+pForm._gfn_gridCommE_setHeadfilter = function (objGrid)
+{
+    var sSetHeaddsTemp = "ds_TempHeadCol_"+objGrid.sGridNm;
+    var oSetHeaddsTemp = this.gfn_newDataset(sSetHeaddsTemp, objGrid.parent);
+    oSetHeaddsTemp.addColumn("code", "string", "255");
+    oSetHeaddsTemp.addColumn("value", "string", "255");
+    for(var k=0; k<objGrid.getCellCount("Head"); k++) {
+        oSetHeaddsTemp.addRow();
+        oSetHeaddsTemp.setColumn(k,0,this.gfn_cellNm_check(objGrid, k, "head"));
+        oSetHeaddsTemp.setColumn(k,1,this.gfn_cellNm_check(objGrid, k, "head"));
+    }
+
+    if (objGrid._headfilter=="true") {
+       for(var k=0; k<objGrid.getCellCount("Head"); k++) {
+            if (objGrid.getCellProperty("head",k,"text") == "상태" || objGrid.getCellProperty("head",k,"displaytype") == "checkbox") {
+            } else {
+                objGrid.setCellProperty("head",k,"displaytype","combo");
+                objGrid.setCellProperty("head",k,"combodisplay","display");
+                objGrid.setCellProperty("head",k,"combocodecol","code");
+                objGrid.setCellProperty("head",k,"combodatacol","value");
+
+                objGrid.setCellProperty("head",k,"controlcolor","#2e3641");
+                objGrid.setCellProperty("head",k,"controlborder","0 none");
+
+                objGrid.setCellProperty("head",k,"combodataset",sSetHeaddsTemp);
+                //objGrid.setCellProperty("Head",k,"controlbackground", "URL('images::grd_WF_headBg.png') stretch 7,7");
+                objGrid.setCellProperty("Head",k,"controlfont", "arial,9");
+            }
+       }
+    } else {
+       for(var k=0; k<objGrid.getCellCount("Head"); k++) {
+             if (objGrid.getCellProperty("head",k,"displaytype") == "combo") {
+                objGrid.setCellProperty("head",k,"combodisplay","display");
+                objGrid.setCellProperty("head",k,"combocodecol","code");
+                objGrid.setCellProperty("head",k,"combodatacol","value");
+                objGrid.setCellProperty("head",k,"controlcolor","#2e3641");
+                objGrid.setCellProperty("head",k,"controlborder","0 none");
+                objGrid.setCellProperty("head",k,"combodataset",sSetHeaddsTemp);
+                //objGrid.setCellProperty("Head",k,"controlbackground", "URL('images::grd_WF_headBg.png') stretch 7,7");
+                objGrid.setCellProperty("Head",k,"controlfont", "arial,9");
+            }
+       }
+    }
+}
+
+//필수항목 헤더 모양 변경
+pForm._gfn_gridCommE_requiredDisplay = function (objGrid)
+{
+//trace("_gfn_gridCommE_requiredDisplay======="+objGrid.name);
+    objGrid.set_enableredraw(false);
+    // cssclass : cel_point 사용
+    if (!this.gfn_isNull(objGrid._required)) {
+        var aRequired = objGrid._required.split(",");
+        var idx = -1;
+        for(var i=0; i<aRequired.length; i++) {
+            var sColNm = aRequired[i];
+
+            for(var j=0; j<objGrid.getCellCount("Head"); j++) {
+
+                var nCellIdx = objGrid.getBindCellIndex("body",sColNm);
+
+                if (nCellIdx == objGrid.getCellProperty("Head", j,"col")) {
+                    idx = j;
+                    objGrid.setCellProperty("Head", idx, "cssclass", "cel_point");
+                } else {
+                    if (this.gfn_isNull(objGrid.getCellProperty("body", j,"edittype")) == true || objGrid.getCellProperty("body", j,"edittype") == "none")
+                    {
+                        var bSucc = objGrid.setCellProperty("body", j, "cssclass", "bg_d6d6d6");
+                        //var bSucc = objGrid.setCellProperty("body", j, "nexa-background-odd", "#dddddd");
+                    } else {
+                        //objGrid.setCellProperty("body", j, "background", "#ffffff");
+                        //objGrid.setCellProperty("body", j, "nexa-background-odd", "#eeeeee");
+                    }
+                }
+            }
+        }
+    }
+    objGrid.set_enableredraw(true);
+}
+
+/**
+ * @class Grid에 기능 추가(addCol..)
+ * @param {Object} objGrid  - 대상그리드
+ * @param {Object} objDs    - 대상데이터셋
+ * @param {Array} addProp   - 기능
+ * @return N/A
+ * @example
+ * this._gfn_gridCheckboxNoStatusAdd(this.grdMain, this.dsList, [checkbox,no,status]);
+*/
+pForm._gfn_gridCommE_checkboxNoStatusAdd = function (objGrid, addProp)
+{
+//trace("_gfn_gridCommE_checkboxNoStatusAdd==="+addProp);
+    var objDs = objGrid.getBindDataset();
+
+    var nHeadColIndex = 0;
+    var nBodyColIndex = 0;
+
+    var sStatusText     = "상태";
+    var sCheckColumnId  = "CHK";
+    var sStatusColumnId = "_ROW_STATUS";
+
+    var nFormatRowCount = objGrid.getFormatRowCount();
+    var nHeadCount=-1;
+    var nBodyCount=-1;
+    for(var i=0; i<nFormatRowCount; i++)
+    {
+        if (objGrid.getFormatRowProperty(i, "band") == "head") nHeadCount++;
+        if (objGrid.getFormatRowProperty(i, "band") == "body") nBodyCount++;
+    }
+
+    //체크박스
+    if( addProp == "checkbox")
+    {
+        objDs.set_enableevent(false);
+        var idx=-1;
+        for(var j=0; j<objDs.getColCount(); j++){
+            var tmpcol = objDs.getColID(j);
+            if( tmpcol == sCheckColumnId){
+                idx = j;
+            }
+        }
+        if( idx < 0 ) objDs.addColumn(sCheckColumnId, "STRING", 1);
+
+        objDs.set_enableevent(true);
+
+        for(var i=0; i<objGrid.getCellCount("head"); i++){
+            //헤드텍스트
+            var tmp = objGrid.getCellProperty("head" , i, "text");
+            if( tmp == "0"){
+                // head cell index 에 해당하는 body cell index
+                var bodyCellIndex = this._gfn_gridGetBodyCellIndex(objGrid, i);
+                // body cell index 에 해당하는 바인드 컬럼명
+                var columnName = this._gfn_gridGetBindColumnNameByIndex(objGrid, bodyCellIndex);
+                if(columnName == sCheckColumnId) {
+                    //return;
+                    objGrid.deleteContentsCol("body", i);
+                }
+            }
+        }
+        objGrid.insertContentsCol(nBodyColIndex);
+        objGrid.setFormatColProperty(nBodyColIndex, "size", "20");
+
+        if (objGrid._checkhead == "true") {
+            objGrid.setCellProperty("head", nHeadColIndex, "displaytype", "checkboxcontrol");
+            objGrid.setCellProperty("head", nHeadColIndex, "edittype", "checkbox");
+            objGrid.setCellProperty("head", nHeadColIndex, "text", "0");
+        }
+
+        objGrid.setCellProperty("body", nBodyColIndex, "displaytype", "checkboxcontrol");
+        objGrid.setCellProperty("body", nBodyColIndex, "edittype", "checkbox");
+        objGrid.setCellProperty("body", nBodyColIndex, "text", "bind:"+sCheckColumnId);
+
+        objGrid.mergeContentsCell("head", 0, nBodyColIndex, nHeadCount, nBodyColIndex, nHeadColIndex, false);
+        objGrid.mergeContentsCell("body", 0, nBodyColIndex, nBodyCount, nBodyColIndex, nBodyColIndex, false);
+//trace("nHeadColIndex==="+nHeadColIndex+":::::nBodyColIndex==="+nBodyColIndex);
+        objGrid.nCheckCellIdx = nHeadColIndex;  //idx 값 기억
+    }
+
+    //상태
+    if ( addProp == "status")
+    {
+        for(var i=0; i<objGrid.getCellCount("head"); i++){
+            var tmp = objGrid.getCellProperty("head" , i, "text");
+            if( tmp == sStatusText || tmp == "Status"){
+                //return;
+                objGrid.deleteContentsCol("body", i);
+            }
+        }
+
+        var nCurrRow = objDs.rowposition;
+        for(var i=0; i<objDs.rowcount; i++) {
+            objDs.setColumn(i,"_ROW_STATUS",objDs.getRowType(i));
+        }
+        objDs.set_rowposition(nCurrRow);
+//this.gfn_dsView(objDs);
+
+//      var sInsert = nexacro.wrapQuote("입력"); //입력
+//      var sUpdate = nexacro.wrapQuote("수정"); //수정
+//      var sDelete = nexacro.wrapQuote("삭제"); //삭제
+//      var sExpr = "expr:"
+//                + "dataset.getRowType(currow)==2?"+sInsert
+//                + ":dataset.getRowType(currow)==4?"+sUpdate
+//                + ":dataset.getRowType(currow)==8?"+sDelete
+//                + ":''";
+        var sExpr = "expr:"
+                  + "(_ROW_STATUS==2)?'cel_insert'"
+                  + ":(_ROW_STATUS==4)?'cel_update'"
+                  + ":(_ROW_STATUS==8)?'cel_delete'"
+                  + ":'cel_normal'";
+//trace(sExpr);
+        var nSize = 30;
+
+        objGrid.insertContentsCol(nBodyColIndex);
+        objGrid.setFormatColProperty(nBodyColIndex, "size", nSize);
+        objGrid.setCellProperty("head", nHeadColIndex, "text", sStatusText);
+        //objGrid.setCellProperty("head", nHeadColIndex, "textAlign","center");
+        //objGrid.setCellProperty("body", nBodyColIndex, "displaytype", "expr:dataset.getRowType(currow) != 1 ? 'text' : ''");
+        //objGrid.setCellProperty("body", nBodyColIndex, "text", sExpr);
+        objGrid.setCellProperty("body", nBodyColIndex, "cssclass", sExpr);
+        //objGrid.setCellProperty("body", nBodyColIndex, "textAlign","center");
+        objGrid.mergeContentsCell("head", 0, nBodyColIndex, nHeadCount, nBodyColIndex, nHeadColIndex, false);
+        objGrid.mergeContentsCell("body", 0, nBodyColIndex, nBodyCount, nBodyColIndex, nBodyColIndex, false);
+
+        objGrid.nStatusCellIdx = nHeadColIndex; //idx 값 기억
+        if ( objGrid.nCheckCellIdx == 0 ) objGrid.nCheckCellIdx = objGrid.nCheckCellIdx + 1;    //idx 값 기억
+    }
+};
+
+// head의 row수 가져우기
+pForm._gfn_gridCommE_getHeadRowCount = function(objGrid)
+{
+    var nHeadRowCount = 0;
+    for(var i=0;i<objGrid.getFormatRowCount();i++) {
+        if(objGrid.getFormatRowProperty(i,"band") =="head") nHeadRowCount++;
+    }
+    return nHeadRowCount;
+};
+
+//그리드 col size
+pForm._gfn_gridCommE_getColWidth = function(objGrid)
+{
+    var arrCurrentColWidth = new Array();
+
+    for(var i=0; i< objGrid.getFormatColCount(); i++) {
+        arrCurrentColWidth[i] = objGrid.getRealColSize(i);
+    }
+    return arrCurrentColWidth;
+};
+
+/**
+ * form 이 로드될때 지정된 grid 의 head size 를 강제로 조정
+ * @param obj - Form
+ * @param e - LoadEventInfo
+ */
+pForm._gfn_gridCommE_onload_FixedRowSize = function(objForm, objGrid)
+{
+    if (this.gfn_isNull(_datarow)) {var _datarow = 1;} //줄 높이를 지정
+
+    var iFixedRowSize = objGrid.nRowSize;
+    if (_datarow > 1) {
+        iFixedRowSize = objGrid.nRowSize + ((_datarow - 1) * 12);
+    }
+    for(var i=0; i<objGrid.getFormatRowCount(); i++) {
+
+        var sBand = objGrid.getFormatRowProperty(i, "band");
+
+        //head일때
+        if (sBand == "head") {
+            objGrid.setFormatRowProperty(i, "size", objGrid.nHeaderRowSize);
+
+        //head를 제외한 나머지(body, summary)
+        } else {
+            objGrid.setFormatRowProperty(i, "size", iFixedRowSize);
+        }
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 우클릭시 팝업메뉴 관련함수
+//////////////////////////////////////////////////////////////////////////
+//그리드 팝업메뉴선택 (head)
+pForm._gfn_gridCommE_objPopupMenuH_onmenuclick = function(obj, e)
+{
+   eval(obj.grid.sRunAtH);
+};
+
+//그리드 팝업메뉴선택 (body)
+pForm._gfn_gridCommE_objPopupMenuB_onmenuclick = function(obj, e)
+{
+    eval(obj.grid.sRunAtB);
+};
+
+//정렬버튼
+pForm._gfn_gridCommE_sortAsc = function(obj,  e)
+{
+    this._gfn_gridCommE_gridSort3(obj._grid, obj._e);
+    obj.parent.closePopup();
+};
+
+//팝업메뉴 생성
+//fn_createPopupMenu
+pForm._gfn_gridCommE_createPopupMenu = function(objGrid, sPopupMenuId, oMenuDs)
+{
+    //존재하면 리턴
+    if (objGrid.parent.all[sPopupMenuId]) return;
+
+    var obj = new PopupMenu();
+    obj.init(sPopupMenuId, 0, 0, 10, 10);
+
+    obj.set_captioncolumn("captionCol");
+    obj.set_enablecolumn("statusCol");
+    obj.set_idcolumn("menuIdCol");
+    obj.set_innerdataset(oMenuDs.name);
+    obj.set_levelcolumn("levelCol");
+    obj.grid            = objGrid;
+    //obj.class         = "";           //향후 클래스 삽입
+    objGrid.parent.addChild(sPopupMenuId, obj);
+    obj.show();
+    obj.visibe = true;
+    obj.bringToFront();
+    return obj;
+};
+
+//팝업메뉴 이벤트 호출 함수 연결 설정
+pForm._gfn_gridCommE_makePopupMenuEvent = function(oDs)
+{
+   var nCnt = oDs.rowcount;
+   var nPreCnt = nCnt -1;
+   var sRunAt = " switch(e.id) {";
+   for(var i= 0; i<nCnt; i++) {
+       sRunAt += " case '"+oDs.getColumn(i,"menuIdCol")+"': "+oDs.getColumn(i,"eventCol")+" break; "
+   }
+   sRunAt += " }";
+//trace(sRunAt);
+   return sRunAt
+};
+
+
+//빈값
+pForm._gfn_gridCommE_empty = function(objPopupMenu)
+{
+    //trace("_gfn_gridCommE_empty >>>>>");
+}
+
+/**
+ * @desc 그리드 필터를 위한 팝업호출
+ */
+pForm._gfn_gridCommE_openFilterPopup = function(objPopupMenu)
+{
+    var objApp = nexacro.getApplication();
+    var objGrid = objPopupMenu.grid;
+
+    var objPdiv = this._gfn_gridCommE_createPopupDiv(objGrid, objGrid.eventCell);
+
+    //objPdiv를 찾지 못하면 return;
+    if ( this.gfn_isNull(objPdiv) ) return;
+
+    //objPdiv.trackPopup(x, y);
+    objPdiv.trackPopup(objGrid.filterX, objGrid.filterY, null, null, "_gfn_callbackFilterPopup");
+}
+
+//필터 clear
+pForm._gfn_callbackFilterPopup = function(sFrameid, varRtn)
+{
+    //trace("_gfn_callbackFilter>>>>>>>>>>>>>>>>>>"+sFrameid+":::::::::"+varRtn);
+    if ( varRtn == true ) {
+        var objPdiv = this.all[sFrameid];
+        var oOrgDs = objPdiv._oOrgDs;
+        var bFilterFlag = (oOrgDs.getRowCountNF() == oOrgDs.getRowCount())?false:true;
+//trace("oOrgDs.getRowCountNF()==="+oOrgDs.getRowCountNF()+":::::oOrgDs.getRowCount==="+oOrgDs.getRowCount()+"::::bFilterFlag==="+bFilterFlag);
+        var objGrid = objPdiv._oFilterGrid;
+
+        //필터된 데이타가 있는지 반영
+        var nCellCnt = objGrid.getCellCount("head");
+        for(var i=0; i<nCellCnt; i++ ) {
+            if ( i == objGrid.eventCell && bFilterFlag == true) {
+                objGrid.setCellProperty("head",i, "textDecoration", "underline" );
+            } else {
+                objGrid.setCellProperty("head",i, "textDecoration", "none" );
+            }
+        }
+    }
+}
+
+//필터 clear
+pForm._gfn_gridCommE_clearFilter = function(objPopupMenu)
+{
+    //trace("_gfn_gridCommE_clearFilter >>>>>");
+    var objGrid = objPopupMenu.grid;
+    var oOrgDs = objGrid.getBindDataset();
+
+    // filter나 assign시 적용시
+    // 적용전 gfn_delete2updateRowtype, 적용후 gfn_update2deleteRowtype
+    // 항상 쌍으로 적용해야 합니다.
+    this._gfn_gridCommE_delete2updateRowtype(oOrgDs);
+    oOrgDs.filter("");
+    this._gfn_gridCommE_update2deleteRowtype(oOrgDs);
+
+    for(var i=0; i<oOrgDs.rowcount; i++) {
+        if(oOrgDs.getColumn(i,"_ROW_STATUS") == 8){
+            oOrgDs.set_updatecontrol(false);
+            bSucc = oOrgDs.setRowType(i,8);
+            oOrgDs.set_updatecontrol(true);
+        }
+    }
+
+    //Head Text에 필터표시 삭제
+    var nCellCnt = objGrid.getCellCount("head");
+    for(var i=0; i<nCellCnt; i++ ) {
+        objGrid.setCellProperty("head",i, "textDecoration", "none" );
+    }
+}
+//Hide Column
+pForm._gfn_gridCommE_hideColumn = function(objPopupMenu)
+{
+    var objGrid = objPopupMenu.grid;
+    this._gfn_gridCommE_fixedCancelColumn(objPopupMenu);    //틀고정 해제
+
+    var arrCurColWidth = this._gfn_gridCommE_getColWidth(objGrid);
+
+    for(var i=0; i< arrCurColWidth.length; i++) {
+        if ( i == objGrid.eventCol) {
+            objGrid.setFormatColProperty(i, "size",0);
+        } else {
+            objGrid.setFormatColProperty(i, "size", arrCurColWidth[i]);
+        }
+    }
+}
+//Show Column
+pForm._gfn_gridCommE_showColumn = function(objPopupMenu)
+{
+    //trace("_gfn_gridCommE_showColumn >>>>>");
+    var objGrid = objPopupMenu.grid;
+    for(var i=0; i< objGrid.arrColWidth.length; i++) {
+        objGrid.setFormatColProperty(i, "size",objGrid.arrColWidth[i]);
+    }
+}
+//Fixed Column
+pForm._gfn_gridCommE_fixedColumn = function(objPopupMenu)
+{
+    //trace("_gfn_gridCommE_fixedColumn >>>>>");
+    var objGrid = objPopupMenu.grid;
+    if (objGrid.autofittype != "none") {
+        objGrid.set_autofittype("none")
+    }
+
+    var cnt=0;
+    var nMergecell = 0;
+
+    for(var j=objGrid.eventCol; j>=0; j--) {
+        var aa = objGrid.getCellProperty("Head", j, "col");
+        var icell = objGrid.eventCol;
+
+        for(var i=icell; i>=0; i--) {
+            if(objGrid.getCellProperty("Head", i, "row")==0 && aa==objGrid.getCellProperty("Head", i, "col")) {
+                if(cnt==0) {
+                    //trace("컬럼idex == " + i + " | " + objGrid.getCellProperty("Head", i, "col"));
+
+                    var bb = objGrid.getCellProperty("Head", i, "col");
+                    var cc = objGrid.getCellProperty("Head", i, "colspan")-1;
+                    var dd = bb+cc;
+
+                    if(objGrid.getCellProperty("Head", i, "colspan") > 1 || objGrid.getCellProperty("Head", i, "rowspan") > 1)
+                    {
+                        nMergecell++;
+                        break;
+                    }
+
+                    var bRtn;
+
+                    for(var k=0; k <= dd;  k++) {
+                        if(nMergecell > 0) break;
+
+                        bRtn = objGrid.setFormatColProperty(k, "band", "left");
+                        if(k == dd) {
+                            objGrid.setCellProperty("Body", k, "border", "1px solid #d3d3d3,2px solid #ef793e,1px solid #d3d3d3,1px solid #d3d3d3");
+                        }
+                    }
+
+                }
+                cnt++;
+            }
+        }
+    }
+
+    if(nMergecell > 0) {
+        this.alert("병합된셀이 존재합니다.");
+    }
+
+    for(var j=objGrid.eventCol+1; j<objGrid.getCellCount("head"); j++) {
+        objGrid.setFormatColProperty(j, "band", "body");
+        objGrid.setCellProperty("Head", j, "background", "");
+    }
+}
+//Fixed Column Cancel
+pForm._gfn_gridCommE_fixedCancelColumn = function(objPopupMenu)
+{
+    //trace("_gfn_gridCommE_fixedCancelColumn >>>>>");
+    var objGrid = objPopupMenu.grid;
+    if (objGrid.autofittype == "none") {
+        for(var i=0; i< objGrid.getCellCount("head"); i++) {
+            objGrid.setFormatColProperty(i, "band", "body");
+            objGrid.setCellProperty("Body", i, "border", "");
+        }
+    }
+}
+
+//Copy Clipboard
+pForm._gfn_gridCommE_copyClipboard = function(objPopupMenu, e)
+{
+    //trace("_gfn_gridCommE_copyClipboard >>>>>");
+    //copy
+    var objGrid = objPopupMenu.grid;
+    var sBrowser = system.navigatorname;
+    if( sBrowser == "nexacro" || sBrowser == "IE"){
+        this._gfn_gridCopyEventForRuntime(objGrid, e);
+    }else {
+        this._gfn_gridCopyEventForChrome(objGrid, e);
+    }
+}
+
+//Copy Clipboard ( Cell단위만)
+pForm._gfn_gridCommE_copyClipboardCell = function(objPopupMenu, e)
+{
+    //trace("_gfn_gridCommE_copyClipboardCell >>>>>");
+    //copy
+    var objGrid = objPopupMenu.grid;
+    var objGridRow  = objGrid.eventRow;
+    var objGridCell = objGrid.eventCell;
+    var sBrowser = system.navigatorname;
+    if( sBrowser == "nexacro" || sBrowser == "IE"){
+        system.clearClipboard();
+        system.setClipboard("CF_TEXT",objGrid.getCellText(objGridRow, objGridCell));
+    }else {
+        var ta = this._createTextarea(objGrid.getCellText(objGridRow, objGridCell));
+        this.targetGrid = objGrid;
+        this.targetGrid["ta"] = ta;
+        document.execCommand("copy");
+        //var areaInfo = {"startrow": startrow, "startcol": startcol, "endrow": endrow, "endcol": endcol};
+        //e.stopPropagation();
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 이벤트
+//////////////////////////////////////////////////////////////////////////
+/**
+ * @class  그리드키다운 이벤트 [cellcopypaste]
+ * @param {Object} objGrid - 대상그리드
+ * @param {Evnet}  e       - 키다운이벤트
+ * @return  N/A
+ * @example
+ * objGrid.addEventHandler("onheadclick",    this.gfn_grid_onheadclick,      this);
+ */
+pForm._gfn_gridCommE_onkeydown =function(objGrid, e)
+{
+    var keycode = e.keycode;
+    var sBrowser = system.navigatorname;
+    if(e.ctrlkey){
+        if(keycode == 67){
+            //copy
+            //var objGridRow  = objGrid.getBindDataset().rowposition;
+            var objGridRow  = objGrid.selectstartrow;
+            var objGridCell = objGrid.getCellPos();
+//trace(objGridRow + "====" +objGridCell);
+            var sBrowser = system.navigatorname;
+            if( sBrowser == "nexacro" || sBrowser == "IE"){
+                system.clearClipboard();
+                system.setClipboard("CF_TEXT",objGrid.getCellText(objGridRow, objGridCell));
+            }else {
+                var ta = this._createTextarea(objGrid.getCellText(objGridRow, objGridCell));
+                this.targetGrid = objGrid;
+                this.targetGrid["ta"] = ta;
+                document.execCommand("copy");
+                //var areaInfo = {"startrow": startrow, "startcol": startcol, "endrow": endrow, "endcol": endcol};
+                //e.stopPropagation();
+            }
+
+//          // 그리드 row단위 복사 주석처리함
+//          if( sBrowser == "nexacro" || sBrowser == "IE"){
+//              this._gfn_gridCopyEventForRuntime(objGrid, e);
+//          }else {
+//              this._gfn_gridCopyEventForChrome(objGrid, e);
+//          }
+        }else if(keycode == 86){
+            //paste
+            //2016-03-31 그리드 disable 영역에서 붙여넣기가 되어 주석 처리함
+            //this._gfn_gridPasteEvent(objGrid, e);
+        }
+    }
+};
+
+//ToolTip 표시
+pForm._gfn_gridCommE_onmousemove = function(obj,e)
+{
+    var sType = obj.getCellProperty("Body",e.cell,"displaytype");
+
+    var sToolTipText = obj.getCellText(e.row,e.cell);
+    if(this.gfn_isEmpty(sToolTipText)) sToolTipText = "";
+    if(sType == "imagecontrol") sToolTipText = "";
+    if(sType == "checkboxcontrol") sToolTipText = "";
+
+    obj.set_tooltiptype("hover");
+    obj.set_tooltiptext(sToolTipText);
+};
+
+/**
+ * @class  그리드헤드클릭 이벤트 [Sort, Checkbox]
+ * @param {Object} objGrid - 대상그리드
+ * @param {Evnet}  e       - 헤드클릭이벤트
+ * @return  N/A
+ * @example
+ * objGrid.addEventHandler("onheadclick",    this.gfn_grid_onheadclick,      this);
+ */
+pForm._gfn_gridCommE_onheadclick = function(objGrid, e)
+{
+//trace("_gfn_gridCommE_onheadclick>>>>>>>>>>>>>>");
+    var objBindDs = objGrid.getBindDataset();
+    var nHeadRowCount = this._gfn_gridCommE_getHeadRowCount(objGrid);
+    nHeadRowCount = nHeadRowCount - 1;
+
+    var nRowspan  = objGrid.getCellProperty("head", e.cell, "rowspan");
+    nRowspan      = nRowspan - 1;
+
+    if(objGrid.getCellCount("Head") != objGrid.getCellCount("Body")) {
+        if(nHeadRowCount != 0) {
+            if(nHeadRowCount != e.subrow) {
+                if(nHeadRowCount != nRowspan) {
+                    return;
+                }
+            }
+        }
+    }
+
+    objGrid.nCellId = e.cell;
+    if (objGrid.getCellProperty("head", objGrid.nCellId, "displaytype")!="combo") {
+        if (objGrid._check=="true" && objGrid.nCellId==objGrid.nCheckCellIdx && objGrid.getCellProperty("head",objGrid.nCellId,"displaytype")=="checkboxcontrol" ) {
+            this.gfn_checkAllGridCallFunc(objGrid, objGrid.nCellId);
+        } else if (objGrid.getCellProperty("head",objGrid.nCellId,"displaytype")!="checkboxcontrol") {
+            if (objGrid.getCellProperty("head",objGrid.nCellId,"text") != "상태") {
+
+                if (objGrid._sort == "true" ) this._gfn_gridCommE_gridSort2(objGrid, e);
+            }
+        }
+    }
+//  //combo용 filter 미사용
+//  else {
+//      objGrid.sDsTemp = "ds_Temp_"+objGrid.sGridNm;
+//      var odsTemp = this.gfn_newDataset(objGrid.sDsTemp, objGrid.parent);
+//      if (this.gfn_isNull(objGrid.getCellProperty("head", objGrid.nCellId, "expandchar"))==false) {
+//          eval("odsTemp.loadXML(adsTempXml["+objGrid.nCellId+"]);");
+//      } else {
+//          var i;
+//          var nRow;
+//          var sColumnId;
+//          var sFilterString;
+//          if (new String(objGrid.getCellProperty("body", e.col, "text")).indexOf("bind:")==-1)return false;
+//          sColumnId = String(objGrid.getCellProperty("body", e.col, "text")).replace("bind:", "");
+//          odsTemp.clear();
+//          odsTemp.addColumn("chk", "string");
+//          odsTemp.addColumn("name", "string");
+//          odsTemp.addColumn("columnid", "string");
+//
+//          for(var i=0; i<objBindDs.rowcount; i++) {
+//              if (odsTemp.findRow("name", objBindDs.getColumn(i, sColumnId))==-1) {
+//                  nRow = odsTemp.addRow();
+//                  odsTemp.setColumn(nRow, "chk", "1");
+//                  odsTemp.setColumn(nRow, "name", objBindDs.getColumn(i, sColumnId));
+//                  odsTemp.setColumn(nRow, "columnid", sColumnId);
+//              }
+//          }
+//      }
+//      var oRtnPopupMenu =this._gfn_gridCommE_usrGridfilterPopupMake(objGrid,e,odsTemp);
+//      var objRect = objGrid.getCellRect(e.row, objGrid.nCellId);
+//      var nX   = system.clientToScreenX(objGrid, objRect.left);
+//      var nY   = system.clientToScreenY(objGrid, objRect.bottom);
+//      var nWidth = objRect.right - objRect.left;
+//      var nHeight = objRect.bottom - objRect.top;
+//      if (odsTemp.rowcount == 0) {
+//          return;
+//      } else {
+//          oRtnPopupMenu.trackPopup(nX, nY, nWidth, 120);
+//      }
+//  }
+};
+
+/**
+ * @class  그리드헤드 더블클릭 이벤트 [멀티소트] + 소트 해제
+ * @param {Object} objGrid - 대상그리드
+ * @param {Evnet}  e       - 헤드클릭이벤트
+ * @return  N/A
+ * @example
+ * objGrid.addEventHandler("onheadclick",    this.gfn_grid_onheadclick,      this);
+ */
+pForm._gfn_gridCommE_onheaddblclick = function(objGrid, e)
+{
+//trace("_gfn_gridCommE_onheaddblclick>>>>>>>>>");
+    var objBindDs = objGrid.getBindDataset();
+    var nHeadRowCount = this._gfn_gridCommE_getHeadRowCount(objGrid);
+    nHeadRowCount = nHeadRowCount - 1;
+
+    var nRowspan  = objGrid.getCellProperty("head", e.cell, "rowspan");
+    nRowspan      = nRowspan - 1;
+
+    if(objGrid.getCellCount("Head") != objGrid.getCellCount("Body")) {
+        if(nHeadRowCount != 0) {
+            if(nHeadRowCount != e.subrow) {
+                if(nHeadRowCount != nRowspan) {
+                    return;
+                }
+            }
+        }
+    }
+
+    if (objGrid._sort=="true") {
+        var sSortDs = "ds" + objGrid.name + "Sort";
+        var sortDs = this.gfn_newDataset(sSortDs, objGrid.parent);
+
+        if (objBindDs.rowcount == 0 || sortDs.rowcount == 0) return false;
+        //head idx 값 가지고
+        var nCellIdx = -1;
+        if (objGrid.getCellCount("head") == objGrid.getCellCount("body")) nCellIdx = e.cell;
+        else nCellIdx = e.col;
+
+        var sHeadText   = objGrid.getCellText(-1, e.cell); //head cell idx 기준
+        var aBodyColId  = new String(objGrid.getCellProperty("body", nCellIdx,"text")).split(":");
+        var sColId      = aBodyColId[1];
+        var iCell       = e.cell;
+
+        //sort 설정 변경
+        var rtn;
+        if (objGrid._multiSort == "true") {
+
+            //더블클릭한 컬럼은 sort에서 제외
+            var sSortColId = "";
+            for(var i=sortDs.rowcount-1; i>=0; i--) {
+               sSortColId = sortDs.getColumn(i, "head");
+               if (sSortColId == sColId ) {
+                    sortDs.deleteRow(i);
+               }
+            }
+
+            var nCnt = sortDs.getRowCount();
+            if (nCnt == 0) {
+                sortDs.clearData();
+                sHeadText = sHeadText.replace(objGrid.CONST_ASC_MARK,"");
+                sHeadText = sHeadText.replace(objGrid.CONST_DESC_MARK,"");
+                objGrid.setCellProperty( "head", e.cell, "text", sHeadText);
+                objBindDs.set_keystring("");
+            } else {
+                sHeadText = sHeadText.replace(objGrid.CONST_ASC_MARK,"");
+                sHeadText = sHeadText.replace(objGrid.CONST_DESC_MARK,"");
+                objGrid.setCellProperty( "head", e.cell, "text", sHeadText);
+                objBindDs.set_keystring("S:"+this.gfn_keyString(objGrid,sortDs,"ncombo"));
+            }
+
+        } else {
+
+
+            var iIndex  = sortDs.getColumn(0, "hindex");
+            if (iIndex >= 0) {
+                var sMark   = sortDs.getColumn(0, "mark");
+                sMark       = sMark.substr(0, sMark.length - 1);
+                objGrid.setCellProperty( "head", iIndex, "text", sMark );
+            }
+            if (sortDs.deleteRow(0)) {
+                objBindDs.set_keystring("");
+            }
+        }
+    }
+};
+
+//그리드 우클릭시 팝업메뉴 호출
+pForm._gfn_gridCommE_onrbuttondown = function(obj, e)
+{
+//trace("_gfn_gridCommE_onrbuttondown>>>>>>>>>>");
+    var objApp = nexacro.getApplication();
+    obj.eventCol   = e.col;
+    obj.eventCell  = e.cell;
+    obj.eventRow   = e.row;
+    obj.eventCellText  = obj.getCellText(e.row, e.cell);
+
+    var x = nexacro.toNumber(nexacro.System.getCursorX()) - nexacro.toNumber(system.clientToScreenX(objApp.mainframe, 0));
+    var y = nexacro.toNumber(nexacro.System.getCursorY()) - nexacro.toNumber(system.clientToScreenY(objApp.mainframe, 0));
+
+    obj.filterX    = x;
+    obj.filterY    = y;
+
+    if (e.row == -1) {
+        if (obj._popUpH=="true") {
+            obj.objPopupMenuH.trackPopup(x, y);
+        }
+    } else {
+        if (obj._popUpB=="true") {
+            obj.objPopupMenuB.trackPopup(x, y);
+        }
+    }
+};
+
+//그리드 cell 클릭시
+pForm._gfn_gridCommE_oncellclick = function(obj, e)
+{
+//trace("_gfn_gridCommE_oncellclick>>>>>>>>>>");
+    //obj.showEditor(true);
+    //obj.dropdownCombo();
+};
+
+/**
+ *해당 그리드에 값 선택이 변경되었을때
+ */
+pForm._gfn_gridCommE_onselectchanged = function(obj, e)
+{
+//trace("_gfn_gridCommE_onselectchanged("+obj.name+")>>>>>>>>>>");
+    if (e.selectstartrow == e.selectendrow) return;
+
+//  if (obj.selecttype == "multirow" && obj._check == "true") {
+//      var arrSelectRows   = new Array();
+//      var arrStartRow     = String(obj.selectstartrow).split(",");
+//      var arrEndRow       = String(obj.selectendrow).split(",");
+//
+//      for(var nSel=0; nSel<obj.selectcount; nSel++) {
+//          var nStartRow = parseInt(arrStartRow[nSel]);
+//          var nEndRow   = parseInt(arrEndRow[nSel]);
+//
+//          for(var nRow=nStartRow; nRow<=nEndRow; nRow++) {
+//              var bSel = this.dsBind.getSelect(nRow);
+//
+//              if (bSel == true) {
+//                  arrSelectRows.push(nRow);
+//              }
+//          }
+//      }
+//
+//      for(var i=0; i<this.dsBind.rowcount; i++) {
+//          var isFind = false;
+//          for(var j=0; j<arrSelectRows.length; j++) {
+//              if (i == arrSelectRows[j]) {
+//                  isFind = true;
+//                  break;
+//              }
+//          }
+//
+//          if (isFind) {
+//              this.dsBind.setColumn(i, "CHK", "Y");
+//          } else {
+//              this.dsBind.setColumn(i, "CHK", "N");
+//          }
+//      }
+//  }
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 Filter
+//////////////////////////////////////////////////////////////////////////
+// //필터용 팝업 만들기(콤보용 미사용)
+// pForm._gfn_gridCommE_usrGridfilterPopupMake = function(obj, e, odsTemp)
+// {
+//  var objPopupMenu;
+//
+//  if (obj.parent.isValidObject("popDivGridFilter"+obj.sGridNm+"_"+e.col) == true) {
+//      objPopupMenu = obj.parent.all["popDivGridFilter"+obj.sGridNm+"_"+e.col];
+//  } else {
+//      objPopupMenu = new PopupDiv();
+//      var objForm = obj.parent;
+//      objPopupMenu.init("popDivGridFilter"+obj.sGridNm+"_"+e.col, 0, 0, 100, 100);
+//      objForm.addChild("popDivGridFilter"+obj.sGridNm+"_"+e.col, objPopupMenu);
+//      objPopupMenu.background = "#ffffff";
+//      //objPopupMenu.scrollbars = "none";
+//      objPopupMenu.show();
+//
+//      var objAscButton = new Button();
+//      objAscButton.init("Btn_asc"+"_"+e.col, 0, 0, 100, 25);
+//      objPopupMenu.addChild("Btn_asc"+"_"+e.col, objAscButton);
+//      //objAscButton.anchor = "left top right";
+//      objAscButton._grid = obj;
+//      objAscButton._e = e;
+//      objAscButton.setEventHandler('onclick',this._gfn_gridCommE_sortAsc, this);
+//      objAscButton.set_text("정렬하기")
+//      objAscButton.show();
+//
+//
+//      var objPopupGrd = new Grid();
+//      objPopupGrd.init("GridMenu"+"_"+e.col, 0, 26, 100, 100);
+//      objPopupMenu.addChild("GridMenu"+"_"+e.col, objPopupGrd);
+//      //objPopupGrd.anchor = "All";
+//      objPopupGrd.set_autofittype("col");
+//      objPopupGrd.show();
+//      objPopupGrd.set_binddataset(odsTemp.name);
+//      objPopupGrd._parentGrid = obj;
+//      objPopupGrd.addEventHandler('oncellclick' ,this._gfn_gridCommE_popDivGrid_oncellclick, this);
+//
+//      objPopupGrd.insertContentsCol("Body", 0);
+//      objPopupGrd.insertContentsRow("Body", 0);
+//      objPopupGrd.insertContentsCol("Body", 1);
+//
+//      objPopupGrd.setCellProperty("Body", 0, "displaytype", "checkboxcontrol");
+//      objPopupGrd.setCellProperty("Body", 0, "edittype", "checkbox");
+//      objPopupGrd.setFormatColProperty(0,"size",18);
+//      objPopupGrd.setFormatColProperty(1,"size",50);
+//      objPopupGrd.setCellProperty("Body", 0, "text", "bind:chk");
+//      objPopupGrd.setCellProperty("Body", 1, "text", "bind:name");
+//      objPopupGrd.setCellProperty("Body", 1, "align", "left middle");
+//  }
+//  return objPopupMenu;
+// };
+
+
+// //필터 팝업화면 cell클릭(콤보용 미사용)
+// pForm._gfn_gridCommE_popDivGrid_oncellclick = function(obj, e)
+// {
+//  if (e.cell== 0) {
+//      var nPtIdx = obj.name.split("_")[1];
+//      var objGrid = obj._parentGrid;
+//      var odsTemp = obj.getBindDataset();
+//      var i,j;
+//      var sFilterString="";
+//      var name;
+//
+//      if (objGrid.bCkfirst == false) {
+//          objGrid.setCellProperty("head", objGrid.nCellId, "expandchar" ,"_");
+//          objGrid.bCkfirst = true;
+//      }
+//      eval("adsTempXml["+objGrid.nCellId+"] = odsTemp.saveXML();");
+//      objGrid.filterString = "";
+//      for(var i=0; i<objGrid.getCellCount("head"); i++) {
+//          if (this.gfn_isNull(objGrid.getCellProperty("head", i, "expandchar")) == false) {
+//              sFilterString = "";
+//              eval("odsTemp.loadXML(adsTempXml["+objGrid.nCellId+"]);");
+//
+//              for(var j=0; j<odsTemp.getRowCount(); j++) {
+//                  if (this.gfn_isNull(sFilterString) == false) {
+//                      if (odsTemp.getColumn(j, "chk") == 1)   {
+//                          if (this.gfn_isNull(odsTemp.getColumn(j, "name")) == false) {
+//                              sFilterString += " || "+odsTemp.getColumn(j, "columnid")+"=='"+odsTemp.getColumn(j, "name")+"'";
+//                          }
+//                      }
+//                  } else {
+//                      if (odsTemp.getColumn(j, "chk") == 1) {
+//                          if (this.gfn_isNull(odsTemp.getColumn(j, "name")) == false) {
+//                              sFilterString += odsTemp.getColumn(j, "columnid")+"=='"+odsTemp.getColumn(j, "name")+"'";
+//                          }
+//                      }
+//                  }
+//              }
+//
+//              if (this.gfn_isNull(objGrid.filterString) == true) {
+//                  if (this.gfn_isNull(sFilterString) == false) {
+//                      objGrid.filterString += " ( " + sFilterString + " ) ";
+//                  }
+//              } else {
+//                  if (this.gfn_isNull(sFilterString) == false) {
+//                      objGrid.filterString += "&& ( " + sFilterString + " ) ";
+//                  }
+//              }
+//          }
+//      }
+//
+//      eval("dsBind.filter(\""+objGrid.filterString+"\");");
+//      if (eval(obj.binddataset).findRow("chk","0") != -1) {
+//          if (!this.gfn_isNull( objGrid._required )) {
+//              objGrid.setCellProperty("Head",nPtIdx,"controlbackground", "URL('images::grd_WF_LheadBg_p.png') stretch 7,7");
+//          } else {
+//              objGrid.setCellProperty("Head",nPtIdx,"controlbackground", "URL('images::grd_WF_LheadBg.png') stretch 7,7");
+//          }
+//      } else {
+//          if (!this.gfn_isNull( objGrid._required )) {
+//              objGrid.setCellProperty("Head",nPtIdx,"controlbackground", "URL('images::grd_WF_headBg_p.png') stretch 7,7");
+//          } else {
+//              objGrid.setCellProperty("Head",nPtIdx,"controlbackground", "URL('images::grd_WF_headBg.png') stretch 7,7");
+//          }
+//      }
+//  }
+// };
+
+// PopupDiv 생성
+// filter 대상조회
+pForm._gfn_gridCommE_createPopupDiv = function(objGrid, nCell)
+{
+//trace("_gfn_gridCommE_createPopupDiv>>>>"+":::::objGrid.name==="+objGrid.name+":::::nCell==="+nCell);
+    var oOrgDs = objGrid.getBindDataset();
+
+    var nCellCnt = objGrid.getCellCount("body");
+
+    var sColInfo = objGrid.getCellProperty("body",nCell,"text");
+    //body text정보를 찾지 못하면 return;
+    if ( this.gfn_isNull(sColInfo) )    return;
+
+    //Bind구분자를 찾지 못하면 return;
+    if ( sColInfo.toString().indexOf(":") == -1 )   return;
+
+    var sColId = objGrid.getCellProperty("body",nCell,"text").split(":")[1];
+
+    //colid를 찾지 못하면 return;
+    if ( this.gfn_isNull(sColId) )  return;
+
+    //trace("sColId===="+sColId);
+
+    //filter용 임시 dataset
+    var objDs = this._gfn_gridCommE_createFilterDataset(objGrid, oOrgDs, sColId);
+    objDs.set_rowposition(0);
+
+    var sPopupDivName = sColId + objGrid.name;
+    var objPopupDiv;
+    //PopupDiv가 존재하면 PopupDiv 리턴
+    if(objGrid.parent.all[sPopupDivName])
+    {
+        //trace("PopupDiv가 존재하면 PopupDiv 리턴");
+        objPopupDiv = objGrid.parent.all[sPopupDivName];
+    } else {
+        //trace("PopupDiv가 존재하지 않으면 PopupDiv 생성");
+        objPopupDiv = new PopupDiv();
+        objPopupDiv.init(sPopupDivName, 0, 0, 162, 162);
+        objPopupDiv.set_text(sColId);
+        objGrid.parent.addChild(sPopupDivName, objPopupDiv);
+
+        //objPopupDiv.addEventHandler('oncloseup' ,this._gfn_gridCommE_closeUp, this);
+        objPopupDiv.set_border("1px solid #808080");
+        objPopupDiv.set_background("white");
+        objPopupDiv.set_opacity(200);
+        objPopupDiv.set_url("frame_common::gridCommEfilterPopup.xfdl");
+        objPopupDiv.show();
+    }
+    objPopupDiv._oFilterGrid = objGrid;
+    objPopupDiv._oOrgDs      = oOrgDs;
+    objPopupDiv._oFilterCol  = sColId;
+    objPopupDiv._oFilterDs   = objDs;
+
+    //popupdiv 사이즈 조정
+    var nFilterRowCnt = objDs.rowcount;
+    if (nFilterRowCnt > 20) {
+        objPopupDiv.setOffsetHeight(673);
+    } else {
+        objPopupDiv.setOffsetHeight(nFilterRowCnt * 22 + 41);
+    }
+
+    return objPopupDiv;
+};
+
+// 필터용 데이타셋 생성
+pForm._gfn_gridCommE_createFilterDataset = function(objGrid, oOrgDs, sColId)
+{
+    var sFilterDsName = "_ds_" + sColId + "_" + objGrid.name;
+    var objDs = objGrid.parent.all[sFilterDsName];  //filter용 임시 dataset
+
+    var objTempDs = new Dataset();
+    objTempDs.copyData(oOrgDs, false);  //모든 데이타 copy
+    var bFilterFlag = (oOrgDs.rowcount == objTempDs.rowcount)?"1":"0";  //filter여부
+//trace("oOrgDs.rowcount==="+oOrgDs.rowcount+":::::objTempDs.rowcount==="+objTempDs.rowcount+"::::bFilterFlag==="+bFilterFlag);
+    //신규생성
+    if(objDs) {
+        objDs.clearData();
+    }
+    else {
+        objDs = new Dataset();
+        objGrid.parent.addChild(sFilterDsName, objDs);
+
+        objDs.addColumn("chk", "string");
+        objDs.addColumn(sColId, "string");
+    }
+    var nRow = objDs.addRow();
+    objDs.setColumn(nRow, "chk", bFilterFlag);
+    objDs.setColumn(nRow, sColId, "전체선택");
+
+    //filter용 data생성
+    var bCheckFlag = "1";
+    var varDate;
+    var nRowCnt = objTempDs.getRowCount();
+    for(var i=0;i<nRowCnt;i++) {
+        varDate = objTempDs.getColumn(i, sColId);
+        //중복처리
+        if(objDs.findRow(sColId, varDate) > -1) continue;
+        //체크처리
+        if(oOrgDs.findRow(sColId, varDate) > -1) {
+            bCheckFlag = "1";
+        } else {
+            bCheckFlag = "0";
+        }
+        nRow = objDs.addRow();
+        objDs.setColumn(nRow, "chk", bCheckFlag);
+        objDs.copyRow(nRow, objTempDs, i, sColId + "=" + sColId);
+    }
+    objTempDs = null;
+//this.gfn_dsView(objDs);
+    return objDs;
+};
+
+pForm._gfn_gridCommE_gridFilterClear = function(obj)
+{
+    var oOrgDs = eval(obj.binddataset);
+
+    // filter나 assign시 적용시
+    // 적용전 _gfn_gridCommE_delete2updateRowtype, 적용후 _gfn_gridCommE_update2deleteRowtype
+    // 항상 쌍으로 적용해야 합니다.
+    this._gfn_gridCommE_delete2updateRowtype(oOrgDs);
+    oOrgDs.filter("");
+    this._gfn_gridCommE_update2deleteRowtype(oOrgDs);
+
+    for(var i=0; i<oOrgDs.rowcount; i++) {
+        if(oOrgDs.getColumn(i,"_ROW_STATUS") == 8){
+            oOrgDs.set_updatecontrol(false);
+            bSucc = oOrgDs.setRowType(i,8);
+            oOrgDs.set_updatecontrol(true);
+        }
+    }
+
+    this._isFilter = false;
+    for(var i=0;i<obj.getFormatColCount();i++) {
+        obj.setCellProperty("head",i,"font", "굴림, 10");
+        if (!this.gfn_isNull(obj.getCellProperty("body",i,"text"))) {
+            var sColid = obj.getCellProperty("body",i,"text").split(":")[1];
+            this.fn_chkClear(sColid);
+        }
+        obj.setCellProperty("head",i,"background", "");
+    }
+};
+
+// PopupDiv 의 oncloseup event 실행 함수(내용없슴, _gfn_callbackFilterPopup 에서 처리중)
+pForm._gfn_gridCommE_closeUp = function(obj, e)
+{
+    //trace("_gfn_gridCommE_closeUp >>>>>>>>>>>>>>>>>>");
+};
+
+// filter나 assign시 delete rowtype이 없어지는 것을 방지하기 위해 임시로 update rowtype으로 변경한다.
+pForm._gfn_gridCommE_delete2updateRowtype = function(oDs)
+{
+    for(var i=0; i<oDs.rowcount; i++) {
+        if(oDs.getColumn(i,"_ROW_STATUS") == 8){
+            oDs.set_updatecontrol(false);
+            var bSucc = oDs.setRowType(i,4);
+            oDs.set_updatecontrol(true);
+        }
+    }
+};
+
+// 임의로 update rowtype으로 변경된것을 delete rowtype로 복귀한다.
+pForm._gfn_gridCommE_update2deleteRowtype = function(oDs)
+{
+    for(var i=0; i<oDs.rowcount; i++) {
+        if(oDs.getColumn(i,"_ROW_STATUS") == 8){
+            oDs.set_updatecontrol(false);
+            var bSucc = oDs.setRowType(i,8);
+            oDs.set_updatecontrol(true);
+        }
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 복사, 붙여넣기
+//////////////////////////////////////////////////////////////////////////
+/**
+ * @class copy event(nexacro, ie)
+ * @param {Object} obj- 대상그리드
+ * @param {Event}  e - key down event
+ * @return N/A
+ * @example
+ * this._gfn_gridCopyEventForRuntime(obj, e);
+*/
+pForm._gfn_gridCopyEventForRuntime = function (obj, e)
+{
+    var startrow = nexacro.toNumber(obj.selectstartrow);
+    if( startrow == -9) return;
+
+    var endrow   = nexacro.toNumber(obj.selectendrow);
+    if( endrow == -9) return;
+
+    var startcol = 0;
+    var endcol = 0;
+
+    if( obj.selecttype == "row" || obj.selecttype == "multirow"){
+        startcol = 0;
+        endcol = obj.getCellCount("body")-1;
+    }else{
+        startcol = nexacro.toNumber(obj.selectstartcol);
+        endcol   = nexacro.toNumber(obj.selectendcol);
+    }
+    var colSeperator = "\t";
+    var copyData = "";
+    var checkIndex = {};
+
+    for(var i = startrow; i <= endrow; i++) {
+        for(var j = startcol; j <= endcol; j++) {
+            var value = obj.getCellValue(i,j);
+            if(!this.gfn_isNull(value)) {
+                if (j < endcol) {
+                    copyData += obj.getCellValue(i,j) + colSeperator;
+                } else {
+                    copyData += obj.getCellValue(i,j);
+                }
+            }
+        }
+        if (i < obj.selectendrow) {
+                copyData += "\r\n";
+        }
+    }
+
+    copyData += "\r\n";
+    system.clearClipboard();
+    system.setClipboard("CF_TEXT",copyData);
+
+
+    var areaInfo = {"startrow": startrow, "startcol": startcol, "endrow": endrow, "endcol": endcol};
+};
+
+/**
+ * @class paste데이터생성
+ * @param {String} browser - 브라우저
+ * @return paste데이터
+ * @example
+ * this._gfn_girdGetPasteData("nexacro");
+*/
+pForm._gfn_girdGetPasteData = function (browser)
+{
+    var copyData = "";
+    if( browser == "nexacro" || browser == "IE"){
+        copyData = system.getClipboard("CF_TEXT");
+        copyData = new String(copyData);
+    }else{
+        var ta = this.targetGrid["ta"];
+
+        if(!ta) return;
+
+        copyData = ta.value;
+        document.body.removeChild(ta);
+
+        this.targetGrid["ta"] = undefined;
+    }
+    return copyData;
+
+};
+
+/**
+ * @class paste event
+ * @param {Object} obj- 대상그리드
+ * @param {Event}  e - key down event
+ * @return N/A
+ * @example
+ * this._gfn_gridPasteEvent(obj, e);
+*/
+pForm._gfn_gridPasteEvent = function (obj, e)
+{
+    var browser = system.navigatorname;
+    var copyData = this._gfn_girdGetPasteData(browser);
+
+    if( this.gfn_isNull(copyData)) return;
+
+    var colSeperator = "\t";
+    var rowData ="";
+    if( browser == "nexacro" || browser =="IE"){
+        rowData = copyData.split("\r\n");
+        if(rowDataCount < 1) {
+            e.stopPropagation();
+            return;
+        }
+    }else{
+        rowData = copyData.split(/[\n\f\r]/);
+    }
+    var rowDataCount = rowData.length - 1;
+
+
+
+    obj.set_enableevent(false);
+    obj.set_enableredraw(false);
+
+    var datasetName = obj.binddataset;
+    var ds = obj.getBindDataset();
+
+    ds.set_enableevent(false);
+
+    var grdCellCount = obj.getCellCount("body");
+    var rowCount = ds.getRowCount();
+
+    var startrow = nexacro.toNumber(obj.selectstartrow);
+    if( startrow == -9) return;
+
+    var endrow   = nexacro.toNumber(obj.selectendrow);
+    if( endrow == -9) return;
+
+    var startcol = 0;
+    var endcol = 0;
+
+    if( obj.selecttype == "row" || obj.selecttype == "multirow"){
+        startcol = 0;
+        endcol = obj.getCellCount("body")-1;
+    }else{
+        startcol = nexacro.toNumber(obj.selectstartcol);
+        endcol   = nexacro.toNumber(obj.selectendcol);
+    }
+
+    var currRow = startrow;
+    var cellIndex = startcol;
+    var maxColumnCount = 0;
+    var checkIndex = {};
+
+    for(var i = 0; i < rowDataCount; i++)
+    {
+        if(rowCount <= currRow)
+        {
+            ds.addRow();
+        }
+
+        var columnData = rowData[i].split(colSeperator);
+        var columnLoopCount = cellIndex + columnData.length;
+
+        if(columnLoopCount > grdCellCount) {
+            columnLoopCount = grdCellCount;
+        }
+
+        if(maxColumnCount < columnLoopCount) {
+            maxColumnCount = columnLoopCount;
+        }
+
+        var k = 0;
+        for(var j = cellIndex; j < columnLoopCount; j++)
+        {
+            var colTemp = obj.getCellProperty("body", j, "text");
+            var colid;
+            if( this.gfn_isNull(colTemp) )
+            {
+                colid = obj.getCellProperty("body", j, "text");
+            }
+            else
+            {
+                colid = obj.getCellProperty("body", j, "text").substr(5);
+            }
+
+            var tempValue = columnData[k];
+            if(!this.gfn_isNull(tempValue))
+            {
+                ds.setColumn(currRow, colid, tempValue);
+            }
+            k++;
+        }
+        currRow++;
+    }
+
+    ds.rowposition = currRow;
+
+    endrow = endrow + rowDataCount - 1;
+    endcol = maxColumnCount - 1;
+
+    system.clearClipboard();
+
+    obj.set_enableredraw(true);
+    obj.set_enableevent(true);
+    ds.set_enableevent(true);
+
+    obj.selectArea(startrow, startcol, endrow, endcol);
+
+
+    var areaInfo = {"startrow": startrow, "startcol": startcol, "endrow": endrow, "endcol": endcol};
+    e.stopPropagation();
+};
+
+/**
+ * @class copy event(chrome)
+ * @param {Object} obj- 대상그리드
+ * @param {Event}  e - key down event
+ * @return N/A
+ * @example
+ * this._gfn_gridCopyEventForChrome(obj, e);
+*/
+pForm._gfn_gridCopyEventForChrome = function (obj, e)
+{
+    var startrow = nexacro.toNumber(obj.selectstartrow);
+    if( startrow == -9) return;
+
+    var endrow   = nexacro.toNumber(obj.selectendrow);
+    if( endrow == -9) return;
+
+    var startcol = 0;
+    var endcol = 0;
+
+    if( obj.selecttype == "row" || obj.selecttype == "multirow"){
+        startcol = 0;
+        endcol = obj.getCellCount("body")-1;
+    }else{
+        startcol = nexacro.toNumber(obj.selectstartcol);
+        endcol   = nexacro.toNumber(obj.selectendcol);
+    }
+
+    var colSeperator = "\t";
+    var copyData = "";
+
+    for(var i = startrow; i <= endrow; i++) {
+        for(var j = startcol; j <= endcol; j++) {
+            var value = obj.getCellValue(i,j);
+            if(!this.gfn_isNull(value)) {
+                if (j < endcol) {
+                    copyData += obj.getCellValue(i,j) + colSeperator;
+                } else {
+                    copyData += obj.getCellValue(i,j);
+                }
+            }
+        }
+        if (i < obj.selectendrow) {
+                copyData += "\r\n";
+        }
+    }
+
+    copyData += "\r\n";
+
+    var ta = this._createTextarea(copyData);
+    this.targetGrid = obj;
+    this.targetGrid["ta"] = ta;
+    var areaInfo = {"startrow": startrow, "startcol": startcol, "endrow": endrow, "endcol": endcol};
+    e.stopPropagation();
+};
+
+/**
+ * @class cell copy and paste (크롬용 텍스트에어리어생성)
+ * @param {String} innerText- value
+ * @return{Object} 텍스트에어리어 오브젝트
+ * @example
+ * this._createTextarea("꼬부기");
+*/
+pForm._createTextarea = function(innerText)
+{
+    var ta = document.createElement('textarea');
+    ta.id = "textAreabyCopyAndPaste";
+    ta.style.position = 'absolute';
+    ta.style.left = '-1000px';
+    ta.style.top = document.body.scrollTop + 'px';
+    ta.value = innerText;
+
+    document.body.appendChild(ta);
+    ta.select();
+
+    return ta;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 Sort
+//////////////////////////////////////////////////////////////////////////
+//fn_keyString
+pForm.gfn_keyString = function(obj, ods_ScSet, bCk)
+{
+    var sSumParam="";
+    var sParam="";
+    for(var m=0; m<ods_ScSet.rowcount; m++) {
+        if (bCk=="combo") {
+            sParam = ods_ScSet.getColumn(m,"set")+"sort_col";
+        } else {
+            sParam = ods_ScSet.getColumn(m,"set")+ods_ScSet.getColumn(m,"head");
+        }
+        //obj.setCellProperty( "head", ods_ScSet.getColumn(m,"hindex"), "text", ods_ScSet.getColumn(m,"mark"));
+        sSumParam += sParam;
+    }
+
+    return sSumParam;
+};
+
+//fn_keyString3
+pForm.gfn_keyString3 = function(obj, ods_ScSet, bCk)
+{
+    var sSumParam="";
+    var sParam="";
+    for(var m=0; m<ods_ScSet.rowcount; m++) {
+        if (bCk=="combo") {
+            sParam = ods_ScSet.getColumn(m,"set")+"sort_col";
+        } else {
+            sParam = ods_ScSet.getColumn(m,"set")+ods_ScSet.getColumn(m,"head");
+        }
+
+//          obj.setCellProperty( "head", ods_ScSet.getColumn(m,"hindex"), "text", ods_ScSet.getColumn(m,"mark"));
+
+//          objComboDs = eval(obj.getCellProperty( "head", iCell, "combodataset"));
+//          nSrow = objComboDs.findRow("code",sHeadText);
+//          objComboDs.setColumn(nSrow,"value",sNewHeadText);
+
+        sSumParam += sParam;
+    }
+
+    return sSumParam;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+// Bind Dataset Event
+//////////////////////////////////////////////////////////////////////////
+/**
+ * @desc Dataset Row의 RowPosition이 변경되었을때
+ * @param obj:Dataset Dataset
+ * @param e:DSRowPosChangeEventInfo
+ */
+pForm._gfn_gridCommE_bind_dataset_onrowposchanged = function(obj, e)
+{
+    var nRowType = obj.getRowType(e.newrow); //변경된 줄의 rowtype
+    if (nRowType == 2) {
+        obj.setColumn(e.newrow, "_ROW_STATUS", 2);
+        //obj.bindgrid.setCellPos(0);
+        //multirow일때만 실행
+        if ( obj.selecttype == "multirow" ) {
+            obj.selectRow(e.oldrow, false);
+            obj.selectRow(e.newrow);
+        }
+    }
+};
+
+/**
+ * @desc Dataset Row의 값이 변경되었을때
+ * @param obj:Dataset Dataset
+ * @param e:DSColChangeEventInfo
+ */
+pForm._gfn_gridCommE_bind_dataset_oncolumnchanged = function(obj, e)
+{
+//trace("pForm._gfn_gridCommE_bind_dataset_oncolumnchanged = function("+obj.name+", e), e.row="+e.row+", e.columnid="+e.columnid+", e.newvalue="+e.newvalue);
+
+    var objGrid = obj.bindgrid;
+    if(e.columnid == "CHK") {
+
+        if(e.newvalue == 0 || e.newvalue == "" || e.newvalue == "0")
+        {
+            var bChange = false;
+            // CHK, _ROW_STATUS를 제외한 컬럼 변경여부 확인(bChange)
+            for(var i=0; i < obj.getColCount(); i++) {
+
+                if(obj.getColID(i) != "CHK" && obj.getColID(i) != "_ROW_STATUS") {
+
+                    if(obj.getColumn(e.row, obj.getColID(i)) != obj.getOrgColumn(e.row, obj.getColID(i))) {
+                    //if(obj.getColumn(e.row, obj.getColID(i)) != aOrgVal[sColId]) {
+                        bChange = true;
+                        break;
+                    }
+                }
+            }
+            //변경된 값이 없으면 _ROW_STATUS 초기화
+            if(!bChange) {
+                obj.setColumn(e.row, "_ROW_STATUS", obj.getOrgColumn(e.row, "_ROW_STATUS"));
+            }
+
+            //obj.setColumn(e.row, "CHK", obj.getOrgColumn(e.row, "CHK"));
+            obj.setColumn(e.row, "CHK", "0");
+            //변경된 값이 없고, getRowType이 UPDATE이면
+            if(!bChange && obj.getRowType(e.row) == 4) {
+                obj.set_updatecontrol(false);
+                obj.setRowType(e.row,1);
+                obj.set_updatecontrol(true);
+            }
+
+        } else {    //CHK 값이 0이 아니면
+
+            var bChange = false;
+            // CHK, _ROW_STATUS를 제외한 컬럼 변경여부 확인(bChange)
+            for(var i=0; i < obj.getColCount(); i++) {
+                if(obj.getColID(i) != "CHK" && obj.getColID(i) != "_ROW_STATUS") {
+                    if(obj.getColumn(e.row, obj.getColID(i)) != obj.getOrgColumn(e.row, obj.getColID(i))) {
+                    //if(obj.getColumn(e.row, obj.getColID(i)) != aOrgVal[sColId]) {
+                        bChange = true;
+                        break;
+                    }
+                }
+            }
+
+            //obj.setColumn(e.row, "CHK", obj.getOrgColumn(e.row, "CHK"));
+            //변경된 값이 없고, getRowType이 UPDATE이면
+            if(!bChange && obj.getRowType(e.row) == 4) {
+                obj.set_updatecontrol(false);
+                obj.setRowType(e.row,1);
+                obj.set_updatecontrol(true);
+            }
+        }
+
+    } else {    //e.columnid 가 CHK가 아니면
+
+        if(obj.getColumn(e.row, "_ROW_STATUS") == 2) {
+
+            // 그리드 ROW  자동선택
+            this._gfn_gridCommE_setAutoSelect(objGrid, obj, e.row);
+
+
+        } else if (obj.getColumn(e.row, "_ROW_STATUS") == 8) {
+
+            obj.set_enableevent(false);
+            obj.setColumn(e.row, "_ROW_STATUS", 8);
+            obj.set_enableevent(true);
+
+        } else {
+
+            var bChange = false;
+            var sColId = '';
+
+            for(var i=0; i < obj.getColCount(); i++) {
+                sColId = obj.getColID(i);
+                if(sColId != "_ROW_STATUS" && sColId != "CHK") {
+
+                    objGrid.aOrgVal[sColId] = obj.getOrgColumn(e.row, sColId);
+
+                    // 값이 달라졌거나, 이전/변경 값이 모두 빈값('' or undefined) 이 아니면 변경된것으로 체크한다. 2014.06.02 수정
+                    //if( (obj.getColumn(e.row, sColId) != aOrgVal[sColId])
+                    if(     (obj.getColumn(e.row, sColId) != obj.getOrgColumn(e.row, sColId))
+                        && !( this.gfn_isEmpty(obj.getColumn(e.row, sColId)) && this.gfn_isEmpty(obj.getOrgColumn(e.row, sColId)))
+                       )
+                    {
+                        // 그리드 ROW  자동선택
+                        this._gfn_gridCommE_setAutoSelect(objGrid, obj, e.row);
+
+                        bChange = true;
+                        break;
+                    }
+                }
+            }
+
+            if(!bChange) {
+                obj.set_enableevent(false);
+                for(var i=0; i < obj.getColCount();i++) {
+                    obj.setColumn(e.row, obj.getColID(i), obj.getOrgColumn(e.row, obj.getColID(i)));
+                }
+                obj.set_enableevent(true);
+            } else {
+                obj.setColumn(e.row, "_ROW_STATUS", 4);
+            }
+        }
+    }
+
+    //checkbox 필드에서 Y/N값 변경
+    if (objGrid.arrPrevCellInfo.length == 3) {
+
+        //이전 정보 가지고 오기
+        var sPrevRow            = objGrid.arrPrevCellInfo[0];
+        var sPrevCheckColName   = objGrid.arrPrevCellInfo[1];
+        var sPrevCheckColVal    = objGrid.arrPrevCellInfo[2];
+
+        //checkbox 일때 이전속성의 반대로
+        var sVal = "";
+        if (sPrevCheckColVal == "1" || sPrevCheckColVal == "Y") {
+
+            var sOrgVal = obj.getOrgColumn(sPrevRow, sPrevCheckColName);
+            var sCheckVal;
+            if (sOrgVal  == "Y") {
+                sCheckVal = "N";
+            } else {
+                sCheckVal = sOrgVal;
+            }
+        } else {
+            sCheckVal = "Y";
+        }
+        obj.set_enableevent(false);
+        obj.setColumn(sPrevRow, sPrevCheckColName, sCheckVal);
+        obj.set_enableevent(true);
+    }
+    objGrid.arrPrevCellInfo = new Array();
+};
+
+// 자동선택 설정
+pForm._gfn_gridCommE_setAutoSelect = function(oGrid, obj, nRow)
+{
+    return;
+
+//  var sAutoSelectExpr = "";
+//  obj.autoSelectExpr = "";
+//
+//  var sAutoSelect = oGrid._autoSelectRowCol;
+//  aAutoSelect = sAutoSelect.split(",");
+//
+//  for(var j=0; j<aAutoSelect.length; j++) {
+//      if(j ==0) {
+//          sAutoSelectExpr += aAutoSelect[j] + "==" + "'" + obj.getColumn(nRow,aAutoSelect[j]) + "'";
+//      } else {
+//          sAutoSelectExpr += " && "+ aAutoSelect[j] + "==" + "'" + obj.getColumn(nRow,aAutoSelect[j]) + "'";
+//      }
+//  }
+//
+//  obj.autoSelectExpr = sAutoSelectExpr;
+//
+//  var sGrid, oPGird, oPDs, oPRow;
+//
+//  if( !this.gfn_isEmpty(oGrid._parentGrid)) {
+//      sGrid  = oGrid._parentGrid;
+//      oPGird = oGrid.parent.components[Grid._parentGrid];
+//      oPDs   = oPGird.getBindDataset();
+//      oPRow  = oPDs.rowposition;
+//
+//      this._gfn_gridCommE_setAutoSelect(oPGird, oPDs, oPRow);
+//  }
+};
+
+//DataSet 에 데이터가 Insert, Delete 되거나 Row 의 위치, 상태 등이 변경된 후 발생하는 이벤트입니다
+pForm._gfn_gridCommE_bind_dataset_onrowsetchanged = function(obj, e)
+{
+    obj.setColumn(e.row, "_ROW_STATUS", obj.getRowType(e.row));
+};
+
+pForm._gfn_gridCommE_bind_dataset_onload = function(obj, e)
+{
+    if(!this.gfn_isEmpty(obj.autoSelectExpr)) {
+        //trace("obj.autoSelectExpr : " + obj.autoSelectExpr);
+        var nRow = obj.findRowExpr(obj.autoSelectExpr);
+        obj.set_rowposition(nRow);
+    }
+    obj.autoSelectExpr = "";
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 그리드 유틸함수
+//////////////////////////////////////////////////////////////////////////
+/**
+ * 그리드에 바인드 되어 있는 Dataset Column ID 리턴
+ * @param obj - Grid
+ * @param iCell - cell index
+ */
+ //getBindColName
+ pForm.gfn_getBindColNameGrid = function(objGrid, iCell) {
+    if (iCell == -1 ) return "";
+
+    var sColName = objGrid.getCellProperty( "Body", iCell, "text" );
+    var aText = String(sColName).split(":");
+
+    if (aText.length == 2 && aText[0] == "bind") {
+        return aText[1];
+    } else {
+        return "";
+    }
+};
+
+/**
+ * 바인드되어 있는 Dataset에 해당되는 ColumnId 를 가지고 있는 Cell의 Index
+ * @param - 비교할 ColumnId
+ * @return - 못찾으면 '-1' 을 반환
+ */
+//getCellIdx
+pForm.gfn_getCellIdxGrid = function(objGrid, sCompColumnId)
+{
+    //2.Cell Id에 해당하는 번호를 기억
+    var aColumnId = new Array();
+
+    var nCellCount = objGrid.getCellCount("body");
+    for(var i=0; i<nCellCount; i++) {
+        var sColumnId = String(objGrid.getCellProperty("body", i, "text")).replace("bind:", "");
+
+        if (sColumnId == sCompColumnId) return i;
+    }
+
+    return -1;
+};
+
+//gfn_checkAllGrid을 실행하고, afterCheckAll함수가 있으면 호출
+pForm.gfn_checkAllGridCallFunc = function(objGrid, nCellIdx, isCheck)
+{
+    isCheck = this.gfn_checkAllGrid(objGrid, nCellIdx, isCheck );
+//trace("gfn_checkAllGridCallFunc isCheck ==="+isCheck);
+    try {
+        if (typeof(this.afterCheckAll) == "function") {
+            this.afterCheckAll(objGrid, nCellIdx, isCheck);
+        }
+    } catch(e) {
+    }
+}
+
+/**
+ * @desc 해당되는 idx 에 있는 cell 의 checkbox 를 전체 선택/해제
+ * @param nCellIdx Cell Index
+ * @param isCheck 체크 여부 (true / false)
+ */
+pForm.gfn_checkAllGrid = function(objGrid, nCellIdx, isCheck)
+{
+//trace("gfn_checkAllGrid isCheck==="+isCheck);
+    //0.초기값 설정
+    if (this.gfn_isNull( isCheck ) ) isCheck = true; //기본값 true
+
+    var sEditType   = objGrid.getCellProperty ( "Body", nCellIdx, "edittype" );
+    var objDS       = objGrid.getBindDataset();
+
+    //1.하나라도 해당이 되지 않으면 무시
+    if (nCellIdx == -1 || sEditType != "checkbox")
+        return;
+
+    //2.Head셋팅
+    var strVal = objGrid.getCellProperty("head", nCellIdx, "text");
+    if (this.gfn_isNull(strVal) || strVal == "0" ) strVal = "false";
+    if (strVal == "false") {
+        isCheck = "true";
+    } else {
+        isCheck = "false";
+    }
+    objGrid.setCellProperty("head", nCellIdx, "text", isCheck);
+
+    //3.Body셋팅
+    var sColNm = this.gfn_getBindColNameGrid(objGrid, nCellIdx);
+
+    if ( objGrid._checkheadevent == "false" )   objDS.set_enableevent(false);
+    for(var i=0 ; i< objDS.rowcount ; i++) {
+        objDS.setColumn( i, sColNm, isCheck == "true" ? "1" : "0");
+    }
+    if ( objGrid._checkheadevent == "false" )   objDS.set_enableevent(true);
+//this.gfn_dsView(objDS);
+    return isCheck;
+};
+
+/**
+ * @desc _check 의 체크박스에 체크되어 있는 값들만 가지고 와서 ds 를 반환
+ * @return dataset 체크되어 있는 dataset
+ */
+ //getCheckedData
+pForm.gfn_getCheckedDataGrid = function(objGrid) {
+
+    var dsRtn = this.gfn_newDataset("ds_checked_"+objGrid.name, objGrid.parent);
+    var dsBind = objGrid.getBindDataset();
+
+//      gfn_dsFilter(dsBind,dsRtn,false); //헤더복사
+    dsRtn.copyData(dsBind);
+    dsRtn.clearData();
+
+    for(var i=0; i<dsBind.rowcount; i++) {
+        var nRowType = dsBind.getRowType(i);
+        if (dsBind.getColumn(i,"CHK") == 1 || dsBind.getColumn(i, "CHK") == "Y" ) {
+            var nNewRow = dsRtn.addRow();
+            dsRtn.copyRow( nNewRow, dsBind, i );
+            dsRtn.setRowType( nNewRow, nRowType );
+        }
+    }
+
+    return dsRtn;
+};
+
+/**
+ * @desc 변경된 데이타만 가지고
+ * @return dataset 변경된 데이타 dataset
+ */
+ //getUpdateData
+pForm.gfn_getUpdateDataGrid = function(objGrid)
+{
+    var dsRtn = this.gfn_newDataset("ds_updated_"+objGrid.name,objGrid.parent);
+    var dsBind = objGrid.getBindDataset();
+    this.gfn_dsFilter(dsBind,dsRtn,"");
+    for(var i=dsRtn.rowcount-1; i>=0; i--) {
+        var nRowType = dsBind.getRowType(i);
+        if (nRowType != 2 && nRowType != 4 && nRowType != 8) {
+            dsRtn.deleteRow( i );
+        }
+    }
+    return dsRtn;
+};
+
+/**
+ * @desc 상태값을 가지고 옴
+ * @param nRow 줄번호
+ * @return 상태값
+ */
+ //getDataStatus
+pForm.gfn_getDataStatusGrid = function(objGrid, nRow) {
+    var dsBind = objGrid.getBindDataset();
+    //var nRowType = dsBind.getRowType(nRow);
+    var nRowType = dsBind.getColumn(nRow,"_ROW_STATUS");
+
+    var sStatus = "";
+    if (nRowType == 0 ) sStatus = "E";
+    else if (nRowType == 1 ) sStatus = "N";
+    else if (nRowType == 2 ) sStatus = "I";
+    else if (nRowType == 4 ) sStatus = "U";
+    else if (nRowType == 8 ) sStatus = "D";
+
+    return sStatus;
+};
+
+/**
+ * @desc 상태값을 설정
+ * @param nRow 줄번호
+ * @param sStatus 설정할 상태값
+ */
+ //setDataStatus
+pForm.gfn_setDataStatusGrid = function(objGrid, nRow, sStatus) {
+    var dsBind = objGrid.getBindDataset();
+
+    /*
+    Dataset.ROWTYPE_EMPTY 0 존재하지 않는 Row 상태
+    Dataset.ROWTYPE_NORMAL 1 초기 Row 상태
+    Dataset.ROWTYPE_INSERT 2 추가된 Row 상태
+    Dataset.ROWTYPE_UPDATE 4 수정된 Row 상태
+    Dataset.ROWTYPE_DELETE 8 삭제된 Row 상태
+    Dataset.ROWTYPE_GROUP 16 Group 정보 Row 상태
+    */
+    var nRowType = 0;
+    if (sStatus == "N" || sStatus == "n" ) nRowType = 1;
+    else if (sStatus == "I" || sStatus == "i" ) nRowType = 2;
+    else if (sStatus == "U" || sStatus == "u" ) nRowType = 4;
+    else if (sStatus == "D" || sStatus == "d" ) nRowType = 8;
+    else nRowType = sStatus;
+
+    //상태값 변경
+    dsBind.set_updatecontrol(false);
+    var nOriRowType = dsBind.getRowType(nRow);
+    if (nOriRowType == 8 && nRowType == 8) {
+        nRowType = 1;
+    }
+    var bSucc = dsBind.setRowType(nRow, nRowType);
+    dsBind.set_updatecontrol(true);
+};
+
+/**
+ * @desc 체크 상태 모두삭제
+ * @param
+ */
+ //checkDeleteAll
+pForm.gfn_checkDeleteAllGrid = function(objGrid)
+{
+    var dsBind = objGrid.getBindDataset();
+    for(var i=dsBind.rowcount-1; i>=0; i--) {
+        if (dsBind.getColumn(i,"CHK") == 1 || dsBind.getColumn(i,"CHK") == "Y") { this.gfn_deleteRowDatasetGrid(objGrid, i); }
+    }
+    this.gfn_refreshDatasetGrid(objGrid);
+};
+
+/**
+ * @desc 삭제 상태를 지정
+ * @param nRow 줄번호
+ */
+ //deleteRowDataset
+pForm.gfn_deleteRowDatasetGrid = function(objGrid, nRow)
+{
+    objGrid.arrDeleteRow.push(nRow); //삭제할 줄번호 기억
+    this.gfn_setDataStatusGrid(objGrid, nRow, "D");
+    var dsBind = objGrid.getBindDataset();
+    dsBind.setColumn(nRow,"_ROW_STATUS",8);
+    dsBind.set_rowposition(nRow);
+};
+
+/**
+ * @desc 이미 삭제된 empty row 를 삭제
+ */
+ //refreshDataset
+pForm.gfn_refreshDatasetGrid = function(objGrid)
+{
+    var dsBind = objGrid.getBindDataset();
+    var arrSort = objGrid.arrDeleteRow.sort();
+    for(var i=arrSort.length-1; i>=0; i--) {
+        var nRow = arrSort[i];
+        dsBind.deleteRow(nRow);
+    }
+    objGrid.arrDeleteRow = new Array();
+};
+
+/**
+ * @desc 현재 선택된 Row 가지고옴
+ * @return 선택된 줄 array
+ */
+ //getSelectRow
+pForm.gfn_getSelectRowGrid = function(objGrid)
+{
+    return objGrid.getSelectedDatasetRows();
+};
+
+/**
+ * @desc 데이타셋생성
+ * @return 데이타셋
+ */
+pForm.gfn_newDataset = function(sDatasetNm, objParent)
+{
+    var objDS;
+    var objParent = this.gfn_isNull(objParent) ? this : objParent ;
+    if (!objParent.isValidObject(sDatasetNm)) {
+        objDS  = new Dataset();
+        objDS.set_name(sDatasetNm);
+        objParent.addChild(sDatasetNm, objDS);
+    } else {
+        objDS = objParent.objects[sDatasetNm];
+    }
+    return objDS;
+};
+
+/**
+ * @desc 데이타셋필터
+ * @return
+ */
+pForm.gfn_dsFilter = function(dsDs, tgDs, sFilterExpr)
+{
+    dsDs.filter("");
+    dsDs.filter(sFilterExpr);
+    tgDs.copyData(dsDs,true);
+    dsDs.filter("");
+};
+
+/**
+ * @desc 그리드 상단 왼쪽에 제목 표시
+ * @param isType 제목 유형 (M / D)
+ * @param sTitle 제목
+ * @param sAnchor anchor
+ * @return
+ */
+ //setGridTitle
+pForm.gfn_setTitleGrid = function(objGrid, sType, sTitle, sAnchor)
+{
+    if (!sType)  { sType = "M"; }
+    if (!sTitle) return;
+
+    var grd = objGrid;
+    var gridTitle = objGrid._gridTitle;
+    var gridRowCount = objGrid._gridRowCount;
+
+    if (!gridTitle) {
+        var grdPos = grd.position;
+        var grdPosTop = grdPos.top;
+        gridTitle = new Static(grd.name + "Title", grdPos.left, grdPosTop - 20, grdPos.left, grdPosTop);
+        var _parent = grd.parent;
+
+        if (sType == "M") {
+            gridTitle.set_cssclass("sta_WF_label01");
+        } else {
+            gridTitle.set_cssclass("sta_WF_label02");
+        }
+
+        grd.parent.addChild(gridTitle.name, gridTitle);
+
+        gridTitle.set_visible(false);
+        gridTitle.show();
+        objGrid._gridTitle = gridTitle;
+    }
+
+    gridTitle.set_visible(false);
+    gridTitle.set_text(sTitle);
+    gridTitle.set_fittocontents( "width" );     //사이즈조정 auto
+    gridTitle.set_visible(true);
+};
+
+/**
+ * @desc 그리드 상단 왼쪽에 조회건수 표시
+ * @param nRowCnt 조회건수
+ * @param sAnchor anchor
+ * @return
+ */
+ //setRowCount
+pForm.gfn_setRowCountGrid = function(objGrid, nRowCnt, sAnchor)
+{
+    if (!nRowCnt) { nRowCnt = 0; }
+
+    var grd = objGrid;
+    var gridTitle = grd._gridTitle;
+    var gridRowCount = grd._gridRowCount;
+
+    if (!gridRowCount) {
+        var grdPos = grd.position;
+        var grdPosTop = grdPos.top;
+        gridRowCount = new Static(grd.name + "RowCount", grdPos.left, grdPosTop - 20, grdPos.left, grdPosTop);
+        var _parent = grd.parent;
+
+        grd.parent.addChild(gridRowCount.name, gridRowCount);
+
+        gridRowCount.set_visible(false);
+        gridRowCount.show();
+        grd._gridRowCount = gridRowCount;
+    }
+
+    gridRowCount.set_visible(false);
+    gridRowCount.set_usedecorate(true);
+//  gridRowCount.set_text("총 "
+//                    + nRowCnt
+//                    + " 건");
+//  gridRowCount.font.set_type("bold");
+//  var size = this.x2n_lookupPath("UtilMisc").getTextSize(gridRowCount);
+//  gridRowCount.font.set_type("");
+    gridRowCount.set_text("총 <b v='true'><fc v='#e40707'>"
+                      + nRowCnt
+                      + "</fc></b> 건");
+    gridRowCount.set_fittocontents( "width" );      //사이즈조정 auto
+    gridRowCount.set_visible(true);
+};
+
+//setChangRCb
+pForm.gfn_setChangRCbGrid = function(objGrid, argDataset)
+{
+    objGrid.set_binddataset(argDataset);
+    objGrid.createFormat();
+};
+
+// setVisible
+pForm.gfn_setVisibleGrid = function(objGrid, bVisible)
+{
+    objGrid.set_visible(bVisible);
+    var gridTitle = objGrid._gridTitle;
+    if (gridTitle) {
+        gridTitle.set_visible(bVisible);
+    }
+
+    var gridRowCount = objGrid._gridRowCount;
+    if (gridRowCount) {
+        gridRowCount.set_visible(bVisible);
+    }
+};
+
+//clear
+pForm.gfn_clearGrid = function(objGrid)
+{
+    if ((objGrid._check=="true")
+        && (objGrid._checkhead == "true")
+        && (objGrid.getCellProperty('Head', 0, "edittype") == "checkbox")
+        ) {
+        objGrid.setCellProperty("head", 0, "text", "false");
+    }
+
+    if (objGrid._sort=="true") {
+        var objSortDs = objGrid.objBizForm["ds" + objGrid.name + "Sort"];
+        if (!objSortDs) return;
+        if (objSortDs.rowcount == 0) return;
+
+        var sHeadText;
+        var nIndex;
+
+        for(var i=0; i<objSortDs.rowcount; i++) {
+            sHeadText = objSortDs.getColumn(i, "mark");
+            nIndex    = objSortDs.getColumn(i, "hindex");
+            objGrid.setCellProperty("head", nIndex, "text", sHeadText.substr(0, sHeadText.length - 1));
+        }
+        objSortDs.clearData();
+        var dsBind = objGrid.getBindDataset();
+        dsBind.set_keystring("");
+    }
+};
+
+/**
+ * @desc 현재 컨트롤의 전체이름을 반환
+ * @param
+ * @return fullName : 현재 컨트롤의 전체이름
+ */
+//getComponentFullName
+pForm.gfn_getComponentFullName = function(obj)
+{
+    var fullName = "";
+    if ( this.gfn_isNull(obj) ) obj = this;
+    while (!this.gfn_isNull(obj.parent.name) && (obj.parent.toString().toUpperCase() != "[OBJECT CHILDFRAME]")) {
+        fullName = obj.name + (this.gfn_isNull(fullName)?"":"_") + fullName;
+        obj = obj.parent;
+    }
+
+    return fullName;
+};
+
+/*****************************************************************************************
+ * 함  수  명   :   gfn_cellNm_check
+ * 입      력   :   1.obj       : grd_common
+ *                  2.pBodyCell : cell
+ * 반      환   :   tCellNM
+ * 기      능   :   컬럼을 조건으로 컬럼의 ID 를 가져옴
+ *****************************************************************************************/
+pForm.gfn_cellNm_check = function(pObj, pBodyCell, pType)
+{
+    var sCellNM = "";
+    try {
+        sCellNM     = pObj.getCellProperty(pType,pBodyCell, "text" ).toString();
+        sCellNM     = sCellNM.replace("BIND:","");
+        sCellNM     = sCellNM.replace("bind:","");
+        sCellNM     = sCellNM.replace("Bind:","");
+    } catch(e) {
+        sCellNM     = "";
+    } finally {
+        return sCellNM;
+    }
+};
+
+pForm.gfn_getBindColumnID = function(pObj, pBodyCell)
+{
+    return this.gfn_cellNm_check(pObj, pBodyCell , "body");
+};
+
+//그리드 mark clear
+// nyb_form 에서 이동
+pForm.cfn_gridMarkClear = function(aGrid)
+{
+    for(var j=0; j<aGrid.length; j++) {
+        var nHeadCnt = aGrid[j].getCellCount("Head");
+        var oDs = aGrid[j].getBindDataset();
+        oDs.set_keystring("");
+        var sProperty = "";
+        var sText = "";
+
+        for(var i=0; i<nHeadCnt; i++) {
+            sProperty = aGrid[j].getCellProperty( "Head", i, "displaytype" );
+            sText = aGrid[j].getCellProperty( "Head", i, "text" );
+            if(this.gfn_isNull(sText)) sText = "";
+
+            if(sProperty == "checkboxcontrol") {
+                aGrid[j].setCellProperty( "Head", i, "text", "0");
+            } else {
+                sText = sText.replace("▲","");
+                sText = sText.replace("▼","");
+                aGrid[j].setCellProperty( "Head", i, "text", sText);
+            }
+            aGrid[j].setCellProperty( "Head", i, "font", "");
+        }
+    }
+};
+
+/**
+ * @class head cell에 match되는 body cell을 얻어온다
+ * @param {Object}  grid 대상 Grid Component
+ * @param {Number} eadCellIndex head cell index
+ * @return{Number}  body cell index
+ * @example
+ * this._gfnGridSetSortStatus(obj, e.cell, multiple);
+ */
+pForm._gfn_gridGetBodyCellIndex = function(grid, headCellIndex, useColspan)
+{   //, useColspan)
+    if( this.gfn_isNull(useColspan)) useColspan=false;
+    // Max Head Row Index
+    var maxHeadRow = 0;
+    for(var i=0, len=grid.getCellCount("head"); i<len; i++) {
+        var row = grid.getCellProperty("head", i, "row");
+        if (maxHeadRow < row) {
+            maxHeadRow = row;
+        }
+    }
+    // Max Body Row Index
+    var maxBodyRow = 0;
+    for(var i=0, len=grid.getCellCount("body"); i<len; i++) {
+        var row = grid.getCellProperty("body", i, "row");
+        if (maxBodyRow < row) {
+            maxBodyRow = row;
+        }
+    }
+
+    if (maxHeadRow == 0 && maxBodyRow == 0) {
+//      var headcolspan = grid.getCellProperty("head", headCellIndex, "colspan");
+//      var bodycolspan = grid.getCellProperty("body", headCellIndex, "colspan");
+//
+//      if( headcolspan == bodycolspan ){
+//          return headCellIndex;
+//      }
+        useColspan = true;
+    }
+
+    // Body Row 가 1개 이상일 경우
+    // Head의 row 가 Body의 row 보다 클 경우 차이 row 를 뺀 것을 대상으로 찾고
+    // Body의 row 가 Head의 row 보다 크거나 같을 경우 row index가 같은 대상을 찾는다.
+    var cellIndex = -1;
+    var sRow = -1;
+    var nRow = parseInt(grid.getCellProperty("head", headCellIndex, "row"));
+    var nCol = parseInt(grid.getCellProperty("head", headCellIndex, "col"));
+    var nColspan = parseInt(grid.getCellProperty("head", headCellIndex, "colspan"));
+
+    if (maxHeadRow > maxBodyRow)
+    {
+        sRow = nRow - (maxHeadRow - maxBodyRow);
+        sRow = (sRow < 0 ? 0 : sRow);
+    }
+    else
+    {
+        sRow = nRow;
+    }
+    var cRow, cCol, cColspan, cRowspan;
+    for(var i=0, len=grid.getCellCount("body"); i<len; i++)
+    {
+        cRow = parseInt(grid.getCellProperty("body", i, "row"));
+        cCol = parseInt(grid.getCellProperty("body", i, "col"));
+        cColspan = parseInt(grid.getCellProperty("body", i, "colspan"));
+        cRowspan = parseInt(grid.getCellProperty("body", i, "rowspan"));
+        if( cRowspan > 1 )
+        {
+            if ( useColspan ){
+                if (sRow >= cRow && nCol <= cCol && cCol < (nCol + nColspan))
+                {
+                    cellIndex = i;
+                    break;
+                }
+            }else{
+                if (sRow >= cRow && nCol == cCol && nColspan == cColspan)
+                {
+                    cellIndex = i;
+                    break;
+                }
+            }
+        }else{
+            if ( useColspan ){
+                if (sRow == cRow && nCol <= cCol && cCol < (nCol + nColspan))
+                {
+                    cellIndex = i;
+                    break;
+                }
+            }else{
+                if (sRow == cRow && nCol == cCol && nColspan == cColspan)
+                {
+                    cellIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+    return cellIndex;
+};
+
+/**
+ * @class body cell index로 binding 된 컬럼명을 얻어온다.
+ * @param {Object}  grid 대상 Grid Component
+ * @param {Number} eadCellIndex head cell index
+ * @return{String} column id
+ * @example
+ * this._gfnGridGetBindColumnNameByIndex(obj, e.cell);
+ */
+pForm._gfn_gridGetBindColumnNameByIndex = function(grid, index)
+{
+    var text = "";
+    var columnid = "";
+    var subCell = grid.getCellProperty("body", index, "subcell");
+    if ( subCell > 0 ){
+        text = grid.getSubCellProperty("body", index, 0, "text");
+    }
+    else{
+        text = grid.getCellProperty("body", index, "text");
+    }
+
+    if ( !this.gfn_isNull(text) ){
+        if ( text.search(/^BIND\(/) > -1 ) {
+            columnid = text.replace(/^BIND\(/, "");
+            columnid = columnid.substr(0, columnid.length-1);
+        }
+        else if ( text.search(/^bind:/) > -1 ) {
+            columnid = text.replace(/^bind:/, "");
+        }
+    }
+    return columnid;
+};

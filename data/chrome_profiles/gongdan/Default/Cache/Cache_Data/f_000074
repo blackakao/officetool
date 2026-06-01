@@ -1,0 +1,723 @@
+/**
+*  @FileName 	nyg_frame.js 
+*  @Creator 	consulting
+*  @CreateDate 	2017.03.08
+*  @Desction   	프레임 관련 함수	
+************** 소스 수정 이력 ***********************************************
+*  date          		Modifier                Description
+*******************************************************************************
+*  2017.03.08     	consulting 	                최초 생성 		   
+*  2018.09.05     	나종식       	        	Conversion
+*******************************************************************************
+*/
+
+var pForm   = nexacro.Form.prototype;
+var sysver  = "nexacro17"; // 넥사크로 제품구분 nexacro14/nexacro17
+
+pForm.gfn_dsView = function(objDs)
+{
+	trace(objDs.saveXML());
+};
+
+/**
+* @class frame open <br>
+* @param {Object} obj - 화면
+* @return N/A
+* @example 
+* this.gfnFormOnLoad(this);
+*/
+pForm.gfn_formOnLoad = function(objForm)
+{
+	var arrComp = objForm.components;
+	var nLength = arrComp.length;
+
+	for (var i=0; i<nLength; i++)
+	{
+		if (arrComp[i] instanceof nexacro.Div)
+		{
+			// URL로 링크된 경우에는 존재하는 경우에는 해당 링크된 Form Onload에서 처리하도록 한다.
+			if (this.gfn_isNull(arrComp[i].url))
+				this.gfn_formOnLoad(arrComp[i].form); //재귀함수
+		}
+		else if (arrComp[i] instanceof nexacro.Tab)
+		{
+			var nPages = arrComp[i].tabpages.length;
+			
+			for (var j=0; j<nPages;j++)
+			{	
+				// URL로 링크된 경우에는 존재하는 경우에는 해당 링크된 Form Onload에서 처리하도록 한다.
+				if (this.gfn_isNull(arrComp[i].tabpages[j].url))
+					this.gfn_formOnLoad(arrComp[i].tabpages[j].form); //재귀함수
+			}
+		}
+		else
+		{
+			if (arrComp[i] instanceof nexacro.Grid)
+			{
+				this.gfn_setGrid(arrComp[i]);
+			}
+			
+			if (arrComp[i] instanceof nexacro.Edit)
+			{
+				this._gfn_setEditMsClear(arrComp[i]);
+			}
+		}
+	}
+
+	// 화면 loading 시간 측정
+	if (objForm.parent.name == "divWork")
+	{
+		var objApp     = nexacro.getApplication();
+		var sStartDate = objApp.sStartDate;
+		var nStartTime = objApp.nStartTime;
+		
+		var objDate  = new Date();
+		var sEndDate = objDate.getYear()
+						+"-"+String(objDate.getMonth()  ).padLeft(2, '0')
+						+"-"+String(objDate.getDate()   ).padLeft(2, '0')
+						+" "+String(objDate.getHours()  ).padLeft(2, '0')
+						+":"+String(objDate.getMinutes()).padLeft(2, '0')
+						+":"+String(objDate.getSeconds()).padLeft(2, '0')
+						+" "+objDate.getMilliseconds();						
+		var nElapseTime = (objDate.getTime() - nStartTime)/1000;
+		//trace("gfn_formOnLoad : "+ sStartDate + " - " + nStartTime + " / " + sEndDate + " - " + nElapseTime);		
+		
+		//objForm.parent.parent.staLodingTime.set_text("해당 화면의 loading 시간은 " +  + nElapseTime + " Sec 입니다.");
+	}
+	
+	// 팝업 일때 처리
+	if (objForm.opener)
+	{
+		if (objForm.parent instanceof nexacro.ChildFrame)
+		{
+			// 키다운 이베트 추가
+			objForm.addEventHandler("onkeydown", this.gfn_onnkeydown, this);
+		}
+	}
+};
+
+/**
+ * @description 각 화면에서 단축키 지정
+*/
+pForm.gfn_onkeydown = function(obj, e)
+{
+	//trace("e.ctrlkey : " + e.ctrlkey + " / e.keycode : " + e.keycode);
+	
+	// 디버그 창 : Ctrl + Q
+	if (e.ctrlkey && e.keycode == 81)
+	{
+		var objApp = nexacro.getApplication();
+		var strHost = objApp.av_sHost;
+		// 운영환경에서는 실행 방지
+		if ( strHost.indexOf("localhost") < 0 ) return;
+		
+		var oArg = {};
+		var oOption = {popuptype:"debugging", title:"디버그",width:1080,height:703};
+		var sPopupCallBack = "fnPopupCallback";
+		this.gfn_openPopup("debugging","cmm::cmmDebug.xfdl",oArg,sPopupCallBack,oOption);
+	}
+};
+
+
+/**
+ * @class left메뉴 클릭시 해당화면 호출함수 <br>
+ * @param {Object} oObj 
+ * @return N/A
+ * @example 
+ */
+pForm.gfn_call = function(oObj)
+{	
+	if(!this.gfn_isNull(oObj) && typeof(oObj) !=  "object") return;	
+	
+	var objApp  = nexacro.getApplication();
+	var gdsOpen = objApp.gds_openMenu;				//열린 	  dataset	
+	var ds      = oObj.ds;							//넘어온 dataset
+	var nRow    = oObj.nRow;						//선택된 현재 row
+	var aArgs 	= this.gfn_isNull(oObj.oArgs) ? "" : oObj.oArgs ;   //넘어온 arguments
+	var sMenuId;
+	/* 2025기관평가시스템 고도화 
+	 급여제공서식 - 기관평가 관리 하위 메뉴 진입시 동의여부 확인을 위한 데이터셋 생성
+	*/
+	var dsTemp  = new nexacro.Dataset("ds_temp",this);
+	
+	
+	if (!this.gfn_isNull( oObj.sMenuId)){
+		sMenuId = oObj.sMenuId;
+	}else{
+		sMenuId = ds.getColumn(nRow, objApp.av_aMenuColumns.menuId);
+	}
+	/* 2025기관평가시스템 고도화 
+	   급여제공서식 - 기관평가 관리 하위 메뉴 확인을 위해 글로벌 메뉴 데이터셋 복사 및 필터 적용 
+	*/
+	dsTemp.copyData(nexacro.getApplication().gds_allMenu);
+	dsTemp.filter("PARENT_MENU_ID == 'NPA09020000'");  // 상위코드가 기관평가 관리인 코드만 필터걸어서 가져오기
+	
+	/* 2025기관평가시스템 고도화 
+	   메뉴 선택 시 해당 메뉴가 급여제공서식 - 기관평가 관리 하위 메뉴인지 확인  아니면 바로 화면 이동
+	   dsTemp.findRow("MENU_ID", sMenuId) != -1 >> 하위 메뉴가 맞으면 작동 로직
+	*/
+	if(dsTemp.findRow("MENU_ID", sMenuId) != -1) {
+		/*  기존 동의여부 데이터셋을 생성했는지 확인
+			dsResult : 동의여부 확인 데이터셋
+		*/
+		if(!this.isValidObject("ds_agreeYn")) {
+			var dsResult = new nexacro.Dataset("ds_agreeYn",this);
+			this.addChild("ds_agreeYn", dsResult);
+		}
+		/* 2025기관평가시스템 고도화 
+			동의여부 확인 후 Y가 아니면 동의여부 조회 
+			사용자가 언제 동의를 할 지 모르기 때문에 N인 경우 계속 조회
+			현재날짜가 동의기간안에 있는지 확인 
+		*/
+		if(this.ds_agreeYn.getColumn(0, "RESULT") != "Y") {
+			var sTrId     = "selectAgreeYn";
+			var sPath     = "/r/m/000/selectAgreeYn.do";
+			var sArgs     = "ds_ltcAdminSym=" + this.bfn_getUserInfo().adminSym;
+			var aPrevArgs = [];
+			var sInputDs  = "";
+			var sOutputDs = "ds_agreeYn=ds_result";
+			var sCallBack = "gfn_callBack";
+
+			this.gfn_callService(sTrId, sPath, sInputDs, sOutputDs, sArgs, aPrevArgs, sCallBack , false);
+		}
+		
+		var agreeYn = this.ds_agreeYn.getColumn(0,"RESULT");
+		
+		/* 2025기관평가시스템 고도화 
+			동의여부 확인 후 Y면 해당 화면ID로 이동
+			Y 가 아니면 동의여부 확인 팝업 호출 
+		*/
+	    if(agreeYn == "Y") {
+			var winid = gdsOpen.lookup(objApp.av_aMenuColumns.menuId, sMenuId, objApp.av_aMenuColumns.winId);
+
+			//	 	if (!this.gfn_isNull(winid))
+			//	 	{
+			//	 		if (objApp.av_oBottomFrame.form.isActiveFrame(winid, aArgs) == true)
+			//	 		{
+			//	 			objApp.av_oBottomFrame.form.fn_moveTab(winid);
+			//	 			return;
+			//	 		}
+			//	 	}
+			
+			this.gfn_newMdi(sMenuId, aArgs, false, null);
+		
+		}else {
+			var sPopId         = "nprm138p01";                                            //Popup화면 ChildFrame ID
+			var sScrId         = "nprm138p01";                                            //Popup화면 ID
+			var oArgs          = {sMenuId : sMenuId};                                                    //Popup에 전달될 Argsument - {변수명:'변수값'}
+			var bIsModal       = true;                                                    //Popup Modal여부(default false, modeless)
+			var nWidth         = 580;
+			var nHeight        = 270;
+			var bVscrollbar    = true;
+			var nLeft          = null;          //Popup Left위치 정보
+			var nTop           = null;          //Popup Top위치 정보
+			var bResize        = null;          //Resize 유무(default false)
+			var bTitleBar      = null;          //TitleBar 유무(default true)
+			var bStatusBar     = null;          //StatusBar 유무(default true)
+			var sPopupTitle    = null;          //화면정보와 별도로 Popup Title 설정용
+			var bWrapForm      = true;          //표준 popup 화면에 Embed 여부(default true)
+			var sPopupCallback = "";          //modeless인 경우 callback지원하지 않음./ modal인 경우 반드시 기술할것(default-fn_popupCallback), 존재하지 않는경우 error발생
+			
+			this.gfn_showPopupByID(this, sPopId, sScrId, oArgs, bIsModal, nWidth, nHeight, bVscrollbar, nLeft, nTop, bResize, bTitleBar, bStatusBar, sPopupTitle, bWrapForm, sPopupCallback);
+		}
+		
+	   
+	}else {
+		
+		
+		var winid = gdsOpen.lookup(objApp.av_aMenuColumns.menuId, sMenuId, objApp.av_aMenuColumns.winId);
+
+		//	 	if (!this.gfn_isNull(winid))
+		//	 	{
+		//	 		if (objApp.av_oBottomFrame.form.isActiveFrame(winid, aArgs) == true)
+		//	 		{
+		//	 			objApp.av_oBottomFrame.form.fn_moveTab(winid);
+		//	 			return;
+		//	 		}
+		//	 	}
+		
+		this.gfn_newMdi(sMenuId, aArgs, false, null);
+		
+	}
+	
+	
+};
+
+/**
+ * @class gdsOpenMenu의 해당 Row의 정보를 기준으로 신규 윈도우 화면을 생성하고 open 시킴 <br>
+ * @param {String} sMenuId - menuId
+ * @param {Number} nRow - gdsOpenMenu의rowpostion
+ * @param {Array} aArgs - arguments
+ * @return N/A
+ */
+pForm.gfn_newMdi = function(sMenuId, oArg, bOpened, sGroup)
+{	
+	var objApp   = nexacro.getApplication();
+	var gdsOpen  = objApp.gds_openMenu;		//열린 dataset
+	var gdsMenu  = objApp.gds_allMenu;
+	//var winid  = "win" + sMenuId + "_" + gdsOpen.getRowCount() + "_" + parseInt(Math.random() * 1000);		
+	var winid  = "win" + sMenuId;
+	
+	var sPageFlag = objApp.gds_openMenu.lookup("screen_id", winid, "screen_out");	
+	//화면이 존재하면 이동
+	var objTargetChild;
+	if ( sPageFlag == "Y" ) {
+		objTargetChild = nexacro.getPopupFrames(objApp.mainframe)[winid];
+	} else {
+		objTargetChild = objApp.av_oWorkFrame.frames[winid];
+	}
+	if (objTargetChild) {
+		objTargetChild.setFocus();
+		return;
+	}
+	
+	//열린메뉴 체크( application.av_nMaxOpenMenu = 8)	
+	if( objApp.av_nMaxOpenMenu <= gdsOpen.getRowCount() ){
+		          
+		alert(objApp.av_nMaxOpenMenu +"개 초과하여 화면을 열수 없습니다");
+		return false;
+	}
+	
+	var nMenuRow 	= gdsMenu.findRow("MENU_ID",sMenuId);
+	var sMenuText 	= gdsMenu.getColumn(nMenuRow,"MENU_NM");
+	var sMenuUrl 	= gdsMenu.getColumn(nMenuRow,"PGM_URL");
+	var sMenuDesc 	= gdsMenu.getColumn(nMenuRow,"MENU_PATH");
+	var sMultiOpen 	= gdsMenu.getColumn(nMenuRow,"MULTI_OPEN_YN");	
+	var sProgramId 	= gdsMenu.getColumn(nMenuRow,"PGM_ID");	
+	var sMenuParm   = gdsMenu.getColumn(nMenuRow, "MENU_PARM");
+	
+	var sTouchEn 	= gdsMenu.getColumn(nMenuRow,"LKAV_FUNC_YN");			//캡쳐방지
+	var sXecureWeb 	= gdsMenu.getColumn(nMenuRow,"WB_FAX_SEND_FUNC_YN");	//구간암호화
+	
+	var nOpenMenurow = gdsOpen.findRow("screen_menuId",sMenuId);
+	
+	if(this.gfn_isNull(sMenuUrl)) {
+		this.gfn_msgShow(this, "M00001",["메뉴주소가 연결되지 않았습니다."]);
+		return;		//pageURl 이 없으면 return
+	}
+	
+	/*--------------------------------------------------------------------------------------*
+	* 팝업메뉴로 화면열기 (김영진, 2015.06.02) - 업무포털 청구심사 팝업메뉴 오픈용도(임시)
+	*--------------------------------------------------------------------------------------*/
+// 	var sPopupOpenYN = gdsMenu.getColumn(nMenuRow,"POP_OPEN_YN");			//팝업Open옵션
+// 	if ( sPopupOpenYN == "Y" ) {
+// 		objApp.av_oTopFrame.form.fn_menuPopupOpen(sMenuId, sMenuUrl, sMenuText, sMenuParm);
+// 		return;
+// 	}
+	//this.gfn_dsView(gdsMenu);
+	// 화면 loading 시간 측정
+	var objDate = new Date();
+	var nStartTime = objDate.getTime();
+    var sStartDate = objDate.getYear()
+						+"-"+String(objDate.getMonth()).padLeft(2, '0')
+						+"-"+String(objDate.getDate()).padLeft(2, '0')
+						+" "+String(objDate.getHours()).padLeft(2, '0')
+						+":"+String(objDate.getMinutes()).padLeft(2, '0')
+						+":"+String(objDate.getSeconds()).padLeft(2, '0')
+						+" "+objDate.getMilliseconds();
+	objApp.nStartTime = nStartTime;
+	objApp.sStartDate = sStartDate;
+	
+	//Work FrameSet 활성화
+	objApp.afn_setSeparatesize("WORK");
+
+	//ChildFrame 생성
+	var objNewWin = new ChildFrame;
+	objNewWin.init(winid, 0, 0, null, null, 0, 0);
+	objApp.av_oWorkFrame.addChild(winid, objNewWin);
+	objNewWin.show();
+
+	//objNewWin.set_tooltiptext(winid);
+	objNewWin.arguments = [];
+	objNewWin.set_dragmovetype("normal");
+	objNewWin.titlebar.maxbutton.click();
+	objNewWin.set_showtitlebar(false);
+	objNewWin.set_resizable(true);
+	objNewWin.set_autosize(false);
+	//objNewWin.set_openstatus("maximize");	//런타임만 지원
+	objNewWin.set_titletext(sMenuText);
+	objNewWin.set_showcascadetitletext(false);
+	
+	// 메뉴정보
+	var _bizInfo = { menuId    : sMenuId
+					,menuText  : sMenuText
+					,menuUrl   : sMenuUrl
+					,screenId  : winid
+					,programId  : sProgramId
+					,menuDesc  : sMenuDesc
+					,webDrm  : sTouchEn
+	                };	
+	objNewWin._bizInfo = _bizInfo;
+	objNewWin.arg      = oArg;
+	objNewWin.isPopup  = false; //팝업여부 체크용
+	
+	objNewWin.set_formurl("frame_main::frameWork.xfdl");
+
+	this.gfn_addOpenMenuDs(winid, 0, "", sMenuId, sMenuText, sGroup, sTouchEn);	// 열린메뉴 row 삽입
+	objApp.av_oBottomFrame.form.fn_insertTab(winid, sMenuText);   //mdi tab button add	
+};
+
+//메뉴에 해당하는 화면 Modeless팝업으로 호출
+// 	oArgs = { nLeft   : nLeft
+// 	        ,nTop    : nTop
+// 	        ,nWidth  : nWidth
+// 			,nHeight : nHeight
+// 		    };
+pForm.gfn_newOpen = function(sMenuId, oArgs)
+{
+	var objApp = nexacro.getApplication();
+	
+	var gdsOpen  = objApp.gds_openMenu;		//열린 dataset
+	var gdsMenu  = objApp.gds_allMenu;
+	//var winid  = "win" + sMenuId + "_" + gdsOpen.getRowCount() + "_" + parseInt(Math.random() * 1000);		
+	var winid  = "win" + sMenuId;
+	
+	//화면이 존재하면 이동
+	var objTargetChild = nexacro.getPopupFrames(objApp.mainframe)[winid];
+	if (objTargetChild) {
+		if (system.navigatorname == "nexacro") {
+			objTargetChild.setFocus();
+		} else {
+			objTargetChild._getWindowHandle().focus();
+		}
+		return;
+	}
+	
+	var nMenuRow 	= gdsMenu.findRow("MENU_ID",sMenuId);
+	var sMenuText 	= gdsMenu.getColumn(nMenuRow,"MENU_NM");
+	var sMenuUrl 	= gdsMenu.getColumn(nMenuRow,"PGM_URL");
+	var sMenuDesc 	= gdsMenu.getColumn(nMenuRow,"MENU_PATH");
+	var sMultiOpen 	= gdsMenu.getColumn(nMenuRow,"MULTI_OPEN_YN");	
+	var sProgramId 	= gdsMenu.getColumn(nMenuRow,"PGM_ID");	
+	var sMenuParm   = gdsMenu.getColumn(nMenuRow, "MENU_PARM");
+	
+	var sTouchEn 	= gdsMenu.getColumn(nMenuRow,"LKAV_FUNC_YN");			//캡쳐방지
+	var sXecureWeb 	= gdsMenu.getColumn(nMenuRow,"WB_FAX_SEND_FUNC_YN");	//구간암호화
+	
+	if(this.gfn_isNull(sMenuUrl)) {
+		this.gfn_msgShow(this, "M00001",["메뉴주소가 연결되지 않았습니다."]);
+		return;		//pageURl 이 없으면 return
+	}
+	
+	if(this.gfn_isNull(oArgs)) {
+		oArgs = {};
+	}
+	var nLeft   = oArgs.nLeft;
+	var nTop    = oArgs.nTop;
+	var nWidth  = oArgs.nWidth;
+	var nHeight = oArgs.nHeight;
+	var nTitleHeight = oArgs.nTitleHeight;
+	
+	if (this.gfn_isNull(nLeft))     	nLeft   = -1;
+	if (this.gfn_isNull(nTop))      	nTop    = -1;
+	if (this.gfn_isNull(nWidth))     	nWidth  = -1;
+	if (this.gfn_isNull(nHeight))     	nHeight = -1;
+	if (this.gfn_isNull(nTitleHeight))  nTitleHeight = 24;
+	
+	var bAutosize = false;
+	if ( nWidth == -1 || nHeight == -1 ) bAutosize = true;	
+	
+	// TitleText 설정
+	var sTitleText = sMenuText;
+	
+	var obj_bizInfo = { menuId    : sMenuId
+				   	   ,menuText  : sMenuText
+					   ,menuUrl   : sMenuUrl
+					   ,screenId  : winid
+					   ,programId : sProgramId
+					   ,menuDesc  : sMenuDesc
+					   ,webDrm    : sTouchEn
+				      };
+
+	// 공통 Popup URL
+	var sBaseUrl = "frame_main::frameWork.xfdl";
+	var objParentFrame = objApp.mainframe;
+
+	// 화면 정보 추가
+	oArgs["isMenuPopup"]  = true;				//팝업여부 체크용
+	oArgs["_bizInfo"]  	  = obj_bizInfo;		//화면정보
+				   
+	var sOpenStyle = "topmost=true showtitlebar=true"
+	               + " showstatusbar=false"
+	               + " showontaskbar=true"
+				   + " showcascadetitletext=false"
+				   + " border='1px solid #24322b'"
+				   + " titlebarheight=" + nTitleHeight
+				   + " resizable=true"
+				   + " autosize=" + bAutosize
+				   + " titletext='" + sTitleText + "'";
+
+	nexacro.open(winid, sBaseUrl, objParentFrame, oArgs, sOpenStyle, nLeft, nTop, nWidth, nHeight, objParentFrame);
+};
+
+/**
+ * @class 열린화면 데이터셋에 추가 <br>
+ * @param {String} winid
+ * @param {String} menuId
+ * @param {String} strTitle
+ * @param {String} spageUrl
+ * @param {String} sGroupId
+ * @return N/A
+ */
+pForm.gfn_addOpenMenuDs = function(sChildFrameId, nScreenSeq, sMonitorId, sMenuId, sMenuText, sGroup, sTouchEn)
+{
+	var gdsOpen = nexacro.getApplication().gds_openMenu ;  //열린 dataset
+	var nAddrow = gdsOpen.addRow();
+	gdsOpen.setColumn(nAddrow,"screen_id",sChildFrameId);
+	gdsOpen.setColumn(nAddrow,"screen_idSeq",nScreenSeq);
+	gdsOpen.setColumn(nAddrow,"screen_virtuaMonitor",sMonitorId);
+	gdsOpen.setColumn(nAddrow,"screen_menuId",sMenuId);	
+	gdsOpen.setColumn(nAddrow,"screen_name",sMenuText);
+	gdsOpen.setColumn(nAddrow,"screen_group",sGroup);	
+	gdsOpen.setColumn(nAddrow,"web_drm",sTouchEn);
+};
+
+/**
+ * @class 열린화면 데이터셋에 제거 <br>
+ * @param {String} winid
+ * @param {String} menuId
+ * @param {String} strTitle
+ * @param {String} spageUrl
+ * @param {String} sGroupId
+ * @return N/A
+ */
+pForm.gfn_delOpenMenuDs = function(sChildFrameId)
+{
+	var gdsOpen = nexacro.getApplication().gds_openMenu ;  //열린 dataset
+	var nRow = gdsOpen.findRow("screen_id", sChildFrameId);
+	if ( nRow > -1 ) gdsOpen.deleteRow(nRow);
+	
+	if ( gdsOpen.rowcount == 0)	nexacro.getApplication().afn_viewIntro(true);
+};
+/**
+ * @class 해당화면 데이터셋에 추가 <br>
+ * @param {String} 	sName : winKey, menuId, menuNm, pageUrl, aArgs
+ * @return String
+ */
+pForm.gfn_getArgument = function(sName)
+{
+	return this.getOwnerFrame().arguments[sName];
+};
+
+/**
+ * @class 클라이언트 IP Address 리턴
+ * @return String
+ */
+pForm.gfn_getClientIP = function()
+{
+	var sClientIP  = nexacro.getApplication().gds_userInfo.getColumn(0,"USER_IP");
+	if ( sClientIP == null || sClientIP == "" || sClientIP == undefined ) {
+		sClientIP = "0.0.0.0";
+	}
+	return sClientIP;
+};
+
+/**
+ * @class 실행폼의 타입이 팝업창인지를 판별하여 반환한다. <br>
+ * @param  none
+ * @return boolean
+ */
+pForm.gfn_isPopup = function()
+{
+	var popFrames = nexacro.getPopupFrames();
+	var isPopFrame=false;
+
+	for(var i=0; i<popFrames.length; i++)
+	{
+		if(this.getOwnerFrame().name==popFrames[i].name){
+			isPopFrame = true;
+		}
+	}
+	// nexacro.getPopupFrames() 오픈창에서 popFrames.length=0
+	if( isPopFrame == false && this.getOwnerFrame().form.opener ) {
+		isPopFrame = true;
+	}
+	
+	return isPopFrame;
+};
+/**
+ * @class 반환값을 호출한 부모창으로 반환하고 팝업창을 종료한다. <br>
+ * @param  none
+ * @return boolean
+ */
+// pForm.gfn_popClose = function(rtn)
+// {
+// 	rtn = rtn||"";
+// 	var isPop = this.gfn_isPopup();
+// 	if( isPop == true )
+// 	{
+// 		var popForm = this.getOwnerFrame().form;
+// 		popForm.close(rtn);
+// 	}
+// 	else
+// 	{
+// 		trace("팝업이 아닙니다.");
+// 	}
+// };
+/**
+ * @class 모든 팝업을 종료처리 한다. <br>
+ * @param  none
+ * @return boolean
+ */
+pForm.gfn_popCloseAll = function()
+{
+	var popFrames = nexacro.getPopupFrames();
+	for (var i=popFrames.length-1; i>=0; i--)
+	{
+		// Runtime, html5에서도 모두 작동
+		var rObj = popFrames[i];
+		rObj.destroy();
+		rObj = null;
+	}
+};
+/**
+ * @class 로그인후 세션객체 설정처리 <br>
+ * @param  none
+ * @return N/A
+ */
+pForm.gfn_setSession = function()
+{
+	var objApp  = nexacro.getApplication();
+	var gds = objApp.gds_userInfo ;
+	objApp.session = {};
+	for(var i=0;i<gds.colcount;i++)
+	{
+		var key = gds.getColID( i );
+		var str = gds.getColumn( 0 , key )||'';
+		objApp.session[key] = str;
+	}
+};
+/**
+ * @class 요청받은 세션값을 반환한다. <br>
+ * @param  none
+ * @return string / {}
+ */
+pForm.gfn_getSession = function(opt)
+{
+	var objApp  = nexacro.getApplication();
+	if( objApp.session )
+	{
+		if( this.gfn_isNull(opt) ) {
+			return objApp.session;
+		} else {
+			var rtn = objApp.session[opt]||'';
+			return rtn;
+		}
+	}
+	return ;
+};
+
+
+/**
+ * @class 실행되는 서버 url 가져오기 <br>
+ * @return String
+ */
+pForm.gfn_getServerUrl = function()
+{
+	var objEnv = nexacro.getEnvironment();
+	urlPath = objEnv.services["svcUrl"].url;
+// 	var urlPath = "";
+//     if (system.navigatorname == "nexacro") 
+// 	{
+// 	    var objEnv = nexacro.getEnvironment();
+// 		urlPath = objEnv.services["svcUrl"].url;
+// 	}else{
+// 		urlPath = window.location.protocol + "//" + window.location.host + "/npbs/";
+// 	}
+	//trace("urlPath : " + urlPath);
+	return urlPath;
+};
+
+/**
+ * @class 실행 환경에 따라 WebBroswer 객체 가져오기 <br>
+ * @return String
+ */
+pForm.gfn_getWebComp = function(objWb)
+{
+    var oWb =  null;
+    var sBrowser  	= nexacro._Browser.toUpperCase(); //system.navigatorname.toUpperCase();
+//trace("sBrowser==="+sBrowser);
+	if (sBrowser == "RUNTIME") { 
+        try {        
+            // 윈도우 런타임
+            oWb = objWb.getProperty("Document").getProperty("parentWindow");
+        } catch (e) {
+            //안드로이드 런타임
+            oWb = objWb;
+        }
+	} 
+    else 
+    {
+		//윈도우 html5, 안드로이드 html5,  iOS html5 , iOS런타임
+		oWb = objWb.getProperty("window");
+	}
+	return oWb;
+};
+
+/************************************************************************************************
+* Form 관련
+************************************************************************************************/
+/**
+* @class frame open 호출 공통함수<br>
+* @param {Object} obj - 화면
+* @return N/A
+* @example 
+* this.gfn_frm_formInit(this);
+*/
+pForm.gfn_frm_formInit = function(objForm)
+{
+	//초기화 function호출
+	if (objForm["fn_formInit"]) {
+		objForm.fn_formInit();
+	}
+}
+
+/**
+* @class LOCAL환경에서 실행중인지 여부
+* @param {} 
+* @return {Boolean} true / false
+* @example 
+*/
+pForm.gfn_isLocal = function() 
+{
+	if(nexacro.getApplication().av_sSvrType == "NEXACRO" || nexacro.getApplication().av_sSvrType == "LOCAL") {
+		return true;
+	}else{
+		return false;
+	}
+};
+
+/**
+ * 프로그램 Url에서 Prefix 변경
+ */
+pForm.gfn_changePgmUrl = function(objDs)
+{
+	var nRowCnt = objDs.rowcount;
+	var sPgmUrl = "";
+	var sPgmPrefix = "";
+	
+	for ( var i=0; i<nRowCnt; i++ ) {
+		sPgmUrl = objDs.getColumn(i, "PGM_URL");
+		if ( !this.gfn_isNull(sPgmUrl) ) {
+			sPgmPrefix = sPgmUrl.split("::")[0];
+			sPgmPrefix = nexacro.replaceAll( sPgmPrefix, ".", "_" );
+			sPgmUrl = sPgmPrefix + "::" + sPgmUrl.split("::")[1];
+			
+			objDs.setColumn(i, "PGM_URL", sPgmUrl);
+		}
+	}
+}
+
+//현재 PC DateTime값 trace
+pForm.gfn_traceCurrentTime = function (sMemo)
+{
+	var objDate  = new Date();
+	var sDate    = objDate.getYear()
+					+"-"+String(objDate.getMonth()  ).padLeft(2, '0')
+					+"-"+String(objDate.getDate()   ).padLeft(2, '0')
+					+" "+String(objDate.getHours()  ).padLeft(2, '0')
+					+":"+String(objDate.getMinutes()).padLeft(2, '0')
+					+":"+String(objDate.getSeconds()).padLeft(2, '0')
+					+" "+objDate.getMilliseconds();	
+	trace(sMemo + ">>>>>>>>>>>>>>>>>> 현재시간 : " + sDate);
+}

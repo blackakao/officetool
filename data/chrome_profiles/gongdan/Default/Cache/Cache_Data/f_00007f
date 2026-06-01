@@ -1,0 +1,1959 @@
+
+/**
+*  @FileName    nyb_cCommon.js
+*  @Creator     이택균
+*  @CreateDate  2015.04.08
+*  @Desction   (NPC) 업무공통 함수
+************** 소스 수정 이력 ***********************************************
+*  date                 Modifier                Description
+*******************************************************************************
+*  2015.04.08       이택균                  최초 생성
+*  2018.09.05       나종식                      Conversion
+*  2018.10.17       이건진                      함수추가
+*******************************************************************************
+*/
+
+var pForm = nexacro.Form.prototype;
+
+/*======================================================================================*
+ * Form 변수
+ *======================================================================================*/
+pForm.fv_pgmId  = "";
+pForm.fv_ltcpDmdTypeCd = "";
+/*---------------------------------------------------------------------------------------
+ * bfn_getGdsNpca gds_npca 정보 가져오기
+ * 사용예
+ include "biz.library::npb_cCommon.xjs";
+ var aGdsNpca = bfn_getGdsNpac();
+ var sLtcpRecvNo = aGdsNpca.ltcpRecvNo;
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_getGdsNpca = function()
+{
+    var objApp = nexacro.getApplication();
+    return {
+        ltcpRecvNo        : objApp.gds_npca.getColumn(0, "LTCP_RECV_NO"),       //장기요양급여접수번호
+        ltcDtstSeqNo      : objApp.gds_npca.getColumn(0, "LTC_DTST_SEQ_NO"),    //장기요양명세서일련번호
+        ltcDtstSeqNo2     : objApp.gds_npca.getColumn(0, "LTC_DTST_SEQ_NO2"),   //장기요양명세서일련번호2
+        ltcpDmdNo         : objApp.gds_npca.getColumn(0, "LTCP_DMD_NO"),        //장기요양급여청구번호
+        ltcpClsfcCd       : objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD"),      //장기요양급여종별코드
+        ltcpDmdTypeCd     : objApp.gds_npca.getColumn(0, "LTCP_DMD_TYPE_CD"),   //장기요양급여청구구분코드
+        addAdtDmdYn       : objApp.gds_npca.getColumn(0, "ADD_ADT_DMD_YN"),     //추가청구구분코드
+        dmdMdmTypeCd      : objApp.gds_npca.getColumn(0, "DMD_MDM_TYPE_CD"),   //장기요양급여청구신청방법
+        ltcpOffrYyyymm    : objApp.gds_npca.getColumn(0, "LTCP_OFFR_YYYYMM"),   //장기요양급여제공년월
+        prsTypeCd         : objApp.gds_npca.getColumn(0, "PRS_TYPE_CD"),        //수급자구분코드
+        ltcMgmtNo         : objApp.gds_npca.getColumn(0, "LTC_MGMT_NO"),        //장기요양관리번호
+        ltcMgmtNoSeq      : objApp.gds_npca.getColumn(0, "LTC_MGMT_NO_SEQ"),    //장기요양관리번호순번
+        ltcMgmtNoPaymtSeq : objApp.gds_npca.getColumn(0, "LTC_MGMT_NO_PAYMT_SEQ"), //장기요양관리번호급여순번
+        prsNm             : objApp.gds_npca.getColumn(0, "PRS_NM"),             //수급자명
+        offrFrDt          : objApp.gds_npca.getColumn(0, "OFFR_FR_DT"),         //급여제공시작일
+        offrToDt          : objApp.gds_npca.getColumn(0, "OFFR_TO_DT"),         //급여제공종료일
+        ltcAdminSym       : objApp.gds_userInfo.getColumn(0, "ADMIN_SYM"),       //장기요양기관기호
+        adminPttnCd       : objApp.gds_npca.getColumn(0, "ADMIN_PTTN_CD"),       //기관유형코드
+        dmdReqGbn         : objApp.gds_npca.getColumn(0, "DMD_REQ_GBN"),        //청구요청구분(청구서목록->2013년 이전버젼사용)
+        dmdCnclYn         : objApp.gds_npca.getColumn(0, "DMD_CNCL_YN"),        //청구취소여부(청구서목록->2013년 이전버젼사용)
+        exmRecvNo         : objApp.gds_npca.getColumn(0, "EXM_RECV_NO"),        //심사접수번호(청구서목록->2013년 이전버젼사용)
+        adminPttnCdNm     : objApp.gds_npca.getColumn(0, "ADMIN_PTTN_CD_NM")     //기관유형코드명
+    };
+};
+
+/*---------------------------------------------------------------------------------------
+ * bfn_setGdsNpca gds_npca 정보 설정하기
+ * 사용예
+ include "biz.library::npb_cCommon.xjs";
+ bfn_setGdsNpca();
+  *--------------------------------------------------------------------------------------*/
+pForm.bfn_setGdsNpca = function()
+{
+    var objApp = nexacro.getApplication();
+    var objDate1 = new Date();
+    var aGdsNpca = this.bfn_getGdsNpca();
+    var sTodayYyyy = this.gfn_today().substr(0,4);
+    var sTodayMm = this.gfn_today().substr(4,2);
+    var sOffrYyyy = "";
+    var sOffrMm = "";
+
+    if(objApp.gds_npca.rowcount > 0){
+        var sLtcpOffrYyyymm = aGdsNpca.ltcpOffrYyyymm;  // 급여제공월
+        var sLtcpClsfcCd    = aGdsNpca.ltcpClsfcCd;     // 급여종별
+        var sLtcpDmdTypeCd  = aGdsNpca.ltcpDmdTypeCd;   // 청구구분
+        var sDmdMdmTypeCd  = aGdsNpca.dmdMdmTypeCd;   // 청구구분
+
+        if(this.cfn_str_isNull(sLtcpOffrYyyymm)){
+            if(this.cfn_str_isNull(this.fv_sLtcpOffrYyyymm))
+            {
+                this.fv_sLtcpOffrYyyymm = this.gfn_toFormatString(objDate1, "%Y%m");
+            }
+
+            objApp.gds_npca.setColumn(0, "LTCP_OFFR_YYYYMM", this.fv_sLtcpOffrYyyymm);
+            objApp.gds_npca.setColumn(0, "OFFR_FR_DT", this.fv_sLtcpOffrYyyymm+"01");                   //:) 추가//2018.11.9 토/Yi Geon-Jin
+            objApp.gds_npca.setColumn(0, "OFFR_TO_DT", this.gfn_getLastDate(this.fv_sLtcpOffrYyyymm));  //:) 추가//2018.11.9 토/Yi Geon-Jin
+        }else{
+            if(this.cfn_str_isNull(this.fv_sLtcpOffrYyyymm)){
+                if(this.parent.parent.fv_sLtcpOffrYyyymm && !this.cfn_str_isNull(this.parent.parent.fv_sLtcpOffrYyyymm)){
+                    this.fv_sLtcpOffrYyyymm = this.parent.parent.fv_sLtcpOffrYyyymm;//:)추가/2018.11.08 목/Yi Geon-Jin
+                }else
+                this.fv_sLtcpOffrYyyymm = this.gfn_toFormatString(objDate1, "%Y%m");
+            }
+
+            if(!this.cfn_str_isNull(this.fv_sLtcpOffrYyyymm) && this.fv_sLtcpOffrYyyymm != sLtcpOffrYyyymm){
+                objApp.gds_npca.setColumn(0, "LTCP_OFFR_YYYYMM", this.fv_sLtcpOffrYyyymm);
+                objApp.gds_npca.setColumn(0, "OFFR_FR_DT", this.fv_sLtcpOffrYyyymm+"01");                   //:) 추가//2018.11.9 토/Yi Geon-Jin
+                objApp.gds_npca.setColumn(0, "OFFR_TO_DT", this.gfn_getLastDate(this.fv_sLtcpOffrYyyymm));  //:) 추가//2018.11.9 토/Yi Geon-Jin
+            }
+        }
+
+        sOffrYyyy = objApp.gds_npca.getColumn(0, "LTCP_OFFR_YYYYMM").substr(0,4);
+        sOffrMm = objApp.gds_npca.getColumn(0, "LTCP_OFFR_YYYYMM").substr(4,2);
+
+        if(parseInt(sTodayYyyy) - parseInt(sOffrYyyy) < 3) {
+            objApp.gds_npca.setColumn(0, "BILL_EXPIRE_YN", "N");
+        } else if(parseInt(sTodayYyyy) - parseInt(sOffrYyyy) == 3) {
+            if(parseInt(sTodayMm) > parseInt(sOffrMm))
+                objApp.gds_npca.setColumn(0, "BILL_EXPIRE_YN", "Y");
+            else
+                objApp.gds_npca.setColumn(0, "BILL_EXPIRE_YN", "N");
+        } else {
+            objApp.gds_npca.setColumn(0, "BILL_EXPIRE_YN", "Y");
+        }
+
+        if(this.cfn_str_isNull(sLtcpClsfcCd)){
+            objApp.gds_npca.setColumn(0, "LTCP_CLSFC_CD", this.fv_sLtcpClsfcCd);
+        }else{
+
+            if(!this.cfn_str_isNull(this.fv_sLtcpClsfcCd) && this.fv_sLtcpClsfcCd != sLtcpClsfcCd){
+                objApp.gds_npca.setColumn(0, "LTCP_CLSFC_CD", this.fv_sLtcpClsfcCd);
+            }
+        }
+
+        if(this.cfn_str_isNull(sLtcpDmdTypeCd)){
+            objApp.gds_npca.setColumn(0, "LTCP_DMD_TYPE_CD", this.fv_sLtcpDmdTypeCd);
+        }else{
+            if(!this.cfn_str_isNull(this.fv_sLtcpDmdTypeCd) && this.fv_sLtcpDmdTypeCd != sLtcpDmdTypeCd){
+                objApp.gds_npca.setColumn(0, "LTCP_DMD_TYPE_CD", this.fv_sLtcpDmdTypeCd);
+            }
+        }
+
+        if(this.cfn_str_isNull(sDmdMdmTypeCd)){
+            objApp.gds_npca.setColumn(0, "DMD_MDM_TYPE_CD", this.fv_sDmdMdmTypeCd);
+        }else{
+            if(!this.cfn_str_isNull(this.fv_sDmdMdmTypeCd) && this.fv_sDmdMdmTypeCd != sDmdMdmTypeCd){
+                objApp.gds_npca.setColumn(0, "DMD_MDM_TYPE_CD", this.fv_sDmdMdmTypeCd);
+            }
+        }
+
+    }else{
+
+        this.fv_sLtcpOffrYyyymm = this.gfn_toFormatString(objDate1, "%Y%m");
+
+        var nRow = objApp.gds_npca.addRow();
+
+        objApp.gds_npca.setColumn(nRow, "LTCP_OFFR_YYYYMM", this.fv_sLtcpOffrYyyymm);
+        objApp.gds_npca.setColumn(nRow, "LTCP_CLSFC_CD"   , this.fv_sLtcpClsfcCd);
+        objApp.gds_npca.setColumn(nRow, "LTCP_DMD_TYPE_CD", this.fv_sLtcpDmdTypeCd);
+        objApp.gds_npca.setColumn(nRow, "ADMIN_SYM"       , objApp.gds_userInfo.getColumn(0, "ADMIN_SYM"));
+        objApp.gds_npca.setColumn(nRow, "ADMIN_PTTN_CD"   , objApp.gds_userInfo.getColumn(0, "ADMIN_PTTN_CD"));
+    }
+};
+
+
+pForm.bfn_BlankStr = function(obj)
+{
+    if(obj =="" || obj == "undefined")
+        return "";
+};
+
+
+
+/*--------------------------------------------------------*
+ * 기관유형코드 -> 급여종류로 Conversion
+ *--------------------------------------------------------*/
+pForm.bfn_convLtcpClsfcInfo = function(sAdminPttnCd) {
+
+    var sLtcpClsfcCd = "";
+    var sLtcpClsfcNm = "";
+
+    if("A01"==sAdminPttnCd){
+        sLtcpClsfcCd = "007";
+        sLtcpClsfcNm = "노인요양(구법)";
+    }else if("A02"==sAdminPttnCd){
+        sLtcpClsfcCd = "008";
+        sLtcpClsfcNm = "노인전문요양(구법)";
+    }else if("A03"==sAdminPttnCd){
+        sLtcpClsfcCd = "012";
+        sLtcpClsfcNm = "노인요양(현행법)";
+    }else if("A04"==sAdminPttnCd){
+        sLtcpClsfcCd = "006";
+        sLtcpClsfcNm = "노인요양공동생활가정";
+    }else if("A05"==sAdminPttnCd){
+        sLtcpClsfcCd = "014";
+        sLtcpClsfcNm = "노인요양시설(단기보호전환)";
+    }else if("B01"==sAdminPttnCd || "C01"==sAdminPttnCd){
+        sLtcpClsfcCd = "001";
+        sLtcpClsfcNm = "방문요양";
+    }else if("B02"==sAdminPttnCd || "C02"==sAdminPttnCd){
+        sLtcpClsfcCd = "002";
+        sLtcpClsfcNm = "방문목욕";
+    }else if("B03"==sAdminPttnCd || "C03"==sAdminPttnCd){
+        sLtcpClsfcCd = "004";
+        sLtcpClsfcNm = "주야간보호";
+    }else if("B04"==sAdminPttnCd || "C04"==sAdminPttnCd){
+        sLtcpClsfcCd = "005";
+        sLtcpClsfcNm = "단기보호";
+    }else if("B05"==sAdminPttnCd || "C05"==sAdminPttnCd){
+        sLtcpClsfcCd = "003";
+        sLtcpClsfcNm = "방문간호";
+        // 복지용구 B06 추가 김수민 
+    }else if("C06"==sAdminPttnCd || "B06"==sAdminPttnCd){
+        sLtcpClsfcCd = "009";
+        sLtcpClsfcNm = "복지용구";
+    }else if("AAA"==sAdminPttnCd){
+        sLtcpClsfcCd = "N/A";
+        sLtcpClsfcNm = "입소시설";
+// DM_201607
+    }else if("G" == sAdminPttnCd.substr(0,1)){
+        sLtcpClsfcCd = "015";
+        sLtcpClsfcNm = "치매전담실가형";
+    }else if("M" == sAdminPttnCd.substr(0,1)){
+        sLtcpClsfcCd = "016";
+        sLtcpClsfcNm = "치매전담실나형";
+    }else if("S41"==sAdminPttnCd){
+        sLtcpClsfcCd = "017";
+        sLtcpClsfcNm = "치매전담형공동생활가정";
+    }else if("H" == sAdminPttnCd.substr(0,1) || "I" == sAdminPttnCd.substr(0,1)){
+        sLtcpClsfcCd = "018";
+        sLtcpClsfcNm = "주야간보호내치매전담실";
+    }else {
+        sLtcpClsfcCd = "";
+        sLtcpClsfcNm = "";
+    }
+
+    return {
+            ltcpClsfcCd  : sLtcpClsfcCd,       //장기요양급여종류코드
+            ltcpClsfcNm  : sLtcpClsfcNm        //장기요양급여종류명
+           };
+};
+
+/*--------------------------------------------------------*
+ * 문자8자리 날짜 -> 날짜구분자포맷 적용
+ * ex) bfn_convDateStrFormat("20140101","/") -> 2014/01/01
+ *--------------------------------------------------------*/
+pForm.bfn_convDateStrFormat = function(sDate, sFormat)
+{
+    if(!this.cfn_str_isNull(sDate)) {
+        if(sDate.length == 8)
+            return sDate.substr(0, 4)+sFormat+sDate.substr(4, 2)+sFormat+sDate.substr(6, 2);
+        else
+            return sDate.substr(0, 4)+sFormat+sDate.substr(4, 2);
+    } else
+        return "";
+};
+
+/**---------------------------------------------------------------------
+* 기능 : 입력된 숫자(문자,숫자)를 금액형태로 표기하는 함수
+* 인수 : nNumber : 문자열로 출력할 실수
+*        nDetail : 출력시 소숫점 이하의 자릿수(Default : 0)
+         nCrncy  : 통화표기단위, (원, 백만원)
+* return : 문자열로 바뀐 실수
+*          출력되는 실수는 정수부분에 3자리마다 ',' 가 삽입됩니다.
+----------------------------------------------------------------------*/
+pForm.bfn_convCurrency = function(sNumber, nDetail, nCrncy)
+{
+    var sStr;
+    var nNumber ;
+
+    if (this.gfn_isEmpty(sNumber)) return "";
+
+    if (typeof(sNumber) != 'string')
+        nNumber = parseInt(String(sNumber));
+    else
+        nNumber = parseInt(sNumber);
+
+    if (this.gfn_isEmpty(nDetail) || nDetail==0)  nDetail = 1;
+    if (this.gfn_isEmpty(nCrncy))  nCrncy = "";
+
+    if (nDetail == 1){
+        //sStr = nNumber.toFixedLocaleString(nDetail);  //toFixedLocaleString ==> gfn_appendComma로 변경
+        sStr = this.gfn_appendComma(nNumber, nDetail);
+        if(sStr.indexOf() >= 0)
+        sStr = sStr.substr(0, sStr.indexOf("."));
+    }else{
+        //sStr = nNumber.toFixedLocaleString(nDetail);
+        sStr = this.gfn_appendComma(nNumber, nDetail);
+    }
+
+    sStr = sStr+""+nCrncy;
+
+    return sStr;
+};
+
+/**---------------------------------------------------------------------
+* 기능 : 입력된 숫자(문자,숫자)를 금액형태로 표기하는 함수
+* 인수 : nNumber : 문자열로 출력할 실수
+*        nDetail : 출력시 소숫점 이하의 자릿수(Default : 0)
+         nCrncy  : 통화표기단위, (원, 백만원)
+* return : 문자열로 바뀐 실수
+*          출력되는 실수는 정수부분에 3자리마다 ',' 가 삽입됩니다.
+----------------------------------------------------------------------*/
+pForm.bfn_scoreFormat = function(sNumber, nDetail)
+{
+    var sStr;
+    var nNumber ;
+
+    if (this.gfn_isEmpty(sNumber)) return "";
+
+    if (typeof(sNumber) != 'string')
+        nNumber = parseFloat(String(sNumber));
+    else
+        nNumber = parseFloat(sNumber);
+
+    if (this.gfn_isEmpty(nDetail) || nDetail==0)  nDetail = 1;
+
+    //sStr = nNumber.toFixedLocaleString(nDetail);
+    sStr = this.gfn_appendComma(nNumber, nDetail, true);
+
+    return sStr;
+};
+
+/*---------------------------------------------------------------------------------------
+ * 2013 청구공통 -> 수가가감산 사유별 조회 팝업 오픈
+ * 작성자 : 2013 청구 개발자 이광복
+ * 작성일 : 20150819
+ * @param : oPrm    팝업에 전달할 파라메터 오브젝트
+            admSym 장기요양기관관리기호
+            recvNo  장기요양급여접수번호
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_c_addSubtDescListPupOpen = function(admSym,recvNo)
+{
+    //파라미터인 관리기호,접수번호를 필수항목으로 입력받는다.
+    if (this.gfn_blankStr(admSym) == "") {
+        //{0}이 없습니다.
+        this.gfn_msgShow(this, "XWTZ0046", ["장기요양기관기호"]);
+        return;
+    }
+    if (this.gfn_blankStr(recvNo) == "") {
+        //{0}이 없습니다.
+        this.gfn_msgShow(this, "XWTZ0046", ["장기요양급여접수번호"]);
+        return;
+    }
+
+    var oPrm = {};
+    oPrm['ltcoMgmtSym'] = admSym;   //장기요양기관관리기호
+    oPrm['ltcpRecvNo']  = recvNo;   //장기요양급여접수번호
+
+    var arg = {initValue:oPrm};
+    if (!arg.initValue) arg.initValue = {ltcoMgmtSym:"",ltcpRecvNo:""};
+
+    var sPopId      = "npca208p04";
+    var sScrNm      = "수가가감산 사유별 조회";
+    var sUrl        = "biz_npc_a::npca208p04.xfdl";
+    var sScrId      = "npca208p04";
+    var nWidth      = 600;
+    var nHeight     = 480;
+    var sArgs       = arg;
+    var bIsModal    = true;
+
+    var bVscrollbar = false;
+
+    return this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+};
+
+/*---------------------------------------------------------------------------------------
+ * 2013 청구공통 -> 수가가감산 사유별 조회 팝업 오픈 : 자동생성 팝업화면의 상세조회
+ * 작성자 : 2013 청구 개발자 이광복
+ * 작성일 : 20150825
+ * @param : oPrm    팝업에 전달할 파라메터 오브젝트
+            admSym  장기요양기관관리기호
+            yyyyMm  서비스제공년월
+            svcKnd  서비스종별코드
+            insuYn  배상보험감액산정유무
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_c_addSubtDescListAutoCre = function(admSym,yyyyMm,svcKnd,insuYn)
+{
+    //파라미터인 관리기호,접수번호를 필수항목으로 입력받는다.
+    if (this.gfn_blankStr(admSym) == "") {
+        //{0}이 없습니다.
+        this.gfn_msgShow(this, "XWTZ0046", ["장기요양기관기호"]);
+        return;
+    }
+    if (this.gfn_blankStr(yyyyMm) == "") {
+        //{0}이 없습니다.
+        this.gfn_msgShow(this, "XWTZ0046", ["서비스제공년월"]);
+        return;
+    }
+    if (this.gfn_blankStr(svcKnd) == "") {
+        //{0}이 없습니다.
+        this.gfn_msgShow(this, "XWTZ0046", ["서비스종별코드"]);
+        return;
+    }
+    if (this.gfn_blankStr(insuYn) == "") {
+        //{0}이 없습니다.
+        this.gfn_msgShow(this, "XWTZ0046", ["배상보험감액산정유무"]);
+        return;
+    }
+
+    var oPrm = {};
+    oPrm['ltcoMgmtSym']     = admSym;   //장기요양기관관리기호
+    oPrm['ltcpOffrYyyyMm']  = yyyyMm;   //서비스제공년월
+    oPrm['ltcpClsfcCd']     = svcKnd;   //서비스종별코드
+    oPrm['rprtnInsuRacExs'] = insuYn;   //배상보험감액산정유무
+
+    var arg = {initValue:oPrm};
+    if (!arg.initValue) arg.initValue = {ltcoMgmtSym:"",ltcpOffrYyyyMm:"",ltcpClsfcCd:"",rprtnInsuRacExs:""};
+
+    var sPopId      = "npca208p04";
+    var sScrNm      = "수가가감산 사유별 조회";
+    var sUrl        = "biz_npc_a::npca208p04.xfdl";
+    var sScrId      = "npca208p04";
+    var nWidth      = 600;
+    var nHeight     = 480;
+    var sArgs       = arg;
+    var bIsModal    = true;
+
+    var bVscrollbar = false;
+
+    return this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+};
+
+/**---------------------------------------------------------------------
+* 기능 : menuParm 에서 급여종류, Media Type(신청방법) Object로 생성하는 함수
+* 인수 : sParm : 문자열 파라미터 (ltcpClsfcCd=005&mediaTypeCd=5)
+* return : Object
+----------------------------------------------------------------------*/
+pForm.bfn_getMenuParm = function(sParm)
+{
+
+    if(sParm == "parm") sParm = this.gfn_getParam("parm");
+
+    var objApp = nexacro.getApplication();
+    if (this.gfn_isEmpty(sParm)) return "";
+
+    var objArr1;
+    var objArrCnt;
+    var objArr2;
+    var objArr3;
+    var objArr4;
+    var objArr5;
+    var objArr6;
+    var objArr7;
+    var objArr8;
+    var objArr9;
+    var objArr10;
+// DM_201607
+    var objArr11;
+    var objArr12;
+
+    //2013청구 개발자 이광복 추가. 청구서 목록조회 화면에서 청구서 화면으로 넘기는 파라미터 초기화되는 부분 수정/추가.
+    var sDmdReqGbn = "";    //청구요청구분
+    var sDmdCnclYn = "N";   //청구취소여부
+    var sExmRecvNo = "";    //심사접수번호
+    if (!this.cfn_str_isNull(this.bfn_getGdsNpca().dmdReqGbn) || this.bfn_getGdsNpca().dmdCnclYn == "Y") {
+        sDmdReqGbn = this.bfn_getGdsNpca().dmdReqGbn;   //청구요청구분
+        sDmdCnclYn = this.bfn_getGdsNpca().dmdCnclYn;   //청구취소여부
+        sExmRecvNo = this.bfn_getGdsNpca().exmRecvNo;   //심사접수번호
+    }
+
+    objApp.gds_npca.clearData();
+    objApp.gds_npca.addRow();
+
+    //2013청구 개발자 이광복 추가. 청구서 목록조회 화면에서 청구서 화면으로 넘기는 파라미터 초기화되는 부분 수정/추가.
+    objApp.gds_npca.setColumn(0,"DMD_REQ_GBN",sDmdReqGbn);              //청구요청구분
+    objApp.gds_npca.setColumn(0,"DMD_CNCL_YN",sDmdCnclYn);              //청구취소여부
+    objApp.gds_npca.setColumn(0,"EXM_RECV_NO",sExmRecvNo);              //심사접수번호
+
+    //시설,단기보호,주야간의 경우 급여종류코드만 넘어옴(강제파라미터셋팅)
+    if (sParm.indexOf("&") < 0){
+        sParm = "ltcpClsfcCd="+sParm+"&mediaTypeCd=1";
+    }
+
+    objArr1 = sParm.split("&"); //파라미터구분자
+
+    objArrCnt = objArr1.length;
+    objArr2 = objArr1[0].split("="); //첫번째(급여종류)
+    objArr3 = objArr1[1].split("="); //두번째(청구신청방법);
+
+
+
+    objApp.gds_npca.setColumn(0, "LTCP_CLSFC_CD", objArr2[1]);
+    objApp.gds_npca.setColumn(0, "DMD_MDM_TYPE_CD", objArr3[1]);
+
+    //:) 추가/팝업 생성시 타이틀 보관//2018.12.07 금/Yi Geon-Jin
+    if(!this.titletextOrg){
+        this.titletextOrg = this.parent.parent.parent.titletext;    //폼생성시 타이틀 보관
+    }
+
+    if(objArr1.length == 2) {   //메뉴에서 넘어옴
+        return {
+                  cnt : objArrCnt
+                , ltcpClsfcCd : objArr2[1]
+                , mediaTypeCd : objArr3[1]
+               };
+    } else {    //청구서 목록에서 넘어옴
+        objArr4 = objArr1[2].split("="); //세번째(급여제공월);
+        objArr5 = objArr1[3].split("="); //네번째(청구구분);
+        objArr6 = objArr1[4].split("="); //다섯번째(접수번호);
+        objArr7 = objArr1[5].split("="); //여섯번째(청구번호);
+        objArr8 = objArr1[6].split("="); //일곱섯번째(추가가산여부);
+        objArr9 = objArr1[7].split("="); //여덟번째(원천소스);
+        if(objArr1[8]!=undefined)
+            objArr10 = objArr1[8].split("="); //여덟번째(원천소스);
+
+// DM_201607
+        if(objArr1[9]!=undefined)
+            objArr11 = objArr1[9].split("="); //(ltcpDmdStatCd);
+
+        if(objArr1[10]!=undefined)
+            objArr12 = objArr1[10].split("="); //(adminPttnCd);
+
+        objApp.gds_npca.setColumn(0, "LTCP_OFFR_YYYYMM", objArr4[1]);
+        objApp.gds_npca.setColumn(0, "LTCP_DMD_TYPE_CD", objArr5[1]);
+        objApp.gds_npca.setColumn(0, "LTCP_RECV_NO", objArr6[1]);
+        objApp.gds_npca.setColumn(0, "LTCP_DMD_NO", objArr7[1]);
+        objApp.gds_npca.setColumn(0, "ADD_ADT_DMD_YN", objArr8[1]);
+// DM_201607
+        objApp.gds_npca.setColumn(0, "ADMIN_PTTN_CD", objArr11[1]);
+
+        if (objApp.gds_npca.getColumnInfo("ADMIN_PTTN_CD_NM") == null) {
+            objApp.gds_npca.addColumn("ADMIN_PTTN_CD_NM","string");
+        }
+        objApp.gds_npca.setColumn(0, "ADMIN_PTTN_CD_NM", objArr12[1]);
+
+        var titile2 = ""
+        var titleText = ""
+
+        if(objApp.gds_npca.getColumn(0, "LTCP_DMD_TYPE_CD") == "3")
+             titile2 = "[보완청구]";
+        else if(objApp.gds_npca.getColumn(0, "LTCP_DMD_TYPE_CD") == "2")
+             titile2 = "[추가청구]";
+        else
+            titile2 = "[원청구]";
+
+        if(!(objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "004" || objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "009" || objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "013")) {
+            if(objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "001") {
+                titleText = "방문요양";
+            } else if(objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "002") {
+                titleText = "방문목욕";
+            } else if(objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "003") {
+                titleText = "방문간호";
+            } else if(objApp.gds_npca.getColumn(0, "LTCP_CLSFC_CD") == "005") {
+                titleText = "단기보호";
+            } else{
+                titleText = "시설";
+            }
+
+            //this.parent.parent.parent.set_titletext(titleText+titile2);
+            //---------------------- 아래와같이 변경/titletext 변경기능이 AsIs와ToBe가 서로 다름/2018.12.07 금/Yi Geon-Jin
+            if(this.gfn_isNull(this.titletextOrg)) this.titletextOrg = this.parent.parent.parent.titletext;
+            if(this.titletextOrg.indexOf(" - "+titleText+titile2) > 0){
+                this.titletextOrg = this.titletextOrg.substring(0, this.titletextOrg.indexOf(" - "+titleText+titile2));
+            }
+            if(this.titletextOrg.indexOf(" - "+this.bfn_getGdsNpca().adminPttnCdNm) > 0){
+                this.titletextOrg = this.titletextOrg.substring(0, this.titletextOrg.indexOf(" - "+this.bfn_getGdsNpca().adminPttnCdNm));
+            }
+            if(this.titletextOrg == this.parent.parent.parent.titletext){
+                this.parent.parent.parent.set_titletext(this.titletextOrg + " - "+titleText+titile2);
+                /*
+                //------------------------------------------------------------------------------
+                - 아래 화면들의 경우 2018.12.11 현재 titleText+titile2 대신 bfn_getGdsNpca().adminPttnCdNm 을 적용하고 있음.
+                  기술위치는 각 화면의 fn_frmInit() 함수임.
+                - titletext 변경 위치가 여러군데 있음으로 인해 기능 이해나 변경에 어려움이 예상됨
+                  각 화면에 기술된 set_titletext() 를 아래 switch 와 같이 한곳에서 처리하게 변경하는것이 바람직해 보임.
+                //------------------------------------------------------------------------------
+                //npca001m01, npca001m02, npca001m03, npca001m04, npca001m05, npca002m01, npca002m02, npca002m03, npca002m04, npca002m05, npca015m01, npca016m01
+                //------------------------------------------------------------------------------
+                switch(this.parent.parent.parent.name) {
+                    case "npca001m01":
+                    case "npca001m02":
+                    case "npca001m03":
+                    case "npca001m04":
+                    case "npca001m05":
+                    case "npca002m01":
+                    case "npca002m02":
+                    case "npca002m03":
+                    case "npca002m04":
+                    case "npca002m05":
+                    case "npca015m01":
+                    case "npca016m01":
+                        this.parent.parent.parent.set_titletext(this.titletextOrg + " - " + this.bfn_getGdsNpca().adminPttnCdNm);
+                        break;
+                    default:
+                        this.parent.parent.parent.set_titletext(this.titletextOrg + " - "+titleText+titile2);
+                }//end of switch
+                */
+            }
+
+        }
+
+        if(objArr10!=undefined)
+            objApp.gds_npca.setColumn(0, "LTCP_DMD_STAT_CD", objArr10[1]);
+
+        //--------------------------------------------------------------------------------
+        //return {
+        //              cnt : objArrCnt
+        //            , ltcpClsfcCd : objArr2[1]
+        //            , mediaTypeCd : objArr3[1]
+        //            , ltcpOffrYyyymm : objArr4[1]
+        //            , ltcpDmdTypeCd : objArr5[1]
+        //            , ltcpRecvNo : objArr6[1]
+        //            , ltcpDmdNo : objArr7[1]
+        //            , addAdtDmdYn : objArr8[1]
+        //            , sTrgId : objArr9[1]
+        //       };
+        //-------------------------------------------------------------------------------- 아래와같이 변경/2018.10.23 화/Yi Geon-Jin
+        var rtnArg = new Object;
+
+        rtnArg["cnt"]= objArrCnt;
+        rtnArg["ltcpClsfcCd"]   = objArr2[1]  ;
+        rtnArg["mediaTypeCd"]   = objArr3[1];
+        rtnArg["ltcpOffrYyyymm"]= objArr4[1];
+        rtnArg["ltcpDmdTypeCd"] = objArr5[1];
+        rtnArg["ltcpRecvNo"]    = objArr6[1];
+        rtnArg["ltcpDmdNo"]     = objArr7[1];
+        rtnArg["addAdtDmdYn"]   = objArr8[1];
+        rtnArg["sTrgId"]        = objArr9[1];
+        if(objArr1.length > 8){
+            for (var i = 8; i < objArr1.length; i++) {
+                var arrEach = objArr1[i].split("=");
+                rtnArg[arrEach[0]] = arrEach[1];
+            }
+        }
+        return rtnArg;
+
+    }
+
+    //bfn_setGdsNpca();
+};
+
+/*---------------------------------------------------------------------------------------
+ * 2013 청구공통 -> 공휴일 색깔표시
+ * 작성자 : 2013 청구 개발자 김명주
+ * 작성일 : 2015.08.20
+ * @param : dsObj       공휴일이 표시되어있는 Dataset
+            grdObj      색깔을 표시할 Grid
+            skipColCnt  일자가 나오기 전까지 skip할 컬럼개수
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_setHoliday = function( dsObj, grdObj, skipColCnt )
+{
+        if ( dsObj == null || grdObj == null ) {
+        trace("Dataset Or Grid is Null");
+        return false;
+    }
+
+    if ( dsObj.rowcount == 0 ) {
+        trace("Dataset Rowcount is 0");
+        return false;
+    }
+
+    if ( skipColCnt == null ) {
+        skipColCnt = 0;
+    }
+
+    // 급여내용 그리드에 날짜 초기화 - 기본 31일
+    for ( var ix = 0; ix < 31; ix++ ) {
+        grdObj.setCellProperty("Head", ( skipColCnt + ix ), "text", "");
+    }
+
+    // 급여내용 그리드에 날짜 토/일 표시
+    for ( var ix = 0; ix < dsObj.rowcount; ix++ ) {
+
+        grdObj.setCellProperty("Head", ( skipColCnt + ix ), "text", dsObj.getColumn(ix, "DT_NM"));
+
+        if ( dsObj.getColumn(ix, "HOL_DT_YN") == "Y" ) {
+            grdObj.setCellProperty("Head", ( skipColCnt - 1 + toNumber(dsObj.getColumn(ix, "DT_NM")) ), "color", "red");
+        } else if ( dsObj.getColumn(ix, "HOL_DT_YN") == "S" ) {
+            grdObj.setCellProperty("Head", ( skipColCnt - 1 + toNumber(dsObj.getColumn(ix, "DT_NM")) ), "color", "blue");
+        } else {
+            grdObj.setCellProperty("Head", ( skipColCnt - 1 + toNumber(dsObj.getColumn(ix, "DT_NM")) ), "color", "black");
+        }
+    }
+
+    //alert( dsObj.rowcount );
+
+    if ( dsObj.rowcount == 28 ) {
+
+        grdObj.setFormatColProperty(skipColCnt+30, "size", 0);
+        grdObj.setFormatColProperty(skipColCnt+31, "size", 0);
+        grdObj.setFormatColProperty(skipColCnt+32, "size", 0);
+
+    } else if ( dsObj.rowcount == 29 ) {
+
+        grdObj.setFormatColProperty(skipColCnt+31, "size", 0);
+        grdObj.setFormatColProperty(skipColCnt+32, "size", 0);
+
+    } else if ( dsObj.rowcount == 30 ) {
+
+        grdObj.setFormatColProperty(skipColCnt+32, "size", 0);
+    }
+};
+
+/*---------------------------------------------------------------------------------------
+ * 데이터셋에서 유일(Unique)값 건수 조회
+ * 작성자 : 김영진
+ * 작성일 : 2015.10.19
+ * @param : orgDs       해당 데이터셋
+            sColNm      검색 속성명
+ * @retun : 건수
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_getUniqueCnt = function( orgDs, sName )
+{
+    var objDs = new Dataset();
+    var nRow;
+
+    //this.parent.addChild("tempDs"+orgDs.name, objDs);
+    objDs.addColumn(sName, "string");
+
+    for(var i=0;i<orgDs.getRowCount();i++) {
+        if(objDs.findRow(sName, orgDs.getColumn(i, sName)) >= 0) continue;
+        nRow = objDs.addRow();
+        objDs.copyRow(nRow, orgDs, i, sName + "=" + sName);
+    }
+
+    var cnt = objDs.rowcount;
+
+    return cnt;
+};
+
+/*---------------------------------------------------------------------------------------
+ * 시간, 일자 포맷 지정
+ * 작성자 : 김영진
+ * 작성일 : 2015.11.12
+ * @param : sValue      시간(4자리) 또는 일자(8자리)
+            sType       'T':시간포맷지정, 'D':날짜포맷지정
+ * @retun : string
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_setFormatDateTime = function( oValue )
+{
+    if (oValue == null || oValue == undefined) return "";
+
+    var sValue = new String(oValue);
+    var sReturn;
+    var sDateTime = sValue.toString();
+
+    if (sDateTime.length == 8){
+        sReturn = sDateTime.substr(0,4)+"-"+sDateTime.substr(4,2)+"-"+sDateTime.substr(6,2);
+    }else if (sDateTime.length == 4){
+        sReturn = sDateTime.substr(0,2)+":"+sDateTime.substr(2,4);
+    }
+
+    return sReturn;
+};
+
+/**
+ * 청구일지정안내 팝업오픈
+ * @parm {String} sPgmId       - 프로그램ID
+ * @parm {String} sPgmNm       - 프로그램명
+ * @parm {String} nWidth       - 넓이
+ * @parm {String} nHeight      - 높이
+ * @parm {String} psScrFileName - 소스파일명
+ * @return - none
+ */
+pForm.bfn_showBillNotice = function(sPgmId, sPgmNm, nWidth, nHeight, psScrFileName)
+{
+    var objApp = nexacro.getApplication();
+//--------------------------------------------------------------------------------:) 여기서부터/개발자용 추가/2018.11.05 월/Yi Geon-Jin
+var _trace_=null;
+if(objApp.av_sSvrType !== "PROD")
+if(arguments[(arguments.length-1)] == "_trace_"){
+  arguments[(arguments.length-1)] = null;
+  _trace_ = "_trace_";
+}
+//--------------------------------------------------------------------------------:) 여기까지 /개발자용 추가/2018.11.05 월/Yi Geon-Jin
+
+    var sScrId      = "npca012m01";
+    if(!this.gfn_isNull(psScrFileName)){
+        sScrId = psScrFileName; //:) 추가/소프파일ID//2019.1.22 화/Yi Geon-Jin
+    }
+    var sPopId      = sPgmId;
+    var sTitle      = "도움말::"+sPgmNm;
+    var sUrl        = "biz_npc_a::npca012m01.xfdl";
+    var nWidth      = nWidth;
+    var nHeight     = nHeight;
+    var bIsModal    = false;
+    var bVscrollbar = true;
+    var sArgs       = {P_PGMID:sPgmId, P_PGMNM:sPgmNm, P_WIDTH:nWidth, P_HEIGHT:nHeight}
+    this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar, "","","","","",sTitle, _trace_); //개발자용 trace를 위해 추가/2018.11.05 월/Yi Geon-Jin
+};
+
+pForm.bfn_selectNotice = function(sPgmId, sLtcpClsfcCd, sLtcpDmdTypeCd)
+{
+    var objApp = nexacro.getApplication();
+//--------------------------------------------------------------------------------:) 여기서부터/개발자용 추가/2018.11.05 월/Yi Geon-Jin
+var _trace_=null;
+if(objApp.av_sSvrType !== "PROD")
+if(arguments[(arguments.length-1)] == "_trace_"){
+  arguments[(arguments.length-1)] = null;
+  _trace_ = "_trace_";
+}
+//--------------------------------------------------------------------------------:) 여기까지 /개발자용 추가/2018.11.05 월/Yi Geon-Jin
+    var sDsName1 = "ds_condNotice";
+
+    var dataset1  = new Dataset;
+    dataset1.set_name(sDsName1);
+    this.addChild(sDsName1, dataset1);
+
+    dataset1.addColumn("PGM_ID", "STRING");
+    dataset1.addColumn("LTCP_CLSFC_CD", "STRING");
+    dataset1.addColumn("LTCP_DMD_TYPE_CD", "STRING");
+    dataset1.addRow();
+
+    dataset1.setColumn(0, "PGM_ID", sPgmId);
+    dataset1.setColumn(0, "LTCP_CLSFC_CD", sLtcpClsfcCd);
+    dataset1.setColumn(0, "LTCP_DMD_TYPE_CD", sLtcpDmdTypeCd);
+
+    //글로벌 데이터셋에 종별과 화면 ID할당
+    this.fv_pgmId = sPgmId;
+    this.fv_ltcpDmdTypeCd = sLtcpDmdTypeCd;
+
+    /**************************************************************************/
+
+    var sDsName2 = "ds_notice";
+
+    var dataset2  = new Dataset;
+    dataset2.set_name(sDsName2);
+    this.addChild(sDsName2, dataset2);
+
+    dataset2.addColumn("PGM_ID", "STRING");
+    dataset2.addColumn("CRE_SEQ", "STRING");
+    dataset2.addColumn("FR_DTHMS", "STRING");
+    dataset2.addColumn("TO_DTHMS", "STRING");
+    dataset2.addColumn("RMK1", "STRING");
+    dataset2.addColumn("RMK2", "STRING");
+    dataset2.addColumn("RMK3", "STRING");
+    dataset2.addColumn("BTN_HADNG_YN", "STRING");
+
+    /**************************************************************************/
+
+    var sSvcId = "selectNotice";
+    var sPath  = "/c/a/comm/selectNotice.do";
+    var sInputDsName = "ds_cond=ds_condNotice";
+    var sOutputDsName = dataset2.name + "=ds_result";
+    var sArg = "";
+    var oPreArgs  = [];
+    var sCallback = "bfn_callBack_cCommon";
+
+    var bASync    = false;
+    var bWait     = true;
+    var bBinary   = true;
+    var bCompress = false;
+
+    this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, _trace_); //개발자용 trace를 위해 추가/2018.11.05 월/Yi Geon-Jin
+
+    var objDelete = this.removeChild("ds_condNotice");
+    objDelete.destroy();
+};
+
+pForm.bfn_postSelectNotice = function()
+{
+    if(this.ds_notice.rowcount > 0)
+    {
+        var tmp = [];
+        var notice;
+
+        for(var i = 0; i < this.ds_notice.rowcount; i++)
+        {
+            tmp[i] = this.ds_notice.getColumn(i, "RMK1") + "\n" + this.ds_notice.getColumn(i, "RMK2") + "\n" + this.ds_notice.getColumn(i, "RMK3");
+
+            if(i == 0){
+                notice = tmp[i];
+            }else{
+                notice = notice + "\n\n" + tmp[i];
+            }
+        }
+
+        this.div_ntc.form.div_notice0.form.div_notice1.form.stc_notice.set_text(notice);
+        if ("Y" != this.ds_notice.getColumn(0, "BTN_HADNG_YN")){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.btn_closeNotice.set_visible(false);
+        } else {
+            this.div_ntc.form.div_notice0.form.div_notice1.form.btn_closeNotice.set_visible(true);
+        }
+
+        this.div_ntc.set_visible(true);
+        this.div_ntc.set_enable(true);
+        this.div_ntc.move(0, 0, null, null, 0, 0);  //변경/메인창 크기에 맞게/2019.01.30 수/Yi Geon-Jin //this.div_ntc.move(0, 59, 1165, 633);  //:)position = "absolute 0 59 1165 633";  //:)변경/2018.10.18 목/Yi Geon-Jin
+        this.div_ntc.form.div_notice0.form.div_notice1.form.btn_closeNotice.setFocus(); //:)추가/2018.10.18 목/Yi Geon-Jin
+
+        if (this.fv_pgmId == "npca000m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("급여비용 청구 공지");
+        } else if (this.fv_pgmId == "npca101m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("처우개선 지급명세서 관리 공지");
+        } else if (this.fv_pgmId == "npca201m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("입퇴소신고내용관리 공지");
+        } else if (this.fv_pgmId == "npca202m01"  || this.fv_pgmId == "npca215m01" || this.fv_pgmId == "npca302m01" || this.fv_pgmId == "npca313m01" || this.fv_pgmId == "npca402m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("급여내용 자료관리 공지");
+        } else if (this.fv_pgmId == "npca203m01" || this.fv_pgmId == "npca303m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("청구명세서 자동생성 관리 공지");
+        } else if (this.fv_pgmId == "npca204m01" || this.fv_pgmId == "npca304m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("청구명세서 관리 공지");
+        } else if (this.fv_pgmId == "npca205m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("청구서 조회 및 전송관리 공지");
+        } else if (this.fv_pgmId == "npca210m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("보완청구 대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca211m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("가산금 추가청구 관리 공지");
+        } else if (this.fv_pgmId == "npca212m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("추가청구 대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca401m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("서비스내용 입력 공지");
+        } else if (this.fv_pgmId == "npca403m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("장기요양급여내용 확인 및 저장 팝업 공지");
+        } else if (this.fv_pgmId == "npca404m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("청구명세서 조회 공지");
+        } else if (this.fv_pgmId == "npca409m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("보완청구 대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca410m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("가산금 추가청구 관리 공지");
+        } else if (this.fv_pgmId == "npca411m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("누락분 추가청구 대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca412m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("배상책임보험 추가청구 대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca501m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("복지용구 청구대상자 자동생성 관리 공지");
+        } else if (this.fv_pgmId == "npca502m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("복지용구 청구명세서 관리 공지");
+        } else if (this.fv_pgmId == "npca504m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("복지용구 보완청구대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca505m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("복지용구 추가청구대상자 관리 공지");
+        } else if (this.fv_pgmId == "npca604m01"){
+            this.div_ntc.form.div_notice0.form.div_notice1.form.Static01.set_text("RFID 전송내용 관리 공지");
+        }
+    } else {
+        this.div_ntc.set_visible(false);
+        this.div_ntc.set_enable(false);
+    }
+
+    //글로벌 데이터셋에 종별과 화면ID 반환
+    this.fv_pgmId = "";
+    this.fv_ltcpDmdTypeCd = "";
+
+    var objDelete = this.removeChild("ds_notice");
+    objDelete.destroy();
+};
+/**---------------------------------------------------------------------------------------
+ * Div 로 구성된 창닫기
+ * 작성자 : 이건진
+ * 작성일 : 2018.11.25 일
+ * @param : none
+ * @retun :
+ * @exercise :
+ *             this.bfn_closeSelectNotice();
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_closeSelectNotice = function ()
+{
+     this.div_ntc.move(0, this.height); //, 59, 1165, 633);
+     this.div_ntc.set_enable(false);
+     this.div_ntc.set_visible(false);
+};
+
+pForm.bfn_selectProcStat = function(sLtcoMgmtSym, sLtctOffrYyyymm, sLtcpClsfcCd, sLtcpDmdTypeCd, sAddAdtDmdYn)
+{
+    var sDsName1 = "ds_condProcStat";
+
+    var dataset1  = new Dataset;
+    dataset1.set_name(sDsName1);
+    this.addChild(sDsName1, dataset1);
+
+    dataset1.addColumn("LTCO_MGMT_SYM", "STRING");
+    dataset1.addColumn("LTCP_CLSFC_CD", "STRING");
+    dataset1.addColumn("LTCP_DMD_TYPE_CD", "STRING");
+    dataset1.addColumn("LTCP_OFFR_YYYYMM", "STRING");
+    dataset1.addColumn("ADD_ADT_DMD_YN", "STRING");
+    dataset1.addRow();
+
+    dataset1.setColumn(0, "LTCO_MGMT_SYM", sLtcoMgmtSym);
+    dataset1.setColumn(0, "LTCP_CLSFC_CD", sLtcpClsfcCd);
+    dataset1.setColumn(0, "LTCP_DMD_TYPE_CD", sLtcpDmdTypeCd);
+    dataset1.setColumn(0, "LTCP_OFFR_YYYYMM", sLtctOffrYyyymm);
+    dataset1.setColumn(0, "ADD_ADT_DMD_YN", sAddAdtDmdYn);
+
+
+    /**************************************************************************/
+
+    var sDsName2 = "ds_ProcStat";
+
+    var dataset2  = new Dataset;
+    dataset2.set_name(sDsName2);
+    this.addChild(sDsName2, dataset2);
+
+    dataset2.addColumn("LTCO_MGMT_SYM", "STRING");
+    dataset2.addColumn("LTCP_CLSFC_CD", "STRING");
+    dataset2.addColumn("LTCP_DMD_TYPE_CD", "STRING");
+    dataset2.addColumn("LTCP_OFFR_YYYYMM", "STRING");
+    dataset2.addColumn("ADD_ADT_DMD_YN", "STRING");
+    dataset2.addColumn("CNT", "STRING");
+
+    /**************************************************************************/
+
+    var sSvcId = "selectProcStat";
+    var sPath  = "/c/a/comm/selectProcStat.do";
+    var sInputDsName = "ds_cond=ds_condProcStat";
+    var sOutputDsName = dataset2.name + "=ds_result";
+    var sArg = "";
+    var oPreArgs  = [];
+    var sCallback = "bfn_callBack_cCommon";
+
+    var bASync    = false;
+    var bWait     = true;
+    var bBinary   = true;
+    var bCompress = false;
+
+    this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+    var objDelete = this.removeChild("ds_condProcStat");
+    objDelete.destroy();
+};
+
+pForm.bfn_postSelectProcStat = function()
+{
+    if(this.ds_ProcStat.getColumn(0, "CNT")  > 0){
+        this.alert("미전송된 청구서가 있습니다. 확인하십시오.");
+    } else {
+        var oFrame = this.getOwnerFrame();
+        oFrame.form.cfn_close();
+    }
+
+};
+
+/*---------------------------------------------------------------------------------------
+ * 5. Transaction CallBack처리 함수
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_callBack_cCommon = function(sSvcId, nErrorCode, sErrorMsg)
+{
+    if (sSvcId == "selectNotice") {
+        this.bfn_postSelectNotice();
+    } else if (sSvcId == "selectProcStat") {
+        this.bfn_postSelectProcStat();
+    }
+
+    return;
+};
+
+/*---------------------------------------------------------------------------------------
+ * bfn_moveObject 임의의 컴포넌트 위치를 기준대상의 상하좌우 방향으로 이동합니다.
+   poBasic  object    기준   콤포넌트
+   poMove   object    이동할 콤포넌트
+   piOffset integer   콤포넌트간 유격
+   psDirect string    이동방향(상하좌우)
+ * 작성자 : 이건진
+ * 작성일 : 2018.10.17 수
+ * 사용예
+  bfn_moveObject(btn_dtstAutoCre, btn_dtstUnitSpcfDescReg, 2, "좌");
+  bfn_moveObjectLeft(btn_dtstAutoCre, btn_dtstUnitSpcfDescReg, 2);
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_moveObject = function(poBasic, poMove, piOffset, psDirect)
+{
+    if(this.gfn_isNull(piOffset)){ piOffset = 2; }
+    if(this.gfn_isNull(psDirect)){ psDirect = "우"; }
+
+    var iBasicPosition =0;  //기준위치
+    var width = poMove.getOffsetWidth();        //이동대상의 폭
+    var height = poMove.getOffsetHeight();      //이동대상의 높이
+
+    if(psDirect == "상"){
+        iBasicPosition = poBasic.getOffsetTop()   -piOffset;
+        poMove.move(poMove.left, iBasicPosition - height);
+    }else
+    if(psDirect == "하"){
+        //iBasicPosition = poBasic.getOffsetBottom()+piOffset;
+        iBasicPosition = poBasic.getOffsetTop()+poBasic.getOffsetHeight()+piOffset;
+        poMove.move(poMove.left, iBasicPosition);   // + height);
+    }else
+    if(psDirect == "좌"){
+        iBasicPosition = poBasic.getOffsetLeft()  -piOffset;
+        poMove.move(iBasicPosition - width, poMove.top);
+    }else
+    if(psDirect == "우"){
+        iBasicPosition = poBasic.getOffsetRight() +piOffset;
+        //poMove.move(iBasicPosition + width, poMove.top);
+        poMove.move(iBasicPosition , poMove.top);
+    }
+
+    return poMove;
+};
+pForm.bfn_moveObjectUp = function(poBasic, poMove, piOffset)
+{
+    return this.bfn_moveObject(poBasic, poMove, piOffset, "상");
+};
+pForm.bfn_moveObjectDown = function(poBasic, poMove, piOffset)
+{
+    return this.bfn_moveObject(poBasic, poMove, piOffset, "하");
+};
+pForm.bfn_moveObjectLeft = function(poBasic, poMove, piOffset)
+{
+    return this.bfn_moveObject(poBasic, poMove, piOffset, "좌");
+};
+pForm.bfn_moveObjectRight = function(poBasic, poMove, piOffset)
+{
+    return this.bfn_moveObject(poBasic, poMove, piOffset, "우");
+};
+/*---------------------------------------------------------------------------------------
+ * 특정컴포넌트를 this form의 중앙으로 이동합니다.
+   poBasic  form    기준   콤포넌트
+   poMove   object    이동할 콤포넌트
+ * 작성자 : 이건진
+ * 작성일 : 2018.11.8 목
+ * 주의 사항 : 첫번째 param이 this(form)가 아니면 문제가 될것임.
+ * 사용예
+            bfn_moveObjectCenter(this, this.div_rfid);
+ *--------------------------------------------------------------------------------------*/
+/*
+ * 2018.11.8 목/Yi Geon-Jin
+ */
+pForm.bfn_moveObjectCenter = function(poBasic, poMove)
+{
+    if(poBasic.getOffsetWidth() < poMove.getOffsetWidth()) return;
+    if(poBasic.getOffsetHeight() < poMove.getOffsetHeight()) return;
+
+
+    var iPosLeft          = (poBasic.getOffsetWidth() - poMove.getOffsetWidth())/2
+    var iPosTop           = (poBasic.getOffsetHeight() - poMove.getOffsetHeight())/2
+    poMove.move(iPosLeft, iPosTop);
+};
+
+/**---------------------------------------------------------------------------------------
+ * Div 로 구성된 창닫기
+ * 작성자 : 이건진
+ * 작성일 : 2018.10.18
+ * @param : nexacro.Div     poDiv   닫혀질 div
+ * @retun :
+ * @exercise :
+ *             this.bfn_closeDivLayer(this.parent);       //div.url 에서 호출
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_closeDivLayer = function (poDiv)
+{
+    poDiv.move(0, this.height);
+};
+
+/**---------------------------------------------------------------------------------------
+ * 상위폼의 자원(변수, 객체..등)을 현재 폼으로 복사합니다.
+ * 작성자 : 이건진
+ * 작성일 : 2018.11.01
+ * @param : form     poThis     : 호출하는 자신(this)
+ * @param : string   psPrefix   : 복사를 원하는 변수(객체)의 시작 문자
+ * @retun :
+ * @exercise :
+ *       this.bfn_getParentVar(this);       //상위폼의 "fv_"로 시작하는 변수를 현재폼으로 복사
+ *       this.bfn_getParentVar(this, "str");//상위폼의 "str"로 시작하는 변수를 현재폼으로 복사
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_getParentVar = function(poThis, psPrefix){
+    var frmParent = poThis.parent.parent;
+    if(psPrefix === undefined || psPrefix === "" || psPrefix === null) psPrefix = "fv_";
+    psPrefix = psPrefix.trim();
+    if(psPrefix === "ALL") psPrefix = "";
+    for (var p in frmParent)
+    {
+        if (frmParent.hasOwnProperty(p))
+        {
+            if(p.indexOf(psPrefix) === 0){
+                poThis[p] = frmParent[p];
+            }
+        }
+    }
+};
+
+/**---------------------------------------------------------------------------------------
+ * 찾고자 하는 자원(변수, 객체..등)을 소유한 상위폼을 찾아서 반환합니다.
+ * 작성자 : 이건진
+ * 작성일 : 2018.11.01
+ * @param : form     poParentForm   : 호출하는 자신의 상위폼(this.parent)
+ * @param : string   psFind         : 찾고자 하는 변수(객체)의 이름
+ * @param : number   piDegree       : 찾기를 시도 할 차수(default=5)
+ * @retun : form     poParentForm   : 찾고자 하는 변수(객체) 소유한 상위 폼
+ * @exercise :
+ *       this.bfn_findParent(this.parent, "ds_dmdDtstDtl");//ds_dmdDtstDtl을 소유한 상위폼을 찾는다.
+ *--------------------------------------------------------------------------------------*/
+pForm.bfn_findParent = function(poParentForm, psFind, piDegree){
+    if(psFind === undefined || psFind === "" || psFind === null) return null;
+    if(piDegree === undefined || piDegree === "" || piDegree === null) piDegree = 5; //기본 차수, 5번까지만 시도합니다.
+
+    for (var p in poParentForm)
+    {
+        if (poParentForm.hasOwnProperty(p))
+        {
+            if(p.indexOf(psFind) === 0){
+                return poParentForm;
+            }
+        }
+    }
+    piDegree--; //찾기 회 수 삭감
+    if(piDegree == 0) return null;  //10번까지만 시도합니다.
+    this.bfn_findParent(poParentForm.parent, psFind, piDegree);
+};
+
+//------------------------------------------------------------------------------------------
+// gfn_attachFileDownload()로 대체합니다./2018.11.30/이건진
+//------------------------------------------------------------------------------------------
+// /**---------------------------------------------------------------------------------------
+//  * Dataset에 BLOB 형태로 존재하는 파일을 다운로드 하게 합니다.
+//  * 작성자 : 이건진
+//  * 작성일 : 2018.11.27
+//  * @param : dataset  objDsFileInfoList     : 파일정보가 들어있는 데이타셋(ds_fileInfoList)
+//  * @param : string   nRow                  : ds_fileInfoList에 들어있는 다운로드할 파일의 행번호
+//  * @retun :
+//  * @ 관련함수 : bfn_fileDownload(), bfn_fileDownloadInit()
+//  * @사용예 :
+//  *       this.bfn_fileDownload(this.ds_fileInfoList, this.ds_fileInfoList.rowposition);
+//  *       //this.bfn_fileDownloadInit();  //:)파일 Download 초기화(필요시 수행)
+//  *--------------------------------------------------------------------------------------*/
+// pForm.bfn_fileDownload = function(objDsFileInfoList, nRow)
+// {
+//     if(!this.isValidObject(this.ds_bfnFileDown)){
+//         this.bfn_fileDownloadInit();
+//     }
+//     this.ds_bfnFileDown.clearData();
+//     var nAddRow = this.ds_bfnFileDown.addRow();
+//     this.ds_bfnFileDown.setColumn(nAddRow, "filename", objDsFileInfoList.getColumn(nRow,"ATMT_FILE_NM"));
+//     this.ds_bfnFileDown.setColumn(nAddRow, "file", objDsFileInfoList.getColumn(nRow,"ATMT_FILE"));
+//
+//     var sSvcId = "filesave";
+//     var sPath = "sample/multipart/saveAttachFile.do";
+//     var sInputDs = "ds_download=ds_bfnFileDown:A";
+//     var sOutputDs = "";
+//     var sArg = "";
+//     var oPreArgs = [];
+//     var sCallback = "bfn_fileDownloadCallBack";
+//
+//     this.gfn_callServiceNormal(sSvcId, sPath, sInputDs, sOutputDs, sArg, oPreArgs, sCallback);  //, "_trace_");
+// };
+// //------------------------------------------------------------------------------
+// //파일다운로드용 Callback
+// //------------------------------------------------------------------------------
+// pForm.bfn_fileDownloadCallBack = function(sSvcId, nErrCd, sErrMsg)
+// {
+//     if(nErrCd < 0 )
+//     {
+//         return;
+//     }
+//
+//     //파일 다운로드
+//     if(sSvcId == "filesave" )
+//     {
+//         var sFileUrl = "svcUrl::sample/multipart/downAttachFile.do";
+//         var sFileNmae = this.ds_bfnFileDown.getColumn(this.ds_bfnFileDown.rowposition,"filename");
+//         sFileNmae = encodeURI(sFileNmae);
+//
+//         var fileArgs  = "?filename="+sFileNmae;
+//         this.fdl_bfnFileDownComp.downloadurl = sFileUrl + fileArgs;
+//         this.fdl_bfnFileDownComp.set_downloadfilename(sFileNmae);
+//         this.fdl_bfnFileDownComp.download();
+//     }
+// };
+// //------------------------------------------------------------------------------
+// //file download 초기화
+// //------------------------------------------------------------------------------
+// pForm.bfn_fileDownloadInit = function() {
+//
+//     var sFdlCompName = "fdl_bfnFileDownComp";
+//
+//     if(!this.isValidObject(sFdlCompName)){
+//         var objFdlComp = new FileDownload();
+//
+//         objFdlComp.init(sFdlCompName, 0, this.height+50, 70, 25);
+//         this.addChild(sFdlCompName, objFdlComp);
+//         objFdlComp.set_text(sFdlCompName);
+//         objFdlComp.set_visible(false);
+//         objFdlComp.show();
+//
+//         this.fdl_bfnFileDownComp.addEventHandler('onerror' ,
+//             function (obj, e) {
+//                 this.gfn_msgShow(this, "XETZ0010",["다운로드에 실패"]);//{0}하였습니다.
+//             }, this);
+//
+//         this.fdl_bfnFileDownComp.addEventHandler('onsuccess' ,
+//             function (obj, e) {
+//                 this.gfn_msgShow(this, "XITZ0088",["다운로드에 성공"]);//{0}하였습니다.
+//             }, this);
+//     }
+//
+//     var sDsName1 = "ds_bfnFileDown";
+//
+//     if(!this.isValidObject(sDsName1)){
+//         var objDsTemp1  = new Dataset;
+//         objDsTemp1.addColumn("filename", "STRING");
+//         objDsTemp1.addColumn("file", "BLOB");
+//         objDsTemp1.set_name(sDsName1);
+//         this.addChild(sDsName1, objDsTemp1);
+//     }
+// };
+//------------------------------------------------------------------------------------------
+// gfn_attachFileDownload()로 대체합니다./2018.11.30/이건진
+//------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+//==============================================================================
+// 개발자용 함수 모음.
+//==============================================================================
+/*
+///////////////////////////////////////////////////////////////////////////// 여기서부터는
+    단순 debuging용 입니다.
+    업무에 사용하지 마십시요.
+    개발 완료후 삭제될 수 도 있습니다.
+/////////////////////////////////////////////////////////////////////////////
+*/
+pForm._debug_log="";            //debug용 메세지//:) 추가//2019.1.16 수/Yi Geon-Jin
+pForm._debug_log_cnt = 0;       //debug용 메세지 누적 횟수//:) 추가//2019.1.16 수/Yi Geon-Jin
+pForm._debug_max_log_cnt = 20;  //debug용 메세지 최대 누적 횟수//:) 추가//2019.1.16 수/Yi Geon-Jin
+/**
+ * @object의 모든 속성값을 추력한다.<br>
+ * @debug용 함수입니다.
+ * object, function, date, array Type은 reference가 출력된다.
+ * @param {Object} srcobject source 객체.
+ * @example
+ * this.dfn_parseObject({a: 1, b: "2", c: {"A": "3", "B": 4}});
+ *  // output : a:1
+ *  // output : b:2
+ *  // output : c:[object Object]
+*/
+pForm.dfn_parseObject = function(srcobject, rCallPrefx)
+{
+    if(!rCallPrefx){
+        rCallPrefx="";
+    }else{
+        if(rCallPrefx.length > 6 && rCallPrefx.substr(0, 6) == "title:"){
+           rCallPrefx = "";  //rCallPrefx.substr(0, 6);
+        }else{
+            trace("---------------------------------------- START <<<"+this.name);
+        }
+    }
+
+    if (srcobject)
+    {
+        var idx=0;
+        for (var p in srcobject)
+        {
+            if (srcobject.hasOwnProperty(p))
+            {
+                //if(nexacro._isObject(p)){
+                if(typeof (p) == "object"){
+                    var sName = "";
+                    dfn_parseObject(p, "  :)");
+                }else{
+                  trace(rCallPrefx + idx +"."+p + ":" + srcobject[p]);
+                  idx++;
+                }
+            }
+        }
+    }else{
+        trace("srcobject is null");
+    }
+
+    if(!rCallPrefx){
+        trace("-------------------------------------------------------------------------------- dfn_parseObject END <<< "+this.name);
+    }else{
+        trace("---------------------------------------- dfn_parseObject END <<< "+this.name);
+    }
+};
+
+/**-----------------------------------------------------------------------------
+  내    용: Data가 널인지 확인합니다.
+    작 성 자: 이건진/2008-02-12 15:52:36
+    파라미터:  pData      = 입력값
+    리 턴 값:
+    참고사항:
+    예    제:
+    주의사항: window간의 리턴값에 대해서는 사용하지말것
+
+------------------------------------------------------------------------------*/
+var dfn_isNull = function (pData){
+  if(pData === null || pData === undefined || pData === "" || pData === "undefined"){
+    return true;
+  }else{
+    return false
+  }
+};
+var dfn_isNotNull = function (pData){
+    return !dfn_isNull(pData);
+}
+/**-----------------------------------------------------------------------------
+  내    용: pValue 가 배열인지 확인합니다.
+    작 성 자: 이건진/2008.10.14 13:10:09
+    파라미터:  pValue      = 값
+    리 턴 값:
+    참고사항:
+    예    제:
+    주의사항:
+------------------------------------------------------------------------------*/
+var dfn_isArray = function (pValue){
+  try{
+  return pValue
+    && typeof(pValue) == 'object'
+    && typeof(pValue.length) == 'number'
+    && typeof(pValue.splice) == 'function'
+    && !(pValue.propertyIsEnumerable('length')) ;
+    //&& pValue.propertyIsEnumerable &&
+  }
+  catch (e){
+    //return "error "+e.name + ": "+e.message;
+    return false;
+  }
+};
+
+/**-----------------------------------------------------------------------------
+  내    용: pValue 의 데이타형식 정보를 문자열로 반환합니다
+    작 성 자: 이건진/2008.10.14 13:10:09
+    파라미터:  pValue      = 값
+    리 턴 값: "number", "string", "boolean", "object", "array", "function", "undefined" 라는 7가지 형식을 반환할 수 있습니다.
+
+    참고사항:
+    예    제:
+    주의사항: array는 자바스크립트의 기본 데이타형식이 아닙니다.array는 object에 속합니다.
+------------------------------------------------------------------------------*/
+var dfn_typeOf = function (pValue){
+  if(typeof(pValue) == 'object'){
+    if(dfn_isArray(pValue)){ //array
+      return 'array';
+    }else{                  //object
+      return 'object';
+    }
+  }else{
+    return typeof(pValue);
+  }
+};
+
+/**---------------------------------------------------------------------
+* 기능 : 문자열 파라미터를 오브젝트로 변환합니다.
+* 인수 : sParm : 문자열 파라미터 (name1=val1&name2=val2&name3=val3&name4=val4)
+*        psParmSeparator    파라미터 간의 구분자
+*        psValueSeparator   항목과값 사이의 구분자
+* return : Object
+* 2018.10.27 토/Yi Geon-Jin
+----------------------------------------------------------------------*/
+var dfn_parm2Obj = function(psParm, psParmSeparator, psValueSeparator)
+{
+    if (dfn_isNull(psParm)) return {};
+    if (dfn_isNull(psSeparator)) psSeparator = "&";
+    if (dfn_isNull(psValueSeparator)) psValueSeparator = "=";
+
+    var arrParm;
+    var intParmCnt;
+
+    //single parameter
+    if (psParm.indexOf(psSeparator) < 0){
+        arrParm = new Array();
+        arrParm[0] = psParm;
+    }else{
+        arrParm = psParm.split(psSeparator); //파라미터구분자
+    }
+
+    intParmCnt = arrParm.length;
+
+    var objRtn = new Object;
+
+    for (var i = 8; i < arrParm.length; i++) {
+        var arrEach = arrParm[i].split(psValueSeparator);
+        objRtn[arrEach[0]] = arrEach[1];
+    }
+    return objRtn;
+};
+/**-----------------------------------------------------------------------------
+  내    용: pValue를 data type를 참조하여 분석합니다.
+    작 성 자: 이건진/2008.10.14 13:10:09
+    파라미터:  pValue      = 값
+    리 턴 값:
+    참고사항:
+    예    제:
+    주의사항:
+------------------------------------------------------------------------------*/
+var dfn_parseValue1 = function (pValue, psOption){
+    var bShow = (!dfn_isNull(psOption) && psOption === "alertValue") ? true : false;
+    var bNoTrace = (!dfn_isNull(psOption) && psOption === "noTrace") ? true : false;
+    var bColSeparateNewLine = (!dfn_isNull(psOption) && psOption === "newLine") ? true : false;  //컬럼별 구분을 행바꿈으로 함.
+    var sTitle = (!dfn_isNull(psOption) && psOption.substr(0, 6) == "title:") ? psOption.substr(6) : "";
+
+    this.dfn_parseValue(pValue, bShow, bColSeparateNewLine, bNoTrace, sTitle);
+};
+var dfn_parseValue = function (pValue, pbShow, pbColSeparateNewLine, pbNoTrace, psTitle){
+  try{
+    //if(pbShow == null || pbShow == undefined) pbShow = false;
+    if(dfn_isNull(pbShow)) pbShow = false;
+    if(dfn_isNull(pbColSeparateNewLine)) pbColSeparateNewLine = false; //2009.06.01 11:01:12/Yi,GeonJin
+    if(dfn_isNull(pbNoTrace)) pbNoTrace = false ; //2018.10.27 토/Yi Geon-Jin
+
+    var colSeparate = (pbColSeparateNewLine) ? "\n" : ",";                      //2009.06.01 11:01:12/Yi,GeonJin
+    var sRtn = "\n-------------------------------------------------------------------------------- START dfn_parseValue <<<"+this.name;
+    if(!dfn_isNull(psTitle)){
+        sRtn += "\n"+psTitle;
+        sRtn += "\n--------------------------------------------------------------------------------";
+    }
+    sRtn += "\n";
+
+    //if(pValue == undefined || pValue == null){
+    //if(dfn_isNull(pValue)){
+    //if(pValue === undefined || pValue === null){
+    if(pValue === undefined ){
+      sRtn += "undefined"; //문자열로 형변환
+    }else if(pValue === null){
+      sRtn += "null"; //문자열로 형변환
+    }else if(pValue === "" ){
+      sRtn += "[white space]=length=0"; //
+    }else if(pValue === "undefined"){
+      sRtn += pValue; //
+    }else{
+      if(dfn_typeOf(pValue) === 'number'){
+        sRtn += pValue;
+      }else if(dfn_typeOf(pValue) === 'string'){
+        sRtn += pValue;
+      }else if(dfn_typeOf(pValue) === 'boolean'){
+        sRtn += pValue+"";
+      }else if(dfn_typeOf(pValue) === 'object'){
+        var sName = "";
+        if(pValue.hasOwnProperty) sName = pValue.hasOwnProperty("id") ? pValue.id : "pValue";
+        sRtn += sName+" is object";
+        var name;
+        var iPorpertiesCnt=0;
+        var sTemp="";
+        for (name in pValue) {
+          iPorpertiesCnt++;
+          //sRtn += "\n"+name + "="+pValue[name];
+          //sRtn += colSeparate+name + "="+pValue[name];//2009.06.01 11:01:12/Yi,GeonJin
+          //sTemp += colSeparate+" "+iPorpertiesCnt+"."+name + "="+pValue[name];//2012.04.03 14:34:50/Yi,Geon-Jin
+          sRtn += colSeparate+" "+iPorpertiesCnt+"."+name + "="+pValue[name];//2012.04.03 14:34:50/Yi,Geon-Jin
+        }
+        //sRtn += sRtn+"&, porperties_cnt="+iPorpertiesCnt+":" + sTemp;
+        //sRtn += +", ::::porperties_cnt="+iPorpertiesCnt;
+        sRtn += colSeparate+"::::object_porperties_cnt="+iPorpertiesCnt;
+      }else if(dfn_typeOf(pValue) === 'array'){
+        var sName = "pValue"; //pValue.hasOwnProperty("name") ? pValue.name : '';
+
+        sRtn += sName +" is array["+pValue.length+"]";
+        for(i = 0 ; i < pValue.length;i += 1){
+          //if(typeof(pValue[i]) == 'object') sRtn += dfn_parseValue(pValue[i]);
+          //sRtn += "\n"+sName+"["+i+"]=" + pValue[i];
+          sRtn += colSeparate+sName+"["+i+"]=" + pValue[i];//2009.06.01 11:01:12/Yi,GeonJin
+        }
+      }else if(dfn_typeOf(pValue) === 'function'){
+        var sName = pValue.hasOwnProperty("id") ? pValue.id : "pValue";
+        sRtn += sName+" is function\n"
+              +sName+"("
+              ;
+        for(i = 0 ; i < pValue.arguments.length;i +=1){
+          sRtn += (i == 0) ? pValue.arguments[i] : ", "+pValue.arguments[i];
+        }
+        sRtn += ")";
+      }else if(dfn_typeOf(pValue) === 'undefined'){
+        sRtn += "undefined";
+      }else{
+        sRtn += ""+pValue;
+      }
+    }
+    if(pbShow) alert(">"+pValue+"<");
+  }
+  catch (e){
+    //alert("dfn_parseValue error...\n"+e);
+    //throw e;
+    sRtn += "\n\n"+e.name + ": " + e.message;
+  }
+
+  sRtn +="\n-------------------------------------------------------------------------------- END   dfn_parseValue <<<"+this.name;
+  if(!pbNoTrace) trace(sRtn);
+  return sRtn;
+};
+
+/*
+ *  그리드의 Cell정보를 ToolTip으로 표시합니다.
+ * 2018.11.7 수/Yi Geon-Jin
+ */
+//pForm.dfn_showGridToolTipText = function(obj:nexacro.Grid,e:nexacro.GridMouseEventInfo)
+pForm.dfn_showCellValueGridToolTipText = function(obj,e){
+    this.dfn_showGridToolTipText(obj,e);
+}
+pForm.dfn_showGridToolTipText = function(obj,e)
+{
+
+    if(e.row < 0 || !e.ctrlkey) {
+        obj.set_tooltiptext("");
+        return;
+    }
+    var ds_bind = this.objects[obj.binddataset];
+    var sColId = this.gfn_getBindColNameGrid(obj, e.cell);
+
+    if(this.gfn_isEmpty(sColId)) sColId = this.dfn_getExprColName(obj, e.cell);
+
+    var colVal = ds_bind.getColumn(e.row, sColId);
+    var strToolTipText = "row="+e.row +", col=" +e.col+", cell=" +e.cell+", bindCol="+sColId +", value="+ colVal;
+
+    obj.set_tooltiptext(strToolTipText);    //
+};
+
+/**
+ * 그리드에 expr에 바인드 되어 있는 Dataset Column ID 리턴
+ * @param obj - Grid
+ * @param iCell - cell index
+ */
+ //getBindColName
+ pForm.dfn_getExprColName = function(objGrid, iCell) {
+    if (iCell == -1 ) return "";
+    try{
+        var sColName = objGrid.getCellProperty( "Body", iCell, "expr" );
+        var aText = String(sColName).split(":");
+
+        if(sColName === undefined || sColName === "" || sColName === null) return "";
+
+        if (aText.length == 2 && aText[0] == "bind") {
+            return this.dfn_stripExpr(aText[1]);
+        } else {
+            return this.dfn_stripExpr(sColName);
+        }
+    }catch(e){
+        trace(this.name +".dfn_getExprColName() >> "+e.name + ": " + e.message);
+        return "";
+    }
+};
+//--------------------------------------------------------------------------------
+//expr 수식을 제거하고 컬럼명을 취합니다.
+//예 > comp.parent.bfn_setFormatDateTime(STOUT_TO_DT)
+//--------------------------------------------------------------------------------
+pForm.dfn_stripExpr = function(strExpr)
+{
+    try{
+        var sRtn = strExpr.replace(/(this\.|comp\.|parent\.|bfn_setFormatDateTime|\(|\)|\/|\[|\]|'|"|-|:|\.)/gi, "");
+        return sRtn.trim();
+    }catch(e){
+        trace(this.name +".dfn_stripExpr() >> "+e.name + ": " + e.message);
+        return "";
+    }
+};
+
+/*
+ *  Clipboard에 복사된 컬럼명으로 BindDataset의 값을 ToolTipText로 표시합니다.
+ *  주의사항 : 함수 호출전 Clipboard에 컬럼명이 존재해야 합니다.
+ *              컬럼은 "col_id1, col_id2, col_id3" 형태이면 됩니다.
+ * 2018.11.10 토/Yi Geon-Jin
+ * 예>
+ *  this.grd_List_onmousemove = functio n(obj:nexacro.Grid,e:nexacro.GridMouseEventInfo)
+ *  {
+ *      this.dfn_showGridBindDsColValueByClipText(obj,e);
+ *  };
+ */
+pForm.dfn_showGridBindDsColValueByClipText = function(obj,e)
+{
+
+    if(e.row < 0 || !e.ctrlkey) {
+        obj.set_tooltiptext("");
+        return;
+    }
+    var strToolTipText;
+    var colVal;
+    var ds_bind = this.objects[obj.binddataset];
+    var sColId = system.getClipboard("CF_TEXT").trim();
+
+    if(!this.gfn_isEmpty(sColId)){
+        //colVal = ds_bind.getColumn(e.row, sColId);
+        //strToolTipText = "row="+e.row +", bindCol="+sColId +", value="+ colVal;
+
+        var arrColId;
+        if(sColId.indexOf(",") >= 0){
+            arrColId = sColId.split(",");
+        }else{
+            arrColId = new Array(sColId);
+        }
+        strToolTipText = "row="+e.row +", e.col="+e.col +", e.cell="+e.cell;
+        for(var i=0; i < arrColId.length; i++) {
+            colVal = ds_bind.getColumn(e.row, arrColId[i].trim());
+            strToolTipText += "\nbindCol="+arrColId[i].trim() +", value="+ colVal;
+        }
+    }else{
+        strToolTipText = "Clipboard가 비어있습니다.\n\n먼저 컬럼명을 Clipboard에 복사해야합니다.";
+    }
+
+    obj.set_tooltiptext(strToolTipText);    //
+    trace("dfn_showGridBindDsColValueByClipText---------------------------\n"+this.name +"."+obj.name+"\nColId : "+sColId+"\n"+strToolTipText);
+};
+/**
+ * @class Date와 format를 받아서 해당 format의 String문자로 날짜 반환
+ * @param {date} dt - Date
+ * @param {String} psFormat - Format유형
+ * @return {String} 변형된 날짜 String
+ */
+pForm.dfn_getDateFormatString = function(psFormat){
+    return this.dfn_toFormatString(new Date(), psFormat);
+};
+pForm.dfn_toFormatString = function(dt, psFormat)
+{
+    var sDate = psFormat.replace(/(%Y|%y|%m|%d|%H|%h|%M|%S|%f|%am|%pm)/g,
+        function ($1) {
+            switch ($1) {
+                case "%Y" : return dt.getFullYear().toString().padLeft(4,"0");
+                case "%y" : return dt.getFullYear().toString().substr(2).padLeft(2,"0");
+                case "%m" : return (dt.getMonth()+1).toString().padLeft(2,"0");
+                case "%d" : return dt.getDate().toString().padLeft(2,"0");
+                case "%H" : return dt.getHours().toString().padLeft(2,"0");
+                case "%h" : return ((h = dt.getHours() % 12 ) ? h : 12).toString().padLeft(2,"0");
+                case "%M" : return dt.getMinutes().toString().padLeft(2,"0");
+                case "%S" : return dt.getSeconds().toString().padLeft(2,"0");
+                case "%f" : return dt.getMilliseconds().toString(); //
+                case "%am" :    return dt.getHours() < 12 ? "am" : "pm";
+                case "%pm" :    return dt.getHours() < 12 ? "am" : "pm";
+            }
+        });
+
+    return sDate;
+};
+
+/**
+ * 현재 시각(시분초ff)과 넘겨받은 문자열 결합하여 반환합니다.
+ * @param {String} psMsg  - 주 문자열
+ * @param {String} psTail - 부 문자열
+ * @param {String} psOption  - 부가옵션, "NoCrLf", 메세지 끝에 CrLf를 추가할지 여부
+ * @return {String} 두 시각의 차 String
+ */
+pForm.dfn_getNowString = function(psMsg, psTail, psOption){
+
+    return this.dfn_getDateFormatString("%H:%M:%S:%f")
+          + (dfn_isNotNull(psMsg) ? " "+ psMsg : "")
+          + (dfn_isNotNull(psTail) ? " "+ psTail : "")
+          + (dfn_isNotNull(psOption) && psOption === "NoCrLf" ? "" : "\n")
+          + (dfn_isNotNull(psOption) && psOption === "CrLf2" ? "\n" : "")
+          ;
+};
+pForm.dfn_getNowStringS = function(psMsg){
+    return this.dfn_getNowString(psMsg, "START");
+};
+pForm.dfn_getNowStringE = function(psMsg){
+    return this.dfn_getNowString(psMsg, "END");
+};
+
+/**
+ * 현재 시각(시분초ff)과 넘겨받은 문자열 결합하여 this._debug_log에 보관 합니다.
+ * @param {String} psMsg  - 주 문자열
+ * @param {String} psTail - 부 문자열
+ * @param {String} psOption  - 부가옵션, "initLog:yes" this._debug_log 초기화여부
+ * @return {String} 두 시각의 차 String
+ */
+pForm.dfn_setLog = function(psMsg, psTail, psOption){
+    
+    if((arguments.length === 2) && (_dfn_isInitLogYes(psTail) || psTail === "CrLf2") )
+    {
+      psOption = psTail;
+      psTail = "";
+    }
+    if(_dfn_isInitLogYes(psOption) || this._debug_log_cnt >= this._debug_max_log_cnt ) {
+        this.dfn_initLog();
+        this._debug_log_cnt=0;
+    }
+
+    this._debug_log += this.dfn_getNowString(psMsg, psTail, psOption);
+    this._debug_log_cnt++;
+};
+pForm.dfn_setLogS = function(psMsg, psOption){
+    this.dfn_setLog(psMsg, "START", psOption);
+};
+pForm.dfn_setLogE = function(psMsg){
+    this.dfn_setLog(psMsg, "END");
+};
+//로그 초기화
+pForm.dfn_initLog = function(){
+    this._debug_log = "";
+};
+//로그 가져오기
+pForm.dfn_getLog = function(psOption){
+    var rtnMsg = this._debug_log;
+    if(_dfn_isInitLogYes(psOption)) this.dfn_initLog();
+
+    return rtnMsg;
+};
+//로그 Alert 띄우기
+pForm.dfn_alertLog = function(psHeadTitle, psOption){
+    //if(arguments.length > 1)
+    //alert((dfn_isNotNull(psHeadTitle) && _dfn_isInitLogYes(psOption) ? psHeadTitle+" :) " : "") +this.dfn_getLog(psOption));
+    //alert((arguments.length >= 2 ? psHeadTitle+" :) " : "") +this.dfn_getLog(psOption));
+    alert((arguments.length >= 2 && dfn_isNotNull(psHeadTitle)  ? psHeadTitle+" :) " : "") +this.dfn_getLog(psOption));
+};
+/**
+ * debug용 메세지 최대 누적 횟수 설정
+ * @param {Number} piMaxCnt  - 최대누적회수
+ * @return none
+ */
+pForm.dfn_setMaxLogCnt = function(piMaxCnt){
+    this._debug_max_log_cnt = piMaxCnt;
+};
+//psOption 가 로그 초기화인지 확인
+var _dfn_isInitLogYes = function(psOption){
+    if(dfn_isNotNull(psOption) && (String(psOption).toLowerCase() === ("initLog").toLowerCase() || String(psOption).toLowerCase() === ("initLog:yes").toLowerCase() )) return true;
+    return false;
+};
+//psOption 가 로그 적용인지 확인
+var _dfn_isSetLogYes = function(psOption){
+    if(dfn_isNotNull(psOption) && (String(psOption).toLowerCase() === ("setLog").toLowerCase() || String(psOption).toLowerCase() === ("setLog:yes").toLowerCase() )) return true;
+    return false;
+};
+
+//psOption 가 timeLapse 초기화인지 확인
+var _dfn_isInitTimeYes = function(psOption){
+    if(dfn_isNotNull(psOption) && (String(psOption).toLowerCase() === ("initTime").toLowerCase() || String(psOption).toLowerCase() === ("initTime:yes").toLowerCase() )) return true;
+    return false;
+};
+
+
+/**
+ * KeyDown event
+ * @param {KeyEventInfo} event - keyDown event
+ * @return none
+ */
+pForm.dfn_onKeyDown = function (event)
+{
+    var keycode = event.keycode;
+    if( event.ctrlkey ) {
+        if(keycode == 17 ) return true; //ctrl
+
+        switch (keycode){
+         case  48: //nuber 0
+            this.dfn_alertLog("\n\n경과시간=");
+
+            try{fHotKeyCtrl_0();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+
+         case  49: //nuber 1
+            try{fHotKeyCtrl_1();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+
+         case  50: //nuber 2
+            try{fHotKeyCtrl_2();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+         case  51: //nuber 3
+            try{fHotKeyCtrl_3();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+         case  52: //nuber 4
+            try{fHotKeyCtrl_4();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+         case  53: //nuber 5   //
+            try{fHotKeyCtrl_5();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+         case  54: //nuber 6
+            try{fHotKeyCtrl_6();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+         case  55: //nuber 7
+            try{fHotKeyCtrl_7();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+         case  56: //nuber 8
+            try{fHotKeyCtrl_8();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+
+         case  57: //nuber 9
+            this.dfn_initLog();
+
+            try{fHotKeyCtrl_9();}catch(Ex){}; //예비
+            //event.keyCode = 0;
+            event.cancelBubble = true;
+            event.returnValue = false;
+            break;
+
+         default:
+            //don't care
+            break;
+        }//end of switch
+    }
+};
+
+/**
+ * @class Date와 format를 받아서 해당 format의 String문자로 날짜 반환
+ * @param {date} poFrDate - Date  시작시각
+ * @param {date} poToDate - Date  종료시각
+ * @return {String} 두 시각의 차 String
+ */
+pForm.dfn_timeDiffFormatString = function(poFrDate, poToDate)
+{
+    var nTotalDiff = poToDate.getTime() - poFrDate.getTime();
+    var millseconds = (nTotalDiff % 1000 );
+    var seconds = Math.floor(nTotalDiff / 1000 );
+    var minutes = Math.floor(nTotalDiff / 1000 / 60);
+    var hours   = Math.floor(nTotalDiff / 1000 / 60 / 60);
+
+    var timeDiff = hours.toString().padLeft(2, "0") +":"+ minutes.toString().padLeft(2, "0") +":"+ seconds.toString().padLeft(2, "0") +" " +millseconds.toString();
+
+    return timeDiff;
+
+};
+//------------------------------------------------------------------------------
+// 경과시간 계산용
+//------------------------------------------------------------------------------
+pForm._frTimeLapse4Debug;        //debug용/ 경과시간 시작시각 //:) 추가//2019.1.16 수/Yi Geon-Jin
+pForm._toTimeLapse4Debug;        //debug용/ 경과시간 종료시각 //:) 추가//2019.1.16 수/Yi Geon-Jin
+/**
+ * 경과시간 계산 시작
+ */
+pForm.dfn_timeLapseStart = function(psMsg)
+{
+    this._frTimeLapse4Debug = new Date();        //경과시간 시작시각
+    if(dfn_isNotNull(psMsg) ) this.dfn_setLogS(psMsg);
+    return this._frTimeLapse4Debug;
+};
+/**
+ * 경과시간 계산 종료
+ */
+pForm.dfn_timeLapseEnd = function(psMsg, psOption)
+{
+    this._toTimeLapse4Debug = new Date();        //경과시간 종료시각
+    if(dfn_isNotNull(psMsg) ) this.dfn_setLogE(psMsg);
+    if(psOption === "setTimeLapseLog"){
+        this.dfn_setLog(this.dfn_getTimeLapseString("경과시간"), "CrLf2");
+    }else
+    if(psOption === "setTimeLapseLog;initTime"){
+        this.dfn_setLog(this.dfn_getTimeLapseString("경과시간", "initTime:yes"), "CrLf2");
+    }
+    return this._toTimeLapse4Debug;
+};
+/**
+ * 경과시간을 계산하여 반환
+ * @parm {String} psHeadTitle   - 제목
+ * @parm {String} psOption      - 옵션
+ * @return {String} 두 시각의 차 String
+ */
+pForm.dfn_getTimeLapseString = function(psHeadTitle, psOption)
+{
+    var rtnVal = this.dfn_timeDiffFormatString(this._frTimeLapse4Debug, this._toTimeLapse4Debug);
+    if(arguments.length === 2){
+        rtnVal = psHeadTitle+"="+rtnVal;
+    }else
+    if(arguments.length === 1 && _dfn_isInitTimeYes(psHeadTitle) ){
+      psOption = psHeadTitle;
+      psHeadTitle = "";
+    }
+
+    if(dfn_isNotNull(psOption) && (_dfn_isInitTimeYes(psOption) )) this.dfn_initTimeLapse();
+    return rtnVal;
+};
+//경과시간 계산용 변수 초기화
+pForm.dfn_initTimeLapse = function()
+{
+    this._frTimeLapse4Debug = null;        //debug용/ 경과시간 시작시각
+    this._toTimeLapse4Debug = null;        //debug용/ 경과시간 종료시각
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////

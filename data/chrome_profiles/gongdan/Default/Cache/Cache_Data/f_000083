@@ -1,0 +1,1180 @@
+/**
+*  @FileName    nyb_form.js
+*  @Creator     황규철
+*  @CreateDate  2014.06.16
+*  @Desction   biz Form 함수 모음
+************** 소스 수정 이력 ***********************************************
+*  date                 Modifier                Description
+*******************************************************************************
+*  2014.06.16       황규철                  최초 생성
+*  2018.09.05       나종식                      Conversion
+*******************************************************************************
+*/
+
+var pForm = nexacro.Form.prototype;
+
+// freeform auto resize시 사용
+pForm.bv_nBizformDefaultWidth = 1018;
+pForm.bv_nBizformDefaultHeight = 550;
+pForm.bv_nMaxBottom ;
+pForm.bv_nMaxRight ;
+pForm.bv_arrReturn = {"RESULT":false};
+pForm.bv_sToDay;
+pForm.fv_divTitleBar;
+pForm.fv_nShowObjects = 0;  // Popup ShowObjects seq
+
+/* 2025 국정과제 이승진.
+var fv_busi24Log = "";
+var fv_indiInfInqRsnCd = "";
+*/
+pForm.fv_busi24Log;
+pForm.fv_indiInfInqRsnCd;
+pForm.fv_indiInfInqRsnNm;
+pForm.fv_inqDataCnt;
+
+pForm.cfn_frmInit = function(objForm)
+{
+    var objApp = nexacro.getApplication();
+    if(objApp.gv_isQuick == true)
+    {
+        var nIndex = objForm.addEventHandler('onkeyup' ,this.cfn_formOnkeyup, objForm);
+        objApp.mainframe.setOffsetHeight(581);
+        objApp.mainframe.titlebarheight = 25;
+
+        //mainframe 타이틀바에 공통버튼 배치
+        var oTitlebar = objApp.mainframe.titlebar;
+        if(!oTitlebar["div_quickBtn"]){
+            var objDivQuickBtn = new Div("div_quickBtn", null, 0, 324, 24, 100, null);
+            objDivQuickBtn.set_url("frame_common::comQuickviewButton.xfdl");
+            trace("objDivQuickBtn name=="+objDivQuickBtn.name);
+            oTitlebar.addChild("div_quickBtn", objDivQuickBtn);
+            objDivQuickBtn.show();
+        }
+
+        //DB메시지 Tr
+        this.cfn_messageSelect();
+    }
+
+    this.cfn_bizFrameLog();
+
+    var nMaxBottom = this.cfn_getMaxBottomPosition(objForm);
+    var nMaxRight = this.cfn_getMaxRightPosition(objForm);
+//
+//  trace("===================================================================");
+//  trace("nMaxBottom : "+nMaxBottom);
+//  trace("nMaxRight : "+ nMaxRight);
+//  trace("===================================================================");
+//
+    this.bv_nMaxBottom = nMaxBottom;
+    this.bv_nMaxRight = nMaxRight;
+
+    objForm.bv_sToDay = this.bfn_getUserInfo().today;   // 현재 DB날짜
+
+    if (objForm["fn_frmInit"]) {
+        objForm.fn_frmInit();
+    }
+};
+
+
+pForm.cfn_formOnkeyup = function(obj, e)
+{
+    var sSvrType = nexacro.getApplication().av_sSvrType;
+
+    //ctrl + F12
+    if ((sSvrType == "NEXACRO" || sSvrType == "LOCAL" || sSvrType == "DEV") && (e.keycode == 123) && (e.ctrlkey) && (!e.altkey) && (!e.shiftkey)) {
+        this.cfn_showObjects(obj);
+    }
+};
+
+
+/*--------------------------------------------------------------------------------------*
+ * DB 시간 조회 (YYYYMMDDhhmmss)
+ *--------------------------------------------------------------------------------------*/
+pForm.cfn_getDbDateTime = function()
+{
+    this.cfn_newDataset("", "ds_timeStamp", this);
+
+    var sTrId           = "timeSelect";
+    var sPath           = "/common/bizcommon/selectDateTime.do";
+    var sInputDs        = "";
+    var sOutputDs       = "ds_timeStamp=ds_result";
+    var sArg            = "";
+    var oPreArgs        = [];
+    var sCallback       = "";
+    var bAsync          = false;
+    this.gfn_callService(sTrId, sPath, sInputDs, sOutputDs, sArg, oPreArgs, sCallback, bAsync);
+
+    var sTimeStamp = this.ds_timeStamp.getColumn(0, "DT");
+
+    var objDs = this.removeChild("ds_timeStamp");
+    objDs.destroy();
+
+    return sTimeStamp;
+
+};
+
+// Dataset 추가
+pForm.cfn_newDataset = function(sUseType, sDsNm, objForm)
+{
+    var objDs;
+    var objForm = this.gfn_isNull(objForm) ? this : objForm;
+    if (!objForm.isValidObject(sDsNm)) {
+        objDs = new Dataset();
+        objDs.set_name(sDsNm);
+        objForm.addChild(objDs.name, objDs);
+
+        this.cfn_addColumn(sUseType, objDs);
+    } else {
+        objDs = objForm[sDsNm];
+        if (objDs.getColCount() == 0) {
+            this.cfn_addColumn(sUseType, objDs);
+        }
+    }
+
+    return objDs;
+};
+
+
+// Dataset에 대한 Column정보 추가
+pForm.cfn_addColumn = function(sUseType, objDs)
+{
+    switch (sUseType) {
+        case "TRANS_INFO" :
+            objDs.addColumn("strInDataset",       "string", 100);
+            objDs.addColumn("strInVOClass",       "string", 100);
+            objDs.addColumn("strInDatasetLocal",  "string", 100);
+            objDs.addColumn("strOutDataset",      "string", 100);
+            objDs.addColumn("strOutVOClass",      "string", 100);
+            objDs.addColumn("strOutDatasetLocal", "string", 100);
+            break;
+
+        case "QUERY_INFO" :
+        case "QUERY_LIST" :
+            objDs.addColumn("formId",         "string",     32);
+            objDs.addColumn("execTime",       "string",     32);
+            objDs.addColumn("execDuration",   "bigdecimal", 16);
+            objDs.addColumn("queryId",        "string",     32);
+            objDs.addColumn("queryStatement", "string",     32);
+            break;
+    }
+};
+
+
+
+
+pForm.cfn_messageSelect = function(){
+    var sTrId           = "messageSelect";
+    var sPath           = "/common/bizcommon/selectMsgList.do";
+    var sInputDs        = "";
+    var sOutputDs       = "gds_message=gds_message";
+    var sArg            = "";
+    var oPreArgs        = [];
+    var sCallback       = "";
+
+    this.gfn_callService(sTrId, sPath, sInputDs, sOutputDs, sArg, oPreArgs, sCallback);
+};
+
+
+this.cfn_quickviewOnsize = function(obj, e)
+{
+    if(nexacro.getApplication().mainframe.titlebar["fv_divTitleBar"]){
+        nexacro.getApplication().mainframe.titlebar.fv_divTitleBar.setOffsetLeft(obj.getOffsetWidth() - 422);
+        nexacro.getApplication().mainframe.titlebar.fv_divTitleBar.setOffsetRight(obj.getOffsetWidth() - 100);
+    }
+};
+
+
+pForm.cfn_bizFrameLog = function()
+{
+    if(nexacro.getApplication().gv_isQuick) return;
+
+    var oParentForm = this.getOwnerFrame().form;
+    var sLog = "## bizFrame_onload #########################################################"
+        + "\n  menuId    = " + oParentForm._bizInfo.menuId
+        + ",  menuText  = " + oParentForm._bizInfo.menuText
+        + ",  menuUrl   = " + oParentForm._bizInfo.menuUrl
+        + ",  screenId  = " + oParentForm._bizInfo.screenId
+        + ",  programId = " + oParentForm._bizInfo.programId;
+
+    trace(sLog);
+};
+
+
+pForm.cfn_getMaxBottomPosition = function(objForm)
+{
+    var allcomponents = objForm.components;
+    var obj;
+    var nMaxBottom = 0;
+
+    for(var i=0; i<allcomponents.length; i++)
+    {
+        obj = allcomponents[i];
+
+        if(!obj.visible) continue;
+
+        //obj.anchor = "default";
+
+        if(nMaxBottom < obj.getOffsetBottom()){
+            nMaxBottom = obj.getOffsetBottom();
+        }
+    }
+    return nMaxBottom;
+};
+
+
+pForm.cfn_getMaxRightPosition = function(objForm){
+
+    var allcomponents = objForm.components;
+    var obj;
+    var nMaxRight = 0;
+
+    for(var i=0; i<allcomponents.length; i++)
+    {
+        obj = allcomponents[i];
+
+        //obj.anchor = "default";
+
+        if(nMaxRight < obj.getOffsetRight()){
+            nMaxRight = obj.getOffsetRight();
+        }
+    }
+    return nMaxRight;
+};
+
+
+
+pForm.cfn_debug = function(oObj)
+{
+    trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    if (oObj instanceof String) {
+        trace(oObj);
+    } else if (oObj instanceof Array) {
+        trace(oObj);
+    } else if (oObj instanceof Object) {
+        for(var key in oObj) {
+            trace(key + ": " + oObj[key]);
+        }
+    } else if (oObj instanceof Dataset) {
+        trace(oObj.saveXML());
+    } else {
+        trace(oObj);
+    }
+    trace("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+};
+
+
+
+pForm.cfn_getCommonCode = function(oForm)
+{
+    if (!oForm.objects["ds_commonCodeList"])
+    {
+        trace("===============================================================");
+        trace("ds_commonCodeList이 존재하지 않습니다. 확인하세요");
+        trace("===============================================================");
+        return;
+    }
+
+    var oDsCommonCodeList = oForm.objects["ds_commonCodeList"];
+    var oDsCommonCode = oForm.objects["_ds_commonCode"];
+
+    if (this.gfn_isNull(oDsCommonCode)) {
+        var sTempDsCommonCode = "_ds_commonCode";
+        oDsCommonCode  = new Dataset();
+        oDsCommonCode.set_name(sTempDsCommonCode);
+        oForm.addChild(sTempDsCommonCode, oDsCommonCode);
+    }
+
+    var oDsCond = oForm.objects["_ds_cond"];
+    if (this.gfn_isNull(oDsCond)) {
+        var sTempDsCond = "_ds_cond";
+        oDsCond  = new Dataset();
+        oDsCond.set_name(sTempDsCond);
+        oForm.addChild(sTempDsCond, oDsCond);
+        oDsCond.addColumn( "BASE_CD_PTTN", "string" );
+    }
+
+    for(var i=0; i<oForm.ds_commonCodeList.rowcount; i++)
+    {
+        oDsCond.addRow();
+        oDsCond.setColumn(oDsCond.rowposition,"BASE_CD_PTTN",oForm.ds_commonCodeList.getColumn(i,"BASE_CD_PTTN"));
+    }
+
+    var sSvcId = "selectCommonCodeList";
+    var sPath  = "/common/bizcommon/selectBaseCdList.do";
+    var sInputDsName = "ds_cond=_ds_cond";
+    var sOutputDsName = "_ds_commonCode=ds_result";
+    var sArg = "";
+    var sCallPrev = "";
+    var sCallback = "";
+
+    this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, sCallPrev, sCallback, false);
+
+    var sFilterstr = "";
+
+    for(var i=0; i<oForm.ds_commonCodeList.rowcount; i++) {
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"BASE_CD_PTTN"))) { // 유형코드
+            sFilterstr = "BASE_CD_PTTN == '" + oForm.ds_commonCodeList.getColumn(i,"BASE_CD_PTTN")   + "' && ";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPST_LTC_BASE_CD_PTTN"))) { // 상위유형코드
+            sFilterstr += "SPST_LTC_BASE_CD_PTTN == '" + oForm.ds_commonCodeList.getColumn(i,"SPST_LTC_BASE_CD_PTTN")   + "' && ";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SYS_CD"))) { //시스템코드
+            sFilterstr += "SYS_CD == '" + oForm.ds_commonCodeList.getColumn(i,"SYS_CD") + "'";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPARE_1"))) { //여분1
+            sFilterstr += " && SPARE_1 == '" + oForm.ds_commonCodeList.getColumn(i,"SPARE_1") + "'";
+        }
+
+		if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPARE_2"))) { //여분2
+            sFilterstr += " && SPARE_2 == '" + oForm.ds_commonCodeList.getColumn(i,"SPARE_2") + "'";
+        }
+
+		if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPARE_3"))) { //여분3
+            sFilterstr += " && SPARE_3 == '" + oForm.ds_commonCodeList.getColumn(i,"SPARE_3") + "'";
+        }
+
+		if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPARE_4"))) { //여분4
+            sFilterstr += " && SPARE_4 == '" + oForm.ds_commonCodeList.getColumn(i,"SPARE_4") + "'";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPARE_5"))) { //여분5
+            sFilterstr += " && SPARE_5 == '" + oForm.ds_commonCodeList.getColumn(i,"SPARE_5") + "'";
+        }
+
+        //if(!this.gfn_isNull(ds_commonCodeList.getColumn(i,"ADPT_YN"))) { //적용여부
+        //  sFilterstr += " && ADPT_YN == '" + ds_commonCodeList.getColumn(i,"ADPT_YN") + "'";
+        //}
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"ADPT_FR_DT"))) { //순번
+            sFilterstr += " && ADPT_FR_DT == '" + oForm.ds_commonCodeList.getColumn(i,"ADPT_FR_DT") + "'";
+        }
+
+		if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"ADPT_TO_DT"))) { //순번
+            sFilterstr += " && ADPT_TO_DT == '" + oForm.ds_commonCodeList.getColumn(i,"ADPT_TO_DT") + "'";
+        }
+
+		if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SORT_ORD"))) { //순번
+            sFilterstr += " && SORT_ORD == '" + oForm.ds_commonCodeList.getColumn(i,"SORT_ORD") + "'";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"BASE_CD"))) { //기초코드
+            sFilterstr += " && BASE_CD == '" + oForm.ds_commonCodeList.getColumn(i,"BASE_CD") + "'";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"BASE_CD_NM"))) { //기초코드명
+            sFilterstr += " && BASE_CD_NM == '" + oForm.ds_commonCodeList.getColumn(i,"BASE_CD_NM") + "'";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"SPST_LTC_BASE_CD"))) { //상위기초코드
+            sFilterstr += " && SPST_LTC_BASE_CD == '" + oForm.ds_commonCodeList.getColumn(i,"SPST_LTC_BASE_CD") + "'";
+        }
+
+        if(!this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"BASE_CD_USE_BUSI_TYPE_CD"))) { //기초코드사용업무구분코드
+            sFilterstr += " && BASE_CD_USE_BUSI_TYPE_CD == '" + oForm.ds_commonCodeList.getColumn(i,"BASE_CD_USE_BUSI_TYPE_CD") + "'";
+        }
+
+		if(this.gfn_isNull(oForm.ds_commonCodeList.getColumn(i,"BASE_CD_USE_BUSI_TYPE_CD"))) { //기초코드사용업무구분코드
+            sFilterstr += " && ( BASE_CD_USE_BUSI_TYPE_CD == '' || BASE_CD_USE_BUSI_TYPE_CD == undefined )";
+        }
+
+        oForm._ds_commonCode.set_filterstr(sFilterstr);
+
+        var sRtnDsName = oForm.ds_commonCodeList.getColumn(i,"RETURN_DATASET");
+        oDs = oForm.objects[sRtnDsName];
+        oDs.copyData(oForm._ds_commonCode,true);
+
+        if(oForm.ds_commonCodeList.getColumn(i,"TYPE") == "T"){
+            oDs.insertRow(0);
+            oDs.setColumn(0,"BASE_CD","");
+            oDs.setColumn(0,"BASE_CD_NM","전체");
+            oDs.setColumn(0,"BASE_CD_NM2","전체");
+        }
+
+        if(oForm.ds_commonCodeList.getColumn(i,"TYPE") == "S"){
+            oDs.insertRow(0);
+            oDs.setColumn(0,"BASE_CD","");
+            oDs.setColumn(0,"BASE_CD_NM","선택");
+            oDs.setColumn(0,"BASE_CD_NM2","선택");
+        }
+
+        if(oForm.ds_commonCodeList.getColumn(i,"TYPE") == "S+") {
+
+            for(var z=0; z<oDs.rowcount; z++) {
+                oDs.setColumn(z,"BASE_CD_NM",oDs.getColumn(z,"BASE_CD_NM2"));
+            }
+            oDs.insertRow(0);
+            oDs.setColumn(0,"BASE_CD","");
+            oDs.setColumn(0,"BASE_CD_NM","선택");
+            oDs.setColumn(0,"BASE_CD_NM2","선택");
+        }
+
+        if(oForm.ds_commonCodeList.getColumn(i,"TYPE") == "T+") {
+
+            for(var x=0; x<oDs.rowcount; x++) {
+                oDs.setColumn(x,"BASE_CD_NM",oDs.getColumn(x,"BASE_CD_NM2"));
+            }
+            oDs.insertRow(0);
+            oDs.setColumn(0,"BASE_CD","");
+            oDs.setColumn(0,"BASE_CD_NM","전체");
+            oDs.setColumn(0,"BASE_CD_NM2","전체");
+        }
+
+        oForm._ds_commonCode.set_filterstr("");
+    }
+
+    if (typeof(oForm.fn_commonCodeCallBack) == "function") {
+            oForm.fn_commonCodeCallBack();
+    }
+
+//  if (oForm["fn_commonCodeCallBack"]) {
+//      oForm.fn_commonCodeCallBack();
+//  }
+
+};
+
+//공통버튼 enable
+pForm.cfn_setCommonButtonEnable = function(sBtnName, bEnable)
+{
+//trace("cfn_setCommonButtonEnable>>>>>>>>>>"+bEnable);
+    var oDiv_functionBtn, oDs;
+    if(nexacro.getApplication().gv_isQuick){
+        oDiv_functionBtn = nexacro.getApplication().mainframe.titlebar.fv_divTitleBar.form.div_functionButton;
+        oDs = nexacro.getApplication().mainframe.titlebar.fv_divTitleBar.form.ds_functionButton;
+    } else {
+        var oParent = this.getOwnerFrame().form;
+        oDiv_functionBtn = oParent.div_functionButton;
+        oDs = oParent.ds_functionButton;
+    }
+    eval("oDiv_functionBtn.form." + sBtnName + ".set_enable(" + bEnable + ")");
+};
+
+
+pForm.cfn_setCommonButtonVisible = function(sBtnName, bVisible)
+{
+//trace("cfn_setCommonButtonVisible>>>>>>>>>>"+sBtnName + "," + bVisible);
+    var oDiv_functionBtn, oDs;
+    if(nexacro.getApplication().gv_isQuick){
+        oDiv_functionBtn = nexacro.getApplication().mainframe.titlebar.fv_divTitleBar.form.div_functionButton;
+        oDs = nexacro.getApplication().mainframe.titlebar.fv_divTitleBar.form.ds_functionButton;
+    } else {
+        var oParent = this.getOwnerFrame().form;
+        oDiv_functionBtn = oParent.div_functionButton;
+        oDs = oParent.ds_functionButton;
+    }
+
+    eval("oDiv_functionBtn.form." + sBtnName + ".set_visible(" + bVisible + ")");
+/*
+    var nRow = oDs.findRow("BUTTON_ID",sBtnName);
+trace("cfn_setCommonButtonVisible>>>>>>>>>>nRow[" + nRow + "]");
+    var sAuth = "Y";
+    if(!bVisible) sAuth = "N";
+trace("cfn_setCommonButtonVisible>>>>>>>>>>sAuth[" + sAuth + "]");
+    oDs.setColumn(nRow,"SCREEN_AUTH",sAuth);
+    oDs.setColumn(nRow,"USER_AUTH",sAuth);
+    this.cfn_sortCommonButton();
+*/
+    var sAuth = "Y";
+    if(!bVisible) sAuth = "N";
+    for(var i=0; i<sBtnName.length; i++)    {
+        var sRow = oDs.findRow("BUTTON_ID", sBtnName[i]);
+        if (sRow > -1){
+            if (sBtnName[i] == "btn_escape") oDs.setColumn(sRow,"SCREEN_AUTH",sAuth);
+            oDs.setColumn(sRow,"USER_AUTH",sAuth);
+        }
+    }
+    this.cfn_sortCommonButton();
+};
+
+
+pForm.cfn_sortCommonButton = function()
+{
+//trace("cfn_sortCommonButton>>>>>>>>>>");
+    var objApp = nexacro.getApplication();
+    var objOwnerFrame = this.getOwnerFrame();
+    var oParent, oDiv_functionBtn, oDs;
+    var nRight = 0;
+
+    var bEscape_flag = true;
+    if(objApp.gv_isQuick == true) {
+        oParent = objApp.mainframe.titlebar.fv_divTitleBar;
+        oDiv_functionBtn = oParent.form.div_functionButton;
+        oDs = oParent.form.ds_functionButton;
+        //nRight = 322;
+    } else {
+        oParent = this.getOwnerFrame().form;
+        oDiv_functionBtn = oParent.div_functionButton;
+        oDs = oParent.ds_functionButton;
+        //nRight = 487;
+    }
+//this.gfn_dsView(oDs);
+
+    for(var i=0; i<oDs.rowcount; i++) {
+        var sBtnName = oDs.getColumn(i,"BUTTON_ID");
+        var objBtn = eval("oDiv_functionBtn.form." + sBtnName);
+        if ( objBtn ){
+            objBtn.set_visible(false);
+        }
+
+
+        if (sBtnName == "btn_escape" && oDs.getColumn(i,"SCREEN_AUTH") == "N")
+        {
+//trace("bEscape_flag=false");
+            bEscape_flag = false;
+        }
+
+    }
+
+    //var sFilterstr = "TYPE == '1' || (SCREEN_AUTH == 'Y' && USER_AUTH == 'Y')";
+    var sFilterstr = "(SCREEN_AUTH == 'Y' && USER_AUTH == 'Y')";
+    oDs.filter(sFilterstr);
+
+    oDs.set_keystring("S:+SEQ");
+    var sBtnName ;
+    var oBtn;
+    var nGap = 3;
+    var nTop = 0;
+    var nLeft = 0;
+    //var nRight = 0;
+    var nHeight = 22;
+    var nDivWidth = 0;
+
+    for(var i=0; i<oDs.rowcount; i++) {
+        sBtnName = oDs.getColumn(i,"BUTTON_ID");
+        oBtn = eval("oDiv_functionBtn.form." + sBtnName);
+        oBtn.set_visible(true);
+
+        nWidth = oBtn.getOffsetWidth();
+        oBtn.move(nLeft, nTop, nWidth, nHeight);
+
+        nLeft = nLeft + nWidth + nGap;
+        nDivWidth =  nLeft - nGap;
+// trace("sBtnName==="+sBtnName+"::::nLeft==="+nLeft+"::::nRight==="+nRight);
+// trace("nDivWidth==="+nDivWidth);
+    }
+
+    //div_functionBtn 의 width조정
+    oDiv_functionBtn.setOffsetWidth(nDivWidth);
+    oDs.set_filterstr("");
+//trace("objApp.gv_isQuick==="+objApp.gv_isQuick);
+    if(objApp.gv_isQuick == false) {
+        if ( objOwnerFrame.isMenuPopup == true ) {
+            oDiv_functionBtn.form.btn_escape.set_visible(false);
+        }
+
+
+
+/**
+        if(oDiv_functionBtn.form.btn_escape.visible) {
+            oDiv_functionBtn.form.btn_return.set_visible(false);
+        } else {
+            oDiv_functionBtn.form.btn_return.set_visible(true);
+        }
+**/
+//trace("oDiv_functionBtn.form.btn_escape.visible==="+oDiv_functionBtn.form.btn_escape.visible);
+        oDiv_functionBtn.form.btn_return.set_visible(false);
+        if(oDiv_functionBtn.form.btn_escape.visible) {
+            oDiv_functionBtn.form.btn_return.set_visible(false);
+        } else {
+//trace("bEscape_flag==="+bEscape_flag);
+            if (bEscape_flag){
+                oDiv_functionBtn.form.btn_return.set_visible(true);
+            }
+        }
+
+
+
+
+        //oDiv_functionBtn.form.btn_return.position = oDiv_functionBtn.form.btn_escape.position;
+        var objEscapeBtn = oDiv_functionBtn.form.btn_escape;
+        oDiv_functionBtn.form.btn_return.move(objEscapeBtn.left, objEscapeBtn.top);
+
+        if(oDiv_functionBtn.form.btn_bookmark.visible) {
+            oDiv_functionBtn.form.btn_bookmarkDel.set_visible(false);
+        } else {
+            oDiv_functionBtn.form.btn_bookmarkDel.set_visible(true);
+        }
+
+        // 업무화면 팝업일 경우
+        if(objOwnerFrame.isPopup == true) {
+            oDiv_functionBtn.form.btn_return.set_visible(false);
+            oDiv_functionBtn.form.btn_bookmarkDel.set_visible(false);
+        }
+        var obBookmarkBtn =  oDiv_functionBtn.form.btn_bookmark;
+        oDiv_functionBtn.form.btn_bookmarkDel.move(obBookmarkBtn.left, obBookmarkBtn.top);
+
+        var nTop_bizTitleNavi    = oParent.sta_bizTitleNavi.getOffsetTop();
+        var nWidth_bizTitleNavi  = oParent.sta_bizTitleNavi.getOffsetWidth();
+        var nHeight_bizTitleNavi = oParent.sta_bizTitleNavi.getOffsetHeight();
+        var nRight_bizTitleNavi  = nexacro.toNumber(oDiv_functionBtn.right) + 10 + oDiv_functionBtn.getOffsetWidth();
+ //trace("::::nTop==="+nTop_bizTitleNavi+"::::nWidth==="+nWidth_bizTitleNavi+"::::nHeight==="+nHeight_bizTitleNavi+"::::nRight==="+nRight_bizTitleNavi);
+        oParent.sta_bizTitleNavi.move(null, nTop_bizTitleNavi, nWidth_bizTitleNavi, nHeight_bizTitleNavi, nRight_bizTitleNavi, null);
+    }
+
+    this.cfn_setQuickMenuIcon(oParent);
+};
+
+//메인 화면에서 실행시 QuickMenu Icon설정
+pForm.cfn_setQuickMenuIcon = function(objForm)
+{
+    if(nexacro.getApplication().gv_isQuick == true) return;
+
+    if(nexacro.getApplication().gds_qukMenu.rowcount <= 0) return ;
+
+    var sMenuId = objForm.getOwnerFrame()._bizInfo.menuId;
+
+    var nQuickRow = nexacro.getApplication().gds_qukMenu.findRow("MENU_PAGE_ID", sMenuId);
+
+    if(nQuickRow >= 0){
+        objForm.div_functionButton.form.btn_bookmarkDel.set_visible(true);
+        objForm.div_functionButton.form.btn_bookmark.set_visible(false);
+    } else {
+        objForm.div_functionButton.form.btn_bookmarkDel.set_visible(false);
+        objForm.div_functionButton.form.btn_bookmark.set_visible(true);
+    }
+};
+
+//공통버튼 설정
+pForm.cfn_setCommonButton = function(aButton)
+{
+    var objApp = nexacro.getApplication();
+    var oDiv_functionBtn, oDs;
+    if(objApp.gv_isQuick == true){
+        oDiv_functionBtn = this.fv_divTitleBar.form.div_functionButton;
+        oDs = this.fv_divTitleBar.form.ds_functionButton;
+    } else {
+        var objWorkForm = this.getOwnerFrame().form;
+        oDiv_functionBtn = objWorkForm.div_functionButton;
+        oDs = objWorkForm.ds_functionButton;
+    }
+
+    if(!oDiv_functionBtn) return;
+    oDiv_functionBtn.set_visible(true);
+
+    for(var i=0; i<aButton.length; i++)     {
+        var sRow = oDs.findRow("BUTTON_ID", "btn_" + aButton[i]);
+        oDs.setColumn(sRow,"SCREEN_AUTH","Y");
+    }
+
+    this.cfn_sortCommonButton();
+};
+
+//sMenuId : 메뉴ID, oArg : 전달파라메타
+//oArg에 값이 있으면 MDI창에서 재오픈
+pForm.cfn_menuOpen = function(sMenuId, oArg)
+{
+     nexacro.getApplication().av_oTopFrame.form.fn_menuOpen(sMenuId, oArg);
+};
+
+
+/*--------------------------------------------------------------------------------------*
+ * Debug 정보용 화면 호출
+ *--------------------------------------------------------------------------------------*/
+pForm.cfn_showObjects = function(objOpener)
+{
+    var objApp = nexacro.getApplication();
+    if ( this.gfn_isNull(objOpener) )   objOpener = this;
+
+    if (system.navigatorname == "nexacro") {
+        var curX = objApp.mainframe.left;
+        var curY = objApp.mainframe.top;
+    }else{
+        var curX = window.screenLeft;
+        var curY = window.screenTop;
+    }
+    var nWidth  = 1080;
+    var nHeight = 703;
+
+    var nLeft   =  curX + (objApp.mainframe.width / 2) - Math.round(nWidth / 2);
+    var nTop    = curY + (objApp.mainframe.height / 2) - Math.round(nHeight / 2) ;
+
+    var sPopId   = "ShowObjects" + this.gfn_getDateMillisecondStr();
+    //var sBaseUrl = "frame_common::showObjects.xfdl";
+    var sBaseUrl = "frame_common::comDebug.xfdl";
+
+    var objParentFrame = objOpener.getOwnerFrame();
+    var oArgs = {argObjOpener:objOpener};
+
+    var sTitleText = "Object Viewer";
+
+    var sOpenStyle = "topmost=true showtitlebar=true showstatusbar=false showontaskbar=true showcascadetitletext=false border='1px solid #24322b' titlebarheight=25"
+                   + " resizable=true autosize=true titletext='" + sTitleText + "'";
+    nexacro.open(sPopId, sBaseUrl, objParentFrame, oArgs, sOpenStyle, nLeft, nTop, nWidth, nHeight, objOpener);
+};
+
+pForm.cfn_tabOnkeydown = function(obj, e)
+{
+    if(e.keycode == 37) {
+        obj.set_tabindex(obj.tabindex - 1);
+    }
+
+    if(e.keycode == 39) {
+        obj.set_tabindex(obj.tabindex + 1);
+    }
+};
+
+pForm.cfn_menuPopupOpen = function(sMenuId,oArg,bIsModal) {
+
+    var objOpener   = this;
+    var nRow        = nexacro.getApplication().gds_allMenu.findRow("MENU_ID",sMenuId);
+    var sScrId      = nexacro.getApplication().gds_allMenu.getColumn(nRow,"PGM_ID");
+    var sPopId      = sMenuId + "_popup";
+
+    var arrScrInfo  = this.gfn_getScreenInfo(sScrId);
+
+    if(arrScrInfo["RESULT"]) {
+        arrScrInfo["PROGRAM_WIDTH"] = 1070;
+        arrScrInfo["PROGRAM_HEIGHT"] = 633;
+        this.ifn_menuPopupOpen(objOpener, sPopId, arrScrInfo, oArg, bIsModal);
+    }
+};
+
+//URL에 정보에 해당하는 팝업호출
+pForm.ifn_menuPopupOpen = function (objOpener, sPopId, arrScrInfo, oArgs, bIsModal, bVscrollbar,
+                                nLeft, nTop, bResize, bTitleBar, bStatusBar, sPopupTitle,
+                                bWrapForm, sPopupCallback)
+{
+    var objApp = nexacro.getApplication();
+
+    // set Default Value
+    if (this.gfn_isNull(bIsModal))      bIsModal    = false;        //default : modeless
+    if (this.gfn_isNull(bVscrollbar))   bVscrollbar = false;
+    if (this.gfn_isNull(nLeft))         nLeft   = -1;
+    if (this.gfn_isNull(nTop))          nTop    = -1;
+    if (this.gfn_isNull(bResize))       bResize     = false;        //modeless는 적용안됨
+    if (this.gfn_isNull(bTitleBar))     bTitleBar   = true;
+    if (this.gfn_isNull(bStatusBar))    bStatusBar  = false;
+    //bStatusBar  = false;
+    //if (this.gfn_isNull(sPopupTitle))   sPopupTitle = "";
+    if (this.gfn_isNull(bWrapForm))     bWrapForm   = true;
+    if (this.gfn_isNull(sPopupCallback))    sPopupCallback  = "fn_popupCallback";
+
+    var bLayered = false;
+    var nOpacity = 100;
+    var bAutoSize = false;
+
+    var sScrId  = arrScrInfo["PROGRAM_ID"];
+    var sScrNm  = arrScrInfo["PROGRAM_NAME"];
+    var sURL    = arrScrInfo["PROGRAM_PATH"];
+    var nWidth  = arrScrInfo["PROGRAM_WIDTH"];
+    var nHeight = arrScrInfo["PROGRAM_HEIGHT"];
+
+    if(nWidth == -1 || nHeight == -1) {
+        bAutoSize = true;
+    }
+
+    // TitleText 설정
+    if (!this.gfn_isNull(sPopupTitle)) { sScrNm     = sPopupTitle; }
+    var sTitleText = sScrNm  + "[" + sScrId +"]";
+
+    // 공통 Popup URL
+    var sBaseUrl = "frame_main::frameWork.xfdl";
+
+    var openerBizInfo;
+    var objParentFrame = objOpener.getOwnerFrame();
+    var objBizInfo = { popupId : sScrId
+                     , popupNm : sScrNm
+                     , url     : sURL
+                     , width   : nWidth
+                     , height  : nHeight
+                     };
+    //mainframe에서 호출시 처리용
+    if (objOpener === objApp.mainframe) {
+        objParentFrame = objOpener;
+    }
+    //업무화면에서 호출(objNewWin.isPopup  = false;)
+    else if(!objParentFrame.isPopup) {
+
+        if (objParentFrame["_bizInfo"]) {
+            openerBizInfo = objParentFrame._bizInfo;
+
+        } else if (objParentFrame["_frmInfo"]) {
+            openerBizInfo = objParentFrame._frmInfo;
+        }
+    //팝업에서 호출
+    }
+    else {
+        openerBizInfo = objParentFrame._bizInfo;
+    }
+    if (openerBizInfo)
+    {
+        objBizInfo["menuId"]        = openerBizInfo.menuId;
+        objBizInfo["menuText"]      = sScrNm;
+        objBizInfo["screenId"]      = openerBizInfo.screenId;
+        objBizInfo["menuUrl"]       = sURL;
+        objBizInfo["programId"]     = sScrId;
+    }
+
+    //팝업크기 재조정
+    var nTitlebarheight = 32;
+    var nRevisionValueW = 2;  // Border 1 * 2
+    var nRevisionValueH = 2;     // Border 1 * 2
+    var nStatusbarheight = 0;
+
+    if (bWrapForm) {
+        nRevisionValueW += 20;  // margin 10 * 2
+        nRevisionValueH += 20;  // margin 10 * 2
+    }
+
+    if (bVscrollbar) {
+        nRevisionValueW += 10;
+    }
+
+    if (!bTitleBar)  { nTitlebarheight = 0; }
+    if (!bStatusBar) { nStatusbarheight = 0; }
+
+    nWidth  += nRevisionValueW;
+    nHeight += nTitlebarheight + nStatusbarheight + nRevisionValueH;
+
+    var sOpenalign = "";
+    if(nLeft == -1 && nTop == -1)
+    {
+        sOpenalign = "center middle";
+        if (system.navigatorname == "nexacro") {
+            var curX = objApp.mainframe.left;
+            var curY = objApp.mainframe.top;
+        }else{
+            var curX = window.screenLeft;
+            var curY = window.screenTop;
+        }
+
+        nLeft   =  curX + (objApp.mainframe.width / 2) - Math.round(nWidth / 2);
+        nTop    = curY + (objApp.mainframe.height / 2) - Math.round(nHeight / 2) ;
+
+    }else{
+        nLeft   =  this.getOffsetLeft() + nLeft;
+        nTop   =  this.getOffsetTop() + nTop;
+    }
+
+    var sPopupType = ( bIsModal == true ) ? "modal":"modeless";
+//trace("sPopupType==="+sPopupType);
+    if( this.gfn_isNull(oArgs))
+    {
+        oArgs = {};
+        oArgs["_bizInfo"] = objBizInfo;
+        oArgs["isPopup"]  = true;       //팝업여부 체크용
+    }
+    else
+    {
+        if( typeof oArgs =="object" )
+        {
+            oArgs["_bizInfo"] = objBizInfo;
+            oArgs["isPopup"]  = true;   //팝업여부 체크용
+        }
+    }
+    //리턴변수 초기화
+    this._variant = "";
+
+    if(sPopupType == "modeless")
+    {
+        var sOpenStyle = "topmost=true showtitlebar=true showstatusbar=false showontaskbar=true showcascadetitletext=false border='1px solid #24322b' titlebarheight="+ nTitlebarheight
+                       + " resizable=true autosize=false titletext='" + sTitleText + "'";
+        // Popup(Modeless) 인 경우 화면이 열려 있으면 Focus만 줌.
+        var arrPopFrame = nexacro.getPopupFrames(objParentFrame);
+        var objPopup = arrPopFrame[sPopId];
+        if (arrPopFrame[sPopId]) {
+            if (system.navigatorname == "nexacro") {
+                arrPopFrame[sPopId].setFocus();
+            } else {
+                arrPopFrame[sPopId]._getWindowHandle().focus();
+            }
+        }
+        else {
+            //trace("this.name==="+this.name+":::::::::::url==="+oArgs._bizInfo.url);
+            nexacro.open(sPopId,sBaseUrl,objParentFrame,oArgs,sOpenStyle,nLeft, nTop, nWidth, nHeight, this);
+        }
+    }
+    else
+    {
+        newChild = new nexacro.ChildFrame;
+        newChild.init(sPopId, nLeft, nTop, nWidth, nHeight, null, null, sBaseUrl);
+        newChild.set_dragmovetype("normal");
+        newChild.set_showcascadetitletext(false);
+        //newChild.set_layered(bLayered);
+        //newChild.set_overlaycolor("RGBA(0, 0, 0, 0.2)");
+        newChild.set_opacity(nOpacity);
+        //newChild.set_border("1px solid #24322b");
+
+        newChild.set_showtitlebar(bTitleBar);
+        newChild.set_titlebarheight(nTitlebarheight);
+        newChild.set_showtitleicon(false);      //타이틀바 아이콘표시
+        newChild.set_titletext(sTitleText);
+        newChild.set_showstatusbar(bStatusBar);
+        newChild.set_autosize(bAutoSize);
+        newChild.set_resizable(bResize);
+        newChild.set_openalign(sOpenalign);
+//trace("oArgs bizinfo===="+oArgs["_bizInfo"]);
+        //newChild.isPopup = true; //팝업여부 체크용
+        //이벤트 추가
+        var nIndex = newChild.addEventHandler("onmove", this._gfn_modalPopup_onmove, this);
+
+        //newChild.set_cssclass("");    //set_background("transparent URL('images::bg_popup.png') stretch 35,10");
+        if ( this.gfn_isNull(objOpener[sPopupCallback]) ) {
+            var bSucc = newChild.showModal(objParentFrame, oArgs, objOpener, function(){});
+        } else {
+            var bSucc = newChild.showModal(objParentFrame, oArgs, objOpener, objOpener[sPopupCallback]);
+        }
+        //newChild.titlebar.set_background('url("./images/bg_popuptitle.png") no-repeat center center #transparent');
+        //newChild.titlebar.set_color("#ffffff");
+        //newChild.titlebar.set_font("dotum,11,bold");
+        //newChild.titlebar.set_padding("0");
+    }
+};
+
+// pForm.ifn_menuPopupOpen = function(objOpener, sPopId, arrScrInfo, sArgs, bIsModal,
+//                          nLeft, nTop, bResize, bTitleBar, bStatusBar, sPopupTitle,
+//                          bWrapForm, bBySession) {
+//
+//  Popup(Modeless) 인 경우 화면이 열려 있으면 Focus만 줌.
+//  var arrPopFrame = nexacro.getPopupFrames();
+//  var objPopup = arrPopFrame[sPopId];
+//  if (arrPopFrame[sPopId]) {
+//      if (system.navigatorname == "nexacro") {
+//          arrPopFrame[sPopId].setFocus();
+//      } else {
+//          arrPopFrame[sPopId]._getWindowHandle().focus();
+//      }
+//      return;
+//  }
+//
+//  var sScrId  = arrScrInfo["PROGRAM_ID"];
+//  var sScrNm  = arrScrInfo["PROGRAM_NAME"];
+//  var sURL    = arrScrInfo["PROGRAM_PATH"];
+//  var nWidth  = arrScrInfo["PROGRAM_WIDTH"];
+//  var nHeight = arrScrInfo["PROGRAM_HEIGHT"];
+//
+//
+//  nWidth, nHeight 보정 작업(지원하지 않음 njs 18.10.09)
+//  var arrScreenRect = nexacro.getApplication().afn_getScreenXY();
+//  if (nWidth == null || nWidth <= 0) {
+//      nWidth = arrScreenRect[0];
+//  }
+//  if (nHeight == null || nHeight <= 0) {
+//      nHeight = arrScreenRect[1];
+//  }
+//
+//  set Default Value
+//  if (this.gfn_isNull(bIsModal))     { bIsModal   = false; }
+//  if (this.gfn_isNull(bResize))      { bResize    = false; }
+//  if (this.gfn_isNull(bTitleBar))    { bTitleBar  = true;  }
+//  if (this.gfn_isNull(bStatusBar))   { bStatusBar = false; }
+//  if (!this.gfn_isNull(sPopupTitle)) { sScrNm     = sPopupTitle; }
+//  if (this.gfn_isNull(bWrapForm))    { bWrapForm  = true; }
+//
+//  TitleText 설정
+//  var sTitleText = sScrNm;
+//
+//  공통 Popup URL
+//  var sBaseUrl = "";
+//  if ((bWrapForm) && (bIsModal)) {
+//      sBaseUrl = "frame_main::frameWork.xfdl";
+//  } else if ((bWrapForm) && (!bIsModal)) {
+//      sBaseUrl = "frame_main::frameWork.xfdl";
+//  } else {
+//      sBaseUrl = sURL;
+//  }
+//
+//  var bizInfo;
+//  var objParentFrame = objOpener.getOwnerFrame();
+//  var _bizInfo = { "popupId" : sScrId
+//                  ,"popupNm" : sScrNm
+//                  ,"url"     : sURL
+//                  ,"width"   : nWidth
+//                  ,"height"  : nHeight
+//                 };
+//  mainframe에서 호출시 처리용
+//  if (objOpener === nexacro.getApplication().mainframe) {
+//      objParentFrame = objOpener;
+//
+//  업무화면에서 호출
+//  } else if(!objParentFrame.isPopup) {
+//
+//      if (objParentFrame["_bizInfo"]) {
+//          bizInfo = objParentFrame._bizInfo;
+//
+//      } else if (objParentFrame["_frmInfo"]) {
+//          bizInfo = objParentFrame._frmInfo;
+//      }
+//
+//  팝업에서 호출
+//  } else {
+//      bizInfo = objParentFrame._bizInfo;
+//  }
+//
+//  if (bizInfo) {
+//      _bizInfo.menuId     = bizInfo.menuId;
+//      _bizInfo.menuText   = sScrNm;
+//      _bizInfo.screenId   = bizInfo.screenId;
+//      _bizInfo.menuUrl    = sURL;
+//      _bizInfo.programId  = sScrId;
+//  }
+//
+//  var nTitlebarheight = 32;
+//  var nRevisionValueW = 2;  // Border 1 * 2
+//  var nRevisionValueH = 2;  // Border 1 * 2
+//  var nStatusbarheight = 0;
+//
+//  if (bWrapForm) {
+//      nRevisionValueW += 20   ;  // margin 10 * 2
+//      nRevisionValueH += 20;  // margin 10 * 2
+//  }
+//
+//  if (!bTitleBar)  { nTitlebarheight = 0; }
+//  if (!bStatusBar) { nStatusbarheight = 0; }
+//
+//
+//  nWidth  += nRevisionValueW;
+//  nHeight += nTitlebarheight + nStatusbarheight + nRevisionValueH;
+//
+//  화면 위치
+//  var sOpenalign = "";
+//  if(nLeft == -1 && nTop == -1)
+//  {
+//      sOpenalign = "center middle";
+//      if (system.navigatorname == "nexacro") {
+//          var curX = objApp.mainframe.left;
+//          var curY = objApp.mainframe.top;
+//      }else{
+//          var curX = window.screenLeft;
+//          var curY = window.screenTop;
+//      }
+//
+//         nLeft   =  curX + (objApp.mainframe.width / 2) - Math.round(nWidth / 2);
+//      nTop    = curY + (objApp.mainframe.height / 2) - Math.round(nHeight / 2) ;
+//
+//  }else{
+//      nLeft   =  this.getOffsetLeft() + nLeft;
+//      nTop   =  this.getOffsetTop() + nTop;
+//  }
+//
+//  var objPopupCF = new ChildFrame;
+//  objPopupCF.init(sPopId, nLeft, nTop, nWidth, nHeight, null, null, sBaseUrl);
+//  objPopupCF.set_dragmovetype("normal");
+//  objPopupCF.set_autosize(false);
+//  objPopupCF.set_layered(false);
+//  objPopupCF.set_resizable(bResize);
+//
+//  objPopupCF.set_showtitlebar(bTitleBar);
+//  objPopupCF.set_showstatusbar(false); //bStatusBar;
+//  objPopupCF.set_titletext(sTitleText);
+//  objPopupCF._bizInfo = _bizInfo;
+//  objPopupCF.arg      = sArgs;
+//  objPopupCF.set_background("#ffffff");
+//  /*objPopupCF.style.background = "transparent URL('images::bg_popup.png') stretch 35,10";*/
+//
+//  objPopupCF.set_border("1px solid #a0afbf");
+//  objPopupCF.style.bordertype = "round 3 3";
+//  objPopupCF.style.shadow = "drop 2,2 2 #2e364144";
+//  objPopupCF.style.margin     = "0 3 3 0";
+//  objPopupCF.set_titlebarheight("32");
+//  objPopupCF.titlebar.set_border("0 none,0 none, 1 solid #a0afbf, 0 none");
+//  objPopupCF.titlebar.style.bordertype  = "round 2 2 lefttop righttop";
+//  objPopupCF.titlebar.set_background("#d9dee4");
+//  objPopupCF.titlebar.set_color("#2e3641");
+//  objPopupCF.titlebar.set_font("dotum,11,bold");
+//
+//  objPopupCF.isPopup = true; //팝업여부 체크용
+//
+//  if (bIsModal == true) {
+//      return objPopupCF.showModal(objParentFrame, sArgs, objOpener);
+//  } else {
+//         var sOpenStyle = "topmost=true showtitlebar=true showstatusbar=false showontaskbar=true showcascadetitletext=false border='1px solid #24322b' titlebarheight="+ nTitlebarheight
+//                     + " resizable=true autosize=false titletext='" + sTitleText + "'";
+//      Popup(Modeless) 인 경우 화면이 열려 있으면 Focus만 줌.
+//      var arrPopFrame = nexacro.getPopupFrames(objParentFrame);
+//      var objPopup = arrPopFrame[sPopId];
+//      if (arrPopFrame[sPopId]) {
+//          if (system.navigatorname == "nexacro") {
+//              arrPopFrame[sPopId].setFocus();
+//          } else {
+//              arrPopFrame[sPopId]._getWindowHandle().focus();
+//          }
+//      }
+//      else {
+//          trace("this.name==="+this.name+":::::::::::url==="+sArgs._bizInfo.url);
+//          nexacro.open(sPopId,sBaseUrl,objParentFrame,sArgs,sOpenStyle,nLeft, nTop, nWidth, nHeight, this);
+//      }
+//  }
+// };
+
+pForm.cfn_deleteRow = function(oGrid)
+{
+    var girdBindDs = oGrid.getBindDataset();
+
+    var iRow  = girdBindDs.rowposition;
+    var sStatus = this.gfn_getDataStatusGrid(oGrid, iRow );
+    var sGrdStatusUse = oGrid._rowstatus;
+    var chkCnt = 0;
+    if(oGrid._check) {
+        for(var i=0; i<girdBindDs.rowcount; i++) {
+            if (girdBindDs.getColumn(i, "CHK") == "1" ) {
+                chkCnt++
+                break;
+            }
+        }
+    }
+
+    if(chkCnt>0) {
+        for(var i=girdBindDs.rowcount; i >= 0 ; i--) {
+
+            if (girdBindDs.getColumn(i, "CHK") == 1 || girdBindDs.getColumn(i, "CHK") == "Y") {
+
+                sStatus = this.gfn_getDataStatusGrid(oGrid, i );
+
+                //girdBindDs.setColumn(i, "CHK", 0);// 체크항목 해제
+
+                if(sStatus == "I") {
+                    girdBindDs.deleteRow( i );
+                } else {
+                    this.gfn_deleteRowDatasetGrid(oGrid, i);
+                }
+
+                if(sStatus == "D") {//삭제 상태를 원복 할 때
+
+                    girdBindDs.set_updatecontrol(false);
+                    girdBindDs.setColumn(i,"_ROW_STATUS",1);
+                    girdBindDs.setRowType(i, Dataset.ROWTYPE_NORMAL);
+                    girdBindDs.set_updatecontrol(true);
+                }
+
+                //상태가 그리드에 없을 경우에 삭제가능.
+                if(sGrdStatusUse == "") {
+                    girdBindDs.deleteRow( i );
+                }
+
+            }
+        }
+    } else {
+
+
+        if(sStatus == "I") {
+            girdBindDs.deleteRow( iRow );
+        } else {
+            this.gfn_deleteRowDatasetGrid(oGrid, iRow);
+        }
+
+
+        if(sStatus == "D") {//삭제 상태를 원복 할 때
+
+            girdBindDs.set_updatecontrol(false);
+            girdBindDs.setColumn(iRow,"_ROW_STATUS",1);
+            girdBindDs.setRowType(iRow, Dataset.ROWTYPE_NORMAL);
+            girdBindDs.set_updatecontrol(true);
+        }
+        //상태가 그리드에 없을 경우에 삭제가능.
+        if(sGrdStatusUse == "") {
+            girdBindDs.deleteRow( iRow );
+        }
+    }
+};
+
+
+pForm.cfn_xecurewebOpen = function(objForm, sCallbackFunc)
+{
+    if ( this.gfn_isNull(objForm) ) objForm = this;
+    if ( this.gfn_isNull(sCallbackFunc) ) sCallbackFunc = "fn_callbackAnysign";
+    nexacro.getApplication().av_oHiddenFrame.form.fn_xcurewebOpen(objForm, sCallbackFunc);
+};

@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QTextEdit
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QTextEdit, QHBoxLayout
 
 
 class LoginLogPage(QWidget):
@@ -12,9 +12,15 @@ class LoginLogPage(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
+        buttons_layout = QHBoxLayout()
         self.refresh_button = QPushButton("새로고침")
         self.refresh_button.clicked.connect(self.load_logs)
-        layout.addWidget(self.refresh_button)
+        self.clear_button = QPushButton("전체 삭제")
+        self.clear_button.clicked.connect(self.clear_logs)
+        buttons_layout.addWidget(self.refresh_button)
+        buttons_layout.addWidget(self.clear_button)
+        buttons_layout.addStretch()
+        layout.addLayout(buttons_layout)
 
         self.text = QTextEdit()
         self.text.setReadOnly(True)
@@ -29,5 +35,15 @@ class LoginLogPage(QWidget):
         try:
             with open(self.log_file, "r", encoding="utf-8") as f:
                 self.text.setPlainText(f.read())
+            scroll_bar = self.text.verticalScrollBar()
+            scroll_bar.setValue(scroll_bar.maximum())
         except Exception as e:
             self.text.setPlainText(f"로그를 읽는 중 오류: {e}")
+
+    def clear_logs(self):
+        try:
+            with open(self.log_file, "w", encoding="utf-8"):
+                pass
+        except Exception:
+            pass
+        self.text.clear()

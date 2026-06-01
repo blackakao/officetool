@@ -1,0 +1,868 @@
+//----------------------------------------------------------------------------------------
+//
+// AnySign Data Encrypt , Decrypt Adaptor / 공인 인증서 처리 / Filed  Encrypt , Decrypt
+//
+//	제약 사항 :
+//		1. AnySign은 동기통신을 지원하지 않음.
+//		2. 암/복호화는 string만 지원하므로 binary문자는 불가. 따라서 SSV등을 사용시 특수문자로 인하여 BASE64를 TRUE로 설정하여야 함.
+//		3. base64로 encoding해서 보낸데이터는 서비스에서 동일하게 base64로 encoding하여 전송하여야 한다.
+//
+//----------------------------------------------------------------------------------------
+// * engine override flow
+//	form.transaction (***override***)
+//			     |
+//			     |___ nexacro._loadData
+//						|
+//						|___nexacro._startCommunication (***override***)
+//							|
+//							|__	nexacro.__startCommunication (서비스 호출 - 스크립트 스트링 재정의) ====> encrypt
+//								|
+//								|__  nexacro.__bindLoadDataHandler (callback)
+//									|
+//									|___ _pTransactionItem.on_load_data (***override***)  ====> decrypt
+//
+//----------------------------------------------------------------------------------------
+// * Adaptor encrypt
+//	encrypt ----- SID no ? ---- BlockEncEx Call ---- __AnySignGetSID_Callback (GET SID)
+//				   |									|
+//				   |________________________________ encryptData ---> BlockEncEx(데이터암호) Call ---> __nxAnySignEncrypt_Callback
+//																									   |
+//																									   |_ nexacro.__startCommunication
+// * Adaptor decrypt
+//  decrypt ----- BlockDec Call ----- __nxAnySignDecrypt_Callback ----- _pTransactionItemEx.originalOn_load_data
+//----------------------------------------------------------------------------------------
+var AnySign_NEXA_Export = true;	// Excel Export/Import 암호화 처리 여부 * true로 할 경우 서비스를 수정(개발)하여야 합니다.
+var AnySign_NEXA_BROWSER = (14 == nexacro.Version?nexacro.Browser:nexacro._Browser);
+var AnySign_NEXA_BROWSER_VERSION = (14 == nexacro.Version?nexacro.BrowserVersion:nexacro._BrowserVersion);
+if(!nexacro.AnySignAdp && AnySign_NEXA_BROWSER != "Runtime") {
+	// AnySign 관련 글로벌 변수
+	var AnySignNexaParam =  {
+								XGATE_ADDR      : "", // XGATE_ADDR
+								SID   			: null,		// SID로 AnySign에서 처리
+								CHARSET			: "UTF-8",	// char-set : utf-8
+								BASE64			: true,	// base 64 처리 여부
+								INITSID			: false,	// true로 설정시 통신시마다 sid를 가져오며 false인 경우 한번만 처리(SIDTIMEOUT=-1) 또는 TIMEOUT에 따라 처리한다.
+								// 인증서
+								CANAME 			: "",		// 인증서 ca name - anysign에서 관리한다.
+								CERTSERIAL      : "",
+								CERTLOCATION    : "",
+								PLAIN 			: "이 내용이 전자서명됩니다.",
+								OPTION 			: "0",	// 인증서 데이터 암호화 방식(bit)같다..
+								DESCRIPTION     : "",
+								LIMITPSWD 		: "3",		// 뭔지 모른다.
+								AIDN            : "",		// 뭔지 모른다.
+								INIT 			: false,	// 최초 구동여부로 Xgateaddress등 가져온후 true로 변경됨.
+								PROTOCOL		: "http",	// 통신 protocol - http,https
+								SIDTIMEOUT		: -1		// Xecure 서버 TIME에 맞추어 준다.	-1 : 한번의 SID 지속 사용	기타 : 분  - timeout은 한컴측에 문의하여야 한다.
+							};
+	// 공인인증서
+	nexacro.anysign = {};
+	nexacro.anysign.robj = null;
+	nexacro.anysign.data = "";
+	nexacro.anysign.rcbname = null;
+	nexacro.anysign.signdata = null;
+	nexacro.anysign.lastdate = null;
+	
+	nexacro.anysign.getApplication = function() {
+		if(14 == nexacro.Version) {
+			return application;
+		} else {
+			return nexacro.getApplication();
+		}
+	};	
+	//------------------------------------------------------------------------------
+	// Adaptor 관련 재정의 시작
+	//------------------------------------------------------------------------------
+	// form.js
+	//------------------------------------------------------------------------------
+	 var _pFormEx = nexacro.Form.prototype;
+	 _pFormEx.originalTransaction = _pFormEx.transaction;
+    _pFormEx.transaction = function (id, url, inDatasetsParam, outDatasetsParam, argsParam, callbackFn, isAsync, datatype, isCompress) {
+		if(url.substr(0,4) != "http")
+		{
+			if(url.indexOf("?")>=0) url = url + "&charset=" + AnySignNexaParam.CHARSET;
+			else url = url + "?charset=" + AnySignNexaParam.CHARSET;
+		}
+		this.originalTransaction(id, url, inDatasetsParam, outDatasetsParam, argsParam, callbackFn, isAsync, datatype, isCompress);
+    };
+	delete _pFormEx;
+	//------------------------------------------------------------------------------
+	// SystemBase.js
+	//------------------------------------------------------------------------------
+	nexacro._originalstartCommunication = nexacro._startCommunication;
+	nexacro._startCommunication = function (loadItem, url, cachelevel, async, service, referer, data, ndatatype, compress, ver, failpass) {
+        var path = url;
+        var senddata = data;
+        if (loadItem._protocol < 0) {
+            var createadaptor = false;
+            var protocoladp = nexacro._getProtocol(loadItem.protocol);
+            if (!protocoladp) {
+                var isprotocol;
+				if(14 == nexacro.Version) { 
+					isprotocol = application._isProtocol(loadItem.protocol);
+				} else {
+					isprotocol = nexacro._isProtocol(loadItem.protocol);
+				}
+                if (isprotocol) {
+                    var adptorclass = nexacro._executeEvalStr(loadItem.protocol);
+                    if (adptorclass) {
+                        protocoladp = new adptorclass;
+                        createadaptor = true;
+                    }
+                }
+            }
+			if (protocoladp && (protocoladp._type_name == "AnySignAdp")) {
+                if (createadaptor && protocoladp.initialize) {
+                    protocoladp.initialize(url);
+					if(14 == nexacro.Version) {
+						application._addProtocol(loadItem.protocol, protocoladp);
+					} else {
+						nexacro._addProtocol(loadItem.protocol, protocoladp);
+					}
+                }
+                var protocol = protocoladp.getUsingProtocol(url);
+                var sep = path.split("://");
+                if (sep) path = protocol + "://" + sep[1];
+                if (data && protocoladp.encrypt) {
+					if (protocoladp.getCommunicationHeaders) {
+						var headers = protocoladp.getCommunicationHeaders(url);
+						if (headers)
+							loadItem._addCookieFromVariables(headers);
+					}
+					if(!async) {
+						trace("AnySign은 비동기만 지원합니다.");
+						protocoladp.cancelTranItem(loadItem,-1,"AnySign은 비동기만 지원합니다.");
+						return;
+					}
+					if(loadItem.datatype != "0" && loadItem.datatype != "2") {
+						trace("XML 또는 SSV만 지원합니다.");
+						protocoladp.cancelTranItem(loadItem,-1,"XML 또는 SSV만 지원합니다.");
+						return;
+					}
+					var _anySign = {
+										"path" 		: path ,
+										"cachelevel": cachelevel ,
+										"async" 	: async ,
+										"referer" 	: referer ,
+										"ndatatype" : ndatatype ,
+										"compress" 	: compress ,
+										"ver" 		: ver ,
+										"failpass" 	: failpass ,
+										"service" 	: service ,
+										"item"		: loadItem
+									};
+					protocoladp.encrypt(loadItem.path, data, _anySign);
+					return;
+				}
+			}
+		}
+		nexacro._originalstartCommunication(loadItem, url, cachelevel, async, service, referer, data, ndatatype, compress, ver, failpass);
+	};
+	//==============================================================================
+	// CallBack
+	//==============================================================================
+	var _pTransactionItemEx = nexacro.TransactionItem.prototype;
+	_pTransactionItemEx.originalOn_load_data = _pTransactionItemEx.on_load_data;
+	_pTransactionItemEx.on_load_data = function (data, cookie, last_modified) {
+		if (this._protocol < 0) {
+			var protocoladp = nexacro._getProtocol(this.protocol);
+			if (protocoladp && protocoladp.decrypt) {
+				if(protocoladp._type_name == "AnySignAdp") {
+					data = protocoladp.decrypt(this.path, data, this, cookie, last_modified);
+					return;
+				}
+			}
+		}
+		this.originalOn_load_data(data, cookie, last_modified);
+	};
+	delete _pTransactionItemEx;
+	//------------------------------------------------------------------------------
+	// Adaptor 관련 재정의 끝
+	//------------------------------------------------------------------------------
+	
+	function fn_xecure_timeDifference()
+	{
+		if(AnySignNexaParam.SIDTIMEOUT == -1) return;
+		
+		if(!nexacro.anysign.lastdate) {
+			nexacro.anysign.lastdate = new Date();
+			return;
+		}
+		
+		var earlierDate = nexacro.anysign.lastdate;
+		
+		var laterDate = new Date();
+		var nTotalDiff = laterDate.getTime() - earlierDate.getTime();
+		var minutes = Math.floor(nTotalDiff / 1000 / 60);
+
+		if(minutes >= AnySignNexaParam.SIDTIMEOUT) {
+			AnySignNexaParam.SID = null;
+		}
+		nexacro.anysign.lastdate = laterDate;
+		laterDate = null;
+	}
+
+    //==============================================================================
+    // anysign adaptor 시작
+    //==============================================================================
+    nexacro.AnySignAdp  = function () {
+    };
+    var _pAnySignAdp = nexacro._createPrototype(nexacro.ProtocolAdp);
+    nexacro.AnySignAdp.prototype = _pAnySignAdp;
+
+    _pAnySignAdp._type = "AnySignAdp";
+    _pAnySignAdp._type_name = "AnySignAdp";
+    //-------------------------------------------------------------------------------------
+    // [46604] [신규] 추가 Adaptor 에서 Content-Type을 설정할 수 있는 기능 필요
+    //-------------------------------------------------------------------------------------
+    _pAnySignAdp._httpheaders = [];
+
+    _pAnySignAdp.version = function () {
+        return "1.1";
+    };
+    _pAnySignAdp.getHTTPHeader = function () {
+        this._httpheaders = [];
+        this._httpheaders.push({ id: "Content-Type", value: "application/x-www-form-urlencoded"});
+		this._httpheaders.push({ id: "X-Requested-With", value: "XMLHttpRequest"});
+
+        return this._httpheaders;
+    };
+	/*----------------------------------------------------------------------------
+	// transaction error
+	-----------------------------------------------------------------------------*/
+    _pAnySignAdp.cancelTran = function(_anySign,errCode,errMsg) {
+		var item = _anySign.item;
+		var loadManager = _anySign.item.context._load_manager;
+		loadManager.on_load_datamodule(item.svcid, errCode, errMsg, errCode, errCode, item.path);
+		_anySign.item.on_error(errCode, errMsg, errCode);
+		item = null;
+		loadManager = null;
+	};
+    _pAnySignAdp.cancelTranItem = function(item,errCode,errMsg) {
+		var loadManager = item.context._load_manager;
+		loadManager.on_load_datamodule(item.svcid, errCode, errMsg, errCode, errCode, item.path);
+		_anySign.item.on_error(errCode, errMsg, errCode);
+		item = null;
+		loadManager = null;
+	};	
+	/*----------------------------------------------------------------------------
+	// Encrypt
+	-----------------------------------------------------------------------------*/
+    _pAnySignAdp.encrypt = function(url, data, _anySign) {
+		fn_xecure_timeDifference();
+		
+		if (!AnySign || (!AnySign.mAnySignLoad && AnySign.mAnySignEnable)) {
+			this.cancelTran(_anySign, - 1, "AnySign Not Found");
+			return false;
+		}
+		if(AnySignNexaParam.INIT == false) nxInitForm_SignDataCMS();
+		if(AnySignNexaParam.INITSID == true) AnySignNexaParam.SID = null;
+
+		var pThis = this;
+		function getSIDCallBack(aResult,uid) {
+			if(aResult != null && aResult != "" ) {
+				AnySignNexaParam.SID = escape(aResult);		// escape_url 함수변경
+				pThis.encryptData(url, data, _anySign);
+			} else {
+				pThis.cancelTran(_anySign,-1,"AnySign SID Error :" + aResult + "\nXGateAddress:" + AnySignNexaParam.XGATE_ADDR);
+				return;
+			}
+		}
+		if (!AnySignNexaParam.SID)	AnySign.BlockEncEx(AnySignNexaParam.XGATE_ADDR , "", "GET", AnySignNexaParam.CHARSET, getSIDCallBack, "");
+		else this.encryptData(url, data, _anySign);
+	};
+	/*----------------------------------------------------------------------------
+	// Encrypt Data
+	-----------------------------------------------------------------------------*/
+	_pAnySignAdp.encryptData = function(url, data, _anySign) {
+		var nFind = 0;
+		var strEncodingPath;
+		if( ( nFind = url.lastIndexOf("/" ) ) >= 0 ) {
+			strEncodingPath = url.substr( 0, nFind );
+		}
+		var sutf8str = "";
+		var sdatatype = "XML";
+		var bBase64 = false;
+
+		if(_anySign.item.datatype == "0" || _anySign.item.datatype == 0) {
+			sutf8str  = "dataType=XML";
+		} else if(_anySign.item.datatype == "2" || _anySign.item.datatype == 2) {
+			sutf8str  = "dataType=SSV";
+			sdatatype = "SSV";
+		}
+		if(AnySignNexaParam.BASE64 || sdatatype == "SSV") {
+			sutf8str += "&nexaData=" + encodeURIComponent(nexacro.base64Encode(data));
+			sutf8str += "&base64=Y";
+			bBase64 = true;
+		} else {
+			sutf8str += "&nexaData=" + encodeURIComponent(data);
+			sutf8str += "&base64=N";
+		}
+		var pThis = this;
+		function encryptCallBack(aResult,uid) {
+			if(!aResult || aResult == "") {
+				pThis.cancelTran(_anySign, -1, "AnySign Encrypt Error");
+				return false;
+			}
+			var strEncodeOut = encodeURIComponent(aResult);
+			var output = "";
+			output  = "p=" + strEncodeOut;
+			output += "&q=" + AnySignNexaParam.SID;
+
+			_anySign.item._handle = nexacro.__startCommunication(_anySign.item, _anySign.path, _anySign.cachelevel, _anySign.async, _anySign.referer,
+													output, _anySign.ndatatype, _anySign.compress, _anySign.ver, _anySign.failpass, _anySign.service);	
+			_anySign = null;
+			return;
+		}
+		
+		AnySign.BlockEncEx(strEncodingPath, sutf8str, "POST", AnySignNexaParam.CHARSET, encryptCallBack, "");
+	};
+	/*----------------------------------------------------------------------------
+	// Decrypt
+	-----------------------------------------------------------------------------*/
+    _pAnySignAdp.decrypt = function (url, data, item, cookie, last_modified) {
+		if(!data || data == "") {
+			var s = this.getErrorXMLMsg("-1","AnySign Decode error --- data is null");
+			item._protocol = 0;	// _pTransactionItem.on_load_data - data.js
+			item.originalOn_load_data(s, cookie, last_modified);
+			return;
+		}
+		/*
+		// xml인 경우 그냥 넘겨준다.
+		// 성능을 위해 처리 안함 - 필요시 주석 제거
+		if(data.indexOf("<?xml")>=0 || data.indexOf("SSV:")>=0) 	{
+			item._protocol = 0;	// _pTransactionItem.on_load_data - data.js
+			item.originalOn_load_data(data, cookie, last_modified);
+			return;
+		}
+		*/
+
+		var start = 0, end = 0, pos = -1;
+		var strEncData = "";
+		var bError = false;
+
+		// 개행 제거
+		data = data.replace(/\s/g,"");
+
+		pos = data.indexOf("<BEGIN_ENC>",0);
+		if(pos >= 0) {
+			start = pos + 11;
+			end = data.indexOf("</END_ENC>",start);
+			strEncData = data.substring(start,end);
+		}
+		if(pos < 0 || strEncData == null || strEncData.length == 0) bError = true;
+
+		if(bError) {
+			var s = this.getErrorXMLMsg("-1","AnySign Decode error");
+			item._protocol = 0;	// _pTransactionItem.on_load_data - data.js
+			item.originalOn_load_data(s, cookie, last_modified);
+			return;
+		}
+		function decryptCallBack(aResult,uid) {
+			if(!aResult || aResult == "") {
+				var s = pThis.getErrorXMLMsg("-1","AnySign Decode error");
+				item._protocol = 0;	// _pTransactionItem.on_load_data - data.js
+				item.originalOn_load_data(s, cookie, last_modified);
+				return false;
+			}
+			var output;
+			if(item.datatype == "2" || item.datatype == 2 || AnySignNexaParam.BASE64) {
+				output = nexacro.base64Decode(aResult);
+			} else {
+				output = aResult;
+			}
+			item._protocol = 0;	// _pTransactionItem.on_load_data - data.js
+			item.originalOn_load_data(output, cookie, last_modified);
+		}
+		// 복호화
+		AnySign.BlockDec(strEncData , "", decryptCallBack, "");
+	};
+	/*----------------------------------------------------------------------------
+	// Get Error XML
+	-----------------------------------------------------------------------------*/
+    _pAnySignAdp.getErrorXMLMsg = function (cd,msg) {
+		var	outData  = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+			outData += "<Root xmlns=\"http://www.tobesoft.com/platform/dataset\" ver=\"5000\">";
+			outData += "<Parameters>";
+			outData += "		<Parameter id=\"ErrorCode\" type=\"string\">"+cd+"</Parameter>";
+			outData += "		<Parameter id=\"ErrorMsg\" type=\"string\">" + msg;
+			outData += "</Parameter>";
+			outData += "	</Parameters>";
+			outData += "</Root>";
+
+			return outData;
+    };
+    _pAnySignAdp.getUsingProtocol = function (url) {
+        return AnySignNexaParam.PROTOCOL;
+    };
+	_pAnySignAdp.getCommunicationHeaders = function (url) {
+	};
+    _pAnySignAdp.initialize = function ()  {
+		if(nexacro.Browser == "Rumtime") {
+			alert("HTML Only...");
+			return;
+		}
+    };
+    _pAnySignAdp.finalize = function () {
+    };
+	//----------------------------------------------------------------------------
+	// set AnySign property
+	//----------------------------------------------------------------------------
+    nexacro.AnySignAdp.setCharset = function(sCharset) {
+    	AnySignNexaParam.CHARSET = sCharset;
+    };
+    nexacro.AnySignAdp.setXgateAddr = function(sXgateaddr) {
+    	AnySignNexaParam.XGATE_ADDR = sXgateaddr;
+    };
+    nexacro.AnySignAdp.getXgateAddr = function() {
+		return AnySignNexaParam.XGATE_ADDR;
+    };
+    nexacro.AnySignAdp.setBase64 = function(b) {
+		AnySignNexaParam.BASE64 = b?true:false;
+    };
+    nexacro.AnySignAdp.getBase64 = function()
+    {
+		return AnySignNexaParam.BASE64;
+    };
+    nexacro.AnySignAdp.setInitSID = function(b)
+    {
+    	AnySignNexaParam.INITSID = b?true:false;
+    };
+    nexacro.AnySignAdp.getSID = function()
+    {
+		return AnySignNexaParam.SID;
+    };
+    nexacro.AnySignAdp.setSIDTimeOut = function(v)
+    {
+    	AnySignNexaParam.SIDTIMEOUT = v;
+    };
+    nexacro.AnySignAdp.setProtocol = function (v)
+    {
+		if(!v || v == "") v = "http";
+		if(v.toLowerCase() == "http" || v.toLowerCase() == "https") {
+		} else {
+			v = "http";
+		}
+    	AnySignNexaParam.PROTOCOL = v;
+    };
+    delete _pAnySignAdp;
+
+	//----------------------------------------------------------------------------
+	// 필드 암호화
+	//----------------------------------------------------------------------------
+	nexacro.anysign.encrypt= function(form,data,cbname)
+	{
+		if (!AnySign || (!AnySign.mAnySignLoad && AnySign.mAnySignEnable)) {
+			trace("AnySign 설치가 되지 않았습니다.");
+			return false;
+		}
+		var strEncodingPath;
+		var url;
+		if(14 == nexacro.Version) {
+			url = application.xadl;
+		} else {
+			url = nexacro.getApplication.xadl;
+		}
+		var nFind = -1;
+		if( ( nFind = url.lastIndexOf("/" ) ) >= 0 ) {
+			strEncodingPath = url.substr( 0, nFind );
+		}		
+		if(AnySignNexaParam.INIT == false) nxInitForm_SignDataCMS();
+
+		nexacro.anysign.robj = form;
+		nexacro.anysign.data = data;
+		nexacro.anysign.rcbname = cbname;
+
+		if(!AnySignNexaParam.SID) {
+			AnySign.BlockEncEx(AnySignNexaParam.XGATE_ADDR , "", "GET", AnySignNexaParam.CHARSET, __nxAnySignSingleBlockSID_Callback,strEncodingPath);
+		} else {
+			if(!surl) surl = null;
+			AnySign.BlockEncEx(surl, nexacro.anysign.data, "POST", AnySignNexaParam.CHARSET, __nxAnySignSingleBlockEnc_Callback, strEncodingPath);
+		}
+	};
+	function __nxAnySignSingleBlockSID_Callback(result,surl)
+	{
+        if(result != null && result != "" ){
+			AnySignNexaParam.SID = escape(result);	// escape_url 함수변경
+			if(!surl) surl = null;
+			AnySign.BlockEncEx(surl, nexacro.anysign.data, "POST", AnySignNexaParam.CHARSET, __nxAnySignSingleBlockEnc_Callback, surl);
+        } else {
+			nexacro.anysign.robj = null;
+			nexacro.anysign.data = null;
+			nexacro.anysign.rcbname = null;			
+			trace("AnySign SID Error :" + result + "\nXGateAddress:" + XGATE_ADDR,surl);
+        	return;
+        }
+	};
+	function __nxAnySignSingleBlockEnc_Callback(result,surl)
+	{
+		nexacro.anysign.robj[nexacro.anysign.rcbname](result);
+		nexacro.anysign.robj = null;
+		nexacro.anysign.data = null;
+		nexacro.anysign.rcbname = null;
+	};
+	//----------------------------------------------------------------------------
+	// 필드 복호화
+	//----------------------------------------------------------------------------
+	nexacro.anysign.decrypt= function(form,data,cbname,surl)
+	{
+		if (!AnySign || (!AnySign.mAnySignLoad && AnySign.mAnySignEnable))
+		{
+			trace("AnySign 설치가 되지 않았습니다.");
+			return false;
+		}
+
+		nexacro.anysign.robj = form;
+		nexacro.anysign.data = data;
+		nexacro.anysign.rcbname = cbname;
+
+		AnySign.BlockDec(data , "", __nxAnySignSingleBlockDec_Callback,"");
+	};
+	function __nxAnySignSingleBlockDec_Callback(result,surl)
+	{
+		nexacro.anysign.robj[nexacro.anysign.rcbname](result);
+		nexacro.anysign.robj = null;
+		nexacro.anysign.data = null;
+		nexacro.anysign.rcbname = null;
+	};
+	//------------------------------------------------------------------------------
+	// 인증서 시작
+	//------------------------------------------------------------------------------
+
+	// 인증서 관련 focus 처리 문제 - 클릭시 focus가 가지 않음.
+	if (nexacro.Browser == "IE" && nexacro.BrowserVersion <= 8)
+	{
+	} else {
+	 	nexacro._orginalSyshandler_onmousedown = nexacro._syshandler_onmousedown;
+	 	nexacro._syshandler_onmousedown = function (_sysEvent, node, evt)
+	 	{
+	 		try
+	 		{
+	 			if(	evt.srcElement.toString() == "[object HTMLInputElement]" &&
+	 				(evt.srcElement.id == "xwup_certselect_tek_input1") ||
+	 				(evt.srcElement.id == "xwup_verifyvid_tek_input1") ||
+					(evt.srcElement.id == "xwup_inputpasswd_tek_input1") )
+	 			{
+	 				evt.srcElement.focus();
+	 				return;
+	 			}
+
+	 			if( evt.srcElement.id.indexOf("xwup_media") >= 0 ||
+	 				evt.srcElement.parentElement.id.indexOf("xwup_media") >= 0 ||
+	 				evt.srcElement.toString() == "[object HTMLButtonElement]")
+	 			{
+	 				evt.srcElement.click();
+	 				return;
+	 			}
+	 		} catch(e) {
+	 		}
+			this._orginalSyshandler_onmousedown(_sysEvent, node, evt);
+	 	};
+	}
+
+	// 인증서 로그인(SignDataCMS)
+	nexacro.anysign.SignDataCMS = function(form,icbname,rcbname) {
+		if (!AnySign || (!AnySign.mAnySignLoad && AnySign.mAnySignEnable)) {
+			alert("AnySign not insatll..");
+			form[icbname]();
+			return false;
+		}
+
+		if(AnySignNexaParam.INIT == false) nxInitForm_SignDataCMS();
+
+		nexacro.anysign.robj = form;
+		nexacro.anysign.rcbname = rcbname;
+
+		// disable하는 것은 tab키 누를경우 nexacro에 focus가 가고 click 되어 비활성화
+		nexacro.anysign.getApplication().mainframe.set_enable(false);
+		setTimeout(function(){ anysign_timer(); }, 1000);
+
+		AnySign.SignDataCMS (AnySignNexaParam.XGATE_ADDR,
+							AnySignNexaParam.CANAME,
+							AnySignNexaParam.PLAIN,
+							AnySignNexaParam.OPTION,
+							"",
+							AnySignNexaParam.LIMITPSWD,
+							__nxSignDataCMS_Callback,
+							__nxSignDataCMS_ErrCallback
+				);
+	};
+	// 인증서 로그인(SignDataCMSWithSerial)
+	nexacro.anysign.SignDataCMSWithSerial = function(form, rcbname) {
+		nexacro.anysign.robj = form;
+		nexacro.anysign.rcbname = rcbname;
+
+		AnySign.SignDataCMSWithSerial (AnySignNexaParam.XGATE_ADDR,
+							AnySignNexaParam.CANAME,
+							AnySignNexaParam.CERTSERIAL,
+							AnySignNexaParam.CERTLOCATION,
+							AnySignNexaParam.PLAIN,
+							AnySignNexaParam.OPTION,
+							AnySignNexaParam.DESCRIPTION,
+							AnySignNexaParam.LIMITPSWD,
+							__nxSignDataCMS_Callback,
+							__nxSignDataCMS_ErrCallback
+				);
+	};
+	// 인증서 로그인(SignDataWithVID)
+	nexacro.anysign.SignDataWithVID = function(form,icbname,rcbname)
+	{
+		if (!AnySign || (!AnySign.mAnySignLoad && AnySign.mAnySignEnable))
+		{
+			alert("AnySign not insatll..");
+			form[icbname]();
+			return false;
+		}
+
+		if(AnySignNexaParam.INIT == false) nxInitForm_SignDataCMS();
+
+		nexacro.anysign.robj = form;
+		nexacro.anysign.rcbname = rcbname;
+
+		// disable하는 것은 tab키 누를경우 nexacro에 focus가 가고 click 되어 비활성화
+		nexacro.anysign.getApplication().mainframe.set_enable(false);
+		setTimeout(function(){ anysign_timer(); }, 1000);
+
+		AnySign.SignDataWithVID (AnySignNexaParam.XGATE_ADDR,
+							AnySignNexaParam.CANAME,
+							AnySignNexaParam.PLAIN,
+							AnySignNexaParam.OPTION,
+							"",
+							AnySignNexaParam.LIMITPSWD,
+                            AnySignNexaParam.AIDN,
+                            s,
+							__nxSignDataWithVID_Callback,
+							__nxSignDataWithVID_ErrCallback
+				);
+
+	};
+	// 인증서 로그인(SignDataWithVIDUser)
+	nexacro.anysign.SignDataWithVIDUser = function(form,icbname,rcbname)
+	{
+		if (!AnySign || (!AnySign.mAnySignLoad && AnySign.mAnySignEnable))
+		{
+			alert("AnySign not insatll..");
+			form[icbname]();
+			return false;
+		}
+
+		if(AnySignNexaParam.INIT == false) nxInitForm_SignDataCMS();
+
+		nexacro.anysign.robj = form;
+		nexacro.anysign.rcbname = rcbname;
+
+		// disable하는 것은 tab키 누를경우 nexacro에 focus가 가고 click 되어 비활성화
+		nexacro.anysign.getApplication().mainframe.set_enable(false);
+		setTimeout(function(){ anysign_timer(); }, 1000);
+
+		Sign_with_vid_user( AnySignNexaParam.OPTION,
+							AnySignNexaParam.PLAIN,
+                            s,
+							__nxSignDataWithVID_Callback
+				);
+
+	};
+	// 인증서 설치페이지 링크
+    nexacro.anysign.install= function(){
+        var downURL = AnySign.mPlatform.aAnySignInstallPath;
+        document.location = downURL;
+    }
+
+	// SignDataCMS 인증서 CALLBACK
+	function __nxSignDataCMS_Callback(result) {
+		nexacro.anysign.getApplication().mainframe.set_enable(true);
+		nexacro.anysign.robj[nexacro.anysign.rcbname](result,AnySignNexaParam.PLAIN,AnySignNexaParam.OPTION);
+		nexacro.anysign.robj = null;
+		nexacro.anysign.data = null;
+		nexacro.anysign.rcbname = null;		
+	}
+
+	// SignDataCMS 인증서 ERROR CALLBACK
+	function __nxSignDataCMS_ErrCallback(result) {
+		nexacro.anysign.getApplication().mainframe.set_enable(true);
+		nexacro.anysign.robj[nexacro.anysign.rcbname](result,AnySignNexaParam.PLAIN,AnySignNexaParam.OPTION);
+		nexacro.anysign.robj = null;
+		nexacro.anysign.data = null;
+		nexacro.anysign.rcbname = null;		
+	}
+
+	// SignDataWithVID 인증서 CALLBACK
+	function __nxSignDataWithVID_Callback(result) {
+		nexacro.anysign.signdata = result;
+		send_vid_info(__nxSignDataWithVID_UserCallback);
+	}
+
+	// SignDataWithVID 인증서 USER CALLBACK
+	function __nxSignDataWithVID_UserCallback(result) {
+		nexacro.anysign.getApplication().mainframe.set_enable(true);
+		nexacro.anysign.robj[nexacro.anysign.rcbname](nexacro.anysign.signdata,result,AnySignNexaParam.PLAIN,AnySignNexaParam.OPTION);
+		nexacro.anysign.robj = null;
+		nexacro.anysign.data = null;
+		nexacro.anysign.rcbname = null;		
+	}
+
+	// SignDataWithVID 인증서 ERROR CALLBACK
+	function __nxSignDataWithVID_ErrCallback(result) {
+		nexacro.anysign.getApplication().mainframe.set_enable(true);
+		nexacro.anysign.robj[nexacro.anysign.rcbname](nexacro.anysign.signdata,result,AnySignNexaParam.PLAIN,AnySignNexaParam.OPTION);
+		nexacro.anysign.robj = null;
+		nexacro.anysign.data = null;
+		nexacro.anysign.rcbname = null;		
+	}
+
+	// 인증서가 뜨지 않을 경우 대비
+	function anysign_timer() {
+		var o = document.getElementById("xwup_certselect_tek_input1");
+		if(!o)
+		{
+			nexacro.anysign.getApplication().mainframe.set_enable(true);
+		} else {
+			setTimeout(function(){ anysign_timer(); }, 500);
+		}
+	}
+
+	// XGATEADDR등을 AnySign 설정값으로 교체한다.
+	function nxInitForm_SignDataCMS() {
+		AnySignNexaParam.XGATE_ADDR = AnySign.mXgateAddress;
+		AnySignNexaParam.CANAME 	= AnySign.mCAList;
+		AnySignNexaParam.LIMITPSWD 	= AnySign.mLimitedTrial;
+	}
+	//------------------------------------------------------------------------------
+	// 인증서 끝
+	//------------------------------------------------------------------------------
+	nexacro.anysign.installCheck = function() {
+		if (!AnySign) {
+			trace("AnySign 설치가 되지 않았습니다.");
+			return false;
+		}
+		return true;
+	};
+	
+	if(AnySign_NEXA_Export === true) {
+		/*----------------------------------------------------------------------------
+		// Import Descrypt
+		-----------------------------------------------------------------------------*/
+		var _pExcelImport = nexacro.ExcelImportObject.prototype;
+		/*----------------------------------------------------------------------------
+		// _pExcelImport Data decrypt
+		-----------------------------------------------------------------------------*/
+		_pExcelImport.decryptData = function (data,url) {
+			if(!data || data == "") {
+				var s = fn_getErrorXMLMsg("-1","AnySign Decode error --- data is null");
+				return this._uploadCompleteAfter(s,url);
+			}
+			var start = 0, end = 0, pos = -1;
+			var strEncData = "";
+			var bError = false;
+			
+			// 개행 제거
+			data = data.replace(/\s/g,"");
+			pos = data.indexOf("<BEGIN_ENC>",0);
+			if(pos < 0) pos = data.indexOf("<begin_enc>",0);
+			if(pos >= 0) {
+				start = pos + 11;
+				end = data.indexOf("</END_ENC>",start);
+				if(end < 0) end = data.indexOf("</end_enc>",0);
+				if(end < 0) end = data.indexOf("</begin_enc>",0);
+				strEncData = data.substring(start,end);
+			}
+			if(pos < 0 || strEncData == null || strEncData.length == 0) bError = true;
+
+			if(bError) {
+				return this._uploadCompleteAfter(data,url);
+			}
+			var pThis = this;
+			function decryptImportCallBack(aResult,uid) {
+				if(!aResult || aResult == "") {
+					return pThis._uploadCompleteAfter(data,url);
+				}
+				var output;
+				output = nexacro.base64Decode(aResult);
+				return pThis._uploadCompleteAfter(output,url);
+			}
+			// 복호화
+			AnySign.BlockDec(strEncData , "", decryptImportCallBack, "");
+		};
+		/*----------------------------------------------------------------------------
+		// _pExcelImport _uploadComplete 후처리
+		-----------------------------------------------------------------------------*/
+		_pExcelImport._uploadCompleteAfter = function (data, url) {
+			var error_info, evt, fileUrl, code = -1, msg = "", result = null, unique_id = this._unique_id;
+			try {
+					var fstr = data.substring(0, 3).toUpperCase();
+					switch (fstr) {
+						case "XML":
+							var xmldoc = nexacro._getXMLDocument(this._unique_id, data, url);
+							result = nexacro._Deserializer["XML"](xmldoc, this);
+							break;
+						case "SSV":
+							result = nexacro._Deserializer["SSV"](data, this);
+							break;
+						default:
+							break;
+					}
+
+					error_info = result ? result[0] : null;
+
+					if (error_info) {
+						code = error_info[0];
+						msg = error_info[1];
+					}
+
+					if (code < 0) {
+						evt = new nexacro.ExcelImportErrorEventInfo(this, "onerror", "ObjectError", msg, this, 9901);
+						this.on_fire_onerror(this, evt);
+					}
+					else {
+						fileUrl = this._fileurl = this._file_url_ds ? this._file_url_ds.getColumn(0, 3) : null;
+						this._file_url_ds = null;
+						evt = new nexacro.ExcelImportEventInfo(this, "onsuccess", fileUrl, this);
+						this.on_fire_onsuccess(this, evt);
+					}
+			} catch (e) {
+				evt = new nexacro.ExcelImportErrorEventInfo(this, "onerror", "ObjectError", "failed to get", this, 9901);
+				this.on_fire_onerror(this, evt);
+			}
+			nexacro._remove_hidden_item(unique_id, "upfile", this._hidden_frame_handle);
+			nexacro._append_hidden_item(unique_id, "upfile", this._checkUploadFile, this, this._hidden_frame_handle);			
+		};
+		/*----------------------------------------------------------------------------
+		// _pExcelImport _uploadComplete 재정의
+		-----------------------------------------------------------------------------*/
+		_pExcelImport._uploadComplete = function (status, data, url) {
+			var error_info, evt, fileUrl, code = -1, msg = "", result = null, unique_id = this._unique_id;
+			try {
+				if (this._iscors) {
+					nexacro._setPostMessage(this._unique_id, this);
+					this._iscors = false;
+				} else {
+					var xmldoc = nexacro._getXMLDocument(unique_id);
+					url = xmldoc.URL ? xmldoc.URL : xmldoc.url;
+					if (url == "about:blank") {
+						return;
+					}
+					data = nexacro._getDataFromDOM(xmldoc);
+					if ((!data || data.length <= 0) && xmldoc.childNodes[0].data) {
+						data = xmldoc.childNodes[0].data;
+					}
+					else {
+						data = nexacro.replaceAll(data, "&amp;", "&");
+					}
+
+					this.context = this.parent;
+
+					var fstr = data.substring(0, 3).toUpperCase();
+					if(fstr == "<SC" || fstr == "<BE") {
+						this.decryptData(data,url);
+						return;
+					}
+					this._uploadCompleteAfter(data, url);
+				}
+			} catch (e) {
+				evt = new nexacro.ExcelImportErrorEventInfo(this, "onerror", "ObjectError", "failed to get", this, 9901);
+				this.on_fire_onerror(this, evt);
+			}
+		};
+		delete _pExcelImport;
+	}
+}

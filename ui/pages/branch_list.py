@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTableWidget,
     QTableWidgetItem,
-    QComboBox,
+    QRadioButton,
     QDialog,
     QLineEdit,
     QFormLayout,
@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QSizePolicy,
     QHeaderView,
+    QButtonGroup,
 )
 
 
@@ -36,15 +37,31 @@ class BranchDialog(QDialog):
         self.corporation_name_edit = QLineEdit()
         self.owner_name_edit = QLineEdit()
         self.address_edit = QLineEdit()
-        self.login_type_combo = QComboBox()
-        self.login_id_edit = QLineEdit()
-        self.login_password_edit = QLineEdit()
+
+        # 로그인 유형: 라디오 버튼 그룹으로 변경
+        self.login_type_group = QButtonGroup()
+        self.carefor_radio = QRadioButton("케어포")
+        self.longterm_radio = QRadioButton("롱텀")
+        self.login_type_group.addButton(self.carefor_radio, 0)
+        self.login_type_group.addButton(self.longterm_radio, 1)
+
+        # 케어포 필드
+        self.carefor_id_edit = QLineEdit()
+        self.carefor_password_edit = QLineEdit()
+
+        # 롱텀 필드
+        self.longterm_certificate_name_edit = QLineEdit()
+        self.longterm_certificate_password_edit = QLineEdit()
 
         self.setMinimumWidth(760)
-        self.login_type_combo.addItems(LOGIN_TYPES)
-        self.login_password_edit.setEchoMode(QLineEdit.Normal)
-        # 허용 문자: ASCII 공백(0x20)부터 물결(0x7E)까지 — 영어, 숫자, 특수문자 포함, 한글 제외
-        self.login_password_edit.setValidator(QRegularExpressionValidator(r"[ -~]*"))
+        
+        # 케어포 비밀번호: ASCII 문자 허용
+        self.carefor_password_edit.setEchoMode(QLineEdit.Normal)
+        self.carefor_password_edit.setValidator(QRegularExpressionValidator(r"[ -~]*"))
+
+        # 롱텀 비밀번호: 보이도록 설정
+        self.longterm_certificate_password_edit.setEchoMode(QLineEdit.Normal)
+        self.longterm_certificate_password_edit.setValidator(QRegularExpressionValidator(r"[ -~]*"))
 
         # 기존 데이터가 있으면 채우기
         if branch_data:
@@ -54,13 +71,45 @@ class BranchDialog(QDialog):
             self.corporation_name_edit.setText(branch_data.get("corporation_name", ""))
             self.owner_name_edit.setText(branch_data.get("owner_name", ""))
             self.address_edit.setText(branch_data.get("address", ""))
-            self.login_type_combo.setCurrentText(branch_data.get("login_type", LOGIN_TYPES[0]))
-            self.login_id_edit.setText(branch_data.get("login_id", branch_data.get("owner_name", "")))
-            self.login_password_edit.setText(branch_data.get("login_password", ""))
+            
+            # 자격증 정보를 새 구조 또는 기존 구조에서 읽기 (호환성)
+            credentials = branch_data.get("credentials", {})
+            carefor_creds = credentials.get("carefor", {})
+            longterm_creds = credentials.get("longterm", {})
+            
+            # 기존 구조 호환성: login_id/login_password가 직접 있으면 사용
+            if not carefor_creds and "login_id" in branch_data:
+                carefor_creds = {
+                    "login_id": branch_data.get("login_id", ""),
+                    "login_password": branch_data.get("login_password", "")
+                }
+            
+            if not longterm_creds and "certificate_name" in branch_data:
+                longterm_creds = {
+                    "certificate_name": branch_data.get("certificate_name", ""),
+                    "certificate_password": branch_data.get("certificate_password", "")
+                }
+            
+            # UI에 채우기
+            self.carefor_id_edit.setText(carefor_creds.get("login_id", ""))
+            self.carefor_password_edit.setText(carefor_creds.get("login_password", ""))
+            self.longterm_certificate_name_edit.setText(longterm_creds.get("certificate_name", ""))
+            self.longterm_certificate_password_edit.setText(longterm_creds.get("certificate_password", ""))
+            
+            # 로그인 타입 선택
+            login_type = branch_data.get("login_type", LOGIN_TYPES[0])
+            if login_type == "롱텀":
+                self.longterm_radio.setChecked(True)
+            else:
+                self.carefor_radio.setChecked(True)
         else:
-            self.login_type_combo.setCurrentText(LOGIN_TYPES[0])
-            self.login_id_edit.setText("")
-            self.login_password_edit.setText("")
+            self.carefor_radio.setChecked(True)
+
+        # 라디오 버튼 그룹 레이아웃
+        login_type_layout = QHBoxLayout()
+        login_type_layout.addWidget(self.carefor_radio)
+        login_type_layout.addWidget(self.longterm_radio)
+        login_type_layout.addStretch()
 
         form_layout = QFormLayout()
         form_layout.addRow("기관기호:", self.organization_code_edit)
@@ -69,18 +118,33 @@ class BranchDialog(QDialog):
         form_layout.addRow("법인명:", self.corporation_name_edit)
         form_layout.addRow("대표자명:", self.owner_name_edit)
         form_layout.addRow("주소:", self.address_edit)
-        form_layout.addRow("로그인 유형:", self.login_type_combo)
+        form_layout.addRow("로그인 유형:", login_type_layout)
 
-        # 로그인 입력 칸: 라벨을 동적으로 변경할 수 있도록 QLabel을 사용
-        self.login_id_label = QLabel("로그인 아이디:")
-        self.login_password_label = QLabel("로그인 비밀번호:")
-        form_layout.addRow(self.login_id_label, self.login_id_edit)
-        form_layout.addRow(self.login_password_label, self.login_password_edit)
+        # 라벨
+        self.carefor_id_label = QLabel("로그인 아이디:")
+        self.carefor_password_label = QLabel("로그인 비밀번호:")
+        self.longterm_certificate_name_label = QLabel("인증서명:")
+        self.longterm_certificate_password_label = QLabel("인증서 비밀번호:")
 
-        # 로그인 유형 변경 시 라벨 업데이트
-        self.login_type_combo.currentTextChanged.connect(self._on_login_type_changed)
-        # 초기 라벨 상태 설정
-        self._on_login_type_changed(self.login_type_combo.currentText())
+        # 폼에 모든 필드 추가
+        self.carefor_id_row = form_layout.rowCount()
+        form_layout.addRow(self.carefor_id_label, self.carefor_id_edit)
+        
+        self.carefor_password_row = form_layout.rowCount()
+        form_layout.addRow(self.carefor_password_label, self.carefor_password_edit)
+        
+        self.longterm_certificate_name_row = form_layout.rowCount()
+        form_layout.addRow(self.longterm_certificate_name_label, self.longterm_certificate_name_edit)
+        
+        self.longterm_certificate_password_row = form_layout.rowCount()
+        form_layout.addRow(self.longterm_certificate_password_label, self.longterm_certificate_password_edit)
+
+        self.form_layout = form_layout
+
+        # 라디오 버튼 변경 시 필드 업데이트
+        self.carefor_radio.toggled.connect(self._on_login_type_changed)
+        # 초기 필드 상태 설정
+        self._on_login_type_changed(self.carefor_radio.isChecked())
 
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
@@ -92,29 +156,57 @@ class BranchDialog(QDialog):
         self.setLayout(layout)
 
     def get_data(self):
-        return {
+        login_type = "롱텀" if self.longterm_radio.isChecked() else "케어포"
+        
+        base_data = {
             "organization_code": self.organization_code_edit.text().strip(),
             "organization_name": self.organization_name_edit.text().strip(),
             "branch_name": self.branch_name_edit.text().strip(),
             "corporation_name": self.corporation_name_edit.text().strip(),
             "owner_name": self.owner_name_edit.text().strip(),
             "address": self.address_edit.text().strip(),
-            "login_type": self.login_type_combo.currentText(),
-            "login_id": self.login_id_edit.text().strip(),
-            "login_password": self.login_password_edit.text(),
+            "login_type": login_type,
+            "credentials": {
+                "carefor": {
+                    "login_id": self.carefor_id_edit.text().strip(),
+                    "login_password": self.carefor_password_edit.text()
+                },
+                "longterm": {
+                    "certificate_name": self.longterm_certificate_name_edit.text().strip(),
+                    "certificate_password": self.longterm_certificate_password_edit.text()
+                }
+            }
         }
 
-    def _on_login_type_changed(self, text: str):
-        """로그인 유형에 따라 라벨과 비밀번호 입력 모드를 변경합니다."""
-        if text == "롱텀":
-            self.login_id_label.setText("인증서명:")
-            self.login_password_label.setText("인증서 비밀번호:")
-            # 롱텀은 기존 케어포 비밀번호 입력창과 동일하게 보이도록 설정
-            self.login_password_edit.setEchoMode(QLineEdit.Normal)
+        return base_data
+
+    def _on_login_type_changed(self, checked: bool):
+        """로그인 유형에 따라 표시할 필드를 변경합니다."""
+        # checked는 carefor_radio의 체크 상태
+        is_longterm = not checked
+        
+        if is_longterm:
+            # 롱텀: 인증서 필드만 표시
+            self.carefor_id_edit.setVisible(False)
+            self.carefor_password_edit.setVisible(False)
+            self.carefor_id_label.setVisible(False)
+            self.carefor_password_label.setVisible(False)
+
+            self.longterm_certificate_name_edit.setVisible(True)
+            self.longterm_certificate_password_edit.setVisible(True)
+            self.longterm_certificate_name_label.setVisible(True)
+            self.longterm_certificate_password_label.setVisible(True)
         else:
-            self.login_id_label.setText("로그인 아이디:")
-            self.login_password_label.setText("로그인 비밀번호:")
-            self.login_password_edit.setEchoMode(QLineEdit.Normal)
+            # 케어포: 로그인 필드만 표시
+            self.carefor_id_edit.setVisible(True)
+            self.carefor_password_edit.setVisible(True)
+            self.carefor_id_label.setVisible(True)
+            self.carefor_password_label.setVisible(True)
+
+            self.longterm_certificate_name_edit.setVisible(False)
+            self.longterm_certificate_password_edit.setVisible(False)
+            self.longterm_certificate_name_label.setVisible(False)
+            self.longterm_certificate_password_label.setVisible(False)
 
 
 class BranchPage(QWidget):
@@ -256,7 +348,9 @@ class BranchPage(QWidget):
             QMessageBox.warning(self, "입력 오류", "지점명과 법인명은 필수 입력 항목입니다.")
             return
 
-        data[self.selected_row] = updated_data
+        # 기존 데이터를 보존하고 업데이트된 필드로만 병합
+        branch_data.update(updated_data)
+        data[self.selected_row] = branch_data
         self._save_data(data)
         self.load_data()
         self.table.selectRow(self.selected_row)

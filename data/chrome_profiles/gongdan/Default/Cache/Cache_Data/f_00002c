@@ -1,0 +1,2464 @@
+/* xTsign css */
+/* body{font-family: 'Noto Sans KR', sans-serif;} */
+#xTsign a {
+  color: #222;
+}
+/* h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {line-height: 1.25px;} */
+#xTsign hr {
+  border-color: #e1e1e1;
+}
+#xTsign .no-transform {
+  -webkit-transform: none !important;
+  transform: none !important;
+}
+#xTsign .no-scroll {
+  overflow: hidden;
+}
+#xTsign .no-scroll-x {
+  overflow-x: hidden;
+}
+#xTsign dl,
+ol,
+ul,
+dt,
+dd,
+p,
+a,
+li,
+img {
+  margin: 0;
+  padding: 0;
+}
+#xTsign li {
+  list-style: none;
+}
+#xTsign fL {
+  float: left;
+}
+#xTsign fR {
+  float: right;
+}
+#xTsign radio {
+  appearance: none;
+}
+#xTsign .scrollT::-webkit-scrollbar {
+  display: none !important;
+} /* chrome */
+#xTsign .scrollT {
+  overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+} /* ie */
+#xTsign img {
+  -webkit-user-drag: none;
+}
+#xTsign input[type='number'] {
+  -moz-appearance: textfield;
+} /* firefox */
+
+#xTsign .tab_container #xTsign_tab2_content *,
+:after,
+:before {
+  box-sizing: content-box;
+}
+
+/*container CSS*/
+#xTsign .container {
+  width: 450px;
+  height: 578px;
+  margin: 0 auto;
+  position: static;
+}
+
+/*popup CSS*/
+#xTsign .black_overlay {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 578px;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+  border-radius: 16px 16px 16px 16px;
+}
+#xTsign .white_content {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  min-height: auto;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  border-radius: 10px;
+  transform: translate(-50%, -77%);
+}
+#xTsign .white_content .popupTop {
+  line-height: 20px;
+  border-bottom: 1px solid #c8cee7;
+  padding: 10px;
+}
+#xTsign .white_content .popupTop p {
+  text-align: center;
+  color: #394da5;
+  font-size: 17px;
+  font-weight: bold;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content .popupTop p.popStit {
+  text-align: center;
+  color: #777;
+  font-size: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content li {
+  padding: 10px 20px;
+  border-bottom: 1px solid #e4e7f3;
+}
+#xTsign .white_content li:hover {
+  background: #bccbfc;
+}
+#xTsign .white_content .active {
+  background: #e4e7f3;
+}
+#xTsign .white_content li img {
+  width: 10%;
+  display: inline-block;
+  vertical-align: middle;
+  padding-right: 10px;
+}
+#xTsign .white_content li a {
+  font-size: 15px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #666;
+  margin-left: 5px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+#xTsign .white_content .popBomt {
+  display: block;
+}
+#xTsign .white_content .popBomt span {
+  display: block;
+  float: left;
+  width: 70%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content .popBomt span.cols {
+  display: block;
+  float: right;
+  text-align: center;
+  width: 30%;
+  background-color: #ddd;
+}
+#xTsign .white_content .popBomt span a {
+  display: block;
+  text-decoration: none;
+  margin-top: 15px;
+  color: #fff;
+  font-weight: bold;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content .popBomt span.cols a {
+  color: #4a5db0;
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  #xTsign .white_content {
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    min-height: auto;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  #xTsign .white_content {
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: auto;
+  }
+}
+@media (min-width: 481px) and (max-width: 767px) {
+  #xTsign .white_content {
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: auto;
+  }
+}
+
+/* 프로필 Naver popup CSS*/
+#xTsign .black_overlay_naver {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_naver {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_naver .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_naver .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_naver .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_naver .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_naver .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*Toss popup CSS*/
+#xTsign .black_overlay_toss {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_toss {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_toss .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_toss .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_toss .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_toss .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_toss .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*Kakao Pay popup CSS*/
+#xTsign .black_overlay_kakaopay {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_kakaopay {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_kakaopay .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_kakaopay .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_kakaopay .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_kakaopay .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_kakaopay .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*Kakao Talk popup CSS*/
+#xTsign .black_overlay_kakaotalk {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_kakaotalk {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_kakaotalk .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_kakaotalk .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_kakaotalk .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_kakaotalk .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_kakaotalk .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*Pass popup CSS*/
+#xTsign .black_overlay_pass {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_pass {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_pass .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_pass .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_pass .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_pass .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_pass .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*Payco popup CSS*/
+#xTsign .black_overlay_payco {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_payco {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_payco .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_payco .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_payco .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_payco .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_payco .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*Shinhan popup CSS*/
+#xTsign .black_overlay_shinhan {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_shinhan {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_shinhan .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_shinhan .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_shinhan .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_shinhan .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_shinhan .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* HanaOneSign-sskim popup CSS*/
+#xTsign .black_overlay_hanaone {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: 0.5;
+  filter: alpha(opacity=80);
+}
+#xTsign .white_content_hanaone {
+  display: none;
+  position: absolute;
+  top: 64.1%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1002;
+  overflow: hidden;
+  transform: translate(-50%, -64%);
+}
+#xTsign .white_content_hanaone .popupTop {
+  padding: 20px 20px;
+  line-height: 27px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .white_content_hanaone .popupTop strong {
+  display: block;
+}
+#xTsign .white_content_hanaone .popBomt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#xTsign .white_content_hanaone .popBomt span {
+  display: block;
+  float: left;
+  width: 100%;
+  background-color: #4a5db0;
+  text-align: center;
+  height: 52px;
+}
+#xTsign .white_content_hanaone .popBomt span a {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  padding-top: 14px;
+  height: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/*TAB CSS*/
+
+#xTsign ul.tabs {
+  margin: 0;
+  padding: 0;
+  float: left;
+  list-style: none;
+  height: 32px;
+  width: 100%;
+}
+#xTsign ul.tabs li {
+  float: left;
+  width: 50%;
+  margin: 0;
+  padding: 0;
+  height: 50px;
+  line-height: 55px;
+  border-left: none;
+  margin-bottom: -1px;
+  overflow: hidden;
+  position: relative;
+  background: #4a5db0;
+  text-align: center;
+}
+#xTsign ul.tabs li.active {
+  background: #fff;
+}
+#xTsign ul.tabs li img {
+  vertical-align: baseline;
+  padding-top: 17px;
+  position: static;
+}
+#xTsign ul.tabs li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  font-size: 1.2em;
+  padding: 0 20px;
+  outline: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign html ul.tabs li.active,
+html ul.tabs li.active a:hover {
+  background: #fff;
+}
+#xTsign html ul.tabs li.active,
+html ul.tabs li.active a:hover {
+  background: #fff;
+}
+
+/*Container CSS*/
+#xTsign .tab_container {
+  overflow: hidden;
+  clear: both;
+  float: left;
+  width: 100%;
+  background: #fff;
+  height: 540px;
+  border-radius: 16px;
+  position: static;
+}
+#xTsign .tab_container .tab_content {
+  padding: 41px 20px 20px 20px;
+  font-size: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  position: static;
+}
+#xTsign .tab_container .tab_content .centerLine {
+  padding: 9px 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 19px;
+}
+#xTsign .tab_container .tab_content > div p {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bold;
+  color: #2a3993;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .scrollT {
+  display: block;
+  height: 340px;
+  overflow-y: scroll;
+}
+#xTsign .tab_container .tab_content .xTsignli {
+  width: 408px;
+  height: 54px;
+  display: block;
+  margin-bottom: 5px;
+  border-radius: 7px;
+  background-color: #ebeffc;
+  background-blend-mode: color-burn;
+  border: 1px solid #bccbfc;
+}
+#xTsign .tab_container .tab_content .xTsignliB {
+  width: 408px;
+  height: 54px;
+  display: block;
+  margin-bottom: 5px;
+  border-radius: 7px;
+  background-blend-mode: color-burn;
+  background: #eee;
+  border: 1px dashed #888;
+}
+#xTsign .tab_container .tab_content .xTsignli .borderSt {
+  background-image: none;
+  background: #f7f7f7;
+  border: 1px dashed #cacaca;
+}
+#xTsign .tab_container .tab_content .xTsignli .borderSt img {
+  display: inline-block;
+  margin: 15px 7px 0px 135px;
+  padding: 0;
+  width: 25px;
+}
+#xTsign .tab_container .tab_content .xTsignli .borderSt a {
+  font-size: 12px;
+  color: #4a5db0;
+  display: inline-block;
+  padding-top: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .iconTop {
+  width: 408px;
+  height: 54px;
+  display: inline-block;
+  margin-bottom: 7px;
+  border-radius: 7px;
+  background: url(../img/icon_top.png) 373px 23px no-repeat;
+  background-color: #ebeffc;
+  background-blend-mode: color-burn;
+  border: 1px solid #bccbfc;
+}
+#xTsign .tab_container .tab_content .xTsignli img {
+  padding: 10px 15px 10px 15px;
+  float: left;
+}
+#xTsign .tab_container .tab_content a {
+  font-size: 16px;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: 0.05remrem;
+  font-weight: 400;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .Atit {
+  padding-top: 15px;
+}
+#xTsign .tab_container .tab_content .xTsignliTxt {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #666;
+  padding-top: 19px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .bottom_button {
+  display: block;
+  text-align: center;
+  margin-top: -10px;
+  bottom: 0;
+  width: 100%;
+  padding-top: 10px;
+  height: 44px;
+  border-top: 1px solid #b2b2b2;
+  position: absolute;
+  background-color: #fff;
+  border-radius: 0 0 16px 16px;
+}
+#xTsign .tab_container .bottom_button button.btn_border1 {
+  background: #4a5db0;
+  color: #fff;
+  width: 97px;
+  height: 30px;
+  border: 1px solid #4a5db0;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+/* #xTsign .tab_container .bottom_button button.btn_border2 {
+  background: #fff;
+  color: #888;
+  width: 97px;
+  height: 30px;
+  border: 1px solid #b2b2b2;
+  border-radius: 20px;
+  font-weight: 600;
+  font-family: 'Noto Sans KR', sans-serif;
+} */
+#xTsign .tab_container .bottom_button button.btn_border2 {
+  color: #000;
+  /* font-weight: 600; */
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1px solid gray;
+  border-radius: 6px;
+  background-color: #efefef;
+  background-image: url(../img/btn_bg.png);
+  text-align: center;
+  vertical-align: top;
+  /* padding: 0 13px; */
+  margin-top: 4px;
+  width: 80px;
+  height: 25px;
+  text-indent: 0;
+}
+#xTsign .tab_container .bottom_button .symbol {
+  width: 34px;
+  height: 27px;
+  background: url(../img/symbol_logo.png) no-repeat;
+  position: absolute;
+  right: 20px;
+  bottom: 17px;
+}
+
+/* 네아로 Naver Conent CSS*/
+/*
+#xTsign .tab_container .tab_content .naversign_con {width:406px; height:254px; background-color: #ebeffc; border-radius: 7px; position: relative; border: 1px solid #bccbfc; margin-left: 1px;}
+#xTsign .tab_container .tab_content .naversign_con img {margin: 0 auto; display: block; padding-top: 12px}
+#xTsign .tab_container .tab_content .naversign_con dl {padding: 20px 20px; line-height: 20px; color:#222;}
+#xTsign .tab_container .tab_content .naversign_con dt {font-size: 16px; color: #222; padding-bottom: 5px;font-family: 'Noto Sans KR', sans-serif;}
+#xTsign .tab_container .tab_content .naversign_con dd {font-size: 12px;font-family: 'Noto Sans KR', sans-serif;}
+#xTsign .tab_container .tab_content .naversign_con dd.loading {text-align: center; padding-top: 50px;}
+#xTsign .tab_container .tab_content .naversign_con .naver_Bot {position: absolute; left: 20px; bottom: 10px; width: 375px;}
+#xTsign .tab_container .tab_content .naversign_con .naver_Bot span {display: inline-block; margin-top: 7px; font-size: 11px;font-family: 'Noto Sans KR', sans-serif;}
+#xTsign .tab_container .tab_content .naversign_con .naver_Bot button {font-family: 'Noto Sans KR', sans-serif;float:right; background-color: #03cf5d; border:0; border-radius: 20px; color:#fff; font-size: 13px; font-weight: bold; letter-spacing: -1px; width:100px; height:30px;}
+#xTsign .tab_container .tab_content .naversign_con .use {position: absolute; bottom: 0; width: 90%; margin: 13px 20px; height: 36px;}
+#xTsign .tab_container .tab_content .naversign_con .use .onlineText {vertical-align: bottom; color:#0050ff; text-decoration: underline;}
+#xTsign .tab_container .tab_content .naversign_con .use_text {padding-top: 12px; font-size: 11px;font-family: 'Noto Sans KR', sans-serif;}
+#xTsign .tab_container .tab_content .naversign_con a {text-decoration: none; display: inline-block; vertical-align: middle; letter-spacing: 0.05remrem; font-weight: 400; cursor: pointer; font-size: 11px;font-family: 'Noto Sans KR', sans-serif;}
+#xTsign .tab_container .tab_content .naversign_con .use .Retext {position: absolute; right: 0; border: 1px solid #4a5db0; background: #4a5db0;font-family: 'Noto Sans KR', sans-serif; font-size: 14px; color: #fff; padding: 7px; border-radius: 26px; width: 25%; text-align: center;}
+#xTsign .tab_container .tab_content .naversign_con .use .agBtn {position: absolute; right: -2px; width: 20%; background: #b7b7b7; border: 1px solid #b7b7b7; margin-right: 115px;font-family: 'Noto Sans KR', sans-serif; font-size: 14px; text-align: center;
+    border-radius: 26px; padding: 7px; color:#fff;}
+*/
+
+/* yessign Conent CSS*/
+#xTsign .tab_container .tab_content .yessign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .yessign_con img {
+  margin: 0 auto;
+  display: block;
+  padding-top: 12px;
+}
+#xTsign .tab_container .tab_content .yessign_con dl {
+  padding: 20px 20px;
+  line-height: 20px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .yessign_con dt {
+  font-size: 16px;
+  color: #222;
+  padding-bottom: 5px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .yessign_con dd {
+  font-size: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .yessign_con dd.loading {
+  text-align: center;
+  padding-top: 30px;
+}
+#xTsign .tab_container .tab_content .yessign_con dd.loading2 {
+  text-align: center;
+  padding-top: 25px;
+}
+#xTsign .tab_container .tab_content .yessign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .yessign_con .use_text {
+  padding-top: 12px;
+  font-size: 11px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+#xTsign .tab_container .tab_content .yessign_con .use a.naverBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.tossBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.kakaoPayBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.kakaoTalkBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.passBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.paycoBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.shinhanBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .yessign_con .use a.hanaoneBtn {
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  width: 90px;
+  text-align: center;
+} /* HanaOneSign-sskim */
+
+#xTsign .tab_container .tab_content .yessign_con .use .agBtn {
+  position: absolute;
+  right: -2px;
+  width: 20%;
+  background: #b7b7b7;
+  border: 1px solid #b7b7b7;
+  margin-right: 115px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 26px;
+  padding: 7px;
+  color: #fff;
+}
+
+#xTsign .tab_container .tab_content .yessign_con a {
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: 0.05remrem;
+  font-weight: 400;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .yessign_con .use .onlineText {
+  vertical-align: bottom;
+  color: #0050ff;
+  text-decoration: underline;
+}
+#xTsign .tab_container .tab_content .yessign_con .use .Retext {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  padding: 7px;
+  border-radius: 26px;
+  width: 25%;
+  text-align: center;
+}
+
+/* 프로필 naver Conent CSS*/
+#xTsign .tab_container .tab_content .naversign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .naversign_con p {
+  padding: 10px 0px 10px 20px;
+  font-size: 16px;
+  color: #222;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .naversign_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .naversign_con dt {
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .naversign_con > div.consent {
+  width: 100%;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .naversign_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .naversign_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .naversign_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .naversign_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .naversign_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .naversign_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .naversign_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .naversign_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .naversign_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .naversign_con .viewInp {
+  font-family: 'Noto Sans KR', sans-serif;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .naversign_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .naversign_con .agree {
+  margin-left: 15px;
+}
+
+#xTsign .tab_container .tab_content .naversign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .naversign_con .use .onlineText {
+  vertical-align: bottom;
+  color: #0050ff;
+  text-decoration: underline;
+}
+#xTsign .tab_container .tab_content .naversign_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .naversign_con a {
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: 0.05remrem;
+  font-weight: 400;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .naversign_con .use .Retext {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  padding: 7px;
+  border-radius: 26px;
+  width: 25%;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .naversign_con .use .agBtn {
+  position: absolute;
+  right: -2px;
+  width: 20%;
+  background: #b7b7b7;
+  border: 1px solid #b7b7b7;
+  margin-right: 115px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 26px;
+  padding: 7px;
+  color: #fff;
+}
+
+/* toss Conent CSS*/
+#xTsign .tab_container .tab_content .tosssign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .tosssign_con p {
+  padding: 10px 0px 10px 20px;
+  font-size: 16px;
+  color: #222;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .tosssign_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .tosssign_con dt {
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .tosssign_con > div.consent {
+  width: 100%;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .tosssign_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .tosssign_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .tosssign_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .tosssign_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .tosssign_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .tosssign_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .tosssign_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .tosssign_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .tosssign_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .tosssign_con .viewInp {
+  font-family: 'Noto Sans KR', sans-serif;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .tosssign_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .tosssign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .tosssign_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .tosssign_con .use a {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  padding: 7px;
+  border-radius: 26px;
+  text-align: center;
+  width: 25%;
+}
+#xTsign .tab_container .tab_content .tosssign_con .agree {
+  margin-left: 15px;
+}
+
+/* Kakao Pay Conent CSS*/
+#xTsign .tab_container .tab_content .kakaopay_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con p {
+  padding: 10px 0px 10px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dt {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con > div.consent {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .kakaopay_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .kakaopay_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .kakaopay_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con .viewInp {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .kakaopay_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .kakaopay_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .kakaopay_con .use a {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  padding: 7px;
+  border-radius: 26px;
+  text-align: center;
+  width: 25%;
+}
+#xTsign .tab_container .tab_content .kakaopay_con .agree {
+  margin-left: 15px;
+}
+
+/* Kakao Talk Conent CSS*/
+#xTsign .tab_container .tab_content .kakaotalk_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con p {
+  padding: 10px 0px 10px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dt {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con > div.consent {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .kakaotalk_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .viewInp {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .agree {
+  margin-left: 15px;
+}
+
+#xTsign .tab_container .tab_content .kakaotalk_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .use .onlineText {
+  vertical-align: bottom;
+  color: #0050ff;
+  text-decoration: underline;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con a {
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: 0.05remrem;
+  font-weight: 400;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .use .Retext {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  padding: 7px;
+  border-radius: 26px;
+  width: 25%;
+  text-align: center;
+}
+#xTsign .tab_container .tab_content .kakaotalk_con .use .agBtn {
+  position: absolute;
+  right: -2px;
+  width: 20%;
+  background: #b7b7b7;
+  border: 1px solid #b7b7b7;
+  margin-right: 115px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 26px;
+  padding: 7px;
+  color: #fff;
+}
+
+/* PASS Conent CSS*/
+#xTsign .tab_container .tab_content .passsign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .passsign_con p {
+  padding: 10px 0px 10px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .passsign_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .passsign_con dt {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#xTsign .tab_container .tab_content .passsign_con > div.consent {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+}
+#xTsign .tab_container .tab_content .passsign_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .passsign_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .passsign_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .passsign_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .passsign_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .passsign_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .passsign_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .passsign_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .passsign_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .passsign_con .viewInp {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .passsign_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .passsign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .passsign_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .passsign_con .use a {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  padding: 7px;
+  border-radius: 26px;
+  text-align: center;
+  width: 25%;
+}
+#xTsign .tab_container .tab_content .passsign_con .agree {
+  margin-left: 15px;
+}
+
+/* PAYCO Conent CSS*/
+#xTsign .tab_container .tab_content .paycosign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .paycosign_con p {
+  padding: 10px 0px 10px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .paycosign_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .paycosign_con dt {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#xTsign .tab_container .tab_content .paycosign_con > div.consent {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+}
+#xTsign .tab_container .tab_content .paycosign_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .paycosign_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .paycosign_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .paycosign_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .paycosign_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .paycosign_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .paycosign_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .paycosign_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .paycosign_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .paycosign_con .viewInp {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .paycosign_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .paycosign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .paycosign_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .paycosign_con .use a {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  padding: 7px;
+  border-radius: 26px;
+  text-align: center;
+  width: 25%;
+}
+#xTsign .tab_container .tab_content .paycosign_con .agree {
+  margin-left: 15px;
+}
+
+/* SHINHAN Conent CSS*/
+#xTsign .tab_container .tab_content .shinhansign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con p {
+  padding: 10px 0px 10px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dt {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con > div.consent {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .shinhansign_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .shinhansign_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .shinhansign_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con .viewInp {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .shinhansign_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .shinhansign_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .shinhansign_con .use a {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  padding: 7px;
+  border-radius: 26px;
+  text-align: center;
+  width: 25%;
+}
+#xTsign .tab_container .tab_content .shinhansign_con .agree {
+  margin-left: 15px;
+}
+
+/* HanaOneSign-sskim Conent CSS*/
+#xTsign .tab_container .tab_content .hanaonesign_con {
+  width: 406px;
+  height: 254px;
+  background-color: #ebeffc;
+  border-radius: 7px;
+  position: relative;
+  border: 1px solid #bccbfc;
+  margin-left: 1px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con p {
+  padding: 10px 0px 10px 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: #222;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dl {
+  padding: 0 19px;
+  line-height: 20px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dt {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  color: #4a5db0;
+  font-weight: bold;
+  float: left;
+  width: 78px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con > div.consent {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10.5px;
+  color: #222;
+  padding: 5px 0px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con > div.consent > div {
+  float: left;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con > div.consent span {
+  color: #4a5db0;
+  text-decoration: underline;
+  display: inline-block;
+  padding-left: 6px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dd {
+  padding-bottom: 5px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dd input {
+  border: 1px solid #d8e0fb;
+  width: 270px;
+  height: 28px;
+  border-radius: 23px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  padding-left: 15px;
+  padding: 0px 2px 2px 15px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dd input.s_box {
+  width: 114px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dd input[type='radio'] {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: -1px;
+  background: #4a5daf;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dd input[type='password'] {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  width: 20px;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  .hanaonesign_con
+  dd
+  input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con dd.loading {
+  text-align: center;
+  padding-top: 50px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con .viewInp {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-right: 3px;
+  appearance: auto;
+  -moz-appearance: auto;
+  -webkit-appearance: auto;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con .viewBtm {
+  color: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: 0;
+  padding: 0 8px;
+  text-decoration: underline;
+  font-weight: 400;
+  margin-right: 6px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con .use {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 7px 20px;
+  height: 36px;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con .use_text {
+  padding-left: 0px;
+  padding-top: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: #444;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con .use a {
+  position: absolute;
+  right: 0;
+  border: 1px solid #4a5db0;
+  background: #4a5db0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  padding: 7px;
+  border-radius: 26px;
+  text-align: center;
+  width: 25%;
+}
+#xTsign .tab_container .tab_content .hanaonesign_con .agree {
+  margin-left: 15px;
+}
+
+#xTsign .tab_container .tab_content div.consent > div.agree {
+  line-height: normal;
+}
+
+#xTsign .tab_container .tab_content div.consent > div.use {
+  line-height: normal;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='checkbox']
+  + label {
+  padding-left: 0px;
+  margin-right: 0px;
+}
+
+#xTsign .tab_container .tab_content div.consent > div.agree input + label {
+  font-size: 10.5px;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='checkbox']
+  + label:before {
+  content: none;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='checkbox']
+  + label:before {
+  content: none;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='checkbox']
+  + label:after {
+  content: none;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='checkbox']
+  + label:after {
+  content: none;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='radio'] {
+  position: relative;
+  width: auto;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='radio']
+  + label {
+  padding-left: 2px;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='radio']:checked
+  + label::before {
+}
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='radio']:checked
+  + label:before {
+  content: none;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='radio']
+  + label::before {
+}
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='radio']
+  + label:before {
+  content: none;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input
+  + label:before {
+  content: none;
+}
+
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  table
+  input[type='radio']:checked
+  + label::after {
+}
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='radio']:checked
+  + label::after {
+  content: none;
+}
+#xTsign
+  .tab_container
+  .tab_content
+  div.consent
+  > div.agree
+  input[type='radio']
+  + label:after {
+  content: none;
+}
+
+#xTsign .tab_container *:focus-visible {
+  outline: -webkit-focus-ring-color auto 1px;
+}
+
+#xTsign {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+}
+
+.xwup_cert_overlay {
+  display: none !important;
+  z-index: 999 !important;
+}
+
+.xTsign-overlay {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+}
+
+#xTsign .tab_container .tab_content ul li .icon-star {
+  float: right;
+  padding: 0px;
+  cursor: pointer;
+  margin-top: 14px;
+  margin-right: 15px;
+}
+
+#xTsign .use_text {
+  display: inline-block;
+  color: #444;
+}
+
+#xTsign_sign,
+#xTsign_sign_cancel,
+#xTsign_sign_retry,
+#xTsign_sign_ok {
+  line-height: normal;
+  cursor: pointer;
+}
+/* anysign 재정의 */
+.xwup_cert_pop_anysign {
+  /* width: 450px!important;
+    top: 50px!important;
+    left: 0px!important; */
+  border-color: #fff !important;
+}
+
+/* Center the loader */
+#tab1_loader {
+  z-index: 1;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  background: url(../img/loading_A.gif) no-repeat;
+  margin-top: 150px;
+}
