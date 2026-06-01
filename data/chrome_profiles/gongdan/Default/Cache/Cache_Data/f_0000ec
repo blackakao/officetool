@@ -1,0 +1,1623 @@
+(function()
+{
+    return function()
+    {
+        if (!this._is_form)
+            return;
+        
+        var obj = null;
+        
+        this.on_create = function()
+        {
+            this.set_initvalueid("iv_Form()");
+            this.set_name("npfa401m01");
+            this.set_titletext("기타자료신고");
+            if (Form == this.constructor)
+            {
+                this._setFormPosition(1080,530);
+            }
+            
+            // Object(Dataset, ExcelExportObject) Initialize
+            obj = new Dataset("ds_insuList", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ILI_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ILI_SCUR_NO\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_CORP_NM\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_ITEM_NM\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_SPCT_NM\" type=\"STRING\" size=\"256\"/><Column id=\"VALID_TERM_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"VALID_TERM_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"PRIOR_ADPT_NOP\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"청약시간\"/><Column id=\"FR_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"시작시간\"/><Column id=\"TO_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"종료시간\"/><Column id=\"CHG_SEQ\" type=\"STRING\" size=\"256\" sumtext=\"변경순번\"/><Column id=\"RNUM\" type=\"STRING\" size=\"256\"/><Column id=\"MAX_CHG_SEQ\" type=\"STRING\" size=\"256\"/><Column id=\"CHG_RSN_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_foodList", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_DCLT_ADM_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"EQUIP_ENTR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"REG_NO\" type=\"STRING\" size=\"256\"/><Column id=\"REPR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"SAVED\" type=\"STRING\" size=\"256\"/><Column id=\"NUTPSN_RCGT_YN\" type=\"STRING\" size=\"256\"/><Column id=\"ASCK_RCGT_YN\" type=\"STRING\" size=\"256\"/><Column id=\"CSMT_CTR_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_cleanList", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_DCLT_ADM_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"EQUIP_ENTR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"REG_NO\" type=\"STRING\" size=\"256\"/><Column id=\"REPR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"SAVED\" type=\"STRING\" size=\"256\"/><Column id=\"NUTPSN_RCGT_YN\" type=\"STRING\" size=\"256\"/><Column id=\"ASCK_RCGT_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_cond", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"ILI_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_DCLT_ADM_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"GOSI_ADPT_202501_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_saveTm", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"WORK_SAVE_TM_INSU\" type=\"STRING\" size=\"256\"/><Column id=\"WORK_SAVE_TM_FOOD\" type=\"STRING\" size=\"256\"/><Column id=\"WORK_SAVE_TM_CLEAN\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_insuExpUnetr", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_DD\" type=\"STRING\" size=\"256\"/><Column id=\"RMK\" type=\"STRING\" size=\"256\"/><Column id=\"ENTER_YN\" type=\"STRING\" size=\"256\"/><Column id=\"UNETR_RSN_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_dmTp", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"BASE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"INE_NOP_CNT\" type=\"STRING\" size=\"256\"/><Column id=\"CHE_NOP_CNT\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_mlsNopList", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_WK_CHASU\" type=\"STRING\" size=\"256\"/><Column id=\"PRETN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"INE_MLS_NOP\" type=\"STRING\" size=\"256\"/><Column id=\"EGGR_MLS_NOP\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_WK_CHASU_TXT\" type=\"STRING\" size=\"256\"/><Column id=\"EAA_CSMT_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_yn", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"BASE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"BASE_CD_NM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"BASE_CD\">Y</Col><Col id=\"BASE_CD_NM\">인정</Col></Row><Row><Col id=\"BASE_CD\">N</Col><Col id=\"BASE_CD_NM\">미인정</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_insuDel", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"ILI_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"CHG_SEQ\" type=\"STRING\" size=\"256\" sumtext=\"변경순번\"/><Column id=\"ILI_SCUR_NO\" type=\"STRING\" size=\"256\" sumtext=\"보험증권번호\"/><Column id=\"VALID_TERM_CHG_TO_DT\" type=\"STRING\" size=\"256\" sumtext=\"종료일자\"/><Column id=\"CHG_TO_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"종료시간\"/><Column id=\"PRE_CHG_SEQ\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_cleanList_tmp", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_TYPE_CD_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_DCLT_ADM_SEQ_NO_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"EQUIP_ENTR_NM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"REG_NO_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"REPR_NM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_BASE_CD_NM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"SAVED_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"NUTPSN_RCGT_YN_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ASCK_RCGT_YN_TMP\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_foodList_tmp", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_TYPE_CD_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_DCLT_ADM_SEQ_NO_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"EQUIP_ENTR_NM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"REG_NO_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"REPR_NM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_BASE_CD_NM_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"SAVED_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"NUTPSN_RCGT_YN_TMP\" type=\"STRING\" size=\"256\"/><Column id=\"ASCK_RCGT_YN_TMP\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_insuListAll", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ILI_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ILI_SCUR_NO\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_CORP_NM\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_ITEM_NM\" type=\"STRING\" size=\"256\"/><Column id=\"INSU_SPCT_NM\" type=\"STRING\" size=\"256\"/><Column id=\"VALID_TERM_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"VALID_TERM_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"PRIOR_ADPT_NOP\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"청약시간\"/><Column id=\"FR_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"시작시간\"/><Column id=\"TO_HR_MT\" type=\"STRING\" size=\"256\" sumtext=\"종료시간\"/><Column id=\"CHG_SEQ\" type=\"STRING\" size=\"256\" sumtext=\"변경순번\"/><Column id=\"RNUM\" type=\"STRING\" size=\"256\"/><Column id=\"MAX_CHG_SEQ\" type=\"STRING\" size=\"256\"/><Column id=\"CHG_RSN_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_rz05List", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CHK\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"WMC_DCLT_ADM_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"EQUIP_ENTR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"REG_NO\" type=\"STRING\" size=\"256\"/><Column id=\"REPR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"NUTPSN_RCGT_YN\" type=\"STRING\" size=\"256\"/><Column id=\"ASCK_RCGT_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/><Row/></Rows>");
+            this.addChild(obj.name, obj);
+            
+            // UI Components Initialize
+            obj = new Static("stc_workSaveTmInsu","204","12","303","15",null,null,null,null,null,null,this);
+            obj.set_text("[최종저장일시 : ]");
+            obj.set_cssclass("sta_WF_help_red_tit");
+            obj.set_font("normal bold 8pt/normal \"굴림\"");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_workSaveTmFood","77","239","303","24",null,null,null,null,null,null,this);
+            obj.set_text("[최종저장일시 : ]");
+            obj.set_cssclass("sta_WF_help_red_tit");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_workSaveTmClean","92","419","303","23",null,null,null,null,null,null,this);
+            obj.set_text("[최종저장일시 : ]");
+            obj.set_cssclass("sta_WF_help_red_tit");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static01","342","232","29","33",null,null,null,null,null,null,this);
+            obj.set_text("H32");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide02");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static03","0","232","307","13",null,null,null,null,null,null,this);
+            obj.set_text("13");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static05","0","257","307","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static34","342","0","29","33",null,null,null,null,null,null,this);
+            obj.set_text("H32");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide02");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static17","0","0","307","13",null,null,null,null,null,null,this);
+            obj.set_text("13");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static35","0","25","307","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static18","0","4","90","31",null,null,null,null,null,null,this);
+            obj.set_text("배상보험");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grid_insuList","0","52",null,"180","1",null,null,null,null,null,this);
+            obj.set_taborder("1");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_check").set("true");
+            obj.set_binddataset("ds_insuList");
+            obj.set_fillareatype("linerow");
+            obj.set_autofittype("col");
+            obj.getSetter("_checkstatus").set("false");
+            obj.getSetter("_sort").set("true");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"48\"/><Column size=\"150\"/><Column size=\"250\"/><Column size=\"150\"/><Column size=\"130\"/><Column size=\"100\"/><Column size=\"100\"/><Column size=\"65\"/><Column size=\"100\"/><Column size=\"65\"/></Columns><Rows><Row size=\"24\" band=\"head\"/><Row size=\"24\"/></Rows><Band id=\"head\"><Cell text=\"연번\"/><Cell col=\"1\" displaytype=\"normal\" text=\"보험회사명\"/><Cell col=\"2\" displaytype=\"normal\" text=\"상품명\"/><Cell col=\"3\" displaytype=\"normal\" text=\"급여종류\"/><Cell col=\"4\" displaytype=\"normal\" text=\"보험증권번호\"/><Cell col=\"5\" displaytype=\"normal\" text=\"청약일\"/><Cell col=\"6\" displaytype=\"normal\" text=\"시작일\"/><Cell col=\"7\" displaytype=\"normal\" text=\"시작시간\"/><Cell col=\"8\" displaytype=\"normal\" text=\"종료일\"/><Cell col=\"9\" displaytype=\"normal\" text=\"종료시간\"/></Band><Band id=\"body\"><Cell font=\"normal 9pt/normal &quot;굴림&quot;\" text=\"bind:RNUM\"/><Cell col=\"1\" displaytype=\"normal\" text=\"bind:INSU_CORP_NM\" textAlign=\"left\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"2\" displaytype=\"normal\" text=\"bind:INSU_ITEM_NM\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"3\" displaytype=\"normal\" text=\"bind:LTC_BASE_CD_NM\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"4\" displaytype=\"normal\" edittype=\"none\" text=\"bind:ILI_SCUR_NO\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"5\" displaytype=\"mask\" edittype=\"none\" text=\"bind:CTR_DT\" mask=\"9999-99-99\" calendardisplay=\"edit\" calendardisplaynulltype=\"default\" maskedittype=\"string\" maskeditformat=\"####-##-##\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"6\" text=\"bind:VALID_TERM_FR_DT\" mask=\"9999-99-99\" calendardisplaynulltype=\"default\" displaytype=\"mask\" maskedittype=\"string\" maskeditformat=\"####-##-##\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"7\" text=\"bind:FR_HR_MT\" displaytype=\"mask\" maskedittype=\"string\" maskeditformat=\"##:##\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"8\" text=\"bind:VALID_TERM_TO_DT\" mask=\"9999-99-99\" calendardisplaynulltype=\"default\" displaytype=\"mask\" maskedittype=\"string\" maskeditformat=\"####-##-##\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"9\" text=\"bind:TO_HR_MT\" displaytype=\"mask\" maskedittype=\"string\" maskeditformat=\"##:##\" font=\"normal 9pt/normal &quot;굴림&quot;\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Combo("cmb_searchInsu",null,"5","130","22","387",null,null,null,null,null,this);
+            obj.set_taborder("2");
+            obj.set_codecolumn("codecolumn");
+            obj.set_datacolumn("datacolumn");
+            var cmb_searchInsu_innerdataset = new nexacro.NormalDataset("cmb_searchInsu_innerdataset", obj);
+            cmb_searchInsu_innerdataset._setContents("<ColumnInfo><Column id=\"codecolumn\" size=\"256\"/><Column id=\"datacolumn\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"codecolumn\">1</Col><Col id=\"datacolumn\">유효한보험</Col></Row><Row><Col id=\"codecolumn\">6</Col><Col id=\"datacolumn\">전체보험</Col></Row><Row><Col id=\"codecolumn\">3</Col><Col id=\"datacolumn\">3월내 종료예정 보험</Col></Row><Row><Col id=\"codecolumn\">4</Col><Col id=\"datacolumn\">3월내 시작예정 보험</Col></Row><Row><Col id=\"codecolumn\">5</Col><Col id=\"datacolumn\">종료된 보험</Col></Row></Rows>");
+            obj.set_innerdataset(cmb_searchInsu_innerdataset);
+            obj.set_text("유효한보험");
+            obj.set_value("1");
+            obj.set_index("0");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_allInsu","83","5","125","22",null,null,null,null,null,null,this);
+            obj.set_taborder("3");
+            obj.set_text("배상보험전체보기");
+            obj.set_cssclass("btn_WF_acty");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_addInsu",null,"5","110","22","111",null,null,null,null,null,this);
+            obj.set_taborder("4");
+            obj.set_text("추가(신규/갱신)");
+            obj.set_cssclass("btn_WF_actb");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static00","0","240","90","24",null,null,null,null,null,null,this);
+            obj.set_text("급식위탁");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grid_foodList","0","263",null,"148","1",null,null,null,null,null,this);
+            obj.set_taborder("6");
+            obj.set_binddataset("ds_foodList");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_fillareatype("linerow");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_check").set("true");
+            obj.set_autoupdatetype("comboselect");
+            obj.getSetter("_sort").set("true");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"200\"/><Column size=\"150\"/><Column size=\"150\"/><Column size=\"150\"/><Column size=\"150\"/><Column size=\"0\"/><Column size=\"0\"/></Columns><Rows><Row size=\"24\" band=\"head\"/><Row size=\"24\"/></Rows><Band id=\"head\"><Cell displaytype=\"normal\" text=\"업체명\"/><Cell col=\"1\" displaytype=\"normal\" text=\"사업자등록번호\"/><Cell col=\"2\" displaytype=\"normal\" text=\"대표자성명\"/><Cell col=\"3\" displaytype=\"normal\" text=\"계약시작일\"/><Cell col=\"4\" displaytype=\"normal\" text=\"계약종료일\"/><Cell col=\"5\" displaytype=\"normal\" text=\"영양사인정\"/><Cell col=\"6\" displaytype=\"normal\" text=\"조리원인정\"/></Band><Band id=\"body\"><Cell displaytype=\"textareacontrol\" edittype=\"textarea\" text=\"bind:EQUIP_ENTR_NM\" editlimit=\"50\" editdisplay=\"display\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff,celltextarea_center':'celltextarea_center'\"/><Cell col=\"1\" displaytype=\"maskeditcontrol\" edittype=\"mask\" text=\"bind:REG_NO\" mask=\"999-99-99999\" editlimit=\"10\" editdisplay=\"display\" editlengthunit=\"utf16\" editinputfilter=\"none\" editinputtype=\"digit\" editmaxlength=\"10\" maskedittype=\"string\" maskeditformat=\"###-##-#####\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff,cellmsk_center':'cellmsk_center'\"/><Cell col=\"2\" displaytype=\"textareacontrol\" edittype=\"textarea\" text=\"bind:REPR_NM\" editlimit=\"20\" editdisplay=\"display\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff,celltextarea_center':'celltextarea_center'\"/><Cell col=\"3\" displaytype=\"calendarcontrol\" edittype=\"date\" text=\"bind:ADPT_FR_DT\" editdisplay=\"edit\" calendardisplay=\"display\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy-MM-dd\"/><Cell col=\"4\" displaytype=\"calendarcontrol\" edittype=\"date\" text=\"bind:ADPT_TO_DT\" calendardisplay=\"display\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy-MM-dd\"/><Cell col=\"5\" displaytype=\"combocontrol\" edittype=\"combo\" text=\"bind:NUTPSN_RCGT_YN\" editlimit=\"20\" editdisplay=\"display\" combodataset=\"ds_yn\" combocodecol=\"BASE_CD\" combodatacol=\"BASE_CD_NM\" combodisplay=\"display\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff':''\"/><Cell col=\"6\" displaytype=\"combocontrol\" edittype=\"combo\" text=\"bind:ASCK_RCGT_YN\" editlimit=\"20\" editdisplay=\"display\" combodataset=\"ds_yn\" combocodecol=\"BASE_CD\" combodatacol=\"BASE_CD_NM\" combodisplay=\"display\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff':''\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static04","0","419","111","23",null,null,null,null,null,null,this);
+            obj.set_text("세탁물위탁");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grid_cleanList","0","444",null,"148","1",null,null,null,null,null,this);
+            obj.set_taborder("11");
+            obj.set_binddataset("ds_cleanList");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_fillareatype("linerow");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_check").set("true");
+            obj.getSetter("_sort").set("true");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"200\"/><Column size=\"150\"/><Column size=\"150\"/><Column size=\"150\"/><Column size=\"150\"/></Columns><Rows><Row size=\"24\" band=\"head\"/><Row size=\"24\"/></Rows><Band id=\"head\"><Cell displaytype=\"normal\" text=\"업체명\"/><Cell col=\"1\" displaytype=\"normal\" text=\"사업자등록번호\"/><Cell col=\"2\" displaytype=\"normal\" text=\"대표자성명\"/><Cell col=\"3\" displaytype=\"normal\" text=\"계약시작일\"/><Cell col=\"4\" displaytype=\"normal\" text=\"계약종료일\"/></Band><Band id=\"body\"><Cell displaytype=\"textareacontrol\" edittype=\"textarea\" text=\"bind:EQUIP_ENTR_NM\" editlimit=\"50\" editdisplay=\"display\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff,celltextarea_center':'celltextarea_center'\"/><Cell col=\"1\" displaytype=\"maskeditcontrol\" edittype=\"mask\" text=\"bind:REG_NO\" mask=\"999-99-99999\" editlimit=\"10\" editdisplay=\"display\" editinputtype=\"digit\" editmaxlength=\"10\" maskeditformat=\"###-##-#####\" maskedittype=\"string\" cssclass=\"cellmsk_center\"/><Cell col=\"2\" displaytype=\"textareacontrol\" edittype=\"textarea\" text=\"bind:REPR_NM\" editlimit=\"20\" editdisplay=\"display\" cssclass=\"expr:_ROW_STATUS ? 'bg_ffffff,celltextarea_center':'celltextarea_center'\"/><Cell col=\"3\" displaytype=\"calendarcontrol\" edittype=\"date\" text=\"bind:ADPT_FR_DT\" editdisplay=\"edit\" calendardisplay=\"display\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy-MM-dd\" textAlign=\"center\"/><Cell col=\"4\" displaytype=\"calendarcontrol\" edittype=\"date\" text=\"bind:ADPT_TO_DT\" calendardisplay=\"display\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy-MM-dd\" textAlign=\"center\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static65",null,"7","80","20","516",null,null,null,null,null,this);
+            obj.set_text("보험구분");
+            obj.set_cssclass("sta_WFSA_label");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_modInsu",null,"5","50","22","59",null,null,null,null,null,this);
+            obj.set_taborder("5");
+            obj.set_text("수정");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_delInsu",null,"5","50","22","7",null,null,null,null,null,this);
+            obj.set_taborder("7");
+            obj.set_text("삭제");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_addFood",null,"237","50","22","111",null,null,null,null,null,this);
+            obj.set_taborder("9");
+            obj.set_text("추가");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_delFood",null,"237","50","22","59",null,null,null,null,null,this);
+            obj.set_taborder("10");
+            obj.set_text("삭제");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_saveClean",null,"416","50","22","7",null,null,null,null,null,this);
+            obj.set_taborder("12");
+            obj.set_text("저장");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_addClean",null,"416","50","22","111",null,null,null,null,null,this);
+            obj.set_taborder("13");
+            obj.set_text("추가");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_delClean",null,"416","50","22","59",null,null,null,null,null,this);
+            obj.set_taborder("14");
+            obj.set_text("삭제");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static12","703","-4","10","35",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static13","73","0","10","35",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static02","74","235","10","35",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static21","89","411","10","35",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static07","342","411","29","33",null,null,null,null,null,null,this);
+            obj.set_text("H32");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide02");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static08","0","411","307","13",null,null,null,null,null,null,this);
+            obj.set_text("13");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static09","0","436","307","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static06","201","0","10","35",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_explain",null,"5","70","22","295",null,null,null,null,null,this);
+            obj.set_taborder("15");
+            obj.set_text("소명하기");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static20","552","0","10","35",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_regMls",null,"237","119","22","163",null,null,null,null,null,this);
+            obj.set_taborder("16");
+            obj.set_text("급식인원등록");
+            obj.set_cssclass("btn_WF_actb");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_saveFood",null,"237","50","22","7",null,null,null,null,null,this);
+            obj.set_taborder("19");
+            obj.set_text("저장");
+            this.addChild(obj.name, obj);
+
+            obj = new Div("div_nop",null,"263","503","237","289",null,null,null,null,null,this);
+            obj.set_taborder("18");
+            obj.set_visible("false");
+            obj.set_background("white");
+            obj.set_border("1px solid #bababa");
+            obj.set_borderRadius("10px");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grid_nop","14","35","472","152",null,null,null,null,null,null,this.div_nop.form);
+            obj.set_taborder("0");
+            obj.set_binddataset("ds_mlsNopList");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_visible("true");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_checkhead").set("true");
+            obj.getSetter("_filter").set("true");
+            obj.getSetter("_hideColumn").set("true");
+            obj.getSetter("_fixedColumn").set("true");
+            obj.getSetter("objectType").set("gridCommE");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"200\"/><Column size=\"120\"/><Column size=\"120\"/></Columns><Rows><Row size=\"30\" band=\"head\"/><Row size=\"24\"/></Rows><Band id=\"head\"><Cell displaytype=\"normal\"/><Cell col=\"1\" displaytype=\"normal\" edittype=\"none\" text=\"입소자 급식 인원수\"/><Cell col=\"2\" displaytype=\"normal\" edittype=\"none\" text=\"종사자 급식 인원수\"/></Band><Band id=\"body\"><Cell displaytype=\"normal\" text=\"bind:TGT_WK_CHASU_TXT\"/><Cell col=\"1\" displaytype=\"text\" edittype=\"text\" editfilter=\"digit\" text=\"bind:INE_MLS_NOP\" editlimit=\"3\" editdisplay=\"display\"/><Cell col=\"2\" displaytype=\"text\" edittype=\"text\" editfilter=\"digit\" text=\"bind:EGGR_MLS_NOP\" editlimit=\"3\" editdisplay=\"display\"/></Band></Format></Formats>");
+            this.div_nop.addChild(obj.name, obj);
+
+            obj = new Button("btn_saveMls","365","9","58","22",null,null,null,null,null,null,this.div_nop.form);
+            obj.set_taborder("1");
+            obj.set_text("저장");
+            this.div_nop.addChild(obj.name, obj);
+
+            obj = new Static("Static00","12","9","121","24",null,null,null,null,null,null,this.div_nop.form);
+            obj.set_text("급식인원등록");
+            obj.set_cssclass("sta_WF_title2");
+            this.div_nop.addChild(obj.name, obj);
+
+            obj = new Static("stc_workSaveTmFood","7","195","460","24",null,null,null,null,null,null,this.div_nop.form);
+            obj.set_text("※ 1일 조·중·석식 중 가장 많은 급식인원을 1개월간 평균하여 입력");
+            obj.set_cssclass("sta_WF_help_red_tit");
+            this.div_nop.addChild(obj.name, obj);
+
+            obj = new Button("btn_close","426","9","58","22",null,null,null,null,null,null,this.div_nop.form);
+            obj.set_taborder("2");
+            obj.set_text("닫기");
+            this.div_nop.addChild(obj.name, obj);
+
+            obj = new CheckBox("chk00","224","9","130","20",null,null,null,null,null,null,this.div_nop.form);
+            obj.set_taborder("5");
+            obj.set_text("병설기관위탁여부");
+            obj.set_value("false");
+            this.div_nop.addChild(obj.name, obj);
+
+            obj = new Static("stc_workSaveTmFood00",null,"30","530","20","8",null,null,null,null,null,this);
+            obj.set_text("※ 계약번경 버튼은 보험가입기간 중 보험 가입내역이 변경된 경우 사용하시기 바랍니다.");
+            obj.set_taborder("39");
+            obj.set_cssclass("sta_WF_help_red_tit");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_chgInsu",null,"5","70","22","223",null,null,null,null,null,this);
+            obj.set_taborder("40");
+            obj.set_text("계약변경");
+            obj.set_cssclass("btn_WF_actb");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_workSaveTmFood01",null,"230","410","40","298",null,null,null,null,null,this);
+            obj.set_text("급식위탁을 하는 경우, 위탁업체에 영양사 및 조리원이 소속된 경우에만 등록이 가능합니다.[참조 : 노인복지법 시행규칙 별표9]");
+            obj.set_taborder("41");
+            obj.set_cssclass("sta_WF_help_red_tit");
+            this.addChild(obj.name, obj);
+
+            // Layout Functions
+            //-- Default Layout : this
+            obj = new Layout("default","",this._adjust_width,this._adjust_height,this,function(p){});
+            this.addLayout(obj.name, obj);
+            
+            // BindItem Information
+
+        };
+        
+        this.loadPreloadList = function()
+        {
+
+        };
+        
+        // User Script
+        this.registerScript("npfa401m01.xfdl", function() {
+
+        /*=============================   Program description   ================================*
+         * Form ID     : npfa401m01.xfdl
+         * Form Desc.  : 기타자료신고
+         * Author      : 양재호
+         * Create Date : 2015.05.14
+         * Change History
+         *======================================================================================*
+         * 수정일 / 이름 / 사유
+          2022.2월 부터 시군구 위탁신고내역으로 신고됨(TBNYRZ05), 입력수정삭제제한(급식,세탁)
+          20250717. 관리자권한은 삭제버튼활성화.(신고내역과 맞지않는 내역 관리자가 삭제 가능하도록 처리)
+
+         *======================================================================================*
+         *======================================================================================*/
+
+         /*======================================================================================*
+         * 1. include
+         *======================================================================================*/
+        //include "biz.library::nyb_include.xjs";
+        //include "biz.library::nyb_tCommon.xjs";
+        /*======================================================================================*
+         * 2. Form 변수
+         *======================================================================================*/
+        this.showCnt = 0;
+        this.parent100 = this.parent.parent.parent.parent.parent.parent.parent;
+        var gosi_20250101 =  this.parent100.gosi_20250101;   //this.parent100.gosi_20250101="202501", 고시적용시작일은 개발[2024.01.01] 운영[2025.01.01]
+        var gosi_202501_colNm = "";
+        /*======================================================================================*
+         * 3. Form Load
+         *======================================================================================*/
+        this.frm_onload = function(obj,e){
+        	this.cfn_frmInit(obj);
+        };
+
+        this.fn_frmInit = function() {
+        	this.gfn_setGrid(this.grid_insuList);
+        	this.gfn_setGrid(this.grid_foodList);
+        	this.gfn_setGrid(this.grid_cleanList);
+
+        	this.ds_cond.setColumn(0, "LTC_ADMIN_SYM", this.parent100.ds_fm_cond.getColumn(0, "LTC_ADMIN_SYM"));
+        	this.ds_cond.setColumn(0, "ADMIN_PTTN_CD", this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD"));
+        	this.ds_cond.setColumn(0, "TGT_YYYYMM", this.parent100.ds_fm_cond.getColumn(0, "TGT_YYYYMM"));
+        	this.ds_cond.setColumn(0, "INSU_TYPE", "1");
+        	//2025.01 고시 변수 생성
+        	if(this.parent100.fn_isGosiFlag(gosi_20250101,this.ds_cond.getColumn(0, "TGT_YYYYMM"),this.ds_cond)){
+        		this.ds_cond.setColumn(0, "GOSI_ADPT_202501_YN", "Y");
+        	}
+        	trace("※고시cd : " + gosi_20250101 + "|| 고시여부:" + this.ds_cond.getColumn(0, "GOSI_ADPT_202501_YN"));
+        	this.CHG_ABLE = this.parent100.CHG_ABLE;
+        	this.SPR_ABLE = this.parent100.SPR_ABLE;
+        	trace("npfa401m01 this.SPR_ABLE = [" + this.SPR_ABLE + "]");
+
+        	// 배상보험 조회
+        	this.fn_selectInsuList();
+
+
+        	this.fn_selectFoodCleanListNew();
+
+        	// 급식세탁물 시군구 연계자료의 변경자료를 기등록(FA55)자료와 비교하여 먼저 업데이트 함
+        	// 계약종료, 삭제등
+        	//20231123
+        	this.fn_updateFoodClean();
+        	this.fn_selectFoodList();  //급식조회
+        	this.fn_selectCleanList(); //세탁조회
+
+        	// 최종저장일시 조회
+        	this.fn_selectSaveTm();
+
+        	// 배상책임보험 미가입 소명
+        	this.fn_selectInsuExpUnetr();
+
+        	// 급식인원조회
+        	this.fn_selectMlsNopList();
+
+        	//운영관리 권한/버튼 컨트롤
+        	this.btn_addInsu.set_enable(this.CHG_ABLE);
+        	this.btn_modInsu.set_enable(this.CHG_ABLE);
+        	this.btn_delInsu.set_enable(this.CHG_ABLE);
+
+        	/* 급식세탁물 시군구 자료 연계 added by jykang 20220221 - start */
+        	if( this.ds_cond.getColumn(0, "TGT_YYYYMM") >= "202202")   // 운영은 202202 으로 바꿔야 함.
+        	{
+        		this.btn_addFood.set_enable(0);
+        		this.btn_delFood.set_enable(0);
+        		this.btn_saveFood.set_enable(0);
+        		this.btn_addClean.set_enable(0);
+        		this.btn_delClean.set_enable(0);
+        		this.btn_saveClean.set_enable(0);
+        	}
+        	else
+        	{
+        	/* 급식세탁물 시군구 자료 연계 added by jykang 20220221 - end */
+        		this.btn_addFood.set_enable(this.CHG_ABLE);
+        		this.btn_delFood.set_enable(this.CHG_ABLE);
+        		this.btn_saveFood.set_enable(this.CHG_ABLE);
+        		this.btn_addClean.set_enable(this.CHG_ABLE);
+        		this.btn_delClean.set_enable(this.CHG_ABLE);
+        		this.btn_saveClean.set_enable(this.CHG_ABLE);
+        	}  /* 급식세탁물 시군구 자료 연계 added by jykang 20220221 */
+
+        	this.btn_chgInsu.set_enable(this.CHG_ABLE);
+
+        	//삭제버튼 활성화(관리자) 20250717
+        	if(this.SPR_ABLE) {
+        	   this.btn_delFood.set_enable(true);
+        	   this.btn_delClean.set_enable(true);
+        	} else {
+        	   this.btn_delFood.set_enable(false);
+        	   this.btn_delClean.set_enable(false);
+        	}
+
+        	//급식인원조회 버튼 및 그리드 타이틀
+        	if(this.ds_cond.getColumn(0, "TGT_YYYYMM") >= "201607" && this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") == "A03"){ //201601부터 적용
+        		this.div_nop.form.grid_nop.setCellProperty("Head",0,"text", this.ds_cond.getColumn(0, "TGT_YYYYMM").substring(0,4) +"년 "+ this.ds_cond.getColumn(0, "TGT_YYYYMM").substring(4,6) +"월");
+        	}
+        	else{
+        		this.btn_regMls.set_visible(false);
+        	}
+
+        	//영양사, 조리원 칼럼추가
+        	if(this.showCnt == 0 && this.ds_cond.getColumn(0, "TGT_YYYYMM") < "201607"){ //201607부터 적용
+        		this.grid_foodList.setFormatColProperty(6,"size",0);
+        		this.grid_foodList.setFormatColProperty(7,"size",0);
+        		this.showCnt++;
+        	}
+
+        	//조리원 칼럼숨김(개정법, 공생외)
+        	//20200910 A1 노인요양시설(구법) 추가
+        	if(this.showCnt == 0 && this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") != "A03" && this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") != "A04" && this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") != "A01"){
+        		this.grid_foodList.setFormatColProperty(7,"size",0);
+        		this.showCnt++;
+        	}
+
+        	//2017.01 조리원 인정 (주야간보호, 단기보호)
+        	if(this.ds_cond.getColumn(0, "TGT_YYYYMM") >= "201701"
+        		&& (this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") == "B03" || this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") == "C03"
+        		|| this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") == "B04" || this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") == "C04")){
+        		this.grid_foodList.setFormatColProperty(7,"size",100);
+        	}
+
+
+        	/*
+        	  //2025.01 고시적용에 따른 변경 기관유형별로 제출자료 입력, 수정, 삭제를 위해 기관유형리스트를 생성후 각화면에서 사용한다.
+        	  기존 A03에서 입력하던 일반실과 치매실입소자 입력을 기관별로 입력수정삭제하며 주야간에 대해서도 치매실과 분리 입력하도록 한다.
+        	  기존 치매실에 대한 보험은 일반실(시설,주야간,공생)에 같이 입력했으며 25년부터는 5D36.SPARE_DESC4의 일반실(시설,주야간,공생)로 설정된 치매실도 제출자료로 생성한다.
+        	*/
+        	this.parent100.ds_ltcoList.filter("G_ADMIN_PTTN_CD == '"+this.ds_cond.getColumn(0, "ADMIN_PTTN_CD")+"'");
+        	this.ds_dmTp.clearData();
+        	for(i=0; i<this.parent100.ds_ltcoList.rowcount; i++){
+        		this.ds_dmTp.addRow();
+        		var sADMIN_PTTN_CD = this.parent100.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD");
+        		this.ds_dmTp.setColumn(i, "BASE_CD", sADMIN_PTTN_CD);
+        		var cdnm = this.parent100.ds_ltcoList.getColumn(i, "BASE_CD_NM");
+        		if(this.parent100.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD") == "A03"
+        		|| this.parent100.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD") == "A04"
+        		|| this.parent100.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD") == "B03"
+        		|| this.parent100.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD") == "C03" ){
+        			cdnm = "일반실";
+        		}else{
+        			if(sADMIN_PTTN_CD.indexOf("G") > -1 || sADMIN_PTTN_CD.indexOf("G") > -1 ) cdnm = cdnm.replace("치매전담실","");
+        			if(sADMIN_PTTN_CD.indexOf("H") > -1 || sADMIN_PTTN_CD.indexOf("I") > -1 ) cdnm = cdnm.replace("주야간보호내","");
+        		}
+        		this.ds_dmTp.setColumn(i, "BASE_CD_NM", cdnm);
+        	}
+            this.parent100.ds_ltcoList.filter("");
+                // 	if(this.parent100.ds_fm_cond.getColumn(0, "DM_YN") == "Y" && this.ds_dmTp.rowcount == 0)  /*치매전담형_고시_개정_[201607]*/
+                // 	{
+                // 		for(i=0; i<this.parent100.ds_ltcoList.rowcount; i++){
+                // 			this.ds_dmTp.addRow();
+                // 			this.ds_dmTp.setColumn(i, "BASE_CD", this.parent100.ds_ltcoList.getColumn(i, "DM_BASE_CD"));
+                // 			this.ds_dmTp.setColumn(i, "BASE_CD_NM", this.parent100.ds_ltcoList.getColumn(i, "DM_BASE_CD_NM"));
+                // 		}
+                // 	}
+
+
+            if( this.ds_cond.getColumn(0, "TGT_YYYYMM") >= "202202")   // 운영은 202202 으로 바꿔야 함.
+        	{
+        		this.gfn_msgShow(this,"XICA0012",["급여제공월 2월부터 '급식위탁/세탁물위탁'사항은 행복e음에 신고해야 합니다.\n관할 지자체에 문의하시기"]);   /* 급식세탁물 시군구 자료 연계 added by jykang 20220127 @바랍니다.*/
+        	}
+
+        };
+
+        /*======================================================================================*
+         * 4.Transaction
+         *======================================================================================*/
+
+        // 급식세탁물 시군구 연계자료의 변경자료를 기등록(FA55)자료와 비교하여 먼저 업데이트 함
+        // 계약종료, 삭제등
+        // 20231123
+        this.fn_updateFoodClean = function()
+        {
+        		var sSvcId = "updateFoodClean";
+        		var sPath = "/f/a/401/updateFoodClean.do";
+        		var sInputDsName = "ds_cond=ds_cond";
+        		var sOutputDsName = "";
+        		var sArg = "";
+        		var oPreArgs = [];
+        		var sCallback = "fn_callBack";
+        		var bAsync = false;
+        		this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback,bAsync);
+
+        }
+
+
+
+        // 배상보험 조회
+        this.fn_selectInsuList = function() {
+
+        	var sSvcId = "selectInsuList1";
+        	var sPath = "/f/a/401/selectInsuList1.do";
+        	var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_insuListAll=ds_insuListAll"; //202501고시 적용에 따른 변경 ds_insuInfo => ds_insuInfoAll
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+        // 지자체신고 신규내역 등록
+        this.fn_selectFoodCleanListNew = function() {
+
+        	var sSvcId = "selectFoodCleanListNew";
+        	var sPath = "/f/a/401/selectFoodCleanListNew.do";
+        	var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_rz05List=ds_rz05List";
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var bASync    = false; // 동기호출
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback,bASync);
+        };
+
+        // 급식위탁 조회
+        this.fn_selectFoodList = function() {
+
+        	var sSvcId = "selectFoodList";
+        	var sPath = "/f/a/401/selectFoodList.do";
+
+
+        	var sInputDsName = "ds_cond=ds_cond";
+        	var sOutputDsName = "ds_foodList=ds_foodList";
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+        // 세탁물위탁 조회
+        this.fn_selectCleanList = function() {
+
+
+        	/* 급식세탁물 시군구 자료 연계 added by jykang 20220221 - end */
+        	var sSvcId = "selectCleanList";
+        	var sPath = "/f/a/401/selectCleanList.do";
+           /* 급식세탁물 시군구 자료 연계 added by jykang 20220221 */
+
+        	var sInputDsName = "ds_cond=ds_cond";
+        	var sOutputDsName = "ds_cleanList=ds_cleanList";
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+
+        // 최종저장일시 조회
+        this.fn_selectSaveTm = function() {
+
+           /* 급식세탁물 시군구 자료 연계 added by jykang 20220221 - end */
+        	var sSvcId = "selectSaveTm";
+        	var sPath = "/f/a/401/selectSaveTm.do";
+           /* 급식세탁물 시군구 자료 연계 added by jykang 20220221 */
+
+        	var sInputDsName = "ds_cond=ds_cond";
+        	var sOutputDsName = "ds_saveTm=ds_saveTm";
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+
+        //배상보험 삭제
+        this.fn_deleteInsuInfo = function(){
+        	var sSvcId = "deleteInsuInfo";
+        	var sPath  = "/f/a/401/deleteInsuInfo.do";
+        	var sInputDsName = "ds_cond=ds_insuDel";
+        	var sOutputDsName = "";
+        	var sArg = "";
+        	var oPreArgs  = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+
+        // 급식/세탁물위탁 저장
+        this.fn_saveFoodClean = function(){
+        	var sSvcId = "saveFoodClean";
+        	var sPath  = "/f/a/401/saveFoodClean.do";
+        	var sInputDsName = "";
+
+        	if((this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "02") || (this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "04")){     /* 급식세탁물 시군구 자료 연계 added by jykang 20220221 */
+        			sInputDsName = "ds_cond=ds_cond ds_foodCleanList=ds_foodList ds_weekNopList=ds_weekNopList";
+        	}
+        	else if((this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "01") || (this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "03") ){  /* 급식세탁물 시군구 자료 연계 added by jykang 20220221 */
+        		sInputDsName = "ds_cond=ds_cond ds_foodCleanList=ds_cleanList";
+        	}
+        	var sOutputDsName = "";
+        	var sArg = "";
+        	var oPreArgs  = [];
+        	var sCallback = "fn_callBack";
+
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+        // 급식/세탁물위탁 저장 20250717
+        this.fn_saveFoodCleanNew = function(){
+
+        	var sSvcId = "saveFoodCleanNew";
+        	var sPath  = "/f/a/401/saveFoodCleanNew.do";
+        	var sInputDsName = "";
+
+        	sInputDsName = "ds_cond=ds_cond ds_foodCleanList=ds_rz05List";
+
+        	var sOutputDsName = "";
+        	var sArg = "";
+        	var oPreArgs  = [];
+        	var bASync    = false; // 동기호출
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback,bASync);
+
+        };
+
+
+
+        //급식/세탁물위탁 삭제
+        this.fn_deleteFoodClean = function(){
+        	var sSvcId = "deleteFoodClean";
+        	var sPath  = "/f/a/401/deleteFoodClean.do";
+        	var sInputDsName = "ds_cond=ds_cond";
+        	var sOutputDsName = "";
+        	var sArg = "";
+        	var oPreArgs  = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+        // 배상책임보험 미가입 소명
+        this.fn_selectInsuExpUnetr = function() {
+
+        	var sSvcId = "selectInsuExpUnetr";
+        	var sPath = "/f/a/401/selectInsuExpUnetr.do";
+        	var sInputDsName = "ds_cond=ds_cond";
+        	var sOutputDsName = "ds_insuExpUnetr=ds_insuExpUnetr";
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+
+        // 급식인원 조회
+        this.fn_selectMlsNopList = function() {
+
+        	var sSvcId = "selectMlsNopList";
+        	var sPath = "/f/a/401/selectMlsNopList.do";
+        	var sInputDsName = "ds_cond=ds_cond";
+        	var sOutputDsName = "ds_mlsNopList=ds_mlsNopList";
+        	var sArg = "";
+        	var oPreArgs = [];
+        	var sCallback = "fn_callBack";
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+        };
+
+
+        // 급식인원 저장
+        this.fn_saveMlsNopList = function(){
+        	var sSvcId = "saveMlsNopList";
+        	var sPath  = "/f/a/401/saveMlsNopList.do";
+        	var sInputDsName = "ds_cond=ds_cond ds_mlsNopList=ds_mlsNopList";
+        	var sOutputDsName = "";
+        	var sArg = "";
+        	var oPreArgs  = [];
+        	var sCallback = "fn_callBack";
+
+
+        	this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+        /*======================================================================================*
+         * 5. Transaction 전/후 처리 함수
+         *======================================================================================*
+         * 5.1 CallPrev- Transaction전 처리
+         *======================================================================================*/
+
+         this.fn_callBack = function(sSvcId,nErrorCode,sErrorMsg) {
+        	this.setWaitCursor(false);
+        	trace(" this.fn_callBack => " + sSvcId);
+
+        	if (sSvcId == "selectMlsNopList") /* 2023 이승진. */
+        	{
+        		if ( this.ds_mlsNopList.rowcount > 0 )
+        		{
+        			// db 칼럼 생성전 테스트.
+        			this.fn_checkboxValueFromYnColumn(this.div_nop.form.chk00, this.ds_mlsNopList.getColumn(this.ds_mlsNopList.rowposition, "EAA_CSMT_YN"));
+        		}
+        	}
+
+        	if (sSvcId == "selectFoodCleanListNew") /* 2023 이승진. */
+        	{
+        		if ( this.ds_rz05List.rowcount > 0 )
+        		{
+        		  this.fn_saveFoodCleanNew();
+
+        		}
+        	}
+
+        	// 배상보험 조회
+        	if (sSvcId == "selectInsuList1") {
+        		//2025.01 고시적용에 따른 변경 ds_insuInfoAll => ds_insuInfo 기존 데이터셋 필터후 기존대로 처리
+        		//제출시 같은 selectInsuList 호출로 인하여 수정
+        		this.ds_insuListAll.filter("ADMIN_PTTN_CD =='"+this.ds_cond.getColumn(0, "ADMIN_PTTN_CD")+"'");
+        		this.ds_insuList.copyData(this.ds_insuListAll,true);
+        		this.ds_insuListAll.filter("");
+        		this.ds_insuList.set_rowposition(-1);
+        		this.fn_seqCheck();
+        	}
+
+        	if (sSvcId == "updateFoodClean") {
+        		trace("#######변경자료 update######");
+        	}
+        	// 급식위탁 조회
+        	if (sSvcId == "selectFoodList") {
+        		this.ds_foodList.set_rowposition(-1);
+        	}
+        	// 세탁물위탁 조회
+        	if (sSvcId == "selectCleanList") {
+        		this.ds_cleanList.set_rowposition(-1);
+        	}
+
+        	//최종저장일시
+        	if (sSvcId == "selectSaveTm") {
+        		var saveTmInsu = this.ds_saveTm.getColumn(0, "WORK_SAVE_TM_INSU");
+        		if(this.gfn_isEmpty(saveTmInsu)){
+        			saveTmInsu = "미확인";
+        		}
+        		this.stc_workSaveTmInsu.set_text("[최종저장일시 : "+ saveTmInsu +"]");
+
+        		var saveTmFood = this.ds_saveTm.getColumn(0, "WORK_SAVE_TM_FOOD");
+        		if(this.gfn_isEmpty(saveTmFood)){
+        			saveTmFood = "미확인";
+        		}
+        		this.stc_workSaveTmFood.set_text("[최종저장일시 : "+ saveTmFood +"]");
+
+        		var saveTmClean = this.ds_saveTm.getColumn(0, "WORK_SAVE_TM_CLEAN");
+        		if(this.gfn_isEmpty(saveTmClean)){
+        			saveTmClean = "미확인";
+        		}
+        		this.stc_workSaveTmClean.set_text("[최종저장일시 : "+ saveTmClean +"]");
+        	}
+
+        	//배상보험 삭제
+        	if (sSvcId == "deleteInsuInfo") {
+        		this.gfn_msgShow(this, "XITZ0019",[]);
+
+        		this.fn_selectInsuList();
+        		this.fn_selectSaveTm();
+        	}
+
+         	//급식/세탁물위탁 저장
+        	if (sSvcId == "saveFoodClean") {
+
+        		if(this.ds_cond.getColumn(0,"WMC_TYPE_CD") =="02"|| this.ds_cond.getColumn(0,"WMC_TYPE_CD") =="04"){
+        			this.fn_selectFoodList();
+        		}
+        		else if(this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "01" || this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "03"){
+        			this.fn_selectCleanList();
+        		}
+        		this.fn_selectSaveTm();
+        	}
+
+
+        	//급식/세탁물위탁 삭제
+        	if (sSvcId == "deleteFoodClean") {
+        		this.gfn_msgShow(this, "XITZ0019",[]);
+
+        		if(this.ds_cond.getColumn(0,"WMC_TYPE_CD") =="02"|| this.ds_cond.getColumn(0,"WMC_TYPE_CD") =="04"){
+        			this.fn_selectFoodList();
+        		}
+        		else if(this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "01" || this.ds_cond.getColumn(0,"WMC_TYPE_CD") == "03"){
+        			this.fn_selectCleanList();
+        		}
+        		this.fn_selectSaveTm();
+        	}
+
+        	//배상책임보험 미가입 소명
+        	if (sSvcId == "selectInsuExpUnetr") {
+        		if(this.ds_insuExpUnetr.rowcount > 0){
+        			//소명하기 버튼 활성
+        			this.btn_explain.set_visible(true);
+        		}
+        	}
+
+        	//급식/세탁물위탁 저장
+        	if (sSvcId == "saveMlsNopList") {
+        		this.gfn_msgShow(this, "XITZ0015",[]);
+        	}
+
+        };
+
+
+        /*======================================================================================*
+         * 6. 사용자정의 함수
+        *======================================================================================*/
+        this.chk_regNo_oncolumnchanged = function(obj,e){
+        //trace("######## 1");
+
+        	//사업자 등록번호 길이체크
+        	if(e.columnid == "REG_NO"){
+        		if(obj.getColumn(e.row, "REG_NO").length != 0 && obj.getColumn(e.row, "REG_NO").length != 10){
+        			this.gfn_msgShow(this, "XITZ0111", ["사업자등록번호는 ","10" ]);
+        			obj.setColumn(e.row, "REG_NO", "");
+        		}
+        	}
+
+        	//영양사 컨트럴
+        	if(e.columnid == "ADPT_FR_DT" || e.columnid == "ADPT_TO_DT"){
+        		var first_dt = this.ds_cond.getColumn(0, "TGT_YYYYMM")+"01";
+        		var last_dt = this.ds_cond.getColumn(0, "TGT_YYYYMM") + this.gfn_lastDateNum(this.ds_cond.getColumn(0, "TGT_YYYYMM")+"01");
+        		var fr_dt = obj.getColumn(e.row, "ADPT_FR_DT");
+        		var to_dt = obj.getColumn(e.row, "ADPT_TO_DT");
+
+
+
+        		if(fr_dt <= first_dt && last_dt <= to_dt){
+        			obj.setColumn(e.row, "NUTPSN_RCGT_YN", "Y");
+        		}
+        		else{
+        			obj.setColumn(e.row, "NUTPSN_RCGT_YN", "N");
+        		}
+        	}
+
+        	//조리원선택
+        	if(e.columnid == "ASCK_RCGT_YN"){
+        		if(obj.getColumn(e.row, "ASCK_RCGT_YN") == "Y"){
+        			this.gfn_msgShow(this, "XWTZ0001",["급식 위탁 업체에 조리원이 소속되어 있는 경우에만 조리원 위탁이 인정됩니다"]);
+        		}
+        	}
+        };
+
+
+        /*======================================================================================*
+         * 7. 이벤트 함수
+         *======================================================================================*
+         * 7.1 공통버튼 이벤트
+         *======================================================================================*/
+
+        /*======================================================================================*
+         * 7.2 사용자버튼 이벤트
+         *======================================================================================*/
+
+         //보험구분
+         this.cmb_searchInsu_onitemchanged = function(obj,e){
+
+        	this.ds_cond.setColumn(0,"INSU_TYPE", obj.value);
+        	this.fn_selectInsuList();
+        };
+
+         //배상보험 전체보기 버튼
+         this.btn_allInsu_onclick = function(obj,e) {
+        /*	var sPopId 		= "ALLINSU";
+        	var sScrNm 		= "배상보험전체보기";
+        	var sUrl 		= "biz_npf_a::npfa401p01.xfdl";
+        	var nWidth 		= 900;
+        	var nHeight 	= 500;
+
+        	var sArgs   	= {LTC_ADMIN_SYM:ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+        					  ADMIN_PTTN_CD:ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+        					  TGT_YYYYMM:ds_cond.getColumn(0, "TGT_YYYYMM")};
+        	var bIsModal 	= true;
+
+        	var arrResult = gfn_showPopupByURL(this, sPopId, sScrNm, sUrl, nWidth, nHeight, sArgs, bIsModal);
+        */
+
+
+        	var sPopId	= "npfa401p01";
+        	var sScrId	= "npfa401p01";
+        	var sArgs	= {LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+        					ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+        					TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM")};
+        	var bIsModal= true;
+        	var nWidth	= 900;
+        	var nHeight	= 500;
+
+        	var arrResult = this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        };
+
+
+        //배상보험 등록(신규/갱신) 버튼
+        this.btn_addInsu_onclick = function(obj,e) {
+
+        	if(obj.name == "btn_addInsu"){
+        		this.ds_cond.setColumn(0, "ILI_MGMT_NO", ""); //초기화
+        	}
+        /*
+        	var sPopId 		= "ADDINSU";
+        	var sScrNm 		= "배상보험가입내용신고";
+        	var sUrl 		= "biz_npf_a::npfa401p02.xfdl";
+        	var nWidth 		= 600;
+        	var nHeight 	= 350;
+
+        	var sArgs   	= {LTC_ADMIN_SYM:ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+        					  ADMIN_PTTN_CD:ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+        					  TGT_YYYYMM:ds_cond.getColumn(0, "TGT_YYYYMM"),
+        					  ILI_MGMT_NO:ds_cond.getColumn(0, "ILI_MGMT_NO")};
+        	var bIsModal 	= true;
+
+        	var arrResult = gfn_showPopupByURL(this, sPopId, sScrNm, sUrl, nWidth, nHeight, sArgs, bIsModal);
+        */
+
+        	var sPopId	= "npfa401p02";
+        	var sScrId	= "npfa401p02";
+        	var sArgs	= {LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+        					ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+        					TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM"),
+        					ILI_MGMT_NO:this.ds_cond.getColumn(0, "ILI_MGMT_NO"),
+        					DS_DMTP:this.ds_dmTp /*치매전담형_고시_개정_[201607]*/
+        					};
+        	var bIsModal= true;
+        	//var nWidth	= 600;
+        	// 2018.09.17 수정
+        	var nWidth = 740;
+        	var nHeight	= 310;
+
+        	this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        };
+
+
+
+
+        //배상보험 수정버튼
+        this.btn_modInsu_onclick = function(obj,e){
+
+        	//선택된 배상보험 key값 추출
+        	for(i=0; i<this.ds_insuList.rowcount; i++){
+        		if(this.ds_insuList.getColumn(i, "CHK") == "1"){
+        			//20181129 수정
+        			if(this.ds_insuList.getColumn(i, "CHG_SEQ") != null && this.ds_insuList.getColumn(i, "CHG_SEQ") != this.ds_insuList.getColumn(i,"MAX_CHG_SEQ")){
+        				alert("다수의 변경 계약 내용이 있는 경우, 최종 변경계약내용만 입력(수정)하실 수 있습니다.");
+        				return;
+        			}
+        			this.ds_cond.setColumn(0, "ILI_MGMT_NO", this.ds_insuList.getColumn(i, "ILI_MGMT_NO"));
+        		}
+        	}
+        	if(this.gfn_isEmpty(this.ds_cond.getColumn(0, "ILI_MGMT_NO"))){
+        		this.gfn_msgShow(this, "XWTZ0046", ["선택된 항목"]);
+        		return;
+        	}
+
+        	this.btn_addInsu_onclick(obj, e);
+        };
+
+        //배상보험 삭제버튼
+        this.btn_delInsu_onclick = function(obj,e){
+        	var nRow = this.ds_insuList.findRow("CHK", "1");
+        	if(nRow < 0){
+        		this.gfn_msgShow(this, "XWTZ0046", ["선택된 항목"]);
+        		return;
+        	}
+        	else{
+        		//20181129 수정
+        		if(this.ds_insuList.getColumn(nRow, "CHG_SEQ") != null && this.ds_insuList.getColumn(nRow, "CHG_SEQ") != this.ds_insuList.getColumn(nRow,"MAX_CHG_SEQ")){
+        			alert("다수의 변경 계약 내용이 있는 경우, 최종 변경계약내용만 삭제하실 수 있습니다.");
+        			return;
+        		}
+
+        		if(this.gfn_msgShow(this, "XCTZ0051",["삭제"])){
+
+        			//20181129 수정
+        		    this.ds_insuDel.setColumn(0, "LTC_ADMIN_SYM"   , this.parent100.ds_fm_cond.getColumn(0, "LTC_ADMIN_SYM"));
+        			this.ds_insuDel.setColumn(0, "ADMIN_PTTN_CD"   , this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD"));
+        			this.ds_insuDel.setColumn(0, "TGT_YYYYMM"      , this.parent100.ds_fm_cond.getColumn(0, "TGT_YYYYMM"));
+        			this.ds_insuDel.setColumn(0, "ILI_MGMT_NO"	   , this.ds_insuList.getColumn(nRow, "ILI_MGMT_NO"));
+        			this.ds_insuDel.setColumn(0, "ILI_SCUR_NO"     , this.ds_insuList.getColumn(nRow, "ILI_SCUR_NO"));
+        			this.ds_insuDel.setColumn(0, "CHG_SEQ"	       , this.ds_insuList.getColumn(nRow, "CHG_SEQ"));
+        			this.ds_insuDel.setColumn(0, "PRE_CHG_SEQ"     , this.ds_insuList.getColumn(nRow, "CHG_SEQ")-1);
+        			this.ds_insuDel.setColumn(0, "VALID_TERM_CHG_TO_DT", this.ds_insuList.getColumn(nRow, "VALID_TERM_TO_DT")); //종료일시
+        			this.ds_insuDel.setColumn(0, "CHG_TO_HR_MT"	      ,  this.ds_insuList.getColumn(nRow, "TO_HR_MT")); 		  //종료시간
+
+        			this.fn_deleteInsuInfo();
+        		}
+        	}
+        };
+
+
+        //급식위탁 추가버튼
+        this.btn_addFood_onclick = function(obj,e) {
+        	var nRow = this.ds_foodList.addRow();
+
+        	this.ds_foodList.setColumn(nRow,"CHK", "1");
+        	this.ds_foodList.setColumn(nRow,"WMC_TYPE_CD", "02");
+        	this.ds_foodList.setColumn(nRow,"LTC_ADMIN_SYM", this.ds_cond.getColumn(0,"LTC_ADMIN_SYM"));
+        	this.ds_foodList.setColumn(nRow,"ADMIN_PTTN_CD", this.ds_cond.getColumn(0,"ADMIN_PTTN_CD"));
+        	this.ds_foodList.setColumn(nRow,"WMC_DCLT_ADM_SEQ_NO", "");
+        	this.ds_foodList.setColumn(nRow,"EQUIP_ENTR_NM", "");
+        	this.ds_foodList.setColumn(nRow,"REG_NO", "");
+        	this.ds_foodList.setColumn(nRow,"REPR_NM","");
+        	this.ds_foodList.setColumn(nRow,"ADPT_FR_DT","");
+        	this.ds_foodList.setColumn(nRow,"ADPT_TO_DT","");
+        	this.ds_foodList.setColumn(nRow,"LTC_BASE_CD_NM","");
+        	this.ds_foodList.setColumn(nRow, "SAVED", "N");
+        	this.ds_foodList.setColumn(nRow, "NUTPSN_RCGT_YN", "N");
+        	this.ds_foodList.setColumn(nRow, "ASCK_RCGT_YN", "N");
+        };
+
+        //급식위탁 삭제버튼
+        this.btn_delFood_onclick = function(obj,e){
+        	var nRow = this.ds_foodList.findRow("CHK", "1");
+        	if(nRow < 0){
+        		this.gfn_msgShow(this, "XWTZ0046", ["선택된 항목"]);
+        		return;
+        	}
+        	else{
+        		//저장되지 않은 항목은 바로 삭제
+        		var saved = this.ds_foodList.getColumn(nRow,"SAVED");
+        		if(saved == "N"){
+        			this.ds_foodList.deleteRow(nRow);
+        			return;
+        		}
+
+        		if(this.gfn_msgShow(this, "XCTZ0051",["삭제"])){
+        			this.ds_cond.setColumn(0, "WMC_DCLT_ADM_SEQ_NO", this.ds_foodList.getColumn(nRow, "WMC_DCLT_ADM_SEQ_NO"));
+        			this.ds_cond.setColumn(0, "WMC_TYPE_CD", this.ds_foodList.getColumn(nRow, "WMC_TYPE_CD"));
+        			this.fn_deleteFoodClean();
+        		}
+        	}
+        };
+
+
+        //세탁물위탁 추가버튼
+        this.btn_addClean_onclick = function(obj,e){
+        	var nRow = this.ds_cleanList.addRow();
+
+        	this.ds_cleanList.setColumn(nRow,"CHK", "1");
+        	this.ds_cleanList.setColumn(nRow,"WMC_TYPE_CD", "01");
+        	this.ds_cleanList.setColumn(nRow,"LTC_ADMIN_SYM", this.ds_cond.getColumn(0,"LTC_ADMIN_SYM"));
+        	this.ds_cleanList.setColumn(nRow,"ADMIN_PTTN_CD", this.ds_cond.getColumn(0,"ADMIN_PTTN_CD"));
+        	this.ds_cleanList.setColumn(nRow,"WMC_DCLT_ADM_SEQ_NO", "");
+        	this.ds_cleanList.setColumn(nRow,"EQUIP_ENTR_NM", "");
+        	this.ds_cleanList.setColumn(nRow,"REG_NO", "");
+        	this.ds_cleanList.setColumn(nRow,"REPR_NM","");
+        	this.ds_cleanList.setColumn(nRow,"ADPT_FR_DT","");
+        	this.ds_cleanList.setColumn(nRow,"ADPT_TO_DT","");
+        	this.ds_cleanList.setColumn(nRow,"LTC_BASE_CD_NM","");
+        	this.ds_cleanList.setColumn(nRow, "SAVED", "N");
+        	this.ds_cleanList.setColumn(nRow, "NUTPSN_RCGT_YN", "N");
+        	this.ds_cleanList.setColumn(nRow, "ASCK_RCGT_YN", "N");
+        };
+
+        //세탁물위탁 삭제버튼
+        this.btn_delClean_onclick = function(obj,e){
+        	var nRow = this.ds_cleanList.findRow("CHK", "1");
+        	if(nRow < 0){
+        		this.gfn_msgShow(this, "XWTZ0046", ["선택된 항목"]);
+        		return;
+        	}
+        	else{
+        		//저장되지 않은 항목은 바로 삭제
+        		var saved = this.ds_cleanList.getColumn(nRow,"SAVED");
+        		if(saved == "N"){
+        			this.ds_cleanList.deleteRow(nRow);
+        			return;
+        		}
+
+        		if(this.gfn_msgShow(this, "XCTZ0051",["삭제"])){
+        			this.ds_cond.setColumn(0, "WMC_DCLT_ADM_SEQ_NO", this.ds_cleanList.getColumn(nRow, "WMC_DCLT_ADM_SEQ_NO"));
+        			this.ds_cond.setColumn(0, "WMC_TYPE_CD", "01");
+        			this.fn_deleteFoodClean();
+        		}
+        	}
+        };
+
+        //급식/세탁물위탁 저장버튼
+        this.btn_save_onclick = function(obj,e){
+        	var ds_tmp = new Dataset;
+        	if(obj.name == "btn_saveFood"){
+        		ds_tmp.copyData(this.ds_foodList);
+        		this.ds_cond.setColumn(0, "WMC_TYPE_CD", "02");
+        	}
+        	else if(obj.name == "btn_saveClean"){
+        		ds_tmp.copyData(this.ds_cleanList);
+        		this.ds_cond.setColumn(0, "WMC_TYPE_CD", "01");
+        	}
+
+        	var nRow = ds_tmp.findRow("CHK", "1");
+        	if(nRow < 0){
+        		this.gfn_msgShow(this, "XWTZ0046", ["선택된 항목"]);
+        		return;
+        	}
+
+        	var bRtn = true;
+        	var nPsn = 0;
+        	var nPos = 0;
+
+        	for(i=0; i<ds_tmp.rowcount; i++){
+        		if(ds_tmp.getColumn(i, "CHK") == 1){
+        			if(this.gfn_isEmpty(ds_tmp.getColumn(i, "EQUIP_ENTR_NM"))){
+        				this.gfn_msgShow(this, "XITZ0001", ["위탁업체명" ]);
+        				bRtn = false; nPsn = i; nPos = 1;
+        			}
+        			else if(this.gfn_isEmpty(ds_tmp.getColumn(i, "REG_NO"))){
+        				this.gfn_msgShow(this, "XITZ0001", ["사업자등록번호" ]);
+        				bRtn = false; nPsn = i;  nPos = 2;
+        			}
+        			else if(this.gfn_isEmpty(ds_tmp.getColumn(i, "REPR_NM"))){
+        				this.gfn_msgShow(this, "XITZ0001", ["대표자성명" ]);
+        				bRtn = false; nPsn = i;  nPos = 3;
+        			}
+        			else if(this.gfn_isEmpty(ds_tmp.getColumn(i, "ADPT_FR_DT"))){
+        				this.gfn_msgShow(this, "XITZ0001", ["계약기간 시작일자" ]);
+        				bRtn = false; nPsn = i;  nPos = 4;
+        			}
+        			else if(this.gfn_isEmpty(ds_tmp.getColumn(i, "ADPT_TO_DT"))){
+        				this.gfn_msgShow(this, "XITZ0001", ["계약기간 종료일자" ]);
+        				bRtn = false; nPsn = i;  nPos = 5;
+        			}
+        			else if(ds_tmp.getColumn(i, "ADPT_FR_DT") > ds_tmp.getColumn(i, "ADPT_TO_DT")){
+        				this.gfn_msgShow(this, "XWFA0033", []);
+        				bRtn = false; nPsn = i;  nPos = 5;
+        			}
+        		}
+        	}
+
+        	//영양사, 조리원 칼럼추가
+        	if(this.ds_cond.getColumn(0, "TGT_YYYYMM") < "201607"){ //201607부터 적용
+        		this.ds_foodList.setConstColumn("NUTPSN_RCGT_YN", "N");
+        		this.ds_foodList.setConstColumn("ASCK_RCGT_YN", "N");
+        	}
+
+        	if(!bRtn){
+        		//ds_tmp.rowposition = nPsn;
+        		if(obj.name == "btn_saveFood"){
+        			this.grid_foodList.setFocus();
+        			this.grid_foodList.setCellPos(nPos);
+        		}
+        		else if(obj.name == "btn_saveClean"){
+        			this.grid_cleanList.setFocus();
+        			this.grid_cleanList.setCellPos(nPos);
+        		}
+        		return false;
+        	}
+        	else{
+        		if(this.gfn_msgShow(this, "XCTZ0051", ["선택된 항목을 저장" ])){
+        			this.fn_saveFoodClean();
+        		}
+        	}
+
+        };
+
+        //소명하기
+        this.btn_explain_onclick = function(obj,e){
+        	var sPopId	= "npfa401p04";
+        	var sScrId	= "npfa401p04";
+        	var sArgs	= {LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+        					ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+        					TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM"),
+        					PRETN_SEQ_NO:"0",
+        					READONLY:"N"};
+        	var bIsModal= true;
+        	var nWidth	= 600;
+        	var nHeight	= 300;
+
+        	var arrResult = this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        };
+
+        //급식인원등록
+        this.btn_regMls_onclick = function(obj,e){
+
+        	if(this.div_nop.visible){
+        		this.div_nop.set_visible(false);
+        	}
+        	else{
+        		this.div_nop.set_visible(true);
+        	}
+        };
+
+        this.div_nop_btn_saveMls_onclick = function(obj,e){
+        	var nRow = this.ds_mlsNopList.findRowExpr("INE_MLS_NOP + EGGR_MLS_NOP >= 50");
+        	if(nRow >= 0){
+        		if(this.gfn_msgShow(this, "XCTZ0051", ["입소자 종사자 급식 내역을  저장" ])){
+        			this.fn_saveMlsNopList();
+        		}
+        	}
+        	else{
+        		if(this.gfn_msgShow(this, "XCTZ0051", ["입소자 종사자 급식 내역을  저장" ])){
+        			this.fn_saveMlsNopList();
+        		}
+        	}
+        };
+
+        //닫기
+        this.div_nop_btn_close_onclick = function(obj,e){
+        	this.div_nop.set_visible(false);
+        };
+
+
+        //팝업 callback
+        this.fn_popupCallback = function (sFrameid,sVarRtn )
+        {
+        	if ( typeof this._variant == "string" ) {
+        		//string type
+        		if ( this._variant == "true") {
+        			this.ds_cond.setColumn(0, "ILI_MGMT_NO", ""); //초기화
+        			this.fn_selectInsuList();
+        			this.fn_selectSaveTm();
+        		}
+        	}
+        };
+
+        //체크박스 컨트럴
+        this.ds_insuList_oncolumnchanged = function(obj,e)
+        {
+        	obj.set_enableevent(false);
+        	for(i=0; i<obj.rowcount; i++){
+        		if (i == e.row ) {
+        			continue;
+        		} else {
+        			obj.setColumn(i, "CHK", 0);
+        		}
+         	}
+        	obj.set_enableevent(true);
+        };
+
+
+        // 2018.09.17 수정
+        // 계약변경 버튼 클릭
+        this.btn_chgInsu_onclick = function(obj,e) {
+        	var chkYn = "N";
+        	for(i=0; i<this.ds_insuList.rowcount; i++){
+        		if(this.ds_insuList.getColumn(i, "CHK") == "1"){
+        			//20181129 수정
+        			if(this.ds_insuList.getColumn(i, "CHG_SEQ") != null && this.ds_insuList.getColumn(i, "CHG_SEQ") != this.ds_insuList.getColumn(i,"MAX_CHG_SEQ")){
+        				alert("다수의 변경 계약 내용이 있는 경우, 최종 변경계약내용만 입력(수정)하실 수 있습니다.");
+        				return;
+        			}
+        			this.ds_cond.setColumn(0, "ILI_MGMT_NO", this.ds_insuList.getColumn(i, "ILI_MGMT_NO"));
+        			chkYn = "Y";
+        			break;
+        		}
+        	}
+
+        	if(chkYn != "Y"){
+        		this.gfn_msgShow(this, "XWTZ0046", ["선택된 항목"/*이 없습니다.*/]);
+        		return;
+        	}
+
+        	var sPopId	= "npfa401p05";
+        	var sScrId	= "npfa401p05";
+
+        	var sArgs	= {LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+        				   ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+        				   TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM"),
+        				   ILI_MGMT_NO:this.ds_cond.getColumn(0, "ILI_MGMT_NO"),
+        				   DS_DMTP:this.ds_dmTp /*치매전담형_고시_개정_[201607]*/
+        				   };
+
+        	var bIsModal = true;
+        	var nWidth 	 = 740;
+        	var nHeight	 = 370;
+
+        	this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        }
+
+        this.fn_seqCheck = function()
+        {
+        	var j=1;
+        	var seq = "";
+
+        	for(var i=0; i<this.ds_insuList.rowcount; i++){
+        		if(this.ds_insuList.getColumn(i,"CHG_SEQ")== null){
+        			seq = 1;
+        	    }else {
+        			seq = this.ds_insuList.getColumn(i,"CHG_SEQ");
+        	    }
+        		if(i==0){
+        			this.ds_insuList.setColumn(i,"RNUM",j + "-"+ seq);
+        		}else{
+        			if(this.ds_insuList.getColumn(i,"ILI_SCUR_NO") != this.ds_insuList.getColumn(i-1, "ILI_SCUR_NO")){
+        				j++;
+        				this.ds_insuList.setColumn(i,"RNUM",j + "-"+ seq);
+        			}else {
+        				this.ds_insuList.setColumn(i,"RNUM",j + "-"+ seq);
+        			}
+        		}
+        	}
+        }
+        this.ds_foodList_onvaluechanged = function(obj,e)
+        {
+        	//trace("11111");
+        };
+
+
+        this.fn_popup_display = function()
+        {
+        	if( this.ds_cond.getColumn(0, "TGT_YYYYMM") >= "202202")   // 운영은 202202 으로 바꿔야 함.
+        	{
+        		this.gfn_msgShow(this,"XICA0012",["급여제공월 2월부터 '급식위탁/세탁물위탁'사항은 행복e음에 신고해야 합니다.\n관할 지자체에 문의하시기"]);   /* 급식세탁물 시군구 자료 연계 added by jykang 20220127 @바랍니다.*/
+        	}
+        };
+
+        /* 2023 이승진. 시설/주야간 병설기관 급식인원 산정 가감산 */
+        this.div_nop_chk00_onchanged = function(obj,e)
+        {
+        	trace("this.div_nop_chk00_onchanged = " + this.div_nop.form.chk00.value);
+        	if ( this.div_nop.form.chk00.value == 1 )
+        	{
+        		//alert("※ 병설기관 급식을 위탁 운영할 경우, 위탁을 받는 기관의 입소자 수를 포함하여 입소자 급식 인원 신고하시기 바랍니다.");
+        		//20240105 안내문구변경
+        		alert("※ 주야간 또는 단기보호서비스를 제공하는 시설을 병설하여 운영하는 사회복지시설에 급식을 위탁하는 경우 식수인원에 따라 조리원 배치 인원이 결정되오니 유의하시기 바랍니다.");
+        	}
+
+        	// checkbox의 true, false 값을 매핑되는 ds column의 Y/N값으로 변환하여 저장.
+        	this.fn_checkboxValueToYnColumn(this.div_nop.form.chk00.value, this.ds_mlsNopList, this.ds_mlsNopList.rowposition,  "EAA_CSMT_YN");
+        };
+
+        this.fn_checkboxValueToYnColumn = function (checkboxValue,targetDs,targetRow,targetColumn ) /* 2023 이승진. */
+        {
+        	trace("fn_checkboxValueToYnColumn " + checkboxValue + " " + targetDs + " " + targetRow + " " + targetColumn);
+
+        	if ( checkboxValue == 1 || checkboxValue == true )
+        	{
+        		targetDs.setColumn(targetRow, targetColumn, "Y");
+        	}
+        	else
+        	{
+        		targetDs.setColumn(targetRow, targetColumn, "N");
+        	}
+
+        	trace(targetColumn + " => " + targetDs.getColumn(targetRow, targetColumn));
+        }
+
+        this.fn_checkboxValueFromYnColumn = function (aCheckbox,aValue) /* 2023 이승진. */
+        {
+        	trace("fn_checkboxValueFromYnColumn " + aCheckbox + " " + aValue);
+
+        	if ( aValue == "Y" )
+        	{
+        		aCheckbox.set_value(true);
+        	}
+        	else
+        	{
+        		aCheckbox.set_value(false);
+        	}
+        }
+        });
+        
+        // Regist UI Components Event
+        this.on_initEvent = function()
+        {
+            this.addEventHandler("onload",this.frm_onload,this);
+            this.cmb_searchInsu.addEventHandler("onitemchanged",this.cmb_searchInsu_onitemchanged,this);
+            this.btn_allInsu.addEventHandler("onclick",this.btn_allInsu_onclick,this);
+            this.btn_addInsu.addEventHandler("onclick",this.btn_addInsu_onclick,this);
+            this.btn_modInsu.addEventHandler("onclick",this.btn_modInsu_onclick,this);
+            this.btn_delInsu.addEventHandler("onclick",this.btn_delInsu_onclick,this);
+            this.btn_addFood.addEventHandler("onclick",this.btn_addFood_onclick,this);
+            this.btn_delFood.addEventHandler("onclick",this.btn_delFood_onclick,this);
+            this.btn_saveClean.addEventHandler("onclick",this.btn_save_onclick,this);
+            this.btn_addClean.addEventHandler("onclick",this.btn_addClean_onclick,this);
+            this.btn_delClean.addEventHandler("onclick",this.btn_delClean_onclick,this);
+            this.btn_explain.addEventHandler("onclick",this.btn_explain_onclick,this);
+            this.btn_regMls.addEventHandler("onclick",this.btn_regMls_onclick,this);
+            this.btn_saveFood.addEventHandler("onclick",this.btn_save_onclick,this);
+            this.div_nop.form.btn_saveMls.addEventHandler("onclick",this.div_nop_btn_saveMls_onclick,this);
+            this.div_nop.form.btn_close.addEventHandler("onclick",this.div_nop_btn_close_onclick,this);
+            this.div_nop.form.chk00.addEventHandler("onchanged",this.div_nop_chk00_onchanged,this);
+            this.btn_chgInsu.addEventHandler("onclick",this.btn_chgInsu_onclick,this);
+            this.ds_insuList.addEventHandler("oncolumnchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_foodList.addEventHandler("oncolumnchanged",this.chk_regNo_oncolumnchanged,this);
+            this.ds_foodList.addEventHandler("onrowposchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_foodList.addEventHandler("onvaluechanged",this.ds_foodList_onvaluechanged,this);
+            this.ds_cleanList.addEventHandler("oncolumnchanged",this.chk_regNo_oncolumnchanged,this);
+            this.ds_cleanList.addEventHandler("onrowposchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_insuDel.addEventHandler("oncolumnchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_cleanList_tmp.addEventHandler("oncolumnchanged",this.chk_regNo_oncolumnchanged,this);
+            this.ds_cleanList_tmp.addEventHandler("onrowposchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_foodList_tmp.addEventHandler("oncolumnchanged",this.chk_regNo_oncolumnchanged,this);
+            this.ds_foodList_tmp.addEventHandler("onrowposchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_foodList_tmp.addEventHandler("onvaluechanged",this.ds_foodList_onvaluechanged,this);
+            this.ds_insuListAll.addEventHandler("oncolumnchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_rz05List.addEventHandler("oncolumnchanged",this.chk_regNo_oncolumnchanged,this);
+            this.ds_rz05List.addEventHandler("onrowposchanged",this.ds_insuList_oncolumnchanged,this);
+            this.ds_rz05List.addEventHandler("onvaluechanged",this.ds_foodList_onvaluechanged,this);
+        };
+
+        this.loadIncludeScript("npfa401m01.xfdl");
+        this.loadPreloadList();
+        
+        // Remove Reference
+        obj = null;
+    };
+}
+)();

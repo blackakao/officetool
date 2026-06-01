@@ -1,0 +1,3578 @@
+(function()
+{
+    return function()
+    {
+        if (!this._is_form)
+            return;
+        
+        var obj = null;
+        
+        this.on_create = function()
+        {
+            this.set_initvalueid("iv_Form()");
+            this.set_name("npfa201m01");
+            this.set_titletext("입퇴소내용신고");
+            this.set_scrolltype("autovert");
+            this.set_visible("true");
+            if (Form == this.constructor)
+            {
+                this._setFormPosition(1080,530);
+            }
+            
+            // Object(Dataset, ExcelExportObject) Initialize
+            obj = new Dataset("ds_cond", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"FR_TM\" type=\"STRING\" size=\"256\"/><Column id=\"TO_TM\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"QLF_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"ODR2_JUDG_GRADE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/><Column id=\"DTL_ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"POCY_ADD_AMT_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_TYPE_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"TGT_YYYYMM\">201505</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_bind", this);
+            obj.set_preload("true");
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj._setContents("<ColumnInfo><ConstColumn id=\"week0\" type=\"INT\" size=\"30\" value=\"0\"/><ConstColumn id=\"week1\" type=\"INT\" size=\"30\" value=\"0\"/><ConstColumn id=\"week2\" type=\"INT\" size=\"30\" value=\"0\"/><ConstColumn id=\"week3\" type=\"INT\" size=\"30\" value=\"0\"/><ConstColumn id=\"week4\" type=\"INT\" size=\"30\" value=\"0\"/><ConstColumn id=\"week5\" type=\"INT\" size=\"30\" value=\"0\"/><ConstColumn id=\"week6\" type=\"INT\" size=\"30\" value=\"0\"/><Column id=\"weekNo\" type=\"INT\" size=\"256\"/><Column type=\"STRING\" size=\"256\" id=\"day0\"/><Column type=\"STRING\" size=\"256\" id=\"day1\"/><Column type=\"STRING\" size=\"256\" id=\"day2\"/><Column type=\"STRING\" size=\"256\" id=\"day3\"/><Column type=\"STRING\" size=\"256\" id=\"day4\"/><Column type=\"STRING\" size=\"256\" id=\"day5\"/><Column type=\"STRING\" size=\"256\" id=\"day6\"/><Column type=\"STRING\" size=\"256\" id=\"hol0\"/><Column type=\"STRING\" size=\"256\" id=\"hol1\"/><Column type=\"STRING\" size=\"256\" id=\"hol2\"/><Column type=\"STRING\" size=\"256\" id=\"hol3\"/><Column type=\"STRING\" size=\"256\" id=\"hol4\"/><Column type=\"STRING\" size=\"256\" id=\"hol5\"/><Column type=\"STRING\" size=\"256\" id=\"hol6\"/><Column id=\"time0\" type=\"STRING\" size=\"256\"/><Column id=\"time1\" type=\"STRING\" size=\"256\"/><Column id=\"time2\" type=\"STRING\" size=\"256\"/><Column id=\"time3\" type=\"STRING\" size=\"256\"/><Column id=\"time4\" type=\"STRING\" size=\"256\"/><Column id=\"time5\" type=\"STRING\" size=\"256\"/><Column id=\"time6\" type=\"STRING\" size=\"256\"/><Column id=\"a0\" type=\"STRING\" size=\"256\"/><Column id=\"a1\" type=\"STRING\" size=\"256\"/><Column id=\"a2\" type=\"STRING\" size=\"256\"/><Column id=\"a3\" type=\"STRING\" size=\"256\"/><Column id=\"a4\" type=\"STRING\" size=\"256\"/><Column id=\"a5\" type=\"STRING\" size=\"256\"/><Column id=\"a6\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows/>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_enOutMonth", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"ENTOUT_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_NM\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_PRSN_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"ETRC_TM\" type=\"STRING\" size=\"256\"/><Column id=\"OUT_TM\" type=\"STRING\" size=\"256\"/><Column id=\"WORK_HOL\" type=\"STRING\" size=\"256\"/><Column id=\"ROOM_NM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_etrcOutBasic", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"FR_TM\" type=\"STRING\" size=\"256\"/><Column id=\"TO_TM\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_SCPS_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_FR_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_TO_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DEL_YN\" type=\"STRING\" size=\"256\"/><Column id=\"SCPS_CNT\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_SCPS_MIN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_SCPS_MAX_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"IN_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_SR_LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_SR_ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_SR_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_SR_STOUT_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_SR_HOO_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_SR_NM\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_CNT\" type=\"STRING\" size=\"256\"/><Column id=\"QLF_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"ODR2_JUDG_GRADE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_IN_YN\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_OUT_YN\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ETRC_TGT_LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ETRC_TGT_ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ROOM_IN_PAIR_YN\" type=\"STRING\" size=\"256\"/><Column id=\"ROOM_OUT_PAIR_YN\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_TYPE_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_etrcOutSub", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_STOUT_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"FR_TM\" type=\"STRING\" size=\"256\"/><Column id=\"TO_TM\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_CBK_RSN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DEL_YN\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SCTN_ADPT_FR_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"SCTN_ADPT_TO_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_TO_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_DAYS\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_CNT\" type=\"STRING\" size=\"256\"/><Column id=\"CONN_CNT2\" type=\"STRING\" size=\"256\"/><Column id=\"QLF_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"ODR2_JUDG_GRADE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_outType", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"RCD\" type=\"STRING\" size=\"256\"/><Column id=\"RNM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"RCD\">00</Col><Col id=\"RNM\"/></Row><Row><Col id=\"RCD\">10</Col><Col id=\"RNM\">복귀</Col></Row><Row><Col id=\"RCD\">20</Col><Col id=\"RNM\">외박중퇴소</Col></Row><Row><Col id=\"RCD\">30</Col><Col id=\"RNM\">외박중사망</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_sctnTo", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CD\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CD\">00</Col><Col id=\"NM\"/></Row><Row><Col id=\"CD\">10</Col><Col id=\"NM\">퇴소</Col></Row><Row><Col id=\"CD\">20</Col><Col id=\"NM\">사망</Col></Row><Row><Col id=\"CD\">30</Col><Col id=\"NM\">퇴소(이동)</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_sleep", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CD\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CD\">01</Col><Col id=\"NM\">외박(일반)</Col></Row><Row><Col id=\"CD\">02</Col><Col id=\"NM\">외박(병원)</Col></Row><Row><Col id=\"CD\">03</Col><Col id=\"NM\">외박(코로나)</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_nsr", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CD\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CD\">N</Col><Col id=\"NM\">일반</Col></Row><Row><Col id=\"CD\">S</Col><Col id=\"NM\">특례</Col></Row><Row><Col id=\"CD\">R</Col><Col id=\"NM\">위탁</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_delEtrcOutBasic", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_delEtrcOutSub", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_STOUT_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/><Column id=\"STOUT_TYPE_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_connsrSelect", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_STOUT_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/><Column id=\"IN_DTTM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_condConnsr", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_SCPS_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_SCTN_TO_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"FR_TM\" type=\"STRING\" size=\"256\"/><Column id=\"TO_TM\" type=\"STRING\" size=\"256\"/><Column id=\"SCPS_ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"SCPS_ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"SCPS_FR_TM\" type=\"STRING\" size=\"256\"/><Column id=\"SCPS_TO_TM\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_SCPS_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DEL_YN\" type=\"STRING\" size=\"256\"/><Column id=\"IN_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_edaDt", this);
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"PAYMT_EDA_TERM\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_DT_TERM\" type=\"STRING\" size=\"256\"/><Column id=\"FNM\" type=\"STRING\" size=\"256\"/><Column id=\"OUT_DATE\" type=\"STRING\" size=\"256\"/><Column id=\"LTCP_CTR_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ETS_DATE\" type=\"STRING\" size=\"256\"/><Column id=\"ETS_DATE2\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO_SEQ\" type=\"STRING\" size=\"256\"/><Column id=\"PAYMT_EDA_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"PAYMT_EDA_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DTL_ADMIN_PTTN_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/><Column id=\"BF_DM_YN\" type=\"STRING\" size=\"256\"/><Column id=\"DELAY_RCGT_EDA_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"DMTIA_EXRES_EQUIP\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_nsr2", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CD\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CD\">N</Col><Col id=\"NM\">일반</Col></Row><Row><Col id=\"CD\">S</Col><Col id=\"NM\">특례</Col></Row><Row><Col id=\"CD\">R</Col><Col id=\"NM\">위탁</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_stoutConnsr", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/><Column id=\"IN_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"NEXT_IN_DTTM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_condStoutConnsr", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_STOUT_SEQ_NO\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_sctnFrm", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"CD\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CD\">10</Col><Col id=\"NM\">입소</Col></Row><Row><Col id=\"CD\">20</Col><Col id=\"NM\">입소(이동)</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_ctrInfoCncl", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTCP_CTR_NO\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"LTCP_OFFR_TO_TM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_ctrInfoNew", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTCP_CTR_NO\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO_SEQ\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_FR_TM\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_TO_TM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_newMonth", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"CREATE1_YN\" type=\"STRING\" size=\"256\"/><Column id=\"LAST_YYYYMM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"CREATE1_YN\">N</Col><Col id=\"LAST_YYYYMM\">N</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_errYN", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ERR_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_errCC", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"FA09_CNT\" type=\"STRING\" size=\"256\"/><Column id=\"FA14_CNT\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_DT\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_btnCC", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ENTOUT_DT\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_5D36", this);
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"DM_BASE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DM_BASE_CD_NM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_ra21", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"POCY_TO_YYYYMM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_raAll", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD_NM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_pocyType", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_entOutTgtList", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj.set_preload("true");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_HOO_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"QLF_TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"ODR2_JUDG_GRADE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"NM\" type=\"STRING\" size=\"256\"/><Column id=\"BDAY\" type=\"STRING\" size=\"256\"/><Column id=\"EDA_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_FRTO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"MECH_AMT\" type=\"STRING\" size=\"256\"/><Column id=\"SIOP_SCPS_PTTN_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_edaDtCopy", this);
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"SIOP_HOO_DSCM_NO\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"PAYMT_EDA_TERM\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_DT_TERM\" type=\"STRING\" size=\"256\"/><Column id=\"FNM\" type=\"STRING\" size=\"256\"/><Column id=\"OUT_DATE\" type=\"STRING\" size=\"256\"/><Column id=\"LTCP_CTR_NO\" type=\"STRING\" size=\"256\"/><Column id=\"ETS_DATE\" type=\"STRING\" size=\"256\"/><Column id=\"ETS_DATE2\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_MGMT_NO_SEQ\" type=\"STRING\" size=\"256\"/><Column id=\"PAYMT_EDA_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"PAYMT_EDA_TO_DT_0\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"CTR_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DTL_ADMIN_PTTN_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+            
+            // UI Components Initialize
+            obj = new Static("Static17","0","0","1018","12",null,null,null,null,null,null,this);
+            obj.set_text("13");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static05","1","6","144","28",null,null,null,null,null,null,this);
+            obj.set_text("대상자 명단");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("gridTgtList","0","33","250","453",null,null,null,null,null,null,this);
+            obj.set_taborder("6");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_checkhead").set("true");
+            obj.getSetter("_filter").set("true");
+            obj.getSetter("_hideColumn").set("true");
+            obj.getSetter("_fixedColumn").set("true");
+            obj.getSetter("objectType").set("gridCommE");
+            obj.set_scrolltype("autoboth");
+            obj.set_autofittype("col");
+            obj.set_binddataset("ds_entOutTgtList");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"35\"/><Column size=\"57\"/><Column size=\"72\"/><Column size=\"56\"/></Columns><Rows><Row size=\"25\" band=\"head\"/><Row size=\"24\"/></Rows><Band id=\"head\"><Cell displaytype=\"normal\" text=\"순번\"/><Cell col=\"1\" displaytype=\"normal\" text=\"성명\"/><Cell col=\"2\" displaytype=\"normal\" text=\"생년월일\"/><Cell col=\"3\" displaytype=\"normal\" text=\"비고\"/></Band><Band id=\"body\"><Cell displaytype=\"normal\" expr=\"expr:currow+1\"/><Cell col=\"1\" displaytype=\"normal\" text=\"bind:NM\" cssclass=\"expr:dataset.getColumn(currow,&quot;SIOP_SCPS_PTTN_CD&quot;)==&quot;S&quot;?&quot;bgfont_ff0000white&quot;:&quot;&quot;\"/><Cell col=\"2\" displaytype=\"normal\" text=\"bind:BDAY\" mask=\"99-99-99\"/><Cell col=\"3\" displaytype=\"expr:comp.parent.fn_checkTgtl(currow, TRAN_DATA)\" edittype=\"expr:comp.parent.fn_checkTgtl2(currow, TRAN_DATA)\" text=\"expr:TRAN_DATA == 'Y' ? '이관' : ''\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static08","250","30","15","335",null,null,null,null,null,null,this);
+            obj.set_text("W15");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static01","263","112","87","31",null,null,null,null,null,null,this);
+            obj.set_text("입퇴소");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static06","263","268","121","28",null,null,null,null,null,null,this);
+            obj.set_text("외박/복귀");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grd_etrcOutBasic","265","139",null,"122","2",null,null,null,null,null,this);
+            obj.set_taborder("11");
+            obj.set_binddataset("ds_etrcOutBasic");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_check").set("false");
+            obj.set_autoupdatetype("itemselect");
+            obj.getSetter("_rowstatus").set("false");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"27\"/><Column size=\"74\"/><Column size=\"75\"/><Column size=\"64\"/><Column size=\"90\"/><Column size=\"50\"/><Column size=\"70\"/><Column size=\"90\"/><Column size=\"50\"/><Column size=\"66\"/><Column size=\"78\"/><Column size=\"55\"/></Columns><Rows><Row size=\"24\" band=\"head\"/><Row size=\"22\"/></Rows><Band id=\"head\"><Cell displaytype=\"text\" text=\"NO\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"1\" text=\"급여형태\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"2\" text=\"입퇴소유형\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"3\" text=\"입소구분\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"4\" text=\"입소일자\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"5\" text=\"시간\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"6\" text=\"퇴소구분\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"7\" text=\"퇴소일자\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"8\" text=\"시간\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"9\" text=\"연계외박자\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"10\" text=\"유형변경횟수\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"11\" text=\"외박횟수\" font=\"normal 9pt/normal &quot;굴림&quot;\"/></Band><Band id=\"body\"><Cell expr=\"expr:currow+1\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"1\" displaytype=\"expr:ROOM_IN_PAIR_YN != &quot;Y&quot; &amp;&amp; dataset.getRowType(currow) == 2  ? &quot;combocontrol&quot;:&quot;combotext&quot;\" edittype=\"expr:ROOM_IN_PAIR_YN != &quot;Y&quot; &amp;&amp; dataset.getRowType(currow) == 2  ? &quot;combo&quot;:&quot;none&quot;\" text=\"bind:ADMIN_PTTN_CD\" combocodecol=\"ADMIN_PTTN_CD\" combodatacol=\"ADMIN_PTTN_CD_NM\" combodisplay=\"expr:ROOM_IN_PAIR_YN != &quot;Y&quot; &amp;&amp; comp.parent.x2n_lookupPath(&quot;getrowtype&quot;)(currow) == 2  ? &quot;display&quot; : &quot;edit&quot;\" combodataset=\"expr:ROOM_IN_PAIR_YN != &quot;Y&quot; &amp;&amp; dataset.getRowType(currow) == 2 ? &quot;ds_ra&quot; + ADPT_FR_DT : &quot;ds_raAll&quot;\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"2\" displaytype=\"combocontrol\" edittype=\"expr:dataset.getRowType(currow)==2?&quot;combo&quot;:&quot;none&quot;\" text=\"bind:SIOP_SCPS_PTTN_CD\" editdisplay=\"display\" taborder=\"0\" expandshow=\"show\" combodataset=\"expr:comp.parent.fn_expCombo(currow)\" combocodecol=\"CD\" combodatacol=\"NM\" combodisplay=\"display\" combotype=\"filter\"/><Cell col=\"3\" displaytype=\"combocontrol\" edittype=\"expr:dataset.getRowType(currow)==2?&quot;combo&quot;:&quot;none&quot;\" text=\"bind:ENTOUT_SCTN_FR_PTTN_CD\" combodataset=\"ds_sctnFrm\" combocodecol=\"CD\" combodatacol=\"NM\" combodisplay=\"expr:ROOM_IN_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_FR_PTTN_CD == &quot;20&quot; ? &quot;edit&quot; : &quot;display&quot;\"/><Cell col=\"4\" displaytype=\"calendarcontrol\" edittype=\"expr:dataset.getRowType(currow)==2?&quot;date&quot;:&quot;none&quot;\" text=\"bind:ADPT_FR_DT\" mask=\"yyyy.MM.dd\" editautoselect=\"true\" editdisplay=\"display\" taborder=\"0\" calendardisplay=\"expr:ROOM_IN_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_FR_PTTN_CD == &quot;20&quot; ? &quot;edit&quot; : &quot;display&quot;\" calendardisplaynulltext=\"expr:date\" calendardateformat=\"yyyy.MM.dd\" calendareditformat=\"yyyy.MM.dd\" font=\"normal 9pt/normal &quot;Gulim&quot;\"/><Cell col=\"5\" displaytype=\"maskeditcontrol\" edittype=\"expr:dataset.getRowType(currow)==2?&quot;mask&quot;:&quot;none&quot;\" wordWrap=\"both\" mask=\"##:##\" editautoselect=\"true\" editdisplay=\"display\" taborder=\"0\" maskedittype=\"string\" maskeditformat=\"##:##\" background=\"white\" border=\"1px solid #dae2e7\" borderRadius=\"1px / 0px\" text=\"bind:FR_TM\"/><Cell col=\"6\" displaytype=\"combocontrol\" edittype=\"expr:ROOM_OUT_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_TO_PTTN_CD == &quot;30&quot; ? &quot;none&quot; : &quot;combo&quot;\" text=\"bind:ENTOUT_SCTN_TO_PTTN_CD\" editdisplay=\"display\" taborder=\"0\" combodataset=\"ds_sctnTo\" combocodecol=\"CD\" combodatacol=\"NM\" combodisplay=\"expr:ROOM_OUT_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_TO_PTTN_CD == &quot;30&quot; ? &quot;edit&quot; : &quot;display&quot;\"/><Cell col=\"7\" displaytype=\"calendarcontrol\" edittype=\"expr:ROOM_OUT_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_TO_PTTN_CD == &quot;30&quot; ? &quot;none&quot; : &quot;date&quot;\" text=\"bind:ADPT_TO_DT\" mask=\"yyyy.MM.dd\" editautoselect=\"true\" taborder=\"0\" calendardisplay=\"expr:ROOM_OUT_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_TO_PTTN_CD == &quot;30&quot; ? &quot;edit&quot; : &quot;display&quot;\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy.MM.dd\" calendareditformat=\"yyyy.MM.dd\"/><Cell col=\"8\" displaytype=\"maskeditcontrol\" edittype=\"expr:ROOM_OUT_PAIR_YN == &quot;Y&quot; &amp;&amp; ENTOUT_SCTN_TO_PTTN_CD == &quot;30&quot; ? &quot;none&quot; : &quot;mask&quot;\" text=\"bind:TO_TM\" mask=\"##:##\" editautoselect=\"true\" editdisplay=\"display\" taborder=\"0\" maskedittype=\"string\" maskeditformat=\"##:##\" background=\"white\"/><Cell col=\"9\" displaytype=\"normal\" edittype=\"none\" text=\"bind:CONN_SR_NM\" taborder=\"0\" expandshow=\"show\"/><Cell col=\"10\" text=\"bind:SCPS_CNT\" taborder=\"0\"/><Cell col=\"11\" text=\"bind:STOUT_CNT\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grd_inOut","265","295",null,"191","2",null,null,null,null,null,this);
+            obj.set_taborder("12");
+            obj.set_binddataset("ds_etrcOutSub");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_check").set("false");
+            obj.set_autoupdatetype("comboselect");
+            obj.getSetter("_rowstatus").set("false");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"26\"/><Column size=\"80\"/><Column size=\"109\"/><Column size=\"66\"/><Column size=\"104\"/><Column size=\"117\"/><Column size=\"63\"/><Column size=\"57\"/><Column size=\"96\"/></Columns><Rows><Row size=\"24\" band=\"head\"/><Row size=\"22\"/></Rows><Band id=\"head\"><Cell displaytype=\"text\" text=\"NO\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"1\" text=\"외박사유\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"2\" text=\"시작일자\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"3\" text=\"시간\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"4\" text=\"복귀사유\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"5\" text=\"종료일자\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"6\" text=\"시간\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"7\" text=\"외박일수\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"8\" text=\"특례입소자\" font=\"normal 9pt/normal &quot;굴림&quot;\"/></Band><Band id=\"body\"><Cell expr=\"expr:currow+1\"/><Cell col=\"1\" displaytype=\"combocontrol\" edittype=\"combo\" text=\"bind:STOUT_TYPE_CD\" editdisplay=\"display\" combodataset=\"ds_sleep\" combocodecol=\"CD\" combodatacol=\"NM\" combodisplay=\"display\"/><Cell col=\"2\" displaytype=\"calendarcontrol\" edittype=\"date\" text=\"bind:ADPT_FR_DT\" mask=\"yyyy.MM.dd\" editautoselect=\"true\" editdisplay=\"display\" calendardisplay=\"display\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy.MM.dd\" calendareditformat=\"yyyy.MM.dd\"/><Cell col=\"3\" edittype=\"mask\" text=\"bind:FR_TM\" mask=\"##:##\" editautoselect=\"true\" editdisplay=\"display\" displaytype=\"maskeditcontrol\" maskedittype=\"string\" maskeditformat=\"##:##\" background=\"white\"/><Cell col=\"4\" displaytype=\"combocontrol\" edittype=\"combo\" text=\"bind:STOUT_CBK_RSN_CD\" combodataset=\"ds_outType\" combocodecol=\"RCD\" combodatacol=\"RNM\" combodisplay=\"display\"/><Cell col=\"5\" displaytype=\"calendarcontrol\" edittype=\"date\" text=\"bind:ADPT_TO_DT\" mask=\"yyyy.MM.dd\" editautoselect=\"true\" editdisplay=\"display\" calendardisplay=\"display\" calendardisplaynulltype=\"none\" calendardateformat=\"yyyy.MM.dd\" calendareditformat=\"yyyy.MM.dd\"/><Cell col=\"6\" edittype=\"mask\" text=\"bind:TO_TM\" mask=\"##:##\" editautoselect=\"true\" editdisplay=\"display\" displaytype=\"maskeditcontrol\" maskedittype=\"string\" maskeditformat=\"##:##\" background=\"white\"/><Cell col=\"7\" text=\"bind:STOUT_DAYS\"/><Cell col=\"8\" edittype=\"none\" text=\"bind:CONN_CNT2\" expandshow=\"show\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_grdAdd_basic",null,"115","52","18","9",null,null,null,null,null,this);
+            obj.set_taborder("15");
+            obj.set_text("+행추가");
+            obj.set_cssclass("btn_grd");
+            obj.set_tooltiptext("행추가");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_grdAdd_sub",null,"268","54","18","9",null,null,null,null,null,this);
+            obj.set_taborder("17");
+            obj.set_text("+행추가");
+            obj.set_cssclass("btn_grd");
+            obj.set_tooltiptext("행추가");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_saveSctn",null,"112","47","22","72",null,null,null,null,null,this);
+            obj.set_taborder("19");
+            obj.set_text("저장");
+            obj.getSetter("functionName").set("fn_save");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_saveStout",null,"266","47","22","73",null,null,null,null,null,this);
+            obj.set_taborder("20");
+            obj.set_text("저장");
+            obj.getSetter("functionName").set("fn_save");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static35","0","25","200","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static02","266","134","700","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static03","268","261","112","13",null,null,null,null,null,null,this);
+            obj.set_text("13");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static09","268","287","700","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static10","263","4","753","31",null,null,null,null,null,null,this);
+            obj.set_text("기본정보(급여계약통보)");
+            obj.set_cssclass("sta_WF_title2");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("Grid_calendar","0","497",null,null,"2","-202",null,null,null,null,this);
+            obj.set_taborder("21");
+            obj.set_binddataset("ds_bind");
+            obj.set_selecttype("cell");
+            obj.set_autofittype("allboth");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"24\"/><Column size=\"60\"/><Column size=\"24\"/><Column size=\"60\"/><Column size=\"24\"/><Column size=\"60\"/><Column size=\"24\"/><Column size=\"60\"/><Column size=\"24\"/><Column size=\"60\"/><Column size=\"24\"/><Column size=\"60\"/><Column size=\"24\"/><Column size=\"60\"/></Columns><Rows><Row size=\"20\" band=\"head\"/><Row size=\"20\" band=\"head\"/><Row size=\"32\"/></Rows><Band id=\"head\"><Cell colspan=\"2\"/><Cell col=\"2\" colspan=\"10\"/><Cell col=\"12\" colspan=\"2\"/><Cell row=\"1\" colspan=\"2\" text=\"일\" color=\"red\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/><Cell row=\"1\" col=\"2\" colspan=\"2\" text=\"월\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/><Cell row=\"1\" col=\"4\" colspan=\"2\" text=\"화\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/><Cell row=\"1\" col=\"6\" colspan=\"2\" text=\"수\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/><Cell row=\"1\" col=\"8\" colspan=\"2\" text=\"목\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/><Cell row=\"1\" col=\"10\" colspan=\"2\" text=\"금\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/><Cell row=\"1\" col=\"12\" colspan=\"2\" text=\"토\" color=\"blue\" background=\"#fffbe1\" font=\"normal bold 10pt/normal &quot;굴림&quot;\"/></Band><Band id=\"body\"><Cell text=\"bind:day0\" color=\"red\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"1\" text=\"bind:hol0\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/><Cell col=\"2\" text=\"bind:day1\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"3\" text=\"bind:hol1\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/><Cell col=\"4\" text=\"bind:day2\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"5\" text=\"bind:hol2\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/><Cell col=\"6\" text=\"bind:day3\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"7\" text=\"bind:hol3\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/><Cell col=\"8\" text=\"bind:day4\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"9\" text=\"bind:hol4\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/><Cell col=\"10\" text=\"bind:day5\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"11\" text=\"bind:hol5\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/><Cell col=\"12\" text=\"bind:day6\" color=\"blue\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\"/><Cell col=\"13\" text=\"bind:hol6\" font=\"8pt/normal &quot;Arial&quot;\" verticalAlign=\"top\" textAlign=\"left\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_sctnDel",null,"112","47","22","121",null,null,null,null,null,this);
+            obj.set_taborder("22");
+            obj.set_text("삭제");
+            obj.getSetter("functionName").set("fn_save");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_stoutDel",null,"266","47","22","122",null,null,null,null,null,this);
+            obj.set_taborder("23");
+            obj.set_text("삭제");
+            obj.getSetter("functionName").set("fn_save");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_selectSctn",null,"112","47","22","170",null,null,null,null,null,this);
+            obj.set_taborder("24");
+            obj.set_text("조회");
+            obj.getSetter("functionName").set("fn_save");
+            obj.set_cssclass("btn_WF_acty");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grd_consrSelect","494","732","122","120",null,null,null,null,null,null,this);
+            obj.set_taborder("25");
+            obj.set_binddataset("ds_connsrSelect");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_status").set("false");
+            obj.getSetter("_check").set("false");
+            obj.getSetter("_checkhead").set("false");
+            obj.getSetter("_sort").set("false");
+            obj.getSetter("_tooltip").set("true");
+            obj.getSetter("_multiSort").set("false");
+            obj.getSetter("_filter").set("true");
+            obj.getSetter("_hideColumn").set("true");
+            obj.getSetter("_fixedColumn").set("true");
+            obj.getSetter("objectType").set("gridCommE");
+            obj.set_visible("false");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"100\"/></Columns><Rows><Row size=\"22\"/></Rows><Band id=\"body\"><Cell text=\"bind:NM\" expandshow=\"hide\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_addUser","151","5","48","22",null,null,null,null,null,null,this);
+            obj.set_taborder("4");
+            obj.set_text("추가");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_TgtDel","201","5","48","22",null,null,null,null,null,null,this);
+            obj.set_taborder("5");
+            obj.set_text("삭제");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static07","5","486","1005","10",null,null,null,null,null,null,this);
+            obj.set_text("10");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new ProgressBar("stc_delOutKey",null,"241","32","24","131",null,null,null,null,null,this);
+            obj.set_taborder("29");
+            obj.set_text("E");
+            obj.set_visible("false");
+            obj.set_min("1");
+            obj.set_max("100");
+            obj.set_pos("1");
+            this.addChild(obj.name, obj);
+
+            obj = new ProgressBar("stc_saveOutKey",null,"241","32","24","81",null,null,null,null,null,this);
+            obj.set_taborder("30");
+            obj.set_text("T");
+            obj.set_visible("false");
+            obj.set_min("1");
+            obj.set_max("100");
+            obj.set_pos("1");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grd_stoutConnsr","160","732","268","141",null,null,null,null,null,null,this);
+            obj.set_taborder("32");
+            obj.set_binddataset("ds_stoutConnsr");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_checkhead").set("true");
+            obj.getSetter("_filter").set("true");
+            obj.getSetter("_hideColumn").set("true");
+            obj.getSetter("_fixedColumn").set("true");
+            obj.getSetter("objectType").set("gridCommE");
+            obj.set_visible("false");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"81\"/><Column size=\"77\"/><Column size=\"74\"/></Columns><Rows><Row size=\"25\" band=\"head\"/><Row size=\"24\"/></Rows><Band id=\"head\"><Cell displaytype=\"normal\" text=\"시작일자\"/><Cell col=\"1\" text=\"종료일자\"/><Cell col=\"2\" displaytype=\"normal\" text=\"특례입소자\"/></Band><Band id=\"body\"><Cell displaytype=\"normal\" text=\"bind:IN_DTTM\" mask=\"9999-99-99\"/><Cell col=\"1\" text=\"bind:NEXT_IN_DTTM\" mask=\"9999-99-99\"/><Cell col=\"2\" text=\"bind:NM\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Grid("grd_edaDt","265","32",null,"68","3",null,null,null,null,null,this);
+            obj.set_taborder("33");
+            obj.set_binddataset("ds_edaDt");
+            obj.set_autoenter("select");
+            obj.set_autoupdatetype("dateselect");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_status").set("false");
+            obj.getSetter("_check").set("false");
+            obj.getSetter("_checkhead").set("false");
+            obj.getSetter("_sort").set("false");
+            obj.getSetter("_tooltip").set("true");
+            obj.getSetter("_multiSort").set("false");
+            obj.getSetter("_filter").set("true");
+            obj.getSetter("_hideColumn").set("true");
+            obj.getSetter("_fixedColumn").set("true");
+            obj.getSetter("objectType").set("gridCommE");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"26\"/><Column size=\"85\"/><Column size=\"40\"/><Column size=\"74\"/><Column size=\"185\"/><Column size=\"63\"/><Column size=\"31\"/><Column size=\"19\"/><Column size=\"185\"/><Column size=\"83\"/></Columns><Rows><Row size=\"24\" band=\"head\"/><Row size=\"19\"/></Rows><Band id=\"head\"><Cell displaytype=\"text\" text=\"NO\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"1\" text=\"성명\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"2\" text=\"SEQ\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"3\" text=\"급여형태\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"4\" text=\"인정유효기간\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"5\" text=\"인정등급\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"6\" text=\"치매\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"7\" text=\"확정유무\" font=\"normal 8pt/normal &quot;Gulim&quot;,&quot;Arial&quot;\"/><Cell col=\"8\" text=\"급여계약기간\" font=\"normal 9pt/normal &quot;굴림&quot;\"/><Cell col=\"9\" displaytype=\"normal\" text=\"비고\" font=\"normal 9pt/normal &quot;굴림&quot;\"/></Band><Band id=\"body\"><Cell expr=\"expr:currow+1\"/><Cell col=\"1\" text=\"bind:FNM\"/><Cell col=\"2\" text=\"bind:LTC_MGMT_NO_SEQ\"/><Cell col=\"3\" displaytype=\"normal\" edittype=\"none\" text=\"bind:DTL_ADMIN_PTTN_CD_NM\"/><Cell col=\"4\" displaytype=\"normal\" edittype=\"none\" text=\"bind:PAYMT_EDA_TERM\" editautoselect=\"true\" editdisplay=\"edit\" calendardisplay=\"edit\"/><Cell col=\"5\" text=\"bind:LTC_RCGT_GRADE_CD\"/><Cell col=\"6\" text=\"bind:DM_YN\"/><Cell col=\"7\" text=\"bind:DMTIA_EXRES_EQUIP\"/><Cell col=\"8\" displaytype=\"normal\" edittype=\"none\" text=\"bind:CTR_DT_TERM\" editautoselect=\"true\" editdisplay=\"edit\" calendardisplay=\"edit\" calendardisplaynulltype=\"none\"/><Cell col=\"9\" displaytype=\"expr:comp.parent.fn_checkEntOut(currow, OUT_DATE, ETS_DATE, ETS_DATE2, PAYMT_EDA_TO_DT, CTR_TO_DT)\" edittype=\"expr:comp.parent.fn_checkEntOut2(currow, OUT_DATE, ETS_DATE, ETS_DATE2, PAYMT_EDA_TO_DT, CTR_TO_DT)\" text=\"expr:comp.parent.fn_checkEntOutText(currow, OUT_DATE, ETS_DATE, ETS_DATE2, PAYMT_EDA_TO_DT, CTR_TO_DT)\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static04","264","25","752","7",null,null,null,null,null,null,this);
+            obj.set_text("7");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static11","265","100","750","12",null,null,null,null,null,null,this);
+            obj.set_text("13");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new ProgressBar("stc_saveKey",null,"88","32","24","131",null,null,null,null,null,this);
+            obj.set_taborder("34");
+            obj.set_text("S");
+            obj.set_visible("false");
+            obj.set_min("1");
+            obj.set_max("100");
+            obj.set_pos("1");
+            this.addChild(obj.name, obj);
+
+            obj = new ProgressBar("stc_delKey",null,"88","32","24","181",null,null,null,null,null,this);
+            obj.set_taborder("35");
+            obj.set_text("D");
+            obj.set_visible("false");
+            obj.set_min("1");
+            obj.set_max("100");
+            obj.set_pos("1");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_dongDongMgt",null,"111","110","24","221",null,null,null,null,null,this);
+            obj.set_taborder("36");
+            obj.set_text("입퇴소이동관리");
+            obj.set_cssclass("btn_WF_act");
+            obj.set_tooltiptext("입퇴소 이동시 이동대상기관을 입력해주세요.");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_CreateCC",null,"111","79","24","333",null,null,null,null,null,this);
+            obj.set_taborder("37");
+            obj.set_text("당월생성");
+            obj.set_cssclass("btn_WF_act");
+            obj.set_tooltiptext("당월 입퇴소 정보를 생성합니다.");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("sta_POCY",null,"114","111","20","564",null,null,null,null,null,this);
+            obj.set_text("한시적지원금");
+            obj.set_cssclass("sta_WFSA_label");
+            obj.set_visible("false");
+            this.addChild(obj.name, obj);
+
+            obj = new Combo("cmb_pocyType",null,"112","149","22","416",null,null,null,null,null,this);
+            obj.set_taborder("38");
+            obj.set_codecolumn("codecolumn");
+            obj.set_datacolumn("datacolumn");
+            obj.set_displaynulltext("선택");
+            obj.set_visible("false");
+            obj.set_enable("false");
+            var cmb_pocyType_innerdataset = new nexacro.NormalDataset("cmb_pocyType_innerdataset", obj);
+            cmb_pocyType_innerdataset._setContents("<ColumnInfo><Column id=\"codecolumn\" size=\"256\"/><Column id=\"datacolumn\" size=\"256\"/></ColumnInfo><Rows><Row><Col id=\"codecolumn\">00</Col><Col id=\"datacolumn\">해당없음</Col></Row><Row><Col id=\"codecolumn\">01</Col><Col id=\"datacolumn\">15일 이하 입소</Col></Row><Row><Col id=\"codecolumn\">02</Col><Col id=\"datacolumn\">16일 이상 입소</Col></Row></Rows>");
+            obj.set_innerdataset(cmb_pocyType_innerdataset);
+            obj.set_text("해당없음");
+            obj.set_value("00");
+            obj.set_index("0");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static00","588","61","122","23",null,null,null,null,null,null,this);
+            obj.set_text("ds_edaDt");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            obj.set_taborder("37");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static12","588","191","122","23",null,null,null,null,null,null,this);
+            obj.set_text("ds_etrcOutBasic");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            obj.set_taborder("38");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static13","68","149","122","23",null,null,null,null,null,null,this);
+            obj.set_text("ds_entOutTgtList");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            obj.set_taborder("39");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_notvac","511","5","139","22",null,null,null,null,null,null,this);
+            obj.set_taborder("40");
+            obj.set_text("미접종자 신규입소");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_spcEntout","658","5","139","22",null,null,null,null,null,null,this);
+            obj.set_taborder("41");
+            obj.set_text("특례입소자이력관리");
+            this.addChild(obj.name, obj);
+
+            // Layout Functions
+            //-- Default Layout : this
+            obj = new Layout("default","",this._adjust_width,this._adjust_height,this,function(p){});
+            this.addLayout(obj.name, obj);
+            
+            // BindItem Information
+
+        };
+        
+        this.loadPreloadList = function()
+        {
+            this._addPreloadList("data","","ds_bind");
+            this._addPreloadList("data","","ds_entOutTgtList");
+        };
+        
+        // User Script
+        this.registerScript("npfa201m01.xfdl", function() {
+
+         /*=============================   Program description   ================================*
+         * Form ID     : npfa201m01
+         * Form Desc.  : 입퇴소내용신고
+         * Author      : 김대진
+         * Create Date : 2015.05.22
+         * Change History
+         *======================================================================================*
+         * 수정일 / 이름 / 사유
+         *======================================================================================*
+         *2016.06.13 / 김민석 / 치매전담형 고시 개정 반영
+         *2019.03.04 / 김혜빈 / 통합재가
+         *======================================================================================*/
+
+        /*======================================================================================*
+         * 1. include
+         *======================================================================================*/
+        //include "biz.library::nyb_include.xjs";
+
+        /*======================================================================================*
+         * 2. Form 변수
+         *======================================================================================*/
+        this.fv_yyyymm ;
+        this.fv_oGrdCalendar;
+        this.fv_oDsBind;
+        this.fv_bShowRoomNm = false; /*치매전담형_고시_개정_[201607] 달력에 치매전담실 표시 여부*/
+
+        this.fv_bPocyTypeChgYn = false; /* 201801 정책가산금 변경 여부 */
+
+        this.parent100 = this.parent.parent.parent.parent.parent.parent.parent;
+
+        this.fv_normOutCnt = 0; //일반입소자퇴소건수
+        this.fv_spcTotCnt = 0;  //특례입소자 총건수
+        this.fv_spcAltCnt = 0;  //특례입소자 일반전환건수
+        this.fv_spcAltPopupYn = "N";  //일반입소자 퇴소에 따른 특례입소자 전환 팝업 여부
+
+
+        /*======================================================================================*
+         * 3. Form Load
+         *======================================================================================*/
+        this.frm_onload = function(obj,e) {
+            this.cfn_frmInit(obj);
+        };
+
+        this.fn_frmInit = function() {
+          	this.gfn_setGrid(this.grd_etrcOutBasic);
+          	this.gfn_setGrid(this.grd_inOut);
+
+        	this.CHG_ABLE = this.parent100.CHG_ABLE;
+
+            this.grd_consrSelect.set_visible(false);
+            this.grd_stoutConnsr.set_visible(false);
+
+        trace("#### admin_pttn_cd : "+this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD"));
+        	// 시설만 수급자 PCR 검체 채취일 입력가능
+        	if( this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD").substring(0,1) != "A" )
+        	{
+        	trace("11");
+        		this.btn_notvac.set_visible(false);
+
+        		if( this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD").substring(0,1) == "G" ||
+        			this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD").substring(0,1) == "M" ||
+        			this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD").substring(0,1) == "S"
+        		){
+        			this.btn_notvac.set_visible(true);
+        		}
+        	}
+        	//20240517 미접종자 신규입소 버튼 2024.4월까지
+        	if (this.parent100.ds_fm_cond.getColumn(0, "TGT_YYYYMM") < "202112" || this.parent100.ds_fm_cond.getColumn(0, "TGT_YYYYMM") > "202404"){
+        	trace("미접종자 신규입소 버튼은 2024.12월부터 2024.4월까지");
+        		this.btn_notvac.set_visible(false);
+        	}
+        	if(this.parent100.ds_fm_cond.getColumn(0, "TGT_YYYYMM") > "202405"){
+        	    this.ds_sleep.filter("CD !='03'");
+        	}
+
+        	trace(this.ds_sleep.saveXML());
+            this.fv_normOutCnt = 0;
+            this.fv_spcAltCnt = 0;
+
+            /*치매전담형_고시_개정_[201607]*/
+        	/*
+        	치매전담형 도입에 따라
+        	1. 치매전담실을 보유한 시설(A03)의 경우 치매전담실(G31,G32,M31,M32)과 일반실(A03)을 구분하기 위한 추가 조건/컬럼을 항상 화면에 표시한다.
+        	2. 반면에 치매전담형 공생의 경우 치매전담형 공생과 일반 공생이 월중에 혼재되는 경우에 한해 추가 컬럼을 화면에 표시한다.
+        	*/
+            if(this.parent100.ds_fm_cond.getColumn(0, "DM_YN") == 'Y'){ // 당월에 치매전담실을 보유한 시설이거나 치매전담형 공생으로 허가된 시설의 경우
+        		this.fv_bShowRoomNm = true;
+        		this.grd_etrcOutBasic.set_autofittype( "none" ); //20190418
+        		this.grd_edaDt.setFormatColProperty(7, 'size', 45);
+            }else{
+        		this.grd_edaDt.setFormatColProperty(3, 'size', 0);
+        		this.grd_edaDt.setFormatColProperty(6, 'size', 0);
+                this.grd_etrcOutBasic.setFormatColProperty(1, 'size', 0);
+        		this.grd_etrcOutBasic.set_autofittype( "col" ); //20190418
+        		this.grd_edaDt.setFormatColProperty(7, 'size', 0);
+            }
+
+            //운영관리 권한/버튼 컨트롤
+            this.gfn_isEmpty(this.btn_addUser.set_enable(this.CHG_ABLE));
+            this.gfn_isEmpty(this.btn_TgtDel.set_enable(this.CHG_ABLE));
+
+            this.gfn_isEmpty(this.btn_sctnDel.set_enable(this.CHG_ABLE));
+            this.gfn_isEmpty(this.btn_saveSctn.set_enable(this.CHG_ABLE));
+            this.gfn_isEmpty(this.btn_grdAdd_basic.set_enable(this.CHG_ABLE));
+
+            this.gfn_isEmpty(this.btn_stoutDel.set_enable(this.CHG_ABLE));
+            this.gfn_isEmpty(this.btn_saveStout.set_enable(this.CHG_ABLE));
+
+            this.gfn_isEmpty(this.btn_dongDongMgt.set_enable(this.CHG_ABLE));
+
+
+
+            this.fn_selectTabPage();
+        };
+
+        /*======================================================================================*
+         * 4.Transaction
+         *======================================================================================*/
+        this.fn_saveCreateSctnAll = function() {  // 데이터 자동 생성구간
+            var sSvcId        = "saveCreateSctnAll";
+            var sPath         = "/f/a/201/saveCreateSctnAll.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "";
+            var sArg          = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+        this.fn_selectEntOutTgtList = function() { // 대상자 목록
+            this.ds_bind.clearData();
+
+            var sSvcId        = "selectEntOutTgtList";
+            var sPath         = "/f/a/201/selectEntOutTgtList.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_entOutTgtList=ds_entOutTgtList";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+        this.fn_selectEdaFrToDt = function(){ // 인정등급, 인정급여, 계약 목록
+            var sSvcId        = "selectEdaFrToDt";
+            var sPath         = "/f/a/201/selectEdaFrToDt.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_edaDt=ds_edaDt";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        this.fn_deleteTgt = function() {   // 대상자 삭제
+            var sSvcId        = "deleteTgt";
+            var sPath         = "/f/a/201/deleteTgt.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        this.fn_selectEntOutTgtMonthInfo = function() {    // 월별 입퇴소 정보
+            this.ds_enOutMonth.clearData();
+            /* 201801 KHCHO */
+            this.cmb_pocyType.set_value('');
+
+            var sSvcId        = "selectEntOutTgtMonthInfo";
+            var sPath         = "/f/a/201/selectEntOutTgtMonthInfo.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_enOutMonth=ds_enOutMonth";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        this.fn_selectEntOutSctn = function() {    //구간/신분 입퇴소 정보 조회
+            this.ds_etrcOutBasic.clearData();
+            this.ds_etrcOutSub.clearData();
+
+            var sSvcId        = "selectEntOutSctn";
+            var sPath         = "/f/a/201/selectEntOutSctn.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_etrcOutBasic=ds_etrcOutBasic ds_ra21=ds_ra21";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+        //     var bASync    = true;
+        //     var bWait     = true;
+        //     var bBinary   = true;
+        //     var bCompress = false;
+
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+            //this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+        this.fn_saveEntOutSctn = function() {   // 구간/신분 저장
+            //this.NetFUNNEL.SetService("default", "act_26");
+            //this.NetFUNNEL.BEGIN(this);
+
+        	//넷퍼넬 시작 : 종료처리 필수 this.gfn_netfunnelEnd();
+        	this.gfn_netfunnelBegin(this, "default", "act_26", function(sResult){
+        		//sResult (성공:success, 중지:stop, 에러:에러메시지)
+        		if ( sResult != "stop" ) {
+        			//trace("sResult==="+sResult);
+        			var sSvcId        = "saveEntOutSctn";
+        			var sPath         = "/f/a/201/saveEntOutSctn.do";
+        			var sInputDsName  = "ds_grid=ds_etrcOutBasic:u ds_cond=ds_cond";
+        			var sOutputDsName = "";
+
+        			var sArg      = "";
+        			var oPreArgs  = "";
+        			var sCallback = "fn_callback";
+        			var bASync    = true;
+        			var bWait     = true;
+        			var bBinary   = true;
+        			var bCompress = false;
+        			this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        		}
+        	});
+        };
+
+        this.fn_postSaveEntOutSctn = function() {   // 구간/신분 저장
+            //this.NetFUNNEL.END(this);
+        	//넷퍼넬 종료 : this.gfn_netfunnelEnd();
+        	this.gfn_netfunnelEnd();
+
+        	//trace("nErrorCode="+nErrorCode + ", sErrorMsg=" + sErrorMsg);
+
+            if(!this.gfn_getDatasetUpdated(this.ds_etrcOutBasic)){
+                 this.gfn_msgShow(this,"XETZ0028",["변경된"]);
+                return false;
+            }
+            return true;
+        };
+
+        this.fn_setPocyType = function() {     // 201801 KHCHO 정책가산금 구분 코드 조회
+
+            var DTL_ADMIN_PTTN_CD = this.ds_cond.getColumn(0, "DTL_ADMIN_PTTN_CD");
+        	if(DTL_ADMIN_PTTN_CD == "AAA") {
+        		var nRow = this.ds_ra21.findRowExpr("String(ADMIN_PTTN_CD).charAt(0) == 'A'") ;
+        	}
+        	else {
+        		var nRow = this.ds_ra21.findRowExpr("ADMIN_PTTN_CD == '"+ DTL_ADMIN_PTTN_CD + "'");
+        	}
+
+        	/* 201801 KHCHO */
+        	if(   this.ds_cond.getColumn(0, "TGT_YYYYMM") >= "201801" // 변경 해야만 함 201801
+        	   && this.ds_cond.getColumn(0, "DTL_ADMIN_PTTN_CD") != null
+        	   && this.ds_cond.getColumn(0, "DTL_ADMIN_PTTN_CD").substring(0,1) != "A"
+        	   && (this.ds_ra21.getColumn(nRow, "POCY_TO_YYYYMM") >= this.ds_cond.getColumn(0, "TGT_YYYYMM"))
+        	  )
+        	{
+        		this.sta_POCY.set_visible(true);
+        		this.cmb_pocyType.set_visible(true);
+        		this.cmb_pocyType.set_enable(true);
+
+        		this.fn_selectPocyType();
+        	}
+        	else {
+
+        		this.sta_POCY.set_visible(false);
+        		this.cmb_pocyType.set_visible(false);
+        		this.cmb_pocyType.set_enable(false);
+
+        		// 정책지원금 콤보박스 관련 데이터셋 및 변경여부 초기화
+        		this.ds_pocyType.clearData();
+        		this.fv_bPocyTypeChgYn = false;
+        	}
+        };
+
+        this.fn_selectPocyType = function() {     // 201801 KHCHO 정책가산금 구분 코드 조회
+
+            this.ds_pocyType.clearData();
+
+            var sSvcId        = "selectPocyType";
+            var sPath         = "/f/a/201/selectPocyType.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_pocyType=ds_pocyType";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+        this.fn_savePocyType = function() {   // 201801 KHCHO 정책가산금 구분 코드 저장
+            //this.NetFUNNEL.SetService("default", "act_26");
+            //this.NetFUNNEL.BEGIN(this);
+        	//넷퍼넬 시작 : 종료처리 필수 this.gfn_netfunnelEnd();
+        	this.gfn_netfunnelBegin(this, "default", "act_26", function(sResult){
+        		//sResult (성공:success, 중지:stop, 에러:에러메시지)
+        		if ( sResult != "stop" ) {
+        			//trace("sResult==="+sResult);
+        			var sSvcId        = "savePocyType";
+        			var sPath         = "/f/a/201/savePocyType.do";
+        			var sInputDsName  = "ds_cond=ds_cond";
+        			var sOutputDsName = "";
+
+        			var sArg      = "";
+        			var oPreArgs  = "";
+        			var sCallback = "fn_callback";
+        			var bASync    = true;
+        			var bWait     = true;
+        			var bBinary   = true;
+        			var bCompress = false;
+        			this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        		}
+        	});
+        };
+
+
+        this.fn_postSaveocyTypeCd = function() {   // 201801 KHCHO 정책가산금 구분 코드 저장
+            //this.NetFUNNEL.END(this);
+
+        	//넷퍼넬 종료 : this.gfn_netfunnelEnd();
+        	this.gfn_netfunnelEnd();
+
+        	//trace("nErrorCode="+nErrorCode + ", sErrorMsg=" + sErrorMsg);
+
+            return true;
+        };
+
+        this.fn_deleteEntOutSctn = function() {     // 구간/신분 삭제
+            var sSvcId        = "deleteEntOutSctn";
+            var sPath         = "/f/a/201/deleteEntOutSctn.do";
+            var sInputDsName  = "ds_delEtrcOutBasic=ds_delEtrcOutBasic";
+            var sOutputDsName = "";
+
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+
+
+        this.fn_selectEntOutStout = function() {   //외박/복귀 조회
+            var sSvcId        = "selectEntOutStout";
+            var sPath         = "/f/a/201/selectEntOutStout.do";
+            var sInputDsName  = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_etrcOutSub=ds_etrcOutSub";
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        this.fn_saveEntOutStout = function() { //외박/복귀 저장
+            //this.NetFUNNEL.SetService("default", "act_27");
+            //this.NetFUNNEL.BEGIN(this);
+        	//넷퍼넬 시작 : 종료처리 필수 this.gfn_netfunnelEnd();
+        	this.gfn_netfunnelBegin_test(this, "default", "act_27", function(sResult){
+        		//sResult (성공:success, 중지:stop, 에러:에러메시지)
+        		if ( sResult != "stop" ) {
+        			//trace("sResult==="+sResult);
+        			var sSvcId        = "saveEntOutStout";
+        			var sPath         = "/f/a/201/saveEntOutStout.do";
+        			var sInputDsName  = "ds_cond=ds_cond ds_etrcOutSub=ds_etrcOutSub ds_grid=ds_etrcOutSub:u";
+        			var sOutputDsName = "";
+
+        			var sArg      = "";
+        			var oPreArgs  = "";
+        			var sCallback = "fn_callback";
+        			var bASync    = true;
+        			var bWait     = true;
+        			var bBinary   = true;
+        			var bCompress = false;
+        			this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        		}
+        	});
+        };
+
+         this.fn_postSaveEntOutStout = function() {     //외박/복귀 저장
+            //this.NetFUNNEL.END(this);
+        	//넷퍼넬 종료 : this.gfn_netfunnelEnd();
+        	this.gfn_netfunnelEnd_test();
+
+        	//trace("nErrorCode="+nErrorCode + ", sErrorMsg=" + sErrorMsg);
+
+            return true;
+        };
+
+        this.fn_deleteStout = function() { // 외박/복귀 삭제
+            var sSvcId        = "deleteEntOutSout";
+            var sPath         = "/f/a/201/deleteEntOutSout.do";
+            var sInputDsName  = "ds_cond=ds_cond ds_delEtrcOutSub=ds_delEtrcOutSub ds_etrcOutSub=ds_etrcOutSub";
+            var sOutputDsName = "";
+
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        this.fn_selectConnSr = function() {
+            var sSvcId        = "fn_selectConnSr";
+            var sPath         = "/f/a/201/selectConnSrList.do";
+            var sInputDsName  = "ds_condConnsr=ds_condConnsr";
+            var sOutputDsName = "ds_connsrSelect=ds_connsrSelect";
+
+            var sArg      = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        this.fn_selectStoutConnSr = function() {
+            var sSvcId = "selectStoutConnSr";
+            var sPath  = "/f/a/201/selectStoutConnSr.do";
+            var sInputDsName = "ds_condStoutConnsr=ds_condStoutConnsr";
+            var sOutputDsName = "ds_stoutConnsr=ds_stoutConnsr";
+
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+        // 계약등록(연장)
+        this.fn_saveEquipPaymtRnw = function(){
+            var sSvcId = "saveEquipPaymtRnw";
+            var sPath  = "/i/a/101/saveEquipPaymtRnw.do";
+            var sInputDsName = "ds_ctrInfo=ds_ctrInfoNew";
+            var sOutputDsName = "";
+
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+
+        };
+
+
+        // 계약해지
+        this.fn_cnclEquipPaymtCtr = function(){
+            var sSvcId = "cnclEquipPaymtCtr";
+            var sPath  = "/i/a/101/cnclEquipPaymtCtr.do";
+            var sInputDsName = "ds_ctrInfo=ds_ctrInfoCncl";
+            var sOutputDsName = "";
+
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+
+        };
+
+        this.fn_selectCreateCurrentMonthData = function() {    // 계속 데이터 월초 최초 자동생성 체크 쿼리
+            var sSvcId = "selectCreateCurrentMonthData";
+            var sPath  = "/f/a/201/selectCreateCurrentMonthData.do";
+            var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_newMonth=ds_newMonth";
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+
+        this.fn_saveCreateCurrentMonth = function() {  // 계속 데이터 월초 최초 자동생성쿼리
+            var sSvcId = "saveCreateCurrentMonth";
+            var sPath  = "/f/a/201/saveCreateCurrentMonth.do";
+            var sInputDsName = "ds_cond=ds_newMonth";
+            var sOutputDsName = "";
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+
+        this.fn_selectSctnErrorCheck = function() {    //  입퇴소 구간데이터중 다음 시퀀스가 큰값 중 시작일자가 이전 시퀀스의 종료날짜보다 작은데이터 추출
+            var sSvcId = "selectSctnErrorCheck";
+            var sPath  = "/f/a/201/selectSctnErrorCheck.do";
+            var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_errYN=ds_errYN";
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+        this.fn_selectSctnErrorCCCheck = function() {  //   입퇴소 구간정보는 없고 일자료만 있는 자료 추출
+            var sSvcId = "selectSctnErrorCCCheck";
+            var sPath  = "/f/a/201/selectSctnErrorCCCheck.do";
+            var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_errCC=ds_errCC";
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+        // 당월 입퇴소 정보를 생성합니다.(
+        this.fn_selectBtnCreateCurrentMonth = function()
+        {
+            var sSvcId = "selectBtnCreateCurrentMonth";
+            var sPath  = "/f/a/201/selectBtnCreateCurrentMonth.do";
+            var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "ds_btnCC=ds_btnCC";
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+        this.fn_saveBtnCreateCurrentMonth = function()
+        {
+            var sSvcId = "saveBtnCreateCurrentMonth";
+            var sPath  = "/f/a/201/saveBtnCreateCurrentMonth.do";
+            var sInputDsName = "ds_cond=ds_cond";
+            var sOutputDsName = "";
+            var sArg = "";
+            var oPreArgs  = "";
+            var sCallback = "fn_callback";
+            var bASync    = true;
+            var bWait     = true;
+            var bBinary   = true;
+            var bCompress = false;
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync, bWait, bBinary, bCompress);
+        };
+
+
+
+        /*======================================================================================*
+         * 5. Transaction CallBack처리 함수
+         *======================================================================================*/
+         this.fn_callback = function(sSvcId,nErrorCode,sErrorMsg) {
+         	this.setWaitCursor(false);
+
+            if (nErrorCode < 0) {
+                return;
+            }
+
+            if (sSvcId == "saveCreateSctnAll") {
+                trace( "saveCreateSctnAll");
+            }
+
+            if (sSvcId == "selectEntOutTgtList") {
+                trace( "selectEntOutTgtList");
+        		this.fv_spcTotCnt = 0;
+        		for(var i=0; i<=this.ds_entOutTgtList.getCount(); i++) {
+        			if (this.ds_entOutTgtList.getColumn(i,"SIOP_SCPS_PTTN_CD") == "S") {
+        				this.fv_spcTotCnt++;
+        			}
+        		}
+            }
+
+            if (sSvcId == "selectSctnErrorCheck") {
+
+                var sSelNm = this.ds_entOutTgtList.getColumn(this.ds_entOutTgtList.rowposition, "NM");
+                if(this.ds_errYN.getColumn(0, "ERR_YN") == "Y"  )
+                {
+                     this.gfn_msgShow(this,"XICA0012", [sSelNm + "님의 입퇴소내용이 올바르지 않게 입력되어 있습니다. \n\n실제 입퇴소 내용으로 재입력 하시기 "]);   // {0} 바랍니다.
+                }
+            }
+
+            if (sSvcId == "selectSctnErrorCCCheck") {
+
+                var sSelNm = this.ds_entOutTgtList.getColumn(this.ds_entOutTgtList.rowposition, "NM");
+
+                if(this.ds_errCC.getColumn(0, "FA09_CNT") > 0 && this.ds_errCC.getColumn(0, "FA14_CNT") == 0 )
+                {
+                     this.gfn_msgShow(this, "XICA0012", ["구 전산에서 입력한 " + sSelNm + "님의 입퇴소 내용이 유효하지 않은 형식입니다. \n\n실제 입퇴소 내용을 직접 입력 하시기  "]);   // {0} 바랍니다.
+                }
+            }
+
+            if (sSvcId == "selectEdaFrToDt") {
+                //trace("selectEdaFrToDt");
+
+                /*치매전담형_고시_개정_[201607]
+                급여형태가 치매전담형인 급여계약통보가 있는 경우 급여형태 컬럼을 표시한다
+                */
+                if(this.parent100.ds_fm_cond.getColumn(0, "DM_YN") != 'Y'){
+        			if(this.ds_edaDt.findRowExpr("String(ADMIN_PTTN_CD).charAt(0) != 'A'") > -1){
+        				this.grd_edaDt.setFormatColProperty(3, 'size', 74);
+        				this.grd_edaDt.setFormatColProperty(6, 'size', 31);
+        			}else{
+        				this.grd_edaDt.setFormatColProperty(3, 'size', 0);
+        				this.grd_edaDt.setFormatColProperty(6, 'size', 0);
+        			}
+                }
+        		//2019-10-21 유예기간 체크하기 위한 정보 작성
+        		for(var i = 0; i < this.ds_edaDt.rowcount; i++)
+        		{
+        			if( i == this.ds_edaDt.rowcount -1) continue; // 마지막에는 작업하지 않음
+        			this.ds_edaDt.setColumn(i,"BF_DM_YN",this.ds_edaDt.getColumn(i+1,"DMTIA_EXRES_EQUIP")); //이전의 치매YN 체크 : 유예체크하기 위해 필요
+        		}
+
+
+            }
+
+            if (sSvcId == "selectEntOutTgtMonthInfo") {
+
+                this.Grid_calendar.UserData = this.fv_yyyymm;
+
+                this.fv_oGrdCalendar = this.Grid_calendar;
+                this.fv_oDsBind      = this.ds_bind;
+
+                this.fn_createCalendar(this.fv_oDsBind, this.fv_oGrdCalendar, this.ds_cond.getColumn(0, "TGT_YYYYMM"));
+            }
+
+            if(sSvcId == "selectPocyType"){
+
+        		this.cmb_pocyType.set_value(this.ds_pocyType.getColumn(0,"POCY_ADD_AMT_TYPE_CD"));
+            }
+
+            if(sSvcId == "savePocyType"){
+                this.fn_setPocyType();
+        		this.fn_selectEntOutTgtMonthInfo(); // 저장후 입퇴소구간내역 다시 불러와야 한시적지원금  재수정시 저장가능함..
+            }
+
+            if (sSvcId == "selectEntOutSctn") {// 입퇴소 구간/신분 조회
+                this.grd_consrSelect.set_visible(false);
+
+                /*치매전담형_고시_개정_[201607]
+                급여형태가 치매전담형인 구간이 있는 경우 급여형태 컬럼 및 치매 컬럼을 표시한다
+                */
+                if(this.parent100.ds_fm_cond.getColumn(0, "DM_YN") != 'Y'){
+        			if(this.ds_etrcOutBasic.findRowExpr("ADMIN_PTTN_CD != 'AAA'") > -1){
+        				this.grd_etrcOutBasic.setFormatColProperty(1, 'size', 74);
+        				this.grd_etrcOutBasic.set_autofittype( "none" ); //20190418
+        			}else{
+        				this.grd_etrcOutBasic.setFormatColProperty(1, 'size', 0);
+        				this.grd_etrcOutBasic.set_autofittype( "col" ); //20190418
+        			}
+                }
+
+        		this.ds_raAll.clearData();
+        		for(var i = 0; i < this.ds_ra21.rowcount; i++){
+        			if(this.ds_raAll.rowcount > 0){
+        				if(this.ds_raAll.findRow("ADMIN_PTTN_CD", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD")) > -1){
+        					continue;
+        				}
+        			}
+
+        			var rowIdx = this.ds_raAll.addRow();
+        			this.ds_raAll.setColumn(rowIdx, "ADMIN_PTTN_CD", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD"));
+        			this.ds_raAll.setColumn(rowIdx, "ADMIN_PTTN_CD_NM", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD_NM"));
+        		}
+
+                /*치매전담형_고시_개정_[201607]*/
+                /*
+                입소(이동), 퇴소(이동) 구간에 대해 이동대상기관정보가 존재하지 않는 경우
+                "입퇴소이동관리" 팝업을 띄운다.
+                */
+
+                //trace("selectEntOutSctn");
+
+                /* 201801 KHCHO  한시적지원금 대상 여부 조회 */
+        		this.fn_setPocyType();
+
+                this.fn_checkMoveAndPop();
+            }
+
+            if (sSvcId == "saveEntOutSctn") {// 입퇴소 구간/신분 저장
+        		this.gfn_msgShow(this, "XITZ0015",[]);
+
+        		var iTgtRow = this.ds_entOutTgtList.rowposition;
+        		var bfSiopCd = this.ds_entOutTgtList.getColumn(iTgtRow, "SIOP_SCPS_PTTN_CD"); //변경전 급여형태
+        		var afSiopCd = this.ds_etrcOutBasic.getColumn(0, "SIOP_SCPS_PTTN_CD");		  //변경후 급여형태
+        		var bfEntoutCd = this.ds_entOutTgtList.getColumn(iTgtRow, "ENTOUT_SCTN_TO_PTTN_CD"); //변경전 입퇴소구분
+        		var afEntoutCd = this.ds_etrcOutBasic.getColumn(0, "ENTOUT_SCTN_TO_PTTN_CD");        //변경후 입퇴소구분
+
+        		if ( (bfSiopCd == "S" && afSiopCd != "S") || (afSiopCd == "S" && bfEntoutCd == "00" && afEntoutCd != "00") ) { //특례입소자 일반전환 or 특례입소자 퇴소 확인
+        			this.fv_spcTotCnt--; //특례입소자 총건수
+        			this.fv_spcAltCnt++; //특례입소자 일반전환건수
+        		} else if (bfSiopCd != "S" && afSiopCd == "S" && afEntoutCd == "00") { //일반입소자 특례전환
+        			this.fv_spcTotCnt++; //특례입소자 총건수
+        		}
+
+        		this.fv_spcAltPopupYn = "N";
+
+        		if (bfSiopCd == "N" && afEntoutCd != "00"){ //일반입소자(입소->퇴소)
+        			this.fv_normOutCnt++; //일반입소자 퇴소건수
+        			if (this.fv_spcTotCnt > 0) {
+        				this.fv_spcAltPopupYn = "Y";
+        			}
+        		} else if (afSiopCd == "N" && bfEntoutCd != "00" && afEntoutCd == "00"){ //일반입소자(퇴소->입소)
+        			this.fv_normOutCnt--; //일반입소자 퇴소건수
+        		}
+
+        		//입퇴소유형이 변경된 경우 대상자 명단의 입퇴소 유형도 변경해 준다
+        		if (bfSiopCd != afSiopCd) {
+        			this.ds_entOutTgtList.setColumn(iTgtRow, "SIOP_SCPS_PTTN_CD", afSiopCd);
+        		}
+
+        		//일반입소자 퇴소에 따른 특례입소자 전환팝업생서(퇴소(이동)일 경우는 이동팝업이 먼저 뜬 후에 팝업)
+        		if (this.fv_spcAltPopupYn == "Y" && this.ds_etrcOutBasic.getColumn(0, "ENTOUT_SCTN_TO_PTTN_CD") != "30") {
+        			this.fn_gnlIneOutPopup();
+        		}
+
+        		this.fn_selectEdaFrToDt();
+                this.fn_selectEntOutSctn();
+                this.fn_selectEntOutTgtMonthInfo();
+            }
+
+            if (sSvcId == "deleteEntOutSctn") {// 입퇴소 구간/신분 삭제
+        		this.fn_selectEdaFrToDt();
+                this.fn_selectEntOutSctn();
+                this.fn_selectEntOutTgtMonthInfo();
+                this.ds_delEtrcOutBasic.clearData();
+                 this.gfn_msgShow(this, "XITZ0019",[]);
+            }
+
+            if (sSvcId == "selectEntOutStout") {// 입퇴소 외박/복귀 조회
+                this.grd_stoutConnsr.set_visible(false);
+            }
+
+            if (sSvcId == "saveEntOutStout") {// 입퇴소 외박/복귀 저장
+                this.fn_selectEntOutSctn();
+                this.fn_selectEntOutTgtMonthInfo();
+                this.fn_selectEdaFrToDt();
+                 this.gfn_msgShow(this, "XITZ0015",[]);
+            }
+
+            if (sSvcId == "deleteEntOutSout") {// 입퇴소 외박/복귀 삭제
+                this.fn_selectEntOutStout();
+                this.fn_selectEntOutSctn();
+                this.fn_selectEntOutTgtMonthInfo();
+
+                this.ds_delEtrcOutSub.clearData();
+                 this.gfn_msgShow(this, "XITZ0019",[]);
+            }
+
+            if (sSvcId == "deleteTgt") {// 입퇴소대상자  삭제
+                this.fn_selectEntOutTgtList();
+                 this.gfn_msgShow(this, "XITZ0019",[]);
+            }
+
+            if (sSvcId == "cnclEquipPaymtCtr") {
+                //trace("cnclEquipPaymtCtr");
+                this.gfn_msgShow(this, "XITZ0015",[]);
+                this.fn_selectEdaFrToDt();
+            }
+            if (sSvcId == "saveEquipPaymtRnw") {
+                //trace("saveEquipPaymtRnw");
+                 this.gfn_msgShow(this, "XITZ0015",[]);
+                this.fn_selectEdaFrToDt();
+            }
+
+            if(sSvcId == "selectCreateCurrentMonthData"){ //계속 데이터 월초 최초 자동생성쿼리 (조회)  1
+                //trace("CREATE1_YN" + this.ds_newMonth.getColumn(0, "CREATE1_YN"));
+                //trace("CREATE2_YN" + this.ds_newMonth.getColumn(0, "CREATE2_YN"));
+                if(this.ds_newMonth.getColumn(0, "CREATE1_YN") == "Y" && this.ds_newMonth.getColumn(0, "LAST_YYYYMM") != "N")
+                {
+                    this.alert("이달 계속 입소자 정보를 생성합니다.");
+                    this.fn_saveCreateCurrentMonth();
+                }
+            }
+
+            if(sSvcId == "saveCreateCurrentMonth"){ //계속 데이터 월초 최초 자동생성쿼리 (입력)    1
+                //trace("saveCreateCurrentMonth");
+                 this.gfn_msgShow(this, "XITZ0015",[]);
+            }
+
+            if (sSvcId == "selectBtnCreateCurrentMonth") {
+                trace( "selectBtnCreateCurrentMonth");
+                if(this.ds_btnCC.rowcount > 0) {
+                    this.btn_CreateCC.set_visible(true);
+                } else {
+                    this.btn_CreateCC.set_visible(false);
+                }
+            }
+
+            if (sSvcId == "saveBtnCreateCurrentMonth") {
+                trace( "saveBtnCreateCurrentMonth");
+                 this.gfn_msgShow(this, "XITZ0015",[]);
+                this.fn_selectEntOutTgtMonthInfo();
+            }
+        };
+
+
+        //NyBusinessException 발생 후 화면에서 후처리 시 사용
+        this.fn_callbackErr = function(sTrId,sErrCd,sErrMsgCd,sErrMsg) {
+        	this.setWaitCursor(false);
+
+            if (sTrId == "saveEntOutSctn") {
+                this.fn_selectEntOutSctn();
+            }
+            if (sTrId == "deleteEntOutSctn") {
+                this.fn_selectEntOutSctn();
+            }
+            if (sTrId == "saveEntOutStout") {
+                this.fn_selectEntOutSctn();
+            }
+            if (sTrId == "deleteEntOutSout") {
+                this.ds_delEtrcOutSub.clearData();
+                this.fn_selectEntOutSctn();
+            }
+
+        };
+
+
+        /*======================================================================================*
+         * 6. 사용자정의 함수
+        *======================================================================================*/
+        this.fn_selectTabPage = function() {
+
+            this.ds_cond.clearData();
+            this.ds_cond.addRow();
+
+            this.ds_cond.setColumn(0, "LTC_ADMIN_SYM", this.parent100.ds_fm_cond.getColumn(0, "LTC_ADMIN_SYM"));
+            this.ds_cond.setColumn(0, "ADMIN_PTTN_CD", this.parent100.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD"));
+            this.ds_cond.setColumn(0, "TGT_YYYYMM"   , this.parent100.ds_fm_cond.getColumn(0, "TGT_YYYYMM"));
+            this.ds_cond.setColumn(0, "DM_YN"        , this.parent100.ds_fm_cond.getColumn(0, "DM_YN")); /*치매전담형_고시_개정_[201607]*/
+
+        	this.ds_cond.setColumn(0, "DTL_ADMIN_PTTN_CD", this.parent100.ds_fm_cond.getColumn(0, "DTL_ADMIN_PTTN_CD"));
+
+            /* 대상자 목록을 조회한다 */
+            this.fn_selectEntOutTgtList();
+        };
+
+        this.fn_createCalendar = function(ds_bind,grid_obj,yyyymm)
+        {
+            var i, day, row, colid;
+            var start_day, end_date, lunar;
+            var holiday, aHolidays;
+            var sDD = "";
+
+            grid_obj.UserData = yyyymm;
+            ds_bind.clearData();
+
+            start_day = this.gfn_getDay(yyyymm+"01");
+            this.last_date = this.gfn_lastDateNum(yyyymm+"01");
+
+            row = ds_bind.addRow();
+            ds_bind.setColumn(row, "weekNo", 0);
+
+            for(var i = 1, day = start_day ;  i <= this.last_date ; i++ )
+            {
+                if((i+"").length == 1){
+                    sDD = "0" + i;
+                } else {
+                    sDD = i + "";
+                }
+
+                ds_bind.setColumn(row, "day"+day, i);
+
+                if(this.ds_enOutMonth.rowcount > 0)
+                {
+                     this.nDataRow = this.ds_enOutMonth.findRow("ENTOUT_DT",yyyymm+sDD);
+                    if( this.nDataRow != -1 )
+                    {
+                        /*치매전담형_고시_개정_[201607]*/
+                        /*수급자가 치매전담실에 있는 경우에만 실정보를 표시한다.*/
+                        var roomNm = this.ds_enOutMonth.getColumn(this.nDataRow, 'ROOM_NM');
+                        roomNm = roomNm && this.fv_bShowRoomNm ? '\n' + roomNm : '';
+
+        				ds_bind.setColumn(row, "hol"+day, this.ds_enOutMonth.getColumn(this.nDataRow,"ENTOUT_NM") + roomNm);
+                    }
+                }
+
+                day = (day + 1) % 7;
+
+                if( day == 0 && i != this.last_date ) {
+                    row = ds_bind.addRow();
+                    ds_bind.setColumn(row, "weekNo", 0);
+                }
+            }
+
+        //    ds_bind.set_rowposition(-1);
+        };
+
+
+        this.fn_selectConnSrPop = function()   // 연계외박자선택 팝업조회
+        {
+            var iRow = this.ds_etrcOutBasic.rowposition;
+            var sInDttm = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT") + this.ds_etrcOutBasic.getColumn(iRow, "FR_TM");
+        	var sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, iRow);
+
+            if( this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") == "S"
+                && !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT")) && !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")))
+            {
+                this.ds_condConnsr.clearData();
+
+                var nAddRow = this.ds_condConnsr.addRow();
+                this.ds_condConnsr.setColumn(nAddRow, "DM_YN", this.ds_cond.getColumn(0, "DM_YN"));
+                this.ds_condConnsr.setColumn(nAddRow, "LTC_ADMIN_SYM", this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"));
+                this.ds_condConnsr.setColumn(nAddRow, "ADMIN_PTTN_CD", this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD"));
+                this.ds_condConnsr.setColumn(nAddRow, "SIOP_HOO_DSCM_NO", this.ds_cond.getColumn(0, "SIOP_HOO_DSCM_NO"));
+                this.ds_condConnsr.setColumn(nAddRow, "IN_DTTM", sInDttm);
+
+                this.ds_condConnsr.setColumn(nAddRow, "SCPS_ADPT_FR_DT", this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT"));
+                this.ds_condConnsr.setColumn(nAddRow, "SCPS_FR_TM", this.ds_etrcOutBasic.getColumn(iRow, "FR_TM"));
+
+
+                if( !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")))
+                {
+                    this.ds_condConnsr.setColumn(nAddRow, "SCPS_ADPT_TO_DT", this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT"));
+                }
+                else
+                {
+                    this.ds_condConnsr.setColumn(nAddRow, "SCPS_ADPT_TO_DT", "99991231");
+                }
+
+                if( !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")))
+                {
+                    this.ds_condConnsr.setColumn(nAddRow, "SCPS_TO_TM", this.ds_etrcOutBasic.getColumn(iRow, "TO_TM"));
+                }
+                else
+                {
+                    this.ds_condConnsr.setColumn(nAddRow, "SCPS_TO_TM", "0000");
+                }
+                this.fn_selectConnSr();
+            }
+        };
+
+        this.fn_expandShow = function(iRow )
+        {
+            var returnValue = "hide";
+        	var sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, this.ds_etrcOutBasic.rowposition );
+
+            if(this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") == "S" && sStatus == "I")
+            {
+                returnValue = "show";
+            }
+
+            return returnValue;
+        };
+
+
+        this.fn_expCombo = function(currow)
+        {
+            if(this.ds_etrcOutBasic.getColumn(currow, "SCPS_CNT") > 0)
+            {
+                return "ds_nsr2";
+            }
+            else
+            {
+                return "ds_nsr";
+            }
+        };
+
+        // 대상자 추가 비고 클릭
+        this.fn_checkTgtl = function(currow,TRAN_DATA)
+        {
+            if(TRAN_DATA == "Y"){
+                return "buttoncontrol";
+            }
+            else
+            {
+                return "none";
+            }
+        };
+
+        this.fn_checkTgtl2 = function(currow,TRAN_DATA)
+        {
+            if(TRAN_DATA == "Y"){
+                return "button";
+            }
+            else
+            {
+                return "none";
+            }
+        };
+
+
+        // 기본정보 비고 클릭
+        this.fn_checkEntOut = function(currow,OUT_DATE,ETS_DATE,ETS_DATE2,PAYMT_EDA_TO_DT,CTR_TO_DT)
+        {
+            if(currow == 0)
+            {
+                if( ( !this.gfn_isEmpty(OUT_DATE) && (this.ds_edaDt.getColumn(0, "OUT_DATE").substring(0,8) != CTR_TO_DT))
+                   || !this.gfn_isEmpty(ETS_DATE) || !this.gfn_isEmpty(ETS_DATE2)){
+                    return "buttoncontrol";
+                }
+                else if(PAYMT_EDA_TO_DT < CTR_TO_DT)
+                {
+                    return "buttoncontrol";
+                }
+                else
+                {
+                    return "none";
+                }
+            }
+        };
+
+        this.fn_checkEntOut2 = function(currow,OUT_DATE,ETS_DATE,ETS_DATE2,PAYMT_EDA_TO_DT,CTR_TO_DT)
+        {
+            if(currow == 0)
+            {
+                if( ( !this.gfn_isEmpty(OUT_DATE) && (this.ds_edaDt.getColumn(0, "OUT_DATE").substring(0,8) != CTR_TO_DT))
+                   || !this.gfn_isEmpty(ETS_DATE) || !this.gfn_isEmpty(ETS_DATE2)){
+                    return "button";
+                }
+                else if(PAYMT_EDA_TO_DT < CTR_TO_DT)
+                {
+                    return "button";
+                }
+                else
+                {
+                    return "none";
+                }
+            }
+        };
+
+        // 기본정보 비고 클릭
+        this.fn_checkEntOutText = function(currow,OUT_DATE,ETS_DATE,ETS_DATE2,PAYMT_EDA_TO_DT,CTR_TO_DT)
+        {
+            if(currow == 0)
+            {
+                if( !this.gfn_isEmpty(OUT_DATE) && (this.ds_edaDt.getColumn(0, "OUT_DATE").substring(0,8) != CTR_TO_DT)){
+                    return "계약해지";
+                }
+                else if(PAYMT_EDA_TO_DT < CTR_TO_DT)
+                {
+                    return "계약해지";
+                }
+
+                if(!this.gfn_isEmpty(ETS_DATE) || !this.gfn_isEmpty(ETS_DATE2)){
+                    return "계약연장";
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        };
+
+        this.fn_checkHHMM = function(sTime)
+        {
+            var bCheck = true;
+
+            if(sTime.length != 4 || !sTime.match(/[012][0-9][0-5][0-9]/))
+            {
+                return false;
+            }
+
+
+            var inHh = sTime.substring(0,2);
+            var inMm = sTime.substring(2,4);
+
+            if(inHh > 23 || inMm > 60)
+            {
+                //trace("toNum(inHh) : " + inHh);
+                return false;
+            }
+
+            return bCheck;
+        };
+
+        // 탭페이지 이동시 특례입소자 관련 체크
+        this.fn_chkSpc = function() {
+            if (this.fv_normOutCnt > 0 &&   //일반입소자 중 퇴소자 수 > 0
+        		this.fv_spcTotCnt > 0 &&    //특례입소자 전체 수 > 0
+        		this.fv_normOutCnt > this.fv_spcAltCnt //일반입소자 중 퇴소자 수 > 특례입소자 중 일반변경자
+        	   )
+        	{
+        		var sPopId   = "npfa201p06";
+        		var sScrId   = "npfa201p06";
+        		var sArgs    =  {};
+        		var nWidth      = 650;
+        		var nHeight     = 120;
+        		var bIsModal 	= true;
+        		this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+            } else {
+        		this.fn_moveNextPage();
+        	}
+        };
+
+        // 탭페이지 이동시 특례입소자 관련 체크
+        this.fn_moveNextPage = function() {
+        	this.parent.parent.parent.parent.removeEventHandler("canchange", this.parent.parent.parent.parent.parent.Tab00_canchange, this.parent.parent.parent.parent.parent);
+        	this.parent.parent.parent.parent.set_tabindex(1);
+        	this.sleep(300);
+        	this.parent.parent.parent.parent.addEventHandler("canchange", this.parent.parent.parent.parent.parent.Tab00_canchange, this.parent.parent.parent.parent.parent);
+        }
+
+        //일반입소자 퇴소 발생시 팝업 화면 오픈
+        this.fn_gnlIneOutPopup = function() {
+        	var v_fnm = this.ds_entOutTgtList.getColumn(this.ds_entOutTgtList.rowposition, "NM");
+        	this.gfn_msgShow(this,"XWFA0061", [v_fnm]); //일반입소자 [OOO]님의 퇴소가 발생하였습니다. 특례입소자를 일반입소자로 전환하시기 바랍니다.
+        	var sPopId   = "npfa201p05";
+        	var sScrId   = "npfa201p05";
+        	var sArgs    =  {
+        					  "arg_LTC_ADMIN_SYM": this.ds_cond.getColumn(0, "LTC_ADMIN_SYM")
+        					, "arg_ADMIN_PTTN_CD": this.ds_etrcOutBasic.getColumn(this.ds_etrcOutBasic.rowposition, "ADMIN_PTTN_CD")
+        					, "arg_ADPT_TO_DT"   : this.ds_etrcOutBasic.getColumn(this.ds_etrcOutBasic.rowposition, "ADPT_TO_DT")
+        					, "arg_TGT_YYYYMM"   : this.ds_cond.getColumn(0, "TGT_YYYYMM")
+        					};
+
+        	var nWidth      = 750;
+        	var nHeight     = 376;
+        	var bIsModal 	= true;
+        	var bVscrollbar = true;
+        	this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        }
+
+        //입퇴소유형 변경 팝업(npfa201p02)에서 입퇴소유형이 변경됐을 경우 호출되는 함수
+        this.fn_changeEntOutScps = function(afSiopCd) {
+        	var bfSiopCd = this.ds_entOutTgtList.getColumn(this.ds_entOutTgtList.rowposition, "SIOP_SCPS_PTTN_CD");
+        	if (bfSiopCd != afSiopCd) {
+        		this.ds_entOutTgtList.setColumn(this.ds_entOutTgtList.rowposition, "SIOP_SCPS_PTTN_CD", afSiopCd);
+        		if (bfSiopCd != "S" && afSiopCd == "S") { //일반 -> 특례 변경시
+        			this.fv_spcTotCnt++;
+        		} else if (bfSiopCd == "S" && afSiopCd != "S") { //특례 -> 일반 변경시
+        			this.fv_spcTotCnt--; //특례입소자 총건수
+        			this.fv_spcAltCnt++; //특례입소자 일반전환건수
+        		}
+        	}
+        }
+
+        //특례입소 팝업(npfa201p07)에서 입소일자가 급여계약기간내에 있는지 체크
+        this.fn_chkEdaDt = function(entTime) {
+        	// 특례 신규등록이 가능한지 계약관계 check
+        	var bCrtFlag = false;
+        	if (this.ds_edaDt.rowcount > 0)
+        	{
+        		var strCrtFrDt;
+        		var strCrtToDt;
+        		for (var i=0; i<this.ds_edaDt.rowcount; i++)
+        		{
+        			strCrtFrDt = this.ds_edaDt.getColumn(i, "CTR_FR_DT");
+        			strCrtToDt = this.ds_edaDt.getColumn(i, "CTR_TO_DT");
+        			if (!this.gfn_isEmpty(strCrtFrDt) && !this.gfn_isEmpty(strCrtToDt))
+        			{
+        				// 계약시작일자 <= 입소일자 <= 계약종료일자
+        				if (this.cfn_dt_compareDate(entTime, strCrtFrDt) != -1 && this.cfn_dt_compareDate(entTime, strCrtToDt) != 1)
+        				{
+        					bCrtFlag = true;
+        					break;
+        				}
+        			}
+        		}
+        	}
+        	if (bCrtFlag != true)
+        	{
+        		this.alert("수급자(대상자)의 입소일자는 시설급여 계약기간 이내이어야 합니다.\n시작일자를 확인하여 주십시요");
+        		return false;
+        	}
+        	return true;
+        }
+        /*======================================================================================*
+         * 7. 이벤트 함수
+         *======================================================================================*/
+        /*======================================================================================*
+         * 7.1 사용자버튼 이벤트
+         *======================================================================================*/
+
+        this.btn_addUser_onclick = function(obj,e)
+        {
+            var sPopId   = "npfa201p01";
+            var sScrId   = "npfa201p01";
+            var sArgs       =  {
+                              "arg_LTC_ADMIN_SYM": this.ds_cond.getColumn(0, "LTC_ADMIN_SYM")
+                            , "arg_ADMIN_PTTN_CD": this.ds_cond.getColumn(0, "ADMIN_PTTN_CD")
+                            , "arg_TGT_YYYYMM"   : this.ds_cond.getColumn(0, "TGT_YYYYMM")};
+
+            var nWidth      = 880;
+            var nHeight     = 385;
+            var bIsModal = true;
+            var bVscrollbar = true;
+            this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        };
+
+
+        //팝업 callback
+        this.fn_popupCallback = function (sFrameid,sVarRtn )
+        {
+        	if ( sFrameid == "npfa201p04") {
+        		this.fn_selectEdaFrToDt();
+        		if (this.fv_spcAltPopupYn == "Y") {
+        			this.fv_spcAltPopupYn = "N";
+        			this.fn_gnlIneOutPopup();
+        		}
+        		if (this._variant == "updated") {
+        			// 20191205 저장이 있었던 경우만 재호출
+        			this.btn_selectSctn_onclick(null,null);
+        		}
+
+            } else if ( sFrameid == "npfa201p02") {
+        		this.fn_selectEntOutSctn();
+        		this.fn_selectEntOutTgtMonthInfo();
+
+            } else if ( sFrameid == "npfa201p03") {
+        		if (this._variant == "save") {
+                    this.fn_selectEntOutTgtList();
+        		}
+            } else if ( sFrameid == "npfa201p05") {
+        		if (sVarRtn!=null) {
+                    //특례입소자목록 팝업에서 선택한 입소자 이동
+                    var row = this.ds_entOutTgtList.findRow("SIOP_HOO_DSCM_NO", sVarRtn);
+                    this.ds_entOutTgtList.set_rowposition(row);
+                }
+        	} else if ( sFrameid == "npfa201p06") {
+        		if (sVarRtn == "NEXT") {
+        			this.fn_moveNextPage();
+        		}
+        	}
+        // 신규 특례입퇴소 등록 적용 START - 2019.05.20 (국정과제 kys)
+        	else if ( sFrameid == "npfa201p07") {
+        		if (this._variant == "save") {
+                    this.fn_selectEntOutTgtList();
+        		}else
+        		{
+        		    this.fn_selectEntOutSctn();
+        		}
+        	}
+        // 신규 특례입퇴소 등록 적용 END
+        	else if ( typeof this._variant == "string" ) {
+        		//string type
+        		//trace("return string : " + this._variant);
+        		if (this._variant == "save") {
+        			this.fn_selectEntOutTgtList();
+        		}
+        	}
+        }
+
+        // 입퇴소 재조회
+        this.btn_selectSctn_onclick = function(obj,e)
+        {
+            this.fn_selectEntOutTgtMonthInfo();
+            this.fn_selectEntOutSctn();
+        };
+
+
+        // 입퇴소 유형 조회 팝업
+        this.grd_etrcOutBasic_onexpanddown = function(obj,e)
+        {
+        	var sStatus;
+
+        	obj.selectRow(e.row);
+            var iRow  = this.ds_etrcOutBasic.rowposition;
+
+            if(e.cell == 2)
+            {
+                 sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, iRow);
+
+        // 신규 특례입퇴소 등록 적용 START - 2019.05.20 (국정과제 kys)
+        /*
+        		if( !this.gfn_isEmpty(sStatus) && sStatus != "N"){
+                    this.gfn_msgShow(this, "XWTZ0020",["입퇴소 변경", "저장후 신분변경이 가능합니다."]);
+        			return;
+                }
+
+                var sPopId   = "npfa201p02";
+                var sScrId   = "npfa201p02";
+                var sArgs       = {   "arg_LTC_ADMIN_SYM"         : this.ds_etrcOutBasic.getColumn(iRow, "LTC_ADMIN_SYM")
+                                    , "arg_ADMIN_PTTN_CD"         : this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD")
+                                    , "arg_SIOP_HOO_DSCM_NO"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_DSCM_NO")
+                                    , "arg_SIOP_HOO_TYPE_CD"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_TYPE_CD")
+                                    , "arg_ENTOUT_SCTN_SEQ_NO"    : this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_SEQ_NO")
+                                    , "arg_ADPT_FR_DT"		      : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT")
+                                    , "arg_FR_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")
+                                    , "arg_ADPT_TO_DT"            : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")
+                                    , "arg_TO_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")
+                                    , "arg_ENTOUT_SCTN_TO_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD")
+                                    , "arg_DM_YN"                 : this.ds_cond.getColumn(0, "DM_YN") //치매전담형_고시_개정_[201607]
+                };
+                var nWidth      = 580;
+                var nHeight     = 400;
+                var bIsModal = true;
+                var bVscrollbar = true;
+
+                this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        */
+        		if( !this.gfn_isEmpty(sStatus) && sStatus != "N"){
+        			if (sStatus == "I" && this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") == "S")
+        			{
+        				if (this.confirm("신규 특례입소 등록을 진행하시겠습니까?"))
+        			    {
+        			    	var sPopId   = "npfa201p07";
+        			    	var sScrId   = "npfa201p07";
+        			    	var sArgs       = {   "arg_LTC_ADMIN_SYM"         : this.ds_etrcOutBasic.getColumn(iRow, "LTC_ADMIN_SYM")
+        			    						, "arg_ADMIN_PTTN_CD"         : this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD")
+        										, "arg_SIOP_SCPS_PTTN_CD"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD")
+        			    						, "arg_SIOP_HOO_DSCM_NO"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_DSCM_NO")
+        			    						, "arg_SIOP_HOO_TYPE_CD"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_TYPE_CD")
+        			    						, "arg_ENTOUT_SCTN_SEQ_NO"    : this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_SEQ_NO")
+        			    						, "arg_ADPT_FR_DT"		      : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT")
+        			    						, "arg_FR_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")
+        			    						, "arg_ADPT_TO_DT"            : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")
+        			    						, "arg_TO_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")
+        			    						, "arg_ENTOUT_SCTN_FR_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_FR_PTTN_CD")
+        										, "arg_ENTOUT_SCTN_TO_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD")
+        			    						, "arg_DM_YN"                 : this.ds_cond.getColumn(0, "DM_YN") //치매전담형_고시_개정_[201607]
+        										, "arg_TGT_YYYYMM"            : this.ds_cond.getColumn(0, "TGT_YYYYMM") // 20211213 jykang 정원초과시에만 특례입소자
+        										, "arg_DTL_ADMIN_PTTN_CD"     : this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") // 20211213 jykang 정원초과시에만 특례입소자
+        										, "arg_STOUT_TYPE_CD"         : "03"
+        			    					  }
+        			    	var nWidth      = 585;
+        			    	var nHeight     = 280;
+        			    	var bIsModal    = true;
+        			    	var bVscrollbar = true;
+
+        			    	this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        			    }
+        			}else{
+        				this.gfn_msgShow(this, "XWTZ0020",["입퇴소 변경", "저장후 신분변경이 가능합니다."]);
+        			}
+        		}else
+        		{
+        			var sPopId   = "npfa201p02";
+        			var sScrId   = "npfa201p02";
+
+        			// 20200820 국정과제 이승진.
+        			// 실간(일반실⇔치매실, 치매실⇔치매실) 이동할 때 해당기관에서 실제 퇴소 후 입소하는 경우
+        			// , 입소하는 ‘일반실 또는 치매실’에 10일을 초과하는 외박자가 있다면 해당 수급자의 특례입소자로 입소 가능하며
+        			// , 이 때 특례입소자의 입소일수는 특례입소자로 입소한 날부터 90일까지 가능함.
+        			// 단, 해당기관에서 퇴소 없이 실간 이동만을 의미하는 ‘퇴소(이동) 후 입소(이동)’인 경우는 불인정.
+
+        			var lv_ADPT_FR_DT = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT");
+        			var lv_ENTOUT_DT_row = this.ds_enOutMonth.findRow("ENTOUT_DT", lv_ADPT_FR_DT);
+        			var lv_ENTOUT_CD = "";
+        			if ( lv_ENTOUT_DT_row > -1 ) {
+        				lv_ENTOUT_CD = this.ds_enOutMonth.getColumn(lv_ENTOUT_DT_row, "ENTOUT_CD");
+        			}
+        			trace("lv_ADPT_FR_DT = " + lv_ADPT_FR_DT + " lv_ENTOUT_DT_row = " + lv_ENTOUT_DT_row + " lv_ENTOUT_CD = " + lv_ENTOUT_CD);
+
+        			var sArgs       = {   "arg_LTC_ADMIN_SYM"         : this.ds_etrcOutBasic.getColumn(iRow, "LTC_ADMIN_SYM")
+        								, "arg_ADMIN_PTTN_CD"         : this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD")
+        								, "arg_SIOP_HOO_DSCM_NO"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_DSCM_NO")
+        								, "arg_SIOP_HOO_TYPE_CD"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_TYPE_CD")
+        								, "arg_ENTOUT_SCTN_SEQ_NO"    : this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_SEQ_NO")
+        								, "arg_ADPT_FR_DT"		      : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT")
+        								, "arg_FR_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")
+        								, "arg_ADPT_TO_DT"            : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")
+        								, "arg_TO_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")
+        								, "arg_ENTOUT_SCTN_FR_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_FR_PTTN_CD")
+        								, "arg_ENTOUT_SCTN_TO_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD")
+        								, "arg_DM_YN"                 : this.ds_cond.getColumn(0, "DM_YN") //치매전담형_고시_개정_[201607]
+        								, "arg_ENTOUT_CD"             : lv_ENTOUT_CD // 20200820 국정과제 이승진.
+        								, "arg_TGT_YYYYMM"            : this.ds_cond.getColumn(0, "TGT_YYYYMM") // 20211213 jykang 정원초과시에만 특례입소자
+        								, "arg_DTL_ADMIN_PTTN_CD"     : this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") // 20211213 jykang 정원초과시에만 특례입소자
+        								, "arg_STOUT_TYPE_CD"         : this.ds_etrcOutBasic.getColumn(iRow, "STOUT_TYPE_CD")
+        			};
+        			var nWidth      = 580;
+        			var nHeight     = 440;
+        			var bIsModal = true;
+        			var bVscrollbar = true;
+
+        			this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        		}
+        // 신규 특례입퇴소 등록 적용 END
+            }
+
+            //연계외박자
+            if(e.cell == 9)
+            {
+                //특례인 경우만 처리
+                if( this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") == "S"
+                    && !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT"))
+                    && !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")))
+                {
+                    if(this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, iRow) == "I" || this.ds_etrcOutBasic.getColumn(iRow, "SCPS_CNT") == "0")
+                        this.grd_consrSelect.set_visible(true);
+                        //초기값
+                        var startX =830;
+                        var startY = 150;
+                        var endX = 930;
+                        var endY = 250;
+
+                        this.grd_consrSelect.move(startX, startY);
+
+                        this.fn_selectConnSrPop();
+                }
+            }
+        };
+
+
+        // 입퇴소 신분/구간 ROW 추가
+        this.btn_grdAdd_basic_onclick = function(obj,e)
+        {
+            /*
+
+            입퇴소구간내역(FA14) 추가 시 확인 사항
+
+            1. 신규행 추가는 새로운 입소를 의미
+            2. 따라서 기존 입퇴소 내역에 계속이 존재해선 안됨. 퇴소가 이뤄진 상태에서만 입소가 가능.
+                2.1 적용종료일이 없거나
+                2.2 적용종요일이 99991231 이거나
+                2.3 적용종료시가 없거나
+                2.4 입퇴소구간종료유형코드가 계속이면
+
+            3. 또한, 기존 내역에 사망으로 인한 퇴소가 있을 경우 이후에 입소 불가. 당연하다. 돌아가셨는데... 입소가 가능할리가.
+
+            */
+            for(var i = 0; i < this.ds_etrcOutBasic.rowcount ; i++){
+
+        		/* 모든 구간이 종료(퇴소)되어야 신규 구간 입력이 가능하다. */
+        		if( this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(i, "ADPT_TO_DT")) ||
+        			this.ds_etrcOutBasic.getColumn(i, "ADPT_TO_DT") == "99991231" || this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(i, "TO_TM")) ||
+        			this.ds_etrcOutBasic.getColumn(i, "ENTOUT_SCTN_TO_PTTN_CD") == "00"){
+        			 this.gfn_msgShow(this, "XWFA0001");  // 퇴소후 입소가 가능합니다.
+        			return;
+        		}
+
+                /* 퇴소구분이 퇴소(이동)인 구간이 있다면 */
+                if(this.ds_etrcOutBasic.getColumn(i, "ENTOUT_SCTN_TO_PTTN_CD") == "30"){
+        			/* 이번에 퇴소(이동)으로 잡혔다면 반드시 저장 후 신규 구간 추가를 하도록 한다. */
+        			if(this.ds_etrcOutBasic.getOrgColumn(i, "ENTOUT_SCTN_TO_PTTN_CD") != "30"){
+        				 this.gfn_msgShow(this, "XWTZ0020",["퇴소(이동)","저장후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+        				return;
+        			}
+
+        			if( this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(i, "TGT_LTC_ADMIN_SYM"))){
+        				 this.gfn_msgShow(this, "XWTZ0020",["이동대상기관이 누락된 퇴소(이동)","이동대상기관 입력후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+        				return;
+        			}
+                }
+
+                if(this.ds_etrcOutBasic.getColumn(i, "ENTOUT_SCTN_TO_PTTN_CD") == "20")
+                {
+                         this.gfn_msgShow(this, "XWFA0047");  // 사망후후 입퇴소를 추가할 수 업습니다.
+                        return;
+                }
+            }
+            var nAddRow = this.ds_etrcOutBasic.insertRow(0);
+
+            this.ds_etrcOutBasic.setColumn(nAddRow, "LTC_ADMIN_SYM", this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"));
+
+            this.ds_etrcOutBasic.setColumn(nAddRow, "SIOP_HOO_DSCM_NO", this.ds_cond.getColumn(0, "SIOP_HOO_DSCM_NO"));
+            this.ds_etrcOutBasic.setColumn(nAddRow, "SIOP_HOO_TYPE_CD", this.ds_cond.getColumn(0, "SIOP_HOO_TYPE_CD"));
+            this.ds_etrcOutBasic.setColumn(nAddRow, "QLF_TYPE", this.ds_cond.getColumn(0, "QLF_TYPE"));
+            this.ds_etrcOutBasic.setColumn(nAddRow, "ODR2_JUDG_GRADE_CD", this.ds_cond.getColumn(0, "ODR2_JUDG_GRADE_CD"));
+            this.ds_etrcOutBasic.setColumn(nAddRow, "LTC_MGMT_NO", this.ds_cond.getColumn(0, "LTC_MGMT_NO"));
+
+            this.ds_etrcOutBasic.setColumn(nAddRow, "SIOP_SCPS_PTTN_CD", "N");
+            this.ds_etrcOutBasic.setColumn(nAddRow, "ENTOUT_SCTN_FR_PTTN_CD", "10");
+            this.ds_etrcOutBasic.setColumn(nAddRow, "ENTOUT_SCTN_TO_PTTN_CD", "00");
+
+            this.ds_etrcOutBasic.setColumn(nAddRow, "DEL_YN", "N");
+
+            /*치매전담형_고시_개정_[201607]*/
+            /*
+            신규 입퇴소구간내역의 급여형태는 기본적으로 계약에서 넘어온 급여형태에 따라 정해져야 하는데
+            기존은 무조건 AAA 였지만 치매전담형 고시 개정 이후에는 아래와 같이 달라진다.
+
+            1. 계약이 일반이면, AAA (G31, G32, M31, M32 선택불가)
+            2. 계약이 가형이면, G31혹은 G32 필수 선택 해야함
+            3. 계약이 나형이면, M31혹은 M32 필수 선택 해야함
+
+            */
+
+            if( this.parent100.ds_fm_cond.getColumn(0, "DM_YN") == 'Y' && this.parent100.ds_fm_cond.getColumn(0, "DM_DP") == 'N' && this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") == "A04"){
+        		this.ds_etrcOutBasic.setColumn(nAddRow, "ADMIN_PTTN_CD", "G41");
+            }else if(this.ds_cond.getColumn(0, "ADMIN_PTTN_CD").charAt(0) == "A"){
+                this.ds_etrcOutBasic.setColumn(nAddRow, "ADMIN_PTTN_CD", "AAA");
+            }else{
+                this.ds_etrcOutBasic.setColumn(nAddRow, "ADMIN_PTTN_CD", this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"));
+            }
+
+            this.ds_etrcOutBasic.setColumn(nAddRow, "ADPT_FR_DT", this.ds_cond.getColumn(0, "TGT_YYYYMM") + "01");
+            this.ds_etrcOutBasic.setColumn(nAddRow, "FR_TM", "0000");
+            this.ds_etrcOutBasic.setColumn(nAddRow, "ADPT_TO_DT", "");
+            this.ds_etrcOutBasic.setColumn(nAddRow, "TO_TM", "");
+            this.ds_etrcOutBasic.setColumn(nAddRow, "STOUT_TYPE_CD", "01");
+
+            /* 기간별 기관유형에 치매가 있는 경우 신규행 추가 시 급여형태 컬럼을 표시한다. */
+            if(this.ds_ra21.findRowExpr("ADMIN_PTTN_CD != 'AAA'") > -1){
+        		this.grd_etrcOutBasic.setFormatColProperty(1, 'size', 74);
+        		this.grd_etrcOutBasic.set_autofittype( "none" ); //20190418
+            }else{
+        		this.grd_etrcOutBasic.set_autofittype( "col" ); //20190418
+        	}
+
+
+            var frDt = this.ds_etrcOutBasic.getColumn(nAddRow, "ADPT_FR_DT");
+
+            if(!this.objects["ds_ra" + frDt]){
+        		var ds = new Dataset;
+        		ds.set_name("ds_ra" + frDt);
+        		ds.set_id("ds_ra" + frDt);
+
+        		ds.addColumn("ADMIN_PTTN_CD", "string");
+        		ds.addColumn("ADMIN_PTTN_CD_NM", "string");
+
+        		this.ds_ra21.filter("ADPT_FR_DT <= '" + frDt + "' && '" + frDt + "' <= ADPT_TO_DT");
+
+        		for(var i = 0; i < this.ds_ra21.rowcount; i++){
+        			if(ds.rowcount > 0){
+        				if(ds.findRow("ADMIN_PTTN_CD", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD")) > -1){
+        					continue;
+        				}
+        			}
+
+        			var rowIdx = ds.addRow();
+        			ds.setColumn(rowIdx, "ADMIN_PTTN_CD", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD"));
+        			ds.setColumn(rowIdx, "ADMIN_PTTN_CD_NM", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD_NM"));
+        		}
+
+        		this.ds_ra21.filter("");
+        		this.addChild("ds_ra" + frDt, ds);
+            }
+
+        };
+
+        // 20200528 국정과제 이승진.
+        // 수급자(대상자)의 계약내용과 해당 입소시설의 급여종류가 일치하지 않습니다. 계약내용을 다시 확인 후 입력하시기 바랍니다. START
+        this.fn_check_ia21_adminPttnCd = function()
+        {
+        	var chk_val = true; /* false일 경우 alert */
+
+        	for(var i=0; i<this.ds_edaDt.rowcount; i++) {
+
+        		var ia21_ADMIN_PTTN_CD = this.ds_edaDt.getColumn(i, "ADMIN_PTTN_CD");
+
+        		var cond_ADMIN_PTTN_CD = this.ds_cond.getColumn(this.ds_cond.rowposition, "ADMIN_PTTN_CD");
+        		// var cond_DTL_ADMIN_PTTN_CD = this.ds_cond.getColumn(this.ds_cond.rowposition, "DTL_ADMIN_PTTN_CD");
+        		var cond_DTL_ADMIN_PTTN_CD = this.ds_etrcOutBasic.getColumn(this.ds_etrcOutBasic.rowposition,"ADMIN_PTTN_CD");
+
+        		trace("fn_check_ia21_adminPttnCd >> ia21_ADMIN_PTTN_CD = " + ia21_ADMIN_PTTN_CD);
+        		trace("fn_check_ia21_adminPttnCd >> cond_ADMIN_PTTN_CD = " + cond_ADMIN_PTTN_CD);
+        		trace("fn_check_ia21_adminPttnCd >> cond_DTL_ADMIN_PTTN_CD = " + cond_DTL_ADMIN_PTTN_CD);
+
+        		trace(">>>>>> ds_etrcOutBasic.ADMIN_PTTN_CD : "+this.ds_etrcOutBasic.getColumn(0,"ADMIN_PTTN_CD"));
+        		trace(">>>>>> ds_etrcOutBasic.ADMIN_PTTN_CD : "+this.ds_etrcOutBasic.getColumn(this.ds_etrcOutBasic.rowposition,"ADMIN_PTTN_CD"));
+
+        		if ( ia21_ADMIN_PTTN_CD == cond_ADMIN_PTTN_CD ) {
+        			chk_val = true;
+        		} else if ( ia21_ADMIN_PTTN_CD == "G30"  && cond_DTL_ADMIN_PTTN_CD.substring(0,1) == "G" ) { /* 치매가형 */
+        			chk_val = true;
+        		} else if( ia21_ADMIN_PTTN_CD == "M30" && cond_DTL_ADMIN_PTTN_CD.substring(0,1) == "M") { /* 치매나형 */
+        			chk_val = true;
+        		} else if( ia21_ADMIN_PTTN_CD == "S41" && cond_DTL_ADMIN_PTTN_CD.substring(0,1) == "S") { /* 치매공생 */
+        			chk_val = true;
+        		}
+        		else {
+        			chk_val = false;
+        		}
+
+        		// 계약이 없을 땐 우선 통과
+        		if ( this.cfn_str_isNull(ia21_ADMIN_PTTN_CD) ) {
+        			chk_val = true;
+        		}
+
+        		if ( chk_val ) {
+        			// 계약과 일치하는 급여종류가 발견되었으면 루프 중지.
+        			break;
+        		}
+        		trace("fn_check_ia21_adminPttnCd >> chk_val = " + chk_val);
+        	}
+
+
+        	return chk_val;
+        }
+        // 수급자(대상자)의 계약내용과 해당 입소시설의 급여종류가 일치하지 않습니다. 계약내용을 다시 확인 후 입력하시기 바랍니다. END
+
+
+        // 구간/신분 내역 저장
+        this.btn_saveSctn_onclick = function(obj,e)
+        {
+            if( !this.gfn_getDatasetUpdated(this.ds_etrcOutBasic) && (this.fv_bPocyTypeChgYn == false)){
+                 this.gfn_msgShow(this,"XITZ0046");   // 변경내역이 없습니다.
+                return false;
+            }
+
+        	// 20200528 국정과제 이승진.
+        	// 수급자(대상자)의 계약내용과 해당 입소시설의 급여종류가 일치하지 않습니다. 계약내용을 다시 확인 후 입력하시기 바랍니다. START
+        	if ( !this.fn_check_ia21_adminPttnCd() ) {
+        		this.alert("수급자(대상자)의 계약내용과 해당 입소시설의 급여종류가 일치하지 않습니다. 계약내용을 다시 확인 후 입력하시기 바랍니다.");
+        		return false;
+        	}
+        	// 수급자(대상자)의 계약내용과 해당 입소시설의 급여종류가 일치하지 않습니다. 계약내용을 다시 확인 후 입력하시기 바랍니다. END
+
+
+        	if( this.gfn_getDatasetUpdated(this.ds_etrcOutBasic)){
+        		this.ds_edaDtCopy.clearData();
+        		for(var i = 0; i < this.ds_etrcOutBasic.rowcount; i++)
+        		{
+        			var iRow  = i;
+
+        			var sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, iRow)
+        			this.ds_edaDtCopy.copyData(this.ds_edaDt);
+        			if( !this.gfn_isEmpty(sStatus) && sStatus != "N"){
+        				var outTime = "";
+        				var entTime = "";
+        				var sToday = this.gfn_getLocalToday(); //현재일
+        				outTime = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT");
+        				entTime = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT");
+
+        				if(!this.fn_checkHHMM(this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")))
+        				{
+        					 this.gfn_msgShow(this,"XITZ0006", ["입소시간"]);   // {0} 의 형식이 잘못되었습니다.
+        					return false;
+        				}
+
+        				if(this.cfn_dt_compareDate(entTime, sToday) ==  1)
+        				{
+        					 this.gfn_msgShow(this,"XETZ0031", ["입소일자는 현재일자보다 "]);   // {0} 작아야 합니다.
+        					return false;
+        				}
+
+        				if(this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD")) || this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT"))|| this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")))
+        				{
+        					 this.gfn_msgShow(this,"XWTZ0042");   // 필수입력항목이 누락되었습니다. 확인하시고
+        					return false;
+        				}
+
+        				/*치매전담형_고시_개정_[201607]*/
+        				if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") != "30"){
+        					this.ds_etrcOutBasic.setColumn(iRow, "TGT_LTC_ADMIN_SYM", "");
+        					this.ds_etrcOutBasic.setColumn(iRow, "TGT_ADMIN_PTTN_CD", "");
+        					trace("퇴소 이동대상기관삭제");
+        				}
+        				if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_FR_PTTN_CD") != "20"){
+        					this.ds_etrcOutBasic.setColumn(iRow, "ETRC_TGT_LTC_ADMIN_SYM", "");
+        					this.ds_etrcOutBasic.setColumn(iRow, "ETRC_TGT_ADMIN_PTTN_CD", "");
+        					trace("입소 이동대상기관삭제");
+        				}
+
+        				if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") != "00")
+        				{
+        					if( this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")))
+        					{
+        						 this.gfn_msgShow(this,"XWTZ0048", ["퇴소일자"]);   // {0} 가 없습니다.
+        						this.grd_etrcOutBasic.setCellPos(7);
+        						return false;
+        					}
+
+        					if( this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")))
+        					{
+        						 this.gfn_msgShow(this,"XWTZ0046", ["퇴소시간"]);   // {0} 이 없습니다.
+        						return false;
+        					}
+        					else
+        					{
+        						if(!this.fn_checkHHMM(this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")))
+        						{
+        							 this.gfn_msgShow(this,"XITZ0006", ["퇴소시간"]);   // {0} 의 형식이 잘못되었습니다.
+        							return false;
+        						}
+        						/* 20200225 23시 59분 입퇴소 이동 가능하도록 처리
+        						else if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") == "30" && this.ds_etrcOutBasic.getColumn(iRow, "TO_TM") == "2359"){
+        							 this.gfn_msgShow(this,"XETZ0031", ["퇴소(이동) 시 퇴소시간은 23시 59분보다 "]);   // {0} 작아야 합니다.
+        							return false;
+        						} */
+        					}
+
+
+        					if(this.cfn_dt_compareDate(outTime, sToday) == 1)
+        					{
+        						 this.gfn_msgShow(this,"XETZ0031", ["퇴소일자는 현재일자보다 "]);   // {0} 작아야 합니다.
+        						return false;
+        					}
+
+        					if(this.cfn_dt_compareDate(entTime, outTime) == 1)
+        					{
+        						 this.gfn_msgShow(this,"XETZ0031", ["퇴소일자는 입소일자보다 "]);   // {0} 작아야 합니다.
+        						return false;
+        					}
+        					if(this.cfn_dt_compareDate(entTime, outTime) == 0)  // 같은경우
+        					{
+        						var frTm = nexacro.toNumber(this.ds_etrcOutBasic.getColumn(iRow, "FR_TM"));
+        						var toTm = nexacro.toNumber(this.ds_etrcOutBasic.getColumn(iRow, "TO_TM"));
+
+        						if(frTm > toTm)
+        						{
+        							 this.gfn_msgShow(this,"XETZ0031", ["퇴소시간은 입소시간보다 "]);   // {0} 작아야 합니다.
+        							return false;
+        						}
+        					}
+
+        					if(this.ds_etrcOutSub.getRowCount() > 0){
+        						if( this.gfn_getDatasetUpdated(this.ds_etrcOutSub)){
+        							 this.gfn_msgShow(this, "XWTZ0020",["외박/복귀 변경","저장후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+        							this.fn_selectEntOutSctn();
+        							return false;
+        						}else{
+        							var jRow = this.ds_etrcOutSub.findRow("STOUT_CBK_RSN_CD", '00');
+        							if(jRow > -1){
+        								 this.gfn_msgShow(this, "XWTZ0020",["외박 미복귀","복귀후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+        								this.fn_selectEntOutSctn();
+        								return false;
+        							}
+        						}
+        					}
+        				}
+
+        				if(this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") == "S")
+        				{
+        					if(this.ds_cond.getColumn(0, "SIOP_HOO_TYPE_CD") == "20")
+        					{
+        						 this.gfn_msgShow(this, "XETZ0015",["미등록 대상은 특례입소"]);  //{0}할 수 없습니다.
+        						return false;
+        					}
+
+        					if( this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "CONN_SR_NM")))
+        					{
+        						 this.gfn_msgShow(this,"XWFA0052");   // 특례입소는 연계외박자가 필수 필수입력항목입니다.
+        						return false;
+        					}
+
+        					this.alert("특례입소자는 고시 제46조(시설급여기관 정원운영에 관한 특례)에\n\n해당하는 경우에만 입력하시기 바랍니다.");
+
+        					var sInDttm = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT") + this.ds_etrcOutBasic.getColumn(iRow, "FR_TM");
+
+        					this.ds_etrcOutBasic.setColumn(iRow, "IN_DTTM", sInDttm);
+        				}
+        				// 퇴소유형이 없을 경우 퇴소일자 시간도 빈값으로 셋팅(한번더 체크)
+        				if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") == "00")
+        				{
+        					this.ds_etrcOutBasic.setColumn(iRow, "ADPT_TO_DT", "");
+        					this.ds_etrcOutBasic.setColumn(iRow, "TO_TM", "");
+        				}
+        				//치매여부를 확인하여 기본정보 치매여부 체크
+        				var sFilter = "PAYMT_EDA_FR_DT <= '" + this.ds_etrcOutBasic.getColumn(this.ds_etrcOutBasic.rowposition, "ADPT_FR_DT") + "' && ";
+        				sFilter    += "PAYMT_EDA_TO_DT >= '" + this.ds_etrcOutBasic.getColumn(this.ds_etrcOutBasic.rowposition, "ADPT_FR_DT") + "' && ";
+        				sFilter    += "DMTIA_EXRES_EQUIP == 'N'" //"DM_YN == 'N' ";
+        				this.ds_edaDtCopy.filter(sFilter);
+        				trace("sFilter:" + sFilter);
+        				trace("this.ds_edaDtCopy.rowcount:" + this.ds_edaDtCopy.rowcount);
+        				trace("this.ds_edaDtCopy.saveXML:" + this.ds_edaDtCopy.saveXML());
+        				if(this.ds_edaDtCopy.rowcount > 0 && sStatus == "I") //치매가 아닌경우가 존재하면서 신규추가건인 경우에만 체크
+        				{
+        					//신규 입실시 치매가 아닌경우 치매실에 입실할수 없도록 체크
+        					if(	this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD") == "S41" ||
+        						this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD").substr(0, 1) == "G" ||
+        						this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD").substr(0, 1) == "M" ||
+        						this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD").substr(0, 1) == "H" ||
+        						this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD").substr(0, 1) == "I" ) //치매실인경우
+        					{
+        						this.gfn_msgShow(this, "XETZ0015",["치매전담형 장기요양기관 이용대상자가 아닌경우, 치매실에 입소"]);  //{0}할 수 없습니다.
+        						return false;
+        					}
+        				}
+        			}
+        		}
+        		var  siopScpsPttnCd = this.ds_etrcOutBasic.getColumn(iRow,"SIOP_SCPS_PTTN_CD") ;
+        		if(siopScpsPttnCd =="N"){
+        		   this.ds_cond.setColumn(0, "STOUT_TYPE_CD", "01");
+        		}else if(siopScpsPttnCd =="R"){
+        		   this.ds_cond.setColumn(0, "STOUT_TYPE_CD", "02");
+        		}else if(siopScpsPttnCd =="S"){
+        		   this.ds_cond.setColumn(0, "STOUT_TYPE_CD", "04");
+        		}else{
+        		   this.ds_cond.setColumn(0, "STOUT_TYPE_CD", "01");
+        		}
+
+        		if( this.gfn_msgShow(this, "XCTZ0002",[])){
+        			this.fn_saveEntOutSctn() ;
+        		}
+            }
+
+        	if(this.fv_bPocyTypeChgYn == true){
+        		this.fn_savePocyType() ;
+        	}
+        };
+
+
+        // 입퇴소 신분/구간 ROW 삭제
+        this.btn_sctnDel_onclick = function(obj,e)
+        {
+
+        	/* 외박/복귀 내역은 특례와 연관되어 있기 때문에 구간 삭제 이전에 정리가 되어야 함. */
+            if(this.ds_etrcOutSub.getRowCount() > 0){
+                 this.gfn_msgShow(this, "XWTZ0020",["외박/복귀","삭제후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+                return;
+            }
+
+
+            if(this.ds_etrcOutBasic.rowcount < 1){
+                 this.gfn_msgShow(this, "XWTZ0046", ["선택한 항목" ]);
+                return false;
+            }
+
+            var iRow  = this.ds_etrcOutBasic.rowposition;
+        	var sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, iRow );
+
+            if( sStatus == "I" && this.gfn_msgShow(this, "XCTZ0051",["삭제"])){
+        		this.gfn_deleteRowDatasetGrid(this.grd_etrcOutBasic, iRow );
+            }else{
+
+                /*치매전담형_고시_개정_[201607]*/
+                /* 짝이 있는 퇴소(이동)의 경우 입소(이동)을 먼저 삭제해야 삭제 가능 */
+                if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") == "30" && this.ds_etrcOutBasic.getColumn(iRow, "ROOM_OUT_PAIR_YN") == "Y"){
+
+                     this.gfn_msgShow(this, "XWTZ0020",["연관된 입소(이동)","삭제 후 진행 가능합니다."]);  //{0}내역이 있습니다. {1}
+                    return;
+                }
+
+
+                var message = "삭제";
+                if(this.ds_etrcOutBasic.getColumn(iRow,"LTC_ADMIN_SYM") == this.ds_etrcOutBasic.getColumn(iRow,"ETRC_TGT_LTC_ADMIN_SYM") &&
+                   this.ds_etrcOutBasic.getColumn(iRow,"ENTOUT_SCTN_FR_PTTN_CD") == "20"){
+                   message = "실간이동으로 입소(이동)한 구간을 삭제할 경우\n퇴소(이동) 구간의 퇴소정보가 초기화 됩니다. 삭제";
+                }
+
+                if( this.gfn_msgShow(this, "XCTZ0051",[message])){
+        			this.gfn_deleteRowDatasetGrid(this.grd_etrcOutBasic, iRow );
+                    this.ds_delEtrcOutBasic.clearData();
+                    var nAddRow = this.ds_delEtrcOutBasic.addRow();
+                    this.ds_delEtrcOutBasic.setColumn(nAddRow, "LTC_ADMIN_SYM", this.ds_etrcOutBasic.getColumn(iRow,"LTC_ADMIN_SYM"));
+
+                    /*치매전담형_고시_개정_[201607]*/
+                    /* 기존에는 AAA로 다 커버가 됐지만 이제는 G31등 도 들어가므로 실제 코드를 파라미터로 던질 필요가 있다. */
+                    //ds_delEtrcOutBasic.setColumn(nAddRow, "ADMIN_PTTN_CD", "AAA");
+                    this.ds_delEtrcOutBasic.setColumn(nAddRow, "ADMIN_PTTN_CD", this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD"));
+
+                    this.ds_delEtrcOutBasic.setColumn(nAddRow, "SIOP_HOO_DSCM_NO", this.ds_etrcOutBasic.getColumn(iRow,"SIOP_HOO_DSCM_NO"));
+                    this.ds_delEtrcOutBasic.setColumn(nAddRow, "ENTOUT_SCTN_SEQ_NO", this.ds_etrcOutBasic.getColumn(iRow,"ENTOUT_SCTN_SEQ_NO"));
+
+                    /*치매전담형_고시_개정_[201607]*/
+                    this.ds_delEtrcOutBasic.setColumn(nAddRow, "DM_YN", this.ds_cond.getColumn(0, "DM_YN"));
+
+                    this.fn_deleteEntOutSctn();
+                }
+            }
+        };
+
+
+        // 입퇴소 외박/복귀 ROW 추가
+        this.btn_grdAdd_sub_onclick = function(obj,e)
+        {
+            var iRow  = this.ds_etrcOutBasic.rowposition;
+
+        	var sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, iRow );
+        	//trace("this.sStatus = " + this.sStatus );
+            if( !this.gfn_isEmpty(sStatus) && sStatus != "N"){
+        		 this.gfn_msgShow(this, "XWTZ0020",["입퇴소 변경", "저장후 추가 가능합니다."]);
+        		return;
+            }
+
+            /* 신규 외박건 추가 가능한지 검증 */
+            for(var i = 0; i < this.ds_etrcOutSub.rowcount ; i++){
+
+        		/* 1. 외박중퇴소 시 퇴소 했으므로 외박 불가 */
+                if(this.ds_etrcOutSub.getColumn(i, "STOUT_CBK_RSN_CD")  == "20"){
+        			 this.gfn_msgShow(this, "XWFA0050");  // 퇴소후 외박 불가
+                    return;
+                }
+
+                /* 2. 외박중사망 시 사망 했으므로 외박 불가 */
+                if(this.ds_etrcOutSub.getColumn(i, "STOUT_CBK_RSN_CD")  == "30"){
+        			 this.gfn_msgShow(this, "XWFA0051");  // 사망후 외박 불가
+                    return;
+                }
+
+                /* 3. 미복귀 외박건이 있다면 신규 외박 추가 불가 */
+                if(this.gfn_isEmpty(this.ds_etrcOutSub.getColumn(i, "ADPT_TO_DT")) ||
+        			this.ds_etrcOutSub.getColumn(i, "ADPT_TO_DT") == "99991231" || this.gfn_isEmpty(this.ds_etrcOutSub.getColumn(i, "TO_TM")) ||
+                    this.ds_etrcOutSub.getColumn(i, "STOUT_CBK_RSN_CD") == "00"
+                ){
+        			 this.gfn_msgShow(this, "XWTZ0007", ["복귀 후 추가 "]);  // 복귀후 추가 할수 있습니다.
+                    return;
+                }
+            }
+
+            var nAddRow = this.ds_etrcOutSub.insertRow(0);
+
+            this.ds_etrcOutSub.setColumn(nAddRow, "LTC_ADMIN_SYM", this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"));
+
+            /*치매전담형_고시_개정_[201607]*/
+            /*
+            기존에는 AAA로 다 커버가 됐지만 이제는 G31등 도 들어가므로 실제 코드를 파라미터로 던질 필요가 있다.
+            외박은 구간에 추가되는 형태이기 때문에 해당 구간의 기관유형코드를 따라간다.
+            */
+            this.ds_etrcOutSub.setColumn(nAddRow, "ADMIN_PTTN_CD", this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD"));
+
+            this.ds_etrcOutSub.setColumn(nAddRow, "SIOP_HOO_DSCM_NO", this.ds_cond.getColumn(0, "SIOP_HOO_DSCM_NO"));
+            this.ds_etrcOutSub.setColumn(nAddRow, "SIOP_HOO_TYPE_CD", this.ds_cond.getColumn(0, "SIOP_HOO_TYPE_CD"));
+
+            this.ds_etrcOutSub.setColumn(nAddRow, "QLF_TYPE", this.ds_cond.getColumn(0, "QLF_TYPE"));
+            this.ds_etrcOutSub.setColumn(nAddRow, "ODR2_JUDG_GRADE_CD", this.ds_cond.getColumn(0, "ODR2_JUDG_GRADE_CD"));
+            this.ds_etrcOutSub.setColumn(nAddRow, "LTC_MGMT_NO", this.ds_cond.getColumn(0, "LTC_MGMT_NO"));
+
+            this.ds_etrcOutSub.setColumn(nAddRow, "DEL_YN", "N");
+
+            var sFrDay = this.gfn_getDbToday();
+            /* 신규 외박 시작일자는 현재 일자로 초기화한다 */
+            if( this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")) || (this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT") <= sFrDay && sFrDay <= this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT"))){
+        		this.ds_etrcOutSub.setColumn(nAddRow, "ADPT_FR_DT", sFrDay);
+        		this.ds_etrcOutSub.setColumn(nAddRow, "FR_TM", "0000");
+            }else{
+        		/* 현재 일자가 구간을 벗어 났다면? 일단 공란으로 두자 */
+            }
+
+
+            this.ds_etrcOutSub.setColumn(nAddRow, "SCTN_ADPT_FR_DTTM", this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT") + this.ds_etrcOutBasic.getColumn(iRow, "FR_TM"));
+            this.ds_etrcOutSub.setColumn(nAddRow, "ENTOUT_SCTN_TO_PTTN_CD", this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD"));
+
+            this.ds_etrcOutSub.setColumn(nAddRow, "ENTOUT_SCTN_SEQ_NO", this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_SEQ_NO"));
+
+            if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") != "00" )
+            {
+                this.ds_etrcOutSub.setColumn(nAddRow, "ADPT_TO_DT", this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")) ;
+                this.ds_etrcOutSub.setColumn(nAddRow, "TO_TM", this.ds_etrcOutBasic.getColumn(iRow, "TO_TM"));
+                this.ds_etrcOutSub.setColumn(nAddRow, "STOUT_CBK_RSN_CD", "20");
+                this.ds_etrcOutSub.setColumn(nAddRow, "SCTN_ADPT_TO_DTTM", this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT") + this.ds_etrcOutBasic.getColumn(iRow, "TO_TM"));
+            }
+            else
+            {
+                this.ds_etrcOutSub.setColumn(nAddRow, "ADPT_TO_DT", "");
+                this.ds_etrcOutSub.setColumn(nAddRow, "TO_TM", "");
+                this.ds_etrcOutSub.setColumn(nAddRow, "STOUT_CBK_RSN_CD", "00");
+                this.ds_etrcOutSub.setColumn(nAddRow, "SCTN_ADPT_TO_DTTM", "999912310000");
+            }
+            this.ds_etrcOutSub.setColumn(nAddRow, "STOUT_TYPE_CD", "01" );
+
+        };
+
+
+        // 외박/복귀 내역 저장 버튼 클릭
+        this.btn_saveStout_onclick = function(obj,e)
+        {
+            var iRow  = this.ds_etrcOutBasic.rowposition;
+            var sRoomOutPairYn = this.ds_etrcOutBasic.getColumn(iRow, "ROOM_OUT_PAIR_YN");
+
+            if(!this.gfn_getDatasetUpdated(this.ds_etrcOutSub)){
+                 this.gfn_msgShow(this,"XITZ0046");   // 변경내역이 없습니다.
+                return false;
+            }
+
+        	var sStatus = this.gfn_getDataStatusGrid(this.grd_etrcOutBasic, this.ds_etrcOutBasic.rowposition );
+            if( !this.gfn_isEmpty(sStatus) && sStatus != "N"){
+        		this.gfn_msgShow(this, "XWTZ0020",["입퇴소 변경", "저장후 외박/복귀 저장이 가능합니다."]);
+        		return;
+            }
+
+        	for(var i = 0; i < this.ds_etrcOutSub.rowcount; i++)
+            {
+                var iRow2  = i;
+
+        		sStatus = this.gfn_getDataStatusGrid(this.grd_inOut, iRow2 );
+
+        		if( sStatus != null && sStatus != "N"){
+                    if( this.gfn_isEmpty(this.ds_etrcOutSub.getColumn(iRow2, "FR_TM")))
+                    {
+                        this.gfn_msgShow(this,"XWTZ0046", ["외박 시작시간"]);   // {0} 이 없습니다.
+                        return false;
+                    }
+
+                    if(!this.fn_checkHHMM(this.ds_etrcOutSub.getColumn(iRow2, "FR_TM")))
+                    {
+                        this.gfn_msgShow(this,"XITZ0006", ["시작시간"]);   // {0} 의 형식이 잘못되었습니다.
+                        return false;
+                    }
+
+                    if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") != "00" && (this.ds_etrcOutSub.getColumn(iRow2, "STOUT_CBK_RSN_CD") == "00" || this.ds_etrcOutSub.getColumn(iRow2, "ADPT_TO_DT") == ""))
+                    {
+                        this.gfn_msgShow(this, "XITZ0001",["복귀사유 및 종료"]);  //{0}는 필수입력항목입니다.
+                        return;
+                    }
+
+                    if(this.ds_etrcOutSub.getColumn(iRow2, "STOUT_CBK_RSN_CD") != "00")
+                    {
+                        if( this.gfn_isEmpty(this.ds_etrcOutSub.getColumn(iRow2, "ADPT_TO_DT")))
+                        {
+                            this.grd_etrcOutBasic.setCellPos(6);
+                            this.gfn_msgShow(this,"XWTZ0048", ["외박 종료일자"]);   // {0} 가 없습니다.
+                            return false;
+                        }
+
+                        if( this.gfn_isEmpty(this.ds_etrcOutSub.getColumn(iRow2, "TO_TM")))
+                        {
+                            this.gfn_msgShow(this,"XWTZ0046", ["외박 종료시간"]);   // {0} 이 없습니다.
+                            return false;
+                        }
+
+                        if(!this.fn_checkHHMM(this.ds_etrcOutSub.getColumn(iRow2, "TO_TM")))
+                        {
+                            this.gfn_msgShow(this,"XITZ0006", ["종료시간"]);   // {0} 의 형식이 잘못되었습니다.
+                            return false;
+                        }
+
+                        /* 외박이 속한 구간이 퇴소(이동)으로 인해 잠겨있는 경우 외박복귀 사유가
+                           20 외박중퇴소, 30 외박중사망
+                        */
+                        if(sRoomOutPairYn == "Y" && (this.ds_etrcOutSub.getColumn(iRow2, "STOUT_CBK_RSN_CD") == "20" || this.ds_etrcOutSub.getColumn(iRow2, "STOUT_CBK_RSN_CD") == "30")){
+        					this.gfn_msgShow(this, "XWTZ0020",["연관된 입소(이동)","삭제 후 진행 가능합니다."]);  //{0}내역이 있습니다. {1}
+        					this.fn_selectEntOutStout();
+        					return false;
+        				}
+                    }
+
+                    var outSubTime = "";
+                    var entSubTime = "";
+                    var outTime = "";
+                    var entTime = "";
+                    var sToday = this.gfn_getLocalToday(); //현재일
+                    outSubTime = this.ds_etrcOutSub.getColumn(iRow2, "ADPT_TO_DT");
+                    entSubTime = this.ds_etrcOutSub.getColumn(iRow2, "ADPT_FR_DT");
+
+                    outTime = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT");
+                    entTime = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT");
+
+                    if( !this.gfn_isEmpty(entTime) && this.cfn_dt_compareDate(outSubTime, outTime) == 1)
+                    {
+                        this.gfn_msgShow(this,"XETZ0031", ["외박 종료일자는 퇴소보다"]);   // {0} 작습니다.
+                        return false;
+                    }
+
+                    if( !this.gfn_isEmpty(outSubTime) && this.cfn_dt_compareDate(entSubTime, outSubTime) == 1)
+                    {
+                        this.gfn_msgShow(this,"XETZ0031", ["외박 시작일자는 외박 종료일자보다 "]);   // {0} 작습니다.
+                        return false;
+                    }
+
+                    if( !this.gfn_isEmpty(entTime) && this.cfn_dt_compareDate(entTime, outTime) == 0)  // 같은경우
+                    {
+                        var frTm = nexacro.toNumber(this.ds_etrcOutSub.getColumn(iRow, "FR_TM"));
+                        var toTm = nexacro.toNumber(this.ds_etrcOutSub.getColumn(iRow, "TO_TM"));
+
+                        if(frTm > toTm)
+                        {
+                            this.gfn_msgShow(this,"XETZ0031", ["외박시작시간은 외박종료시간보다 "]);   // {0} 작아야 합니다.
+                            return false;
+                        }
+                    }
+
+                    if(this.cfn_dt_compareDate(outSubTime, sToday) == 1)
+                    {
+                        this.gfn_msgShow(this,"XETZ0031", ["종료일자는 현재일자보다 "]);   // {0} 작아야 합니다.
+                        return false;
+                    }
+
+
+                    if(this.cfn_dt_compareDate(entTime, entSubTime) == 1)
+                    {
+                        this.gfn_msgShow(this,"XETZ0029", ["외박시작일자가 입소일자 "]);   // {0} 작습니다.
+                        return false;
+                    }
+
+                    if(this.ds_etrcOutSub.getColumn(iRow, "STOUT_CBK_RSN_CD") == "00")
+                    {
+                        this.ds_etrcOutSub.setColumn(iRow, "ADPT_TO_DT", "");
+                        this.ds_etrcOutSub.setColumn(iRow, "TO_TM", "");
+                    }
+                }
+            }
+
+            if( this.gfn_msgShow(this, "XCTZ0002",[])){
+                this.fn_saveEntOutStout();
+            }
+
+        };
+
+
+        this.btn_stoutDel_onclick = function(obj,e)
+        {
+        	var sStatus;
+
+            if(this.ds_etrcOutSub.rowcount < 1){
+                 this.gfn_msgShow(this, "XWTZ0046", ["선택한 항목" ]);
+                return false;
+            }
+
+            if( this.gfn_msgShow(this, "XCTZ0051",["삭제"])){
+                var iRow  = this.ds_etrcOutSub.rowposition;
+
+        		sStatus = this.gfn_getDataStatusGrid(this.grd_inOut, iRow);
+
+                if(sStatus == "I"){
+                    this.ds_etrcOutSub.deleteRow(iRow);
+                }
+                else{
+        			this.gfn_deleteRowDatasetGrid(this.grd_inOut, iRow );
+
+                    this.ds_delEtrcOutSub.clearData();
+                    var nAddRow = this.ds_delEtrcOutSub.addRow();
+                    this.ds_delEtrcOutSub.setColumn(nAddRow, "LTC_ADMIN_SYM", this.ds_etrcOutSub.getColumn(iRow,"LTC_ADMIN_SYM"));
+
+                    /*치매전담형_고시_개정_[201607]*/
+                    /* 기존에는 AAA로 다 커버가 됐지만 이제는 G31등 도 들어가므로 실제 코드를 파라미터로 던질 필요가 있다. */
+                    this.ds_delEtrcOutSub.setColumn(nAddRow, "ADMIN_PTTN_CD", this.ds_etrcOutSub.getColumn(iRow,"ADMIN_PTTN_CD"));
+
+                    this.ds_delEtrcOutSub.setColumn(nAddRow, "SIOP_HOO_DSCM_NO", this.ds_etrcOutSub.getColumn(iRow,"SIOP_HOO_DSCM_NO"));
+                    this.ds_delEtrcOutSub.setColumn(nAddRow, "SIOP_STOUT_SEQ_NO", this.ds_etrcOutSub.getColumn(iRow,"SIOP_STOUT_SEQ_NO"));
+                    this.ds_delEtrcOutSub.setColumn(nAddRow, "ENTOUT_SCTN_SEQ_NO", this.ds_etrcOutSub.getColumn(iRow,"ENTOUT_SCTN_SEQ_NO"));
+                    this.ds_delEtrcOutSub.setColumn(nAddRow, "DM_YN", this.ds_cond.getColumn(0, "DM_YN"));
+        			this.ds_delEtrcOutSub.setColumn(nAddRow, "STOUT_TYPE_CD", this.ds_etrcOutSub.getColumn(iRow,"STOUT_TYPE_CD"));
+                    this.fn_deleteStout();
+                }
+            }
+        };
+
+
+        /*치매전담형_고시_개정_[201607]*/
+        /*
+        기존 동일부지동일대표 이동 입퇴소관리 기능에 치매전담형 도입에 따른
+        실간 이동 기능을 추가함.
+        */
+        // 입퇴소이동관리 버튼클릭
+        this.btn_dongDongMgt_onclick = function(obj,e)
+        {
+            var sPopId   = "npfa201p04";
+            var sScrId   = "npfa201p04";
+            var sArgs       =  {arg_LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM")
+                            , arg_ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD")
+                            , arg_TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM")
+                            , arg_SIOP_HOO_DSCM_NO:this.ds_cond.getColumn(0, "SIOP_HOO_DSCM_NO")
+                            , arg_DM_YN:this.ds_cond.getColumn(0, "DM_YN")
+
+        					, arg_ODR2_JUDG_GRADE_CD: this.ds_cond.getColumn(0, "ODR2_JUDG_GRADE_CD")
+        				    , arg_QLF_TYPE: this.ds_cond.getColumn(0, "QLF_TYPE")
+        				    , arg_LTC_MGMT_NO: this.ds_cond.getColumn(0, "LTC_MGMT_NO")
+        					, arg_STOUT_TYPE_CD         : "01"
+                            };
+
+            var nWidth      = 1125;
+            var nHeight     = 270;
+            var bIsModal = true;
+            var bVscrollbar = true;
+
+            if( this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight) == "updated"){
+        		this.btn_selectSctn_onclick();
+        	}
+        };
+
+        // 선택 대상자 당월 계속정보 생성
+        this.btn_createCC_onclick = function(obj,e)
+        {
+
+            if( this.gfn_msgShow(this, "XCTZ0002",[])){
+                this.fn_saveBtnCreateCurrentMonth();
+            }
+        };
+
+        /*======================================================================================*
+         * 7.2 사용자정의 이벤트
+         *======================================================================================*/
+
+
+        // 대상자명단 변경 클릭
+        this.ds_entOutTgtList_onrowposchanged = function(obj,e)
+        {
+
+            this.ds_cond.setColumn(0, "SIOP_HOO_DSCM_NO", this.ds_entOutTgtList.getColumn(e.newrow,"SIOP_HOO_DSCM_NO"));
+            this.ds_cond.setColumn(0, "SIOP_HOO_TYPE_CD", this.ds_entOutTgtList.getColumn(e.newrow,"SIOP_HOO_TYPE_CD"));
+            this.ds_cond.setColumn(0, "ODR2_JUDG_GRADE_CD", this.ds_entOutTgtList.getColumn(e.newrow,"ODR2_JUDG_GRADE_CD"));
+            this.ds_cond.setColumn(0, "QLF_TYPE", this.ds_entOutTgtList.getColumn(e.newrow,"QLF_TYPE"));
+            this.ds_cond.setColumn(0, "LTC_MGMT_NO", this.ds_entOutTgtList.getColumn(e.newrow,"LTC_MGMT_NO"));
+
+        	trace("ds_entOutTgtList_onrowposchanged: " + this.ds_entOutTgtList.getColumn(e.newrow,"NM")
+        			+ "/" + this.ds_entOutTgtList.getColumn(e.newrow,"LTC_MGMT_NO")
+        			+ "/" + this.ds_entOutTgtList.getColumn(e.newrow,"SIOP_HOO_DSCM_NO")
+        	);
+
+
+
+            this.fn_selectEdaFrToDt();
+            this.fn_selectSctnErrorCheck();   // 구간데이터 에러 체크
+            this.fn_selectSctnErrorCCCheck();   // 입소없이 계산 데이터 에러 체크
+            this.fn_selectBtnCreateCurrentMonth();   // 당월 계속 정보 없는 대상자 조회
+            this.fn_selectEntOutSctn();
+            this.fn_selectEntOutTgtMonthInfo();
+        };
+
+
+        // 구간/신분 그리드 선택
+        this.ds_etrcOutBasic_onrowposchanged = function(obj,e)
+        {
+
+
+            if(e.newrow > -1)
+            {
+                this.ds_cond.setColumn(0, "ADPT_FR_DT", this.ds_etrcOutBasic.getColumn(e.newrow,"ADPT_FR_DT"));
+                this.ds_cond.setColumn(0, "FR_TM", this.ds_etrcOutBasic.getColumn(e.newrow,"FR_TM"));
+                this.ds_cond.setColumn(0, "ADPT_TO_DT", this.ds_etrcOutBasic.getColumn(e.newrow,"ADPT_TO_DT"));
+                this.ds_cond.setColumn(0, "TO_TM", this.ds_etrcOutBasic.getColumn(e.newrow,"TO_TM"));
+                this.ds_cond.setColumn(0, "ENTOUT_SCTN_SEQ_NO", this.ds_etrcOutBasic.getColumn(e.newrow,"ENTOUT_SCTN_SEQ_NO"));
+
+                /*치매전담형_고시_개정_[201607]*/
+                this.ds_cond.setColumn(0, "DTL_ADMIN_PTTN_CD", this.ds_etrcOutBasic.getColumn(e.newrow,"ADMIN_PTTN_CD"));
+
+                this.fn_setPocyType();
+
+                //유형변경건이 2건이상일 경우 유형 변경 못하도록 처리
+                this.ds_nsr2.filter("CD == '" +  this.ds_etrcOutBasic.getColumn(e.newrow, "SIOP_SCPS_PTTN_CD") + "'");
+
+                if( !this.gfn_isEmpty(this.ds_cond.getColumn(0, "ENTOUT_SCTN_SEQ_NO")))
+                {
+                    trace("ds_etrcOutBasic_onrowposchanged !gfn_isEmpty : " + this.ds_cond.getColumn(0,"ENTOUT_SCTN_SEQ_NO"));
+                    this.fn_selectEntOutStout();
+                }
+                else
+                {
+                    trace("ds_etrcOutBasic_onrowposchanged clearData : " + this.ds_cond.getColumn(0,"ENTOUT_SCTN_SEQ_NO"));
+                    this.ds_etrcOutSub.clearData();
+                }
+            }
+
+        };
+
+        this.grd_consrSelect_oncelldblclick = function(obj,e)
+        {
+            var iRow = this.ds_etrcOutBasic.rowposition;
+            var iCRow = this.ds_connsrSelect.rowposition;
+            var sInDttm = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT") + this.ds_etrcOutBasic.getColumn(iRow, "FR_TM");
+
+            this.ds_etrcOutBasic.setColumn(iRow, "IN_DTTM", sInDttm);
+            this.ds_etrcOutBasic.setColumn(iRow, "CONN_SR_LTC_ADMIN_SYM", this.ds_connsrSelect.getColumn(iCRow, "LTC_ADMIN_SYM"));
+            this.ds_etrcOutBasic.setColumn(iRow, "CONN_SR_ADMIN_PTTN_CD", this.ds_connsrSelect.getColumn(iCRow, "ADMIN_PTTN_CD"));
+            this.ds_etrcOutBasic.setColumn(iRow, "CONN_SR_HOO_DSCM_NO", this.ds_connsrSelect.getColumn(iCRow, "SIOP_HOO_DSCM_NO"));
+            this.ds_etrcOutBasic.setColumn(iRow, "CONN_SR_STOUT_SEQ_NO", this.ds_connsrSelect.getColumn(iCRow, "SIOP_STOUT_SEQ_NO"));
+            this.ds_etrcOutBasic.setColumn(iRow, "CONN_SR_HOO_TYPE_CD",  this.ds_connsrSelect.getColumn(iCRow, "SIOP_HOO_TYPE_CD"));
+            this.ds_etrcOutBasic.setColumn(iRow, "CONN_SR_NM", this.ds_connsrSelect.getColumn(iCRow, "NM"));
+
+            this.grd_consrSelect.set_visible(false);
+        };
+
+        this.grd_etrcOutBasic_oncellclick = function(obj,e)
+        {
+            this.grd_consrSelect.set_visible(false);
+        };
+
+
+        this.grd_etrcOutBasic_onnodataareaclick = function(obj,e)
+        {
+            this.grd_consrSelect.set_visible(false);
+        };
+
+        this.btn_TgtDel_onclick = function(obj,e)
+        {
+            if( this.ds_entOutTgtList.rowcount > 0 && this.gfn_msgShow(this, "XCTZ0051",["삭제"])){
+                this.fn_deleteTgt();
+            }
+            else
+            {
+                 this.gfn_msgShow(this, "XWTZ0046", ["선택한 항목" ]);
+                return false;
+            }
+        };
+
+        this.ds_etrcOutBasic_oncolumnchanged = function(obj,e)
+        {
+            var iRow  = this.ds_etrcOutBasic.rowposition;
+
+        // 신규 특례입퇴소 등록 적용 START - 2019.05.20 (국정과제 kys)
+        	if (this.ds_etrcOutBasic.getRowType(iRow) == Dataset.ROWTYPE_INSERT)
+        	{
+        		// 특례유형일때
+        		if (e.columnid == "SIOP_SCPS_PTTN_CD" && this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") == "S")
+        		{
+        			// 일반->특례로 변경을 할수 없으므로 신규로 특례를 받을수 있어야한다.
+        			// 신규입력이면서 특례로 입퇴소 유형이 선택되면 메시지후 신규 특례등록 화면으로 이동한다.
+
+        			if (this.ds_etrcOutSub.getRowCount() > 0){
+        				if (this.gfn_getDatasetUpdated(this.ds_etrcOutSub)){
+        					this.gfn_msgShow(this, "XWTZ0020",["외박/복귀 변경","저장후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+        					this.fn_selectEntOutSctn();
+        					return false;
+        				}else{
+        					var jRow = this.ds_etrcOutSub.findRow("STOUT_CBK_RSN_CD", '00');
+        					if (jRow > -1){
+        						this.gfn_msgShow(this, "XWTZ0020",["외박 미복귀","복귀후 진행가능합니다."]);  //{0}내역이 있습니다. {1}
+        						this.fn_selectEntOutSctn();
+        						return false;
+        					}
+        				}
+        			}
+        			var sToday = this.gfn_getLocalToday(); //현재일
+        			var entTime = this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT");
+
+        			if (this.ds_cond.getColumn(0, "SIOP_HOO_TYPE_CD") == "20")
+        			{
+        				this.gfn_msgShow(this, "XETZ0015",["미등록 대상은 특례입소"]);  //{0}할 수 없습니다.
+        				this.ds_etrcOutBasic.setColumn(iRow, "SIOP_SCPS_PTTN_CD", "N");
+        				return false;
+        			}
+        /*
+        			// 특례 신규등록이 가능한지 계약관계 check
+        			var bCrtFlag = false;
+        			if (this.ds_edaDt.rowcount > 0)
+        			{
+        				var strCrtFrDt;
+        				var strCrtToDt;
+        				for (var i=0; i<this.ds_edaDt.rowcount; i++)
+        				{
+        					strCrtFrDt = this.ds_edaDt.getColumn(i, "CTR_FR_DT");
+        					strCrtToDt = this.ds_edaDt.getColumn(i, "CTR_TO_DT");
+        					if (!this.gfn_isEmpty(strCrtFrDt) && !this.gfn_isEmpty(strCrtToDt))
+        					{
+        						// 계약시작일자 <= 입소일자 <= 계약종료일자
+        						if (this.cfn_dt_compareDate(entTime, strCrtFrDt) != -1 && this.cfn_dt_compareDate(entTime, strCrtToDt) != 1)
+        						{
+        							bCrtFlag = true;
+        							break;
+        						}
+        					}
+        				}
+        			}
+        			if (bCrtFlag != true)
+        			{
+        			    this.alert("수급자(대상자)의 시설급여 가능여부를 확인후 입소 내역을 입력하시기 바랍니다.");
+        				this.fn_selectEntOutSctn();
+        				return false;
+        			}
+        */
+        			if (this.confirm("신규 특례입소 등록을 진행하시겠습니까?"))
+        			{
+        				var sPopId   = "npfa201p07";
+        				var sScrId   = "npfa201p07";
+        				var sArgs       = {   "arg_LTC_ADMIN_SYM"         : this.ds_etrcOutBasic.getColumn(iRow, "LTC_ADMIN_SYM")
+        									, "arg_ADMIN_PTTN_CD"         : this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD")
+        									, "arg_SIOP_HOO_DSCM_NO"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_DSCM_NO")
+        									, "arg_SIOP_HOO_TYPE_CD"      : this.ds_etrcOutBasic.getColumn(iRow, "SIOP_HOO_TYPE_CD")
+        									, "arg_ENTOUT_SCTN_SEQ_NO"    : this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_SEQ_NO")
+        									, "arg_ADPT_FR_DT"		      : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_FR_DT")
+        									, "arg_FR_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "FR_TM")
+        									, "arg_ADPT_TO_DT"            : this.ds_etrcOutBasic.getColumn(iRow, "ADPT_TO_DT")
+        									, "arg_TO_TM"                 : this.ds_etrcOutBasic.getColumn(iRow, "TO_TM")
+        									, "arg_ENTOUT_SCTN_FR_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_FR_PTTN_CD")
+        									, "arg_ENTOUT_SCTN_TO_PTTN_CD": this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD")
+        									, "arg_DM_YN"                 : this.ds_cond.getColumn(0, "DM_YN") /*치매전담형_고시_개정_[201607]*/
+        									, "arg_TGT_YYYYMM"            : this.ds_cond.getColumn(0, "TGT_YYYYMM") // 20211213 jykang 정원초과시에만 특례입소자
+        									, "arg_DTL_ADMIN_PTTN_CD"     : this.ds_cond.getColumn(0, "ADMIN_PTTN_CD") // 20211213 jykang 정원초과시에만 특례입소자
+        									, "arg_STOUT_TYPE_CD"         : "03"
+        								  }
+        				var nWidth      = 585;
+        				var nHeight     = 280;
+        				var bIsModal    = true;
+        				var bVscrollbar = true;
+
+        				this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        			}else{
+        				this.ds_etrcOutBasic.setColumn(iRow, "SIOP_SCPS_PTTN_CD", "N");
+        				return false;
+        			}
+        		}
+        	}
+        // 신규 특례입퇴소 등록 적용 END
+
+            if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") == "00")
+            {
+                this.ds_etrcOutBasic.setColumn(iRow, "ADPT_TO_DT", "");
+                this.ds_etrcOutBasic.setColumn(iRow, "TO_TM", "");
+            }
+
+            // 퇴소를 하면
+            if(e.columnid == "ENTOUT_SCTN_TO_PTTN_CD" && this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") != "00")
+            {
+        		/* 201801 KHCHO 일반입소자 퇴소 발생 시 특례입소자 일반 입소자 전환 안내 팝업 */
+                /* 특례입소자 안내 팝업은 저장시점으로 옮김
+        		if(this.ds_etrcOutBasic.getColumn(iRow, "SIOP_SCPS_PTTN_CD") != "S"
+        		   && this.ds_entOutTgtList.findRow("SIOP_SCPS_PTTN_CD", "S")!= -1)
+        		{
+        			var v_fnm = this.ds_entOutTgtList.getColumn(this.ds_entOutTgtList.rowposition, "NM");
+        			this.gfn_msgShow(this,"XWFA0061", [v_fnm]);
+        		}
+        	    */
+
+        		/* 20180130 사망자 팝업 안내 */
+        		if(this.ds_etrcOutBasic.getColumn(iRow, "ENTOUT_SCTN_TO_PTTN_CD") == "20")
+        		{
+        			 this.gfn_msgShow(this,"XWFA0063"); /* 사망시 경고 안내 팝업 */
+        		}
+
+                // 퇴소일자로 포커스이동
+                this.grd_etrcOutBasic.setCellPos(7);
+            }
+
+            // 입소일자변경 후 입소시간으로 포커스이동
+            if(e.columnid == "ADPT_FR_DT" )
+            {
+        		/* 입소일자 변경 시 해당 입소일자에 이용가능한 급여형태 목록을 생성한다 */
+                if(this.ds_etrcOutBasic.getRowType(iRow) == 2 && !this.gfn_isEmpty(e.newvalue)){
+
+        			var frDt = e.newvalue;
+
+        			if(!this.objects["ds_ra" + frDt]){ /* 아직 생성되지 않은 경우만 진행 */
+        				var ds = new Dataset;
+        				ds.set_id(ds.set_name("ds_ra" + frDt));
+        				ds.addColumn("ADMIN_PTTN_CD", "string");
+        				ds.addColumn("ADMIN_PTTN_CD_NM", "string");
+
+        				/* 입소일자에 이용 가능한 급여형태 목록 */
+        				this.ds_ra21.filter("ADPT_FR_DT <= '" + frDt + "' && '" + frDt + "' <= ADPT_TO_DT");
+
+        				for(var i = 0; i < this.ds_ra21.rowcount; i++){
+        					if(ds.rowcount > 0){
+        						/* A02, A03은 둘 다 AAA로 나오기 때문에 중복을 걸러준다 */
+        						if(ds.findRow("ADMIN_PTTN_CD", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD")) > -1){
+        							continue;
+        						}
+        					}
+
+        					var rowIdx = ds.addRow();
+        					ds.setColumn(rowIdx, "ADMIN_PTTN_CD", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD"));
+        					ds.setColumn(rowIdx, "ADMIN_PTTN_CD_NM", this.ds_ra21.getColumn(i, "ADMIN_PTTN_CD_NM"));
+        				}
+
+        				this.ds_ra21.filter("");
+
+        				/* 동적으로 생성된 데이터셋의 이후 참조를 위해 폼에 추가한다 */
+        				this.addChild("ds_ra" + frDt, ds);
+
+        				/* 현재 기관유형코드가 이용 가능한 급여형태 목록에 없다면 알림! */
+        				if( !this.gfn_isEmpty(this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD")) && ds.findRow("ADMIN_PTTN_CD", this.ds_etrcOutBasic.getColumn(iRow, "ADMIN_PTTN_CD")) == -1){
+        					 this.gfn_msgShow(this,"XICA0012", ["입소일자에 유효한 급여형태가 아닙니다. 다시 선택해 주시기 "]); /* 바랍니다 */
+        					this.grd_etrcOutBasic.setCellPos(1);
+        					return false;
+        				}
+        			}
+                }
+                this.grd_etrcOutBasic.setCellPos(5);
+            }
+
+            // 퇴소일자변경 후 퇴소시간으로 포커스이동
+            if(e.columnid == "ADPT_TO_DT" )
+            {
+                this.grd_etrcOutBasic.setCellPos(8);
+            }
+        };
+
+        this.ds_etrcOutSub_oncolumnchanged = function(obj,e)
+        {
+            var iRow  = this.ds_etrcOutSub.rowposition;
+
+            if(this.ds_etrcOutSub.getColumn(iRow, "STOUT_CBK_RSN_CD") == "00")
+            {
+                this.ds_etrcOutSub.setColumn(iRow, "ADPT_TO_DT", "");
+                this.ds_etrcOutSub.setColumn(iRow, "TO_TM", "");
+            }
+
+            // 복귀를 하면 종료일자로 포커스
+            if(e.columnid == "STOUT_CBK_RSN_CD" && this.ds_etrcOutSub.getColumn(iRow, "STOUT_CBK_RSN_CD") != "00")
+            {
+        		/* 201801 일반입소자 퇴소 시, 특례입소자 일반입소 전환 팝업 */
+        		if( this.ds_enOutMonth.getColumn(this.ds_enOutMonth.rowcount-1,"ENTOUT_CD") != null &&    this.ds_enOutMonth.getColumn(this.ds_enOutMonth.rowcount-1,"ENTOUT_CD").substring(0,1) == "S"
+        			&& (this.ds_etrcOutSub.getColumn(iRow, "STOUT_CBK_RSN_CD") == "20" || this.ds_etrcOutSub.getColumn(iRow, "STOUT_CBK_RSN_CD") == "30"))
+        		{
+        			var v_fnm = this.ds_entOutTgtList.getColumn(this.ds_entOutTgtList.rowposition, "NM");
+        			 this.gfn_msgShow(this,"XWFA0062", [v_fnm]); /* 일반입소자 퇴소 발생 시 퇴직특례자 일반 입소자 전환 안내 팝업 */
+        		}
+
+                this.grd_inOut.setCellPos(5);
+            }
+        };
+
+        // 미등록 대상자 이관
+        this.gridTgtList_onlbuttondown = function(obj,e)
+        {
+            var iRow  = this.ds_entOutTgtList.rowposition;
+
+            if(e.col == 3 && this.ds_entOutTgtList.getColumn(e.row, "SIOP_HOO_TYPE_CD") == "20" && this.ds_entOutTgtList.getColumn(e.row, "TRAN_DATA") == "Y"){
+
+                var sPopId   = "npfa201p03";
+                var sScrId   = "npfa201p03";
+                var sArgs       = { "arg_LTC_ADMIN_SYM"   : this.ds_entOutTgtList.getColumn(iRow, "LTC_ADMIN_SYM")
+                                  , "arg_ADMIN_PTTN_CD"   : this.ds_entOutTgtList.getColumn(iRow, "ADMIN_PTTN_CD")
+                                  , "arg_TGT_YYYYMM"      : this.ds_entOutTgtList.getColumn(e.row, "TGT_YYYYMM")
+                                  , "arg_NM"              : this.ds_entOutTgtList.getColumn(e.row, "NM")
+                                  , "arg_BDAY"            : this.ds_entOutTgtList.getColumn(e.row, "BDAY")
+                                  , "arg_SIOP_HOO_DSCM_NO": this.ds_entOutTgtList.getColumn(e.row, "SIOP_HOO_DSCM_NO")
+        	    };
+
+                var nWidth      = 510;
+                var nHeight     = 210;
+                var bIsModal = true;
+                var bVscrollbar = true;
+
+                this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+            }
+        };
+
+        //저장 단축키
+        this.frm_onkeydown = function(obj,e){
+        //trace(e.keycode);
+            if(e.ctrlkey){
+                this.stc_saveKey.set_visible(true);
+                this.stc_delKey.set_visible(true);
+                this.stc_saveOutKey.set_visible(true);
+                this.stc_delOutKey.set_visible(true);
+                if(e.keycode == 83){  // 입퇴소 저장 S
+                    this.btn_saveSctn_onclick(this.btn_saveSctn);
+                    this.stc_saveKey.set_visible(false);
+                    this.stc_delKey.set_visible(false);
+                    this.stc_saveOutKey.set_visible(false);
+                    this.stc_delOutKey.set_visible(false);
+                }
+                if(e.keycode == 68){ // 입퇴소 삭제 D
+                    this.btn_sctnDel_onclick(this.btn_sctnDel);
+                    this.stc_saveKey.set_visible(false);
+                    this.stc_delKey.set_visible(false);
+                    this.stc_saveOutKey.set_visible(false);
+                    this.stc_delOutKey.set_visible(false);
+                }
+                if(e.keycode == 84){ // 외박 저장 T
+                    this.btn_saveStout_onclick(this.btn_saveStout);
+                    this.stc_saveKey.set_visible(false);
+                    this.stc_delKey.set_visible(false);
+                    this.stc_saveOutKey.set_visible(false);
+                    this.stc_delOutKey.set_visible(false);
+                }
+                if(e.keycode == 69){  // 외박 삭제 E
+                    this.btn_stoutDel_onclick(this.btn_stoutDel);
+                    this.stc_saveKey.set_visible(false);
+                    this.stc_delKey.set_visible(false);
+                    this.stc_saveOutKey.set_visible(false);
+                    this.stc_delOutKey.set_visible(false);
+                }
+            }
+        };
+
+        //단축키 숨김
+        this.frm_onkeyup = function(obj,e){
+                this.stc_saveKey.set_visible(false);
+                this.stc_delKey.set_visible(false);
+                this.stc_saveOutKey.set_visible(false);
+                this.stc_delOutKey.set_visible(false);
+        };
+
+
+        this.grd_inOut_onexpanddown = function(obj,e)
+        {
+            var iRow  = this.ds_etrcOutSub.rowposition;
+
+            if(e.cell == 8)
+            {
+                if(this.ds_etrcOutSub.getColumn(iRow, "CONN_CNT") != "0" )
+                {
+                        this.grd_stoutConnsr.set_visible(true);
+                        //초기값
+                        var startX = 750;
+                        var startY = 320;
+                        var endX = 1020;
+                        var endY = 420;
+
+                        this.grd_stoutConnsr.move(startX, startY);
+
+                        this.fn_selectStoutConnSrPop();
+                }
+            }
+        };
+
+
+        this.fn_selectStoutConnSrPop = function()   // 외박/복귀 구간에서 연계외박자조회
+        {
+            var iRow = this.ds_etrcOutSub.rowposition;
+            this.ds_condStoutConnsr.clearData();
+            var nAddRow = this.ds_condStoutConnsr.addRow();
+            this.ds_condStoutConnsr.setColumn(nAddRow, "LTC_ADMIN_SYM", this.ds_etrcOutSub.getColumn(iRow, "LTC_ADMIN_SYM"));
+
+            /*치매전담형_고시_개정_[201607]*/
+            this.ds_condStoutConnsr.setColumn(nAddRow, "ADMIN_PTTN_CD", this.ds_etrcOutSub.getColumn(iRow, "ADMIN_PTTN_CD"));
+
+            this.ds_condStoutConnsr.setColumn(nAddRow, "SIOP_HOO_DSCM_NO", this.ds_etrcOutSub.getColumn(iRow, "SIOP_HOO_DSCM_NO"));
+            this.ds_condStoutConnsr.setColumn(nAddRow, "SIOP_STOUT_SEQ_NO", this.ds_etrcOutSub.getColumn(iRow, "SIOP_STOUT_SEQ_NO"));
+
+            this.fn_selectStoutConnSr();
+        };
+
+
+        this.grd_stoutConnsr_onlbuttondown = function(obj,e)
+        {
+            this.grd_stoutConnsr.set_visible(false);
+        };
+
+        // 기본정보(급여계약통보)
+        this.grd_edaDt_onlbuttondown = function(obj,e)
+        {
+            if(e.row == 0)
+            {
+        		/* 비고컬럼 (계약해지 버튼) */
+                if(e.col == 9
+                     && ( !this.gfn_isEmpty(this.ds_edaDt.getColumn(e.row, "OUT_DATE"))
+                         && (this.ds_edaDt.getColumn(e.row, "OUT_DATE").substring(0,8) != this.ds_edaDt.getColumn(e.row, "CTR_TO_DT")))){
+        			/* 계약기간 중 퇴소 */
+                    this.ds_ctrInfoCncl.clearData();
+                    var nAddRow = this.ds_ctrInfoCncl.addRow();
+                    this.ds_ctrInfoCncl.addRow();
+                    this.ds_ctrInfoCncl.setColumn(nAddRow,"LTCP_CTR_NO", this.ds_edaDt.getColumn(e.row, "LTCP_CTR_NO"));
+                    this.ds_ctrInfoCncl.setColumn(nAddRow,"CTR_TO_DT", this.ds_edaDt.getColumn(e.row, "OUT_DATE").substring(0,8));
+                    this.ds_ctrInfoCncl.setColumn(nAddRow,"LTCP_OFFR_TO_TM", this.ds_edaDt.getColumn(e.row, "OUT_DATE").substring(8,12));
+
+                    if( this.gfn_msgShow(this, "XCTZ0051",[this.ds_ctrInfoCncl.getColumn(0, "CTR_TO_DT") + this.ds_ctrInfoCncl.getColumn(0, "LTCP_OFFR_TO_TM")  + " 일자로 계약해지"])){
+                        //fn_cnclEquipPaymtCtr(); // 급여계약해지
+
+                        var sLtcpCtrNo = this.ds_edaDt.getColumn(e.row, "LTCP_CTR_NO");
+                        var arg_sCncr = { "prm_sLtcpCtrNo": sLtcpCtrNo };
+
+                        var sPopId      = "npia101p05";
+                        var sScrId      = "npia101p05";
+                        var sUrl        = "biz_npi_a::npia101p05.xfdl";
+                        var sScrNm      = "계약해지 팝업";
+                        var nWidth      = 600;
+                        var nHeight     = 160;
+                        var sArgs       = arg_sCncr;
+                        var bIsModal    = true;
+
+                        var bCnclYn = this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+
+                        if(bCnclYn){ //해지처리 성공인 경우 true
+                            this.fn_selectEdaFrToDt();
+                        }
+                    }
+                }
+                else if(e.col == 9 && this.ds_edaDt.getColumn(e.row, "PAYMT_EDA_TO_DT") < this.ds_edaDt.getColumn(e.row, "CTR_TO_DT")){
+        			/* 계약기간 중 급여인정유효기간 만료 */
+        			var sLtcpCtrNo = this.ds_edaDt.getColumn(e.row, "LTCP_CTR_NO");
+        			var arg_sCncr = {prm_sLtcpCtrNo:sLtcpCtrNo};
+
+        			var sPopId      = "npia101p05";
+        			var sScrId      = "npia101p05";
+        			var sUrl        = "biz_npi_a::npia101p05.xfdl";
+        			var sScrNm      = "계약해지 팝업";
+        			var nWidth      = 600;
+        			var nHeight     = 160;
+        			var sArgs       = arg_sCncr;
+        			var bIsModal    = true;
+
+        			var bCnclYn = this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+
+        			if(bCnclYn){ //해지처리 성공인 경우 true
+        				this.fn_selectEdaFrToDt();
+        			}
+                }
+                else if( e.col == 9 && !this.gfn_isEmpty(this.ds_edaDt.getColumn(e.row, "ETS_DATE"))){
+
+                    this.ds_ctrInfoNew.clearData();
+
+                    var nAddRow = this.ds_ctrInfoNew.addRow();
+
+                    this.ds_ctrInfoNew.addRow();
+                    this.ds_ctrInfoNew.setColumn(nAddRow, "LTCP_CTR_NO"    , this.ds_edaDt.getColumn(e.row, "LTCP_CTR_NO"));
+                    this.ds_ctrInfoNew.setColumn(nAddRow, "LTC_MGMT_NO"    , this.ds_edaDt.getColumn(e.row, "LTC_MGMT_NO"));
+                    this.ds_ctrInfoNew.setColumn(nAddRow, "LTC_MGMT_NO_SEQ", this.ds_edaDt.getColumn(e.row, "LTC_MGMT_NO_SEQ"));
+                    this.ds_ctrInfoNew.setColumn(nAddRow, "CTR_FR_DT"      , this.ds_edaDt.getColumn(e.row, "ETS_DATE").substring(0,8));
+                    this.ds_ctrInfoNew.setColumn(nAddRow, "CTR_FR_TM"      , this.ds_edaDt.getColumn(e.row, "ETS_DATE").substring(8,12));
+
+                    if( this.gfn_msgShow(this, "XCTZ0051",[ this.ds_ctrInfoNew.getColumn(0, "CTR_FR_DT") + this.ds_ctrInfoNew.getColumn(0, "CTR_FR_TM") + " 일자로 계약연장을 " ])){
+
+                        var sLtcMgmtNo = this.ds_edaDt.getColumn(e.row, "LTC_MGMT_NO");
+
+                        var arg_aCond = { "prm_sLtcMgmtNo": sLtcMgmtNo };
+
+                        var sPopId      = "npia101p04";
+                        var sScrId      = "npia101p04";
+                        var sScrNm      = "갱신계약등록 팝업";
+                        var sUrl        = "biz_npi_a::npia101p04.xfdl";
+                        var nWidth      = 1022;
+                        var nHeight     = 613;
+                        var sArgs       = arg_aCond;
+                        var bIsModal    = true;
+
+                        var prm_aCncrInfo = this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+
+                        this.fn_selectEdaFrToDt();
+                    }
+                }
+
+                else if( e.col == 9 && this.gfn_isEmpty(this.ds_edaDt.getColumn(e.row, "ETS_DATE"))){
+                    if( !this.gfn_isEmpty(this.ds_edaDt.getColumn(e.row, "ETS_DATE2")))
+                    {
+                        this.ds_ctrInfoNew.clearData();
+                        var nAddRow = this.ds_ctrInfoNew.addRow();
+                        this.ds_ctrInfoNew.addRow();
+                        this.ds_ctrInfoNew.setColumn(nAddRow,"LTCP_CTR_NO", this.ds_edaDt.getColumn(e.row, "LTCP_CTR_NO"));
+                        this.ds_ctrInfoNew.setColumn(nAddRow,"LTC_MGMT_NO", this.ds_edaDt.getColumn(e.row, "LTC_MGMT_NO"));
+                        this.ds_ctrInfoNew.setColumn(nAddRow,"LTC_MGMT_NO_SEQ", this.ds_edaDt.getColumn(e.row, "LTC_MGMT_NO_SEQ"));
+                        this.ds_ctrInfoNew.setColumn(nAddRow,"CTR_FR_DT", this.ds_edaDt.getColumn(e.row, "ETS_DATE2").substring(0,8));
+                        this.ds_ctrInfoNew.setColumn(nAddRow,"CTR_FR_TM", "0000");
+
+                        if( this.gfn_msgShow(this, "XCTZ0051",[this.ds_ctrInfoNew.getColumn(0, "CTR_FR_DT") + this.ds_ctrInfoNew.getColumn(0, "CTR_FR_TM") + " 일자로 계약연장을 "])){
+
+        					//fn_saveEquipPaymtRnw();   // 급여계약연장
+
+        					var sLtcMgmtNo = this.ds_edaDt.getColumn(e.row, "LTC_MGMT_NO");
+
+        					var arg_aCond = {prm_sLtcMgmtNo:sLtcMgmtNo};
+
+        					var sPopId      = "npia101p04";
+        					var sScrId      = "npia101p04";
+        					var sScrNm      = "갱신계약등록 팝업";
+        					var sUrl        = "biz_npi_a::npia101p04.xfdl";
+        					var nWidth      = 1022;
+        					var nHeight     = 613;
+        					var sArgs       = arg_aCond;
+        					var bIsModal    = true;
+
+        					this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+                        }
+                    }
+                }
+            }
+        };
+
+
+
+        this.fn_checkMoveAndPop = function(){
+        	//trace("fn_checkMoveAndPop : " + ds_etrcOutBasic.findRowExpr("(ENTOUT_SCTN_FR_PTTN_CD == '20' || ENTOUT_SCTN_TO_PTTN_CD == '30') && TGT_YN == 'N'"));
+
+        	/* 시설에 치매전담형이 있는 경우에만 이동대상기관 입력 누락을 검증한다. */
+            if(this.ds_etrcOutBasic.findRowExpr("((ENTOUT_SCTN_FR_PTTN_CD == '20' && TGT_IN_YN == 'N') || (ENTOUT_SCTN_TO_PTTN_CD == '30' && TGT_OUT_YN == 'N')) && ADPT_TO_DT >= '20160701'") > -1){
+                this.alert("다음 팝업에서 이동 입퇴소 이동대상기관을 입력하세요.");
+                this.btn_dongDongMgt_onclick();
+            }
+        };
+
+        /* 201801 정책가산금 변경여부 체크 */
+        this.cmb_pocyType_onitemchanged = function(obj,e)
+        {
+        	this.ds_cond.setColumn(0,"POCY_ADD_AMT_TYPE_CD",this.cmb_pocyType.value);
+
+        	if(this.cmb_pocyType.value != this.ds_enOutMonth.getColumn(this.ds_enOutMonth.findRowExpr("POCY_ADD_AMT_TYPE_CD == '01' || POCY_ADD_AMT_TYPE_CD == '02'"),"POCY_ADD_AMT_TYPE_CD")){
+        		this.fv_bPocyTypeChgYn = true;
+        	}
+        	else {
+        		this.fv_bPocyTypeChgYn = false;
+        	}
+        };
+
+
+        // 미접종 신규입소 관련 팝업 호출
+        this.btn_notvac_onclick = function(obj,e)
+        {
+        	var sPopId  = "npfa201p08";
+            var sScrId  = "npfa201p08";
+
+                          var sArgs   = {LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+                            ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+                            TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM")
+                            };
+            var bIsModal= true;
+            var nWidth  = 1200;
+            var nHeight = 600;
+
+            this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        };
+
+        // 특례입소자 팝업 호출
+        this.btn_spcEntout_onclick = function(obj,e)
+        {
+        	var sPopId  = "npfa201p09";
+            var sScrId  = "npfa201p09";
+
+                          var sArgs   = {LTC_ADMIN_SYM:this.ds_cond.getColumn(0, "LTC_ADMIN_SYM"),
+                            ADMIN_PTTN_CD:this.ds_cond.getColumn(0, "ADMIN_PTTN_CD"),
+                            TGT_YYYYMM:this.ds_cond.getColumn(0, "TGT_YYYYMM")
+                            };
+            var bIsModal= true;
+            var nWidth  = 1030;
+            var nHeight = 600;
+
+            this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+        };
+
+        this.Static12_onclick = function(obj,e)
+        {
+
+        };
+
+        });
+        
+        // Regist UI Components Event
+        this.on_initEvent = function()
+        {
+            this.addEventHandler("onload",this.frm_onload,this);
+            this.addEventHandler("onkeydown",this.frm_onkeydown,this);
+            this.addEventHandler("onkeyup",this.frm_onkeyup,this);
+            this.gridTgtList.addEventHandler("onlbuttondown",this.gridTgtList_onlbuttondown,this);
+            this.grd_etrcOutBasic.addEventHandler("oncellclick",this.grd_etrcOutBasic_oncellclick,this);
+            this.grd_etrcOutBasic.addEventHandler("onexpanddown",this.grd_etrcOutBasic_onexpanddown,this);
+            this.grd_etrcOutBasic.addEventHandler("onnodataareaclick",this.grd_etrcOutBasic_onnodataareaclick,this);
+            this.grd_inOut.addEventHandler("onexpanddown",this.grd_inOut_onexpanddown,this);
+            this.btn_grdAdd_basic.addEventHandler("onclick",this.btn_grdAdd_basic_onclick,this);
+            this.btn_grdAdd_sub.addEventHandler("onclick",this.btn_grdAdd_sub_onclick,this);
+            this.btn_saveSctn.addEventHandler("onclick",this.btn_saveSctn_onclick,this);
+            this.btn_saveStout.addEventHandler("onclick",this.btn_saveStout_onclick,this);
+            this.Grid_calendar.addEventHandler("onheadclick",this.Grid_calendar_onheadclick,this);
+            this.btn_sctnDel.addEventHandler("onclick",this.btn_sctnDel_onclick,this);
+            this.btn_stoutDel.addEventHandler("onclick",this.btn_stoutDel_onclick,this);
+            this.btn_selectSctn.addEventHandler("onclick",this.btn_selectSctn_onclick,this);
+            this.grd_consrSelect.addEventHandler("oncelldblclick",this.grd_consrSelect_oncelldblclick,this);
+            this.btn_addUser.addEventHandler("onclick",this.btn_addUser_onclick,this);
+            this.btn_TgtDel.addEventHandler("onclick",this.btn_TgtDel_onclick,this);
+            this.grd_stoutConnsr.addEventHandler("onlbuttondown",this.grd_stoutConnsr_onlbuttondown,this);
+            this.grd_edaDt.addEventHandler("onlbuttondown",this.grd_edaDt_onlbuttondown,this);
+            this.btn_dongDongMgt.addEventHandler("onclick",this.btn_dongDongMgt_onclick,this);
+            this.btn_CreateCC.addEventHandler("onclick",this.btn_createCC_onclick,this);
+            this.cmb_pocyType.addEventHandler("onitemchanged",this.cmb_pocyType_onitemchanged,this);
+            this.Static12.addEventHandler("onclick",this.Static12_onclick,this);
+            this.btn_notvac.addEventHandler("onclick",this.btn_notvac_onclick,this);
+            this.btn_spcEntout.addEventHandler("onclick",this.btn_spcEntout_onclick,this);
+            this.ds_etrcOutBasic.addEventHandler("oncolumnchanged",this.ds_etrcOutBasic_oncolumnchanged,this);
+            this.ds_etrcOutBasic.addEventHandler("onrowposchanged",this.ds_etrcOutBasic_onrowposchanged,this);
+            this.ds_etrcOutSub.addEventHandler("oncolumnchanged",this.ds_etrcOutSub_oncolumnchanged,this);
+            this.ds_delEtrcOutBasic.addEventHandler("onrowposchanged",this.ds_etrcOutBasic_onrowposchanged,this);
+            this.ds_condConnsr.addEventHandler("onrowposchanged",this.ds_entOutScps_onrowposchanged,this);
+            this.ds_condConnsr.addEventHandler("oncolumnchanged",this.ds_entOutScps_oncolumnchanged,this);
+            this.ds_condStoutConnsr.addEventHandler("oncolumnchanged",this.ds_etrcOutSub_oncolumnchanged,this);
+            this.ds_entOutTgtList.addEventHandler("onrowposchanged",this.ds_entOutTgtList_onrowposchanged,this);
+        };
+
+        this.loadIncludeScript("npfa201m01.xfdl");
+        this.loadPreloadList();
+        
+        // Remove Reference
+        obj = null;
+    };
+}
+)();

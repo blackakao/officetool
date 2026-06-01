@@ -1,0 +1,1366 @@
+(function()
+{
+    return function()
+    {
+        if (!this._is_form)
+            return;
+        
+        var obj = null;
+        
+        this.on_create = function()
+        {
+            this.set_initvalueid("iv_Form()");
+            this.set_name("npfa100m01");
+            this.set_titletext("급여비용가산및감액산정");
+            this.set_scrolltype("autovert");
+            if (Form == this.constructor)
+            {
+                this._setFormPosition(1280,370);
+            }
+            
+            // Object(Dataset, ExcelExportObject) Initialize
+            obj = new Dataset("ds_fm_cond", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"LTC_ADMIN_SYM_NM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"DTL_ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/><Column id=\"PLN_EXEC\" type=\"STRING\" size=\"256\"/><Column id=\"OPEN_POSI\" type=\"STRING\" size=\"256\"/><Column id=\"CHG_ABLE\" type=\"STRING\" size=\"256\"/><Column id=\"PRN_ABLE\" type=\"STRING\" size=\"256\"/><Column id=\"SPR_ABLE\" type=\"STRING\" size=\"256\"/><Column id=\"DOC_STAT\" type=\"STRING\" size=\"256\"/><Column id=\"WORKING_TIME\" type=\"STRING\" size=\"256\"/><Column id=\"DM_YN\" type=\"STRING\" size=\"256\"/><Column id=\"DM_DP\" type=\"STRING\" size=\"256\"/></ColumnInfo><Rows><Row/></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_menu", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_progStat", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_ltcoList", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD_SUBSTR1\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"256\"/><Column id=\"ADPT_YN\" type=\"STRING\" size=\"256\"/><Column id=\"SYS_REG_DTTM\" type=\"STRING\" size=\"256\"/><Column id=\"BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"DM_BASE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"DM_BASE_CD_NM\" type=\"STRING\" size=\"256\"/><Column id=\"G_ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_imsi", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"LTC_ADMIN_SYM\" type=\"STRING\" size=\"256\"/><Column id=\"ADMIN_PTTN_CD\" type=\"STRING\" size=\"256\"/><Column id=\"TGT_YYYYMM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_commonCodeList", this);
+            obj.set_useclientlayout("false");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"SYS_CD\" type=\"STRING\" size=\"32\"/><Column id=\"BASE_CD_PTTN\" type=\"STRING\" size=\"32\"/><Column id=\"COMMENT\" type=\"STRING\" size=\"256\"/><Column id=\"RETURN_DATASET\" type=\"STRING\" size=\"256\"/><Column id=\"TYPE\" type=\"STRING\" size=\"256\"/><Column id=\"BASE_CD_USE_BUSI_TYPE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"SPST_LTC_BASE_CD_PTTN\" type=\"STRING\" size=\"32\"/><Column id=\"BASE_CD\" type=\"STRING\" size=\"32\"/><Column id=\"BASE_CD_NM\" type=\"STRING\" size=\"32\"/><Column id=\"SPST_LTC_BASE_CD\" type=\"STRING\" size=\"32\"/><Column id=\"SPARE_1\" type=\"STRING\" size=\"32\"/><Column id=\"SPARE_2\" type=\"STRING\" size=\"32\"/><Column id=\"SPARE_3\" type=\"STRING\" size=\"32\"/><Column id=\"SPARE_4\" type=\"STRING\" size=\"32\"/><Column id=\"SPARE_5\" type=\"STRING\" size=\"32\"/><Column id=\"ADPT_FR_DT\" type=\"STRING\" size=\"32\"/><Column id=\"ADPT_TO_DT\" type=\"STRING\" size=\"32\"/><Column id=\"SORT_ORD\" type=\"BIGDECIMAL\" size=\"16\"/><Column id=\"CD_RMK\" type=\"STRING\" size=\"32\"/></ColumnInfo><Rows><Row><Col id=\"SYS_CD\">NY</Col><Col id=\"BASE_CD_PTTN\">5R17</Col><Col id=\"COMMENT\">통합재가예비사업기간</Col><Col id=\"RETURN_DATASET\">ds_5R17</Col><Col id=\"TYPE\">N</Col></Row></Rows>");
+            this.addChild(obj.name, obj);
+
+
+            obj = new Dataset("ds_5R17", this);
+            obj.set_useclientlayout("true");
+            obj.set_updatecontrol("true");
+            obj.set_enableevent("true");
+            obj.set_loadkeymode("keep");
+            obj.set_loadfiltermode("keep");
+            obj.set_reversesubsum("false");
+            obj._setContents("<ColumnInfo><Column id=\"BASE_CD\" type=\"STRING\" size=\"256\"/><Column id=\"BASE_CD_NM\" type=\"STRING\" size=\"256\"/></ColumnInfo>");
+            this.addChild(obj.name, obj);
+            
+            // UI Components Initialize
+            obj = new Grid("grid_menu","0","0","170","40",null,null,null,null,null,null,this);
+            obj.set_taborder("0");
+            obj.set_binddataset("ds_menu");
+            obj.set_autoenter("select");
+            obj.set_cellsizingtype("col");
+            obj.set_cellmovingtype("col");
+            obj.set_autofittype("col");
+            obj.set_tooltiptype("hover");
+            obj.getSetter("_checkhead").set("true");
+            obj.getSetter("_filter").set("true");
+            obj.getSetter("_hideColumn").set("true");
+            obj.getSetter("_fixedColumn").set("true");
+            obj.getSetter("objectType").set("gridCommE");
+            obj.set_enable("true");
+            obj.set_scrolltype("none");
+            obj.set_border("1px none,0px none,0px none");
+            obj._setContents("<Formats><Format id=\"default\"><Columns><Column size=\"20\"/><Column size=\"150\"/></Columns><Rows><Row size=\"40\" band=\"head\"/><Row size=\"10\" band=\"head\"/><Row size=\"35\"/></Rows><Band id=\"head\"><Cell colspan=\"2\" displaytype=\"normal\" text=\"사용자 메뉴\" align=\"left\" color=\"#ef3f3e\" font=\"bold 9pt Gulim\" textAlign=\"left\" cssclass=\"expr:comp.parent.fn_setBackground('HEAD')\"/><Cell row=\"1\" colspan=\"2\" background=\"white\"/></Band><Band id=\"body\"><Cell displaytype=\"normal\" text=\"*\" tooltiptext=\"bind:MENU_NM\" background=\"white\" color=\"#ef3f3e\" font=\"normal 8pt/normal &quot;Gulim&quot;\" border=\"1px solid #dae2e7,0px none,1px solid #dae2e7,1px solid #dae2e7\"/><Cell col=\"1\" displaytype=\"normal\" text=\"bind:MENU_NM\" textAlign=\"left\" background=\"white\" color=\"#363a47\" cssclass=\"expr:comp.parent.fn_setBackground('BODY', PGM_ID)\"/></Band></Format></Formats>");
+            this.addChild(obj.name, obj);
+
+            obj = new Div("div_main","180","40",null,null,"3","10",null,null,null,null,this);
+            obj.set_taborder("1");
+            obj.set_text("Page Loading ...");
+            obj.set_font("bold 10px Gulim");
+            obj.set_color("red");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_title","180","0",null,"40","3",null,null,null,null,null,this);
+            obj.set_cssclass("sta_WFSA_data");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static04","181","0","1033","9",null,null,null,null,null,null,this);
+            obj.set_text("9");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static00","180","0","15","40",null,null,null,null,null,null,this);
+            obj.set_text("15");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_ltcAdminSymNm","409","9","363","22",null,null,null,null,null,null,this);
+            obj.set_text("급여유형 : ");
+            obj.set_cssclass("sta_WFSA_label_P");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static02","388","9","20","22",null,null,null,null,null,null,this);
+            obj.set_text("20");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_tgtYyyymm","196","9","204","22",null,null,null,null,null,null,this);
+            obj.set_text("급여제공년월 : ");
+            obj.set_cssclass("sta_WFSA_label_P");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static06","181","31","1033","9",null,null,null,null,null,null,this);
+            obj.set_text("9");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static08","830","9","20","22",null,null,null,null,null,null,this);
+            obj.set_text("20");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("Static19","1264","0","15","40",null,null,null,null,null,null,this);
+            obj.set_text("15");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_HelpGuide01");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_mmStdWkgTm",null,"10","199","22","234",null,null,null,null,null,this);
+            obj.set_text("[월기준근무시간 : ]");
+            obj.set_visible("true");
+            obj.set_cssclass("sta_WF_title5");
+            obj.set_font("bold 10pt Gulim");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_1px","169","0","10","290",null,null,null,null,null,null,this);
+            obj.set_background("#ffffff");
+            this.addChild(obj.name, obj);
+
+            obj = new Static("stc_docStat",null,"10","162","22","62",null,null,null,null,null,this);
+            obj.set_text("[자료상태 : 입력가능]");
+            obj.set_visible("false");
+            obj.set_cssclass("sta_WF_title5");
+            obj.set_font("bold 10pt Gulim");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_close",null,"9","45","22","16",null,null,null,null,null,this);
+            obj.set_taborder("63");
+            obj.set_text("닫기");
+            obj.set_tooltiptext("닫기");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_expl","133","7","31","26",null,null,null,null,null,null,this);
+            obj.set_taborder("64");
+            obj.set_tooltiptext("화면설명");
+            obj.set_cssclass("btn_WF_Question");
+            this.addChild(obj.name, obj);
+
+            obj = new Button("btn_faq","74","6","55","24",null,null,null,null,null,null,this);
+            obj.set_taborder("16");
+            obj.set_text("도와줘요");
+            obj.set_tooltiptext("여기를 누르면 급여비용청구FAQ를 볼수 있습니다.");
+            obj.set_background("");
+            obj.set_font("bold 8pt/normal \"굴림\",\"Arial\"");
+            obj.set_cssclass("btn_WF_Explain");
+            obj.set_verticalAlign("middle");
+            this.addChild(obj.name, obj);
+
+            // Layout Functions
+            //-- Default Layout : this
+            obj = new Layout("default","",this._adjust_width,this._adjust_height,this,function(p){});
+            this.addLayout(obj.name, obj);
+            
+            // BindItem Information
+
+        };
+        
+        this.loadPreloadList = function()
+        {
+
+        };
+        
+        // User Script
+        this.registerScript("npfa100m01.xfdl", function() {
+
+        /*=============================   Program description   ================================*
+         * Form ID     : npfa100m01.xfdl
+         * Form Desc.  : 급여비용가산및감액산정
+         * Author      : 양재호
+         * Create Date : 2015.11.30
+         * Change History
+         *======================================================================================*
+         * 수정일 / 이름 / 사유
+         *======================================================================================*
+         *======================================================================================*/
+
+         /*======================================================================================*
+         * 1. include
+         *======================================================================================*/
+        //include "biz.library::nyb_include.xjs";
+
+        //버튼제한 SuperPass 기관등록
+        this.fv_supperPass;
+
+        //////////////////////////////////////
+        //// 201905 추가 시스템일자
+        this.fv_userInfo;
+        this.fv_sToday;
+        //////////////////////////////////////
+
+        // 20180207 KHCHO 급여유형코드 수정
+        this.v_admin_pttn_cd_substr1 = "";
+
+        //★국정과제-통합재가2차사업[2023.03반영예정]:단기보호추가
+        this.fv_unity_oah_vis_dt = "202303";
+        this.fv_unity_oah_vis_2cha_yn = "N";
+
+        //2025.01고시 적용일
+        this.gosi_20250101 = "202501";  //고시적용시작일은 개발[2024.01.01] 운영[2025.01.01]
+        /*======================================================================================*
+         * 2. Form 변수
+         *======================================================================================*/
+        /*
+        AAA : 입소시설
+        A01 : 노인요양(구법)
+        A02 : 노인전문요양(구법)
+        A03 : 노인요양(현행법)
+        A04 : 노인요양공동생활가정
+        A05 : 노인요양시설(단기보호전환)
+        B01, C01 : 방문요양
+        B02, C02 : 방문목욕
+        B03, C03 : 주야간보호
+        B04, C04 : 단기보호
+        B05, C05 : 방문간호
+        C06 : 복지용구
+        */
+
+        /*======================================================================================*
+         * 3. Form Load
+         *======================================================================================*/
+        this.frm_onload = function(obj,e)
+        {
+
+        //////////////////////////////////////
+        //// 201905 추가 시스템일자
+            this.fv_userInfo         = this.bfn_getUserInfo();
+            this.fv_sToday           = this.fv_userInfo.today;                           // 오늘 날짜
+        //////////////////////////////////////
+
+            this.cfn_frmInit(obj);
+
+            //버튼제한 SuperPass 기관등록
+            this.fv_supperPass = [
+                /*["21121500132","B01","201603"],
+                ["14146000012","A03","201511"]
+        		["12920000204","A03","201902"]
+        		["14127000817","A03", "202210"]
+        		,["14155000004","A03", "202210"]
+        		,["14146000023","A03", "202210"]
+        		,["12817000004","A03", "202210"]
+        		,["14165000009","A03", "202210"]
+        		,["14139000235","A03", "202210"]
+        		,["14173000072","A03", "202210"]
+        		,["14117000146","A03", "202210"]
+        		,["11147000005","A03", "202210"]
+        		,["14213000155","A03", "202210"]
+        	*/
+            ];
+
+        };
+
+
+        this.fn_frmInit = function()
+        {
+
+            this.LTC_ADMIN_SYM     = this.gfn_getParam("LTC_ADMIN_SYM");
+            this.ADMIN_PTTN_CD_NM  = this.gfn_getParam("ADMIN_PTTN_CD_NM");
+            this.ADMIN_PTTN_CD     = this.gfn_getParam("ADMIN_PTTN_CD");
+            this.TGT_YYYYMM        = this.gfn_getParam("TGT_YYYYMM");
+            this.DTL_ADMIN_PTTN_CD = this.gfn_getParam("DTL_ADMIN_PTTN_CD");
+
+            this.PLN_EXEC          = this.gfn_getParam("PLN_EXEC");
+            this.OPEN_POSI         = this.gfn_getParam("OPEN_POSI");
+            this.CHG_ABLE          = this.gfn_getParam("CHG_ABLE");
+
+
+        //////////////////////////////////////
+        //// 201905 변경 당월 가감산정은 false 로 셋팅
+        //  this.PRN_ABLE          = this.gfn_getParam("PRN_ABLE");
+
+            if (this.TGT_YYYYMM == String(this.fv_sToday).substr(0, 6)) {
+        		this.PRN_ABLE          = false;
+            } else {
+                this.PRN_ABLE          = this.gfn_getParam("PRN_ABLE");
+            }
+
+        trace("################ this.PRN_ABLE(1) : "+this.PRN_ABLE);
+
+        //////////////////////////////////////
+
+            this.SPR_ABLE          = this.gfn_getParam("SPR_ABLE");
+            this.ADD_HEIGHT        = this.gfn_getParam("ADD_HEIGHT");
+        	this.UNITY_OAH_VIS_YN = this.gfn_getParam("UNITY_OAH_VIS_YN"); //통합재가(가정방문형) 제공기관 여부
+        	this.UNITY_OAH_DAY_YN = this.gfn_getParam("UNITY_OAH_DAY_YN"); //통합재가(주야간보호통합형) 제공기관 여부
+        	this.UNITY_OAH_SVC_YN = this.gfn_getParam("UNITY_OAH_SVC_YN"); //통합재가(통합재가서비스) 제공기관 여부
+
+        	//공통코드  ★국정과제-통합재가2차사업[2023.03반영예정]:1차,2차 반영일관리 (5R17)
+        	this.cfn_getCommonCode(this);
+
+        /***************************************************************************
+         ** 201905 높이 조절 필요 없음
+         ***************************************************************************
+        ////////////////////////////////////////////////////////////////
+        //// 2019.01.30 해상도가 낮은 모니터에서 POPUP 창이 잘리는 현상 보안
+        ////////////////////////////////////////////////////////////////
+        //  this.ADD_HEIGHT = 70;
+        //
+        //  if (this.ADD_HEIGHT == 0) {
+        //      this.ADD_HEIGHT = 90;
+        //  }
+
+            if (this.height < 650) {
+                this.ADD_HEIGHT = 20;
+
+            } else {
+                this.ADD_HEIGHT = 70;
+
+                if (this.ADD_HEIGHT == 0) {
+                    this.ADD_HEIGHT = 90;
+                }
+
+            }
+        ////////////////////////////////////////////////////////////////
+         ***************************************************************************/
+
+            this.ds_fm_cond.setColumn(0,"LTC_ADMIN_SYM"    , this.LTC_ADMIN_SYM);
+            this.ds_fm_cond.setColumn(0,"ADMIN_PTTN_CD_NM" , this.ADMIN_PTTN_CD_NM);
+            this.ds_fm_cond.setColumn(0,"ADMIN_PTTN_CD"    , this.ADMIN_PTTN_CD);
+            this.ds_fm_cond.setColumn(0,"TGT_YYYYMM"       , this.TGT_YYYYMM);
+            this.ds_fm_cond.setColumn(0,"PLN_EXEC"         , this.PLN_EXEC);
+            this.ds_fm_cond.setColumn(0,"OPEN_POSI"        , this.OPEN_POSI);
+            this.ds_fm_cond.setColumn(0,"CHG_ABLE"         , this.CHG_ABLE);
+            this.ds_fm_cond.setColumn(0,"SPR_ABLE"         , this.SPR_ABLE);
+            this.ds_fm_cond.setColumn(0,"PRN_ABLE"         , this.PRN_ABLE);
+
+            this.ds_fm_cond.setColumn(0,"DM_YN"            , "N");  /*치매전담형_고시_개정_[201607]*/
+            this.ds_fm_cond.setColumn(0,"DM_DP"            , "N");  //월중 일반형 치매전담형 혼재
+
+            this.ds_fm_cond.setColumn(0,"DTL_ADMIN_PTTN_CD", this.ADMIN_PTTN_CD); //20181018 KHCHO
+
+
+            //기관유형, 급여제공년월 초기화
+            this.stc_tgtYyyymm.set_text(this.stc_tgtYyyymm.text +this.TGT_YYYYMM.substring(0,4) +"년 "+this.TGT_YYYYMM.substring(4,6) +"월");
+            this.stc_ltcAdminSymNm.set_text(this.stc_ltcAdminSymNm.text +this.ADMIN_PTTN_CD_NM);
+
+            // 20180207 KHCHO 급여유형코드 수정
+            this.v_admin_pttn_cd_substr1 = this.ADMIN_PTTN_CD.substring(0,1);
+
+            // 장기요양기관 존재여부 조회
+            this.fn_selectLtcoExist();
+            // selectLtcoExist 실행후 후처리로 이동함.
+            //메뉴 조회
+            //fn_selectMenuList();
+            //제출 진행상태 조회
+            //fn_selectProgStat();
+            //월기준근무시간 조회
+            //fn_selectMmStdWkgTm();
+
+
+        /***************************************************************************
+         ** 201905 높이 조절 필요 없음
+         ***************************************************************************
+            //화면 높이조절
+            if(!this.gfn_isEmpty(this.ADD_HEIGHT)){ //ADD_HEIGHT : 메인팝업 오픈시 화면 높이 넘겨주는 변수
+        ////////////////////////////////////////////////////////////////
+        //// 2019.01.30 해상도가 낮은 모니터에서 POPUP 창이 잘리는 현상 보안
+        ////////////////////////////////////////////////////////////////
+                //this.div_main.setOffsetHeight(this.div_main.getOffsetHeight() +this.ADD_HEIGHT);
+
+                if (this.height < 663) {
+                    this.div_main.setOffsetHeight(this.height);
+
+                } else {
+                    this.div_main.setOffsetHeight(parseInt(this.div_main.getOffsetHeight()) + parseInt(this.ADD_HEIGHT));
+
+                }
+        ////////////////////////////////////////////////////////////////
+            }
+         ***************************************************************************/
+
+        };
+
+
+        /*======================================================================================*
+         * 4.Transaction
+         *======================================================================================*/
+
+         // 장기요양기관 존재여부 조회
+        this.fn_selectLtcoExist = function()
+        {
+
+            var sSvcId        = "selectLtcoExist";
+            var sPath         = "/f/a/100/selectLtcoExist.do";
+            var sInputDsName  = "ds_cond=ds_fm_cond";
+            var sOutputDsName = "ds_ltcoList=ds_ltcoList";
+            var sArg          = "";
+            var oPreArgs      = [];
+            var sCallback     = "fn_callBack";
+
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+
+        /*치매전담형_고시_개정_[201607]*/
+        // 메인화면에서 넘기지않고 팝업에서 재조회(계약, 청구에서 팝업을 호출하므로)
+        // 장기요양기관 조회
+        this.fn_selectLtcoTgtMonth = function()
+        {
+
+            var sSvcId        = "selectLtcoTgtMonth";
+            var sPath         = "/f/a/100/selectLtcoTgtMonth.do";
+            var sInputDsName  = "ds_cond=ds_fm_cond";
+            var sOutputDsName = "ds_ltcoList=ds_ltcoList";
+            var sArg          = "";
+            var oPreArgs      = [];
+            var sCallback     = "fn_callBack";
+
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+
+        //메뉴 조회
+        this.fn_selectMenuList = function()
+        {
+
+            var sSvcId        = "selectMenuList";
+            var sPath         = "/f/a/100/selectMenuList.do";
+            var sInputDsName  = "ds_cond=ds_fm_cond";
+            var sOutputDsName = "ds_menu=ds_menu";
+            var sArg          = "";
+            var oPreArgs      = [];
+            var sCallback     = "fn_callBack";
+
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+
+        // 월기준근무시간 조회
+        this.fn_selectMmStdWkgTm = function()
+        {
+
+            var sSvcId        = "selectMmStdWkgTm";
+            var sPath         = "/f/a/100/selectMmStdWkgTm.do";
+            var sInputDsName  = "ds_cond=ds_fm_cond";
+            var sOutputDsName = "ds_fm_cond=ds_cond";
+            var sArg          = "";
+            var oPreArgs      = [];
+            var sCallback     = "fn_callBack";
+
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback);
+
+        };
+
+
+        //제출 진행상태 조회
+        this.fn_selectProgStat = function()
+        {
+
+            var sSvcId        = "selectProgStat";
+            var sPath         = "/f/a/100/selectProgStat.do";
+            var sInputDsName  = "ds_cond=ds_fm_cond";
+            var sOutputDsName = "ds_progStat=ds_progStat";
+            var sArg          = "";
+            var oPreArgs      = [];
+            var sCallback     = "fn_callBack";
+
+            // 백그라운드 컬러 표시하는 부분때문에 sync로 변경. async시 refresh시 색깔이 안 바뀜
+            var bASync    = false;
+
+            this.gfn_callService(sSvcId, sPath, sInputDsName, sOutputDsName, sArg, oPreArgs, sCallback, bASync);
+
+        };
+
+
+        /*======================================================================================*
+         * 5. Transaction 전/후 처리 함수
+         *======================================================================================*
+         * 5.1 CallPrev- Transaction전 처리
+         *======================================================================================*/
+
+        this.fn_callBack = function(sSvcId,nErrorCode,sErrorMsg)
+        {
+
+            this.setWaitCursor(false);
+
+            // 장기요양기관 존재여부 조회
+            if (sSvcId == "selectLtcoExist") {
+
+                if(this.ds_ltcoList.rowcount > 0){ //확인후 존재한 경우
+                    //stc_ltcAdminSymNm.text = "급여유형 : " + ds_ltcoList.getColumn(0, "BASE_CD_NM");
+                    //ds_fm_cond.setColumn(0, "ADMIN_PTTN_CD", ds_ltcoList.getColumn(0, "ADMIN_PTTN_CD"));
+
+                    //메뉴 조회
+                    //fn_selectMenuList();
+
+                    //제출 진행상태 조회
+                    //fn_selectProgStat();
+
+                    // 월기준근무시간 조회
+                    //fn_selectMmStdWkgTm();
+
+                    // 장기요양기관 조회
+
+                    if(this.v_admin_pttn_cd_substr1 == 'G' || this.v_admin_pttn_cd_substr1 == 'M'){     //치매전담실 가형 , 나형
+                        this.ds_fm_cond.setColumn(0,"ADMIN_PTTN_CD", "A03");
+                    }
+                    if(this.v_admin_pttn_cd_substr1 == 'S'){                                //치매전담형노인공동생활가정 G41->S41 (20180207)
+                        this.ds_fm_cond.setColumn(0,"ADMIN_PTTN_CD", "A04");
+                    }
+                    if(this.v_admin_pttn_cd_substr1 == 'H'){
+                        this.ds_fm_cond.setColumn(0,"ADMIN_PTTN_CD", "B03");
+                    }
+                    if(this.v_admin_pttn_cd_substr1 == 'I'){
+                        this.ds_fm_cond.setColumn(0,"ADMIN_PTTN_CD", "C03");
+                    }
+
+                    this.fn_selectLtcoTgtMonth();/*치매전담형_고시_개정_[201607]*/
+                }
+                else{ //확인후 존재하지 않는경우
+                    this.gfn_msgShow(this, "XWTZ0039", ["["+this.TGT_YYYYMM.substring(0,4) +"년 "+this.TGT_YYYYMM.substring(4,6) +"월] 제공되는 급여유형이", "\n\n화면을 종료합니다." ]);
+                    this.fn_close();
+                }
+            }
+
+            /*치매전담형_고시_개정_[201607]*/
+            // 장기요양기관 존재여부 조회
+            if (sSvcId == "selectLtcoTgtMonth") {
+
+                //급여유형이 포함되어있는지 체크
+                var rowCnt = this.ds_ltcoList.getCaseCount("ADMIN_PTTN_CD_SUBSTR1 == 'G' || ADMIN_PTTN_CD_SUBSTR1 == 'M' || ADMIN_PTTN_CD_SUBSTR1 == 'S' || ADMIN_PTTN_CD_SUBSTR1 == 'H' || ADMIN_PTTN_CD_SUBSTR1 == 'I'");
+        		//20190828 주야간 치매2실 이상 체크
+        		var rowHICnt = 0;
+
+
+                //선택한 급여유형이 아래 유형이면 ds_fm_cond 설정변경
+                var bType = false;
+                if(this.ADMIN_PTTN_CD == "A03" || this.v_admin_pttn_cd_substr1 == 'G' || this.v_admin_pttn_cd_substr1 == 'M'
+                    || this.ADMIN_PTTN_CD == "A04" || this.v_admin_pttn_cd_substr1 == 'S'
+                    || this.ADMIN_PTTN_CD == "B03" || this.v_admin_pttn_cd_substr1 == 'H'
+                    || this.ADMIN_PTTN_CD == "C03" || this.v_admin_pttn_cd_substr1 == 'I'){
+                        bType = true;
+                }
+
+                if(rowCnt > 0 && bType){
+
+                    var adminSymNm = "급여유형 : ";
+                    var pttnCd = "";
+                    var pttnCd_substr1 = ""; // 20180207 급여유형 확대 적용
+
+                    if(this.ds_ltcoList.rowcount == 1){
+
+                        pttnCd = this.ds_ltcoList.getColumn(0, "ADMIN_PTTN_CD");
+                        pttnCd_substr1 = this.ds_ltcoList.getColumn(0, "ADMIN_PTTN_CD_SUBSTR1"); // 20180207 급여유형 확대 적용
+
+                        adminSymNm += this.ds_ltcoList.getColumn(0, "BASE_CD_NM");
+                        this.ds_ltcoList.setColumn(0, "DM_BASE_CD", pttnCd.charAt(0) == "A" ? "AAA" : pttnCd);
+
+                        // 20180207 급여유형 확대 적용
+                        if(pttnCd_substr1 == "G" || pttnCd_substr1 == "M"){
+                            this.ds_ltcoList.setColumn(0, "DM_BASE_CD_NM", this.ds_ltcoList.getColumn(0, "BASE_CD_NM").substring(5,10));
+                        }else if(pttnCd_substr1 == "S"){
+                            this.ds_ltcoList.setColumn(0, "DM_BASE_CD_NM", "치매전담형");
+                        }else if(pttnCd_substr1 == "H" || pttnCd_substr1 == "I"){
+                            this.ds_ltcoList.setColumn(0, "DM_BASE_CD_NM", "치매전담형");
+                            this.ds_fm_cond.setColumn(0,"DM_DP", "Y");
+                        }else{
+                            this.ds_ltcoList.setColumn(0, "DM_BASE_CD_NM", this.ds_ltcoList.getColumn(0, "BASE_CD_NM"));
+                        }
+                    }else{
+
+                        for(i=0; i<this.ds_ltcoList.rowcount; i++){
+
+                            pttnCd = this.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD");
+                            pttnCd_substr1 = this.ds_ltcoList.getColumn(i, "ADMIN_PTTN_CD_SUBSTR1"); // 20180207 급여유형 확대 적용
+
+                            if(pttnCd_substr1 == "G" || pttnCd_substr1 == "M"){
+                                var baseCdNm = this.ds_ltcoList.getColumn(i, "BASE_CD_NM");
+                                adminSymNm += ", "+ baseCdNm.substring(5,10);
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD", pttnCd);
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD_NM", baseCdNm.substring(5,10));
+                                this.ds_fm_cond.setColumn(0,"DM_DP", "Y");
+                            }else if(pttnCd_substr1 == "S"){/* 치매전담형 공생 */
+                                adminSymNm += ", 치매전담형";
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD", pttnCd);
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD_NM", "치매전담형");
+                                this.ds_fm_cond.setColumn(0,"DM_DP", "Y");
+                            }else if(pttnCd_substr1 == "H" || pttnCd_substr1 == "I"){/* 치매전담형 주야간보호 */
+                                rowCnt = this.ds_ltcoList.getCaseCount("ADMIN_PTTN_CD == 'B03' || ADMIN_PTTN_CD == 'C03'");
+                                if(rowCnt == 0){ //치매전담형 주야간만 있음.
+        							//20190828 주야간 치매실 2실이상 존재하는 기관 신설
+        							rowHICnt = this.ds_ltcoList.getCaseCount("ADMIN_PTTN_CD_SUBSTR1 == 'H' || ADMIN_PTTN_CD_SUBSTR1 == 'I'");
+        							//rowHICnt = 1 ;  //테스트위해 기존데로해봄
+        							if (rowHICnt == 1){
+        								//치매전담 1개만 있음, 기존대로
+        								adminSymNm += this.ds_ltcoList.getColumn(i, "BASE_CD_NM");
+        								this.ds_ltcoList.setColumn(i, "DM_BASE_CD_NM", "치매전담형");
+        							}
+        							else{
+        								//20190828 주야간 치매실 2실이상 존재하는 기관 신설
+        								//실구분필요, 이 경우 일반실이 없으므로 처음에 , 표시가 들어가면안됨
+        								var baseCdNm = this.ds_ltcoList.getColumn(i, "BASE_CD_NM");
+        								if (adminSymNm == "급여유형 : "){
+        									adminSymNm += baseCdNm.substring(6,13);
+        								}
+        								else{
+        									adminSymNm += ", "+ baseCdNm.substring(6,13);
+        								}
+        								this.ds_ltcoList.setColumn(i, "DM_BASE_CD_NM", baseCdNm.substring(6,13));
+        							}
+                                }
+                                else{ //월중급여유형변경으로 급여유형 두개존재
+                                    var baseCdNm = this.ds_ltcoList.getColumn(i, "BASE_CD_NM");
+                                    adminSymNm += ", "+ baseCdNm.substring(6,13);
+                                    this.ds_ltcoList.setColumn(i, "DM_BASE_CD_NM", baseCdNm.substring(6,13));
+                                }
+                                this.ds_fm_cond.setColumn(0,"DM_DP", "Y");
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD", pttnCd);
+                            }else if(pttnCd == "A03" || pttnCd == "A04" || pttnCd == "B03" || pttnCd == "C03"){
+                                adminSymNm += this.ds_ltcoList.getColumn(i, "BASE_CD_NM");
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD", pttnCd.charAt(0) == "A" ? "AAA" : pttnCd);
+                                this.ds_ltcoList.setColumn(i, "DM_BASE_CD_NM", "일반실");
+                            }
+                        }
+                    }
+
+                    this.ds_fm_cond.setColumn(0,"DM_YN", "Y");
+                    this.stc_ltcAdminSymNm.set_text(adminSymNm);
+                }
+
+                //메뉴 조회
+                this.fn_selectMenuList();
+                //제출 진행상태 조회
+                this.fn_selectProgStat();
+                // 월기준근무시간 조회
+                this.fn_selectMmStdWkgTm();
+            }
+
+            // 월기준근무시간 조회
+            if (sSvcId == "selectMmStdWkgTm") {
+                this.working_time = this.ds_fm_cond.getColumn(0, "WORKING_TIME");
+                if(this.gfn_isEmpty(this.working_time) || this.working_time == "0"){
+                    this.ds_fm_cond.setColumn(0, "WORKING_TIME", "160");
+                    this.working_time = "160";
+                }
+                this.stc_mmStdWkgTm.set_text("[월기준근무시간 : "+ this.working_time +"시간]");
+
+                //자료상태
+                if(this.ds_fm_cond.getColumn(0,"DOC_STAT") == "N"){
+                    this.ds_fm_cond.setColumn(0,"CHG_ABLE", false);
+                    this.ds_fm_cond.setColumn(0,"PRN_ABLE", false);
+                    this.CHG_ABLE = false;
+                    this.PRN_ABLE = false;
+                    this.stc_docStat.set_text("[자료상태 : 입력불가]");
+                    this.stc_docStat.set_color("orangered");
+                }
+
+                if( !this.CHG_ABLE && !this.PRN_ABLE){
+                    this.stc_docStat.set_text("[자료상태 : 입력불가]");
+                    this.stc_docStat.set_color("orangered");
+                }
+
+                //SuperPass 기관등록 버튼허용
+                for(i=0; i<this.fv_supperPass.length; i++){
+                    var passItem = this.fv_supperPass[i];
+        trace("@@@@@@@@@@  passItem[0] :"+passItem[0]);
+        trace("@@@@@@@@@@  passItem[1] :"+passItem[1]);
+        trace("@@@@@@@@@@  passItem[2] :"+passItem[2]);
+        trace("@@@@@@@@@@  fv_sToday : "+String(this.fv_sToday).substr(0, 6));
+
+
+                    if(this.ds_fm_cond.getColumn(0, "LTC_ADMIN_SYM") == passItem[0] && this.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD") == passItem[1] && this.ds_fm_cond.getColumn(0, "TGT_YYYYMM") == passItem[2]){
+                        this.ds_fm_cond.setColumn(0,"CHG_ABLE", true);
+                        this.ds_fm_cond.setColumn(0,"PRN_ABLE", true);
+                        this.ds_fm_cond.setColumn(0,"SPR_ABLE", true);
+                        this.CHG_ABLE = true;
+
+
+        				this.PRN_ABLE = true;
+        trace("################ this.PRN_ABLE(2) : "+this.PRN_ABLE);
+        //////////////////////////////////////
+        //// 201905 변경 당월 가감산정은 false 로 셋팅
+        //                 this.PRN_ABLE = true;
+                        if (this.TGT_YYYYMM == String(this.fv_sToday).substr(0, 6)) {
+        					//this.PRN_ABLE = false;
+                        } else {
+                            this.PRN_ABLE = true;
+                        }
+        trace("################ this.PRN_ABLE(3) : "+this.PRN_ABLE);
+
+        //////////////////////////////////////
+                        this.SPR_ABLE = true;
+                        this.stc_docStat.set_text("[자료상태 : 입력가능]");
+                        this.stc_docStat.set_color("#3380baff");
+                    }
+                }
+
+            }
+
+            //메뉴 조회
+            if (sSvcId == "selectMenuList") {
+
+                //2014년01월 이전 프로그램관리/결정요청 메뉴제거
+                if(parseInt(this.TGT_YYYYMM) < 201401){
+                    for(i=this.ds_menu.colcount-1; i>=0; i-- ){
+                        var pgm_id = this.ds_menu.getColumn(i, "PGM_ID");
+                        if(pgm_id == "npfa500m01" || pgm_id == "npfa601m01" || pgm_id == "npfa606m01"){
+                            this.ds_menu.deleteRow(i);
+                        }
+                    }
+                }
+
+                //2016년03월 이전 사회복지사방문관리  메뉴제거
+                if(parseInt(this.TGT_YYYYMM) < 201603){
+                    this.ds_menu.deleteRow(this.ds_menu.findRow("PGM_ID","npfa409m01"));
+                }
+        		//★국정과제-통합재가2차사업[2023.03반영예정]:매뉴재구성
+                if(this.fv_unity_oah_vis_2cha_yn == "Y"){
+        			this.ds_menu.setColumn(this.ds_menu.findRow("PGM_URL","biz.npf.a::npfa150m03.xfdl"),"MENU_NM", "통합재가서비스자료관리" );
+        			this.ds_menu.setColumn(this.ds_menu.findRow("PGM_URL","biz.npf.a::npfa607m01.xfdl"),"MENU_NM", "통합재가결정요청" );
+        			this.ds_menu.setColumn(this.ds_menu.findRow("PGM_URL","biz.npf.a::npfa707m01.xfdl"),"MENU_NM", "통합재가결정조회" );
+        		}
+                //메뉴세팅
+                this.fn_setMenu();
+
+            }
+
+
+            //제출 진행상태 조회
+            if (sSvcId == "selectProgStat") {
+                //제출대장 진행상태세팅
+                var yCnt = 0;
+                var nCnt = 0;
+                for(i=0; i<this.ds_progStat.colcount; i++ ){
+                    var columnData = parseInt(this.ds_progStat.getColumn(0, i));
+                    if(columnData > 0){
+                        yCnt++;
+                    }
+                    else{
+                        nCnt++;
+                    }
+                }
+                trace("yCnt : "+yCnt+", nCnt : "+nCnt);
+                if(yCnt > nCnt){
+                    this.ds_progStat.addColumn("NPFA801", "STRING");
+                    this.ds_progStat.setColumn(0, "NPFA801", "1");
+                }
+
+        		this.grid_menu.redrawExprCell();
+            }
+
+        };
+
+
+        /*======================================================================================*
+         * 6. 사용자정의 함수
+        *======================================================================================*/
+
+        //메뉴세팅
+        this.fn_setMenu = function()
+        {
+
+            var menuUrl = "";
+            var admin_pttn_cd = ""+this.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD");
+
+            if(this.PLN_EXEC == "PRETN" || this.PLN_EXEC == "EXEC"){ //운영관리
+                this.stc_docStat.set_visible(true);
+                var cur_day_mmdd = this.gfn_today().substring(0,8);
+                if((this.ds_fm_cond.getColumn(0, "ADMIN_PTTN_CD") == "A03")&&(cur_day_mmdd >= 20160801) && (cur_day_mmdd <= 20160831)){
+                    this.alert("2016.1월부터 1회 급식인원(종사자 포함)이 50명 이상인 경우 영양사를 배치하여야 합니다.\n\n기타자료관리 > 급식인원등록 버튼을 클릭하여 주별 급식인원을 입력해 주시기 바랍니다.");
+                }
+
+                var comm_menu = "PGM_ID == 'npfa300m01' || PGM_ID == 'npfa400m01' || PGM_ID == 'npfa500m01'"+
+                 "|| PGM_ID == 'npfa601m01' || PGM_ID == 'npfa701m01' || PGM_ID == 'npfa801m01'";
+
+                //월 중 전담형만 있을 경우 프로그램 메뉴(좌측) 삭제
+                if(this.ds_fm_cond.getColumn(0, "DM_YN") == "Y" && this.ds_fm_cond.getColumn(0, "DM_DP") == "N"){
+                    comm_menu = "PGM_ID == 'npfa300m01' || PGM_ID == 'npfa400m01' "+
+                 "|| PGM_ID == 'npfa601m01' || PGM_ID == 'npfa701m01' || PGM_ID == 'npfa801m01'";
+                }
+
+                if(admin_pttn_cd.substring(0,1) == "A"){ //입소시설 /*치매전담형_고시_개정_[201607]*/
+                    this.ds_menu.filter("PGM_ID == 'npfa200m01' || "+ comm_menu);
+                }
+                else if(admin_pttn_cd == "B01" || admin_pttn_cd == "C01"){ //방문요양
+        			var filterStr = "PGM_ID == 'npfa300m01' || PGM_ID == 'npfa400m02' || PGM_ID == 'npfa409m01' || PGM_ID == 'npfa606m01' || PGM_ID == 'npfa706m01' || PGM_ID == 'npfa801m01'";
+        			//★국정과제-통합재가2차사업[2023.03반영예정]:매뉴재구성
+        			if ((this.UNITY_OAH_VIS_YN == "Y" || this.UNITY_OAH_DAY_YN == "Y" || this.UNITY_OAH_SVC_YN == "Y") && this.fv_unity_oah_vis_2cha_yn == "N") { //통합재가 메뉴 추가
+        				 filterStr += " || PGM_ID == 'npfa150m01' || PGM_ID == 'npfa150m02' || PGM_ID == 'npfa150m03' || PGM_ID == 'npfa607m01' || PGM_ID == 'npfa707m01'";
+        			}
+        			this.ds_menu.filter(filterStr);
+                }
+                else if(admin_pttn_cd == "B02" || admin_pttn_cd == "C02"){ //방문목욕
+                    this.ds_menu.filter("PGM_ID == 'npfa300m01' || PGM_ID == 'npfa400m02' || PGM_ID == 'npfa706m01' || PGM_ID == 'npfa801m01'");
+                }
+                else if(admin_pttn_cd == "B03" || admin_pttn_cd == "C03"){ //주야간보호 /*치매전담형_고시_개정_[201607]*/
+        			var filterStr = "PGM_ID == 'npfa200m02' || "+ comm_menu;
+        			//★국정과제-통합재가2차사업[2023.03반영예정]:매뉴재구성
+        			if ( ( this.UNITY_OAH_DAY_YN == "Y" || this.UNITY_OAH_SVC_YN == "Y" ) && this.fv_unity_oah_vis_2cha_yn == "N") { //통합재가(주야간보호통합형, 통합재가서비스) 메뉴 추가
+        				 filterStr += " ||  PGM_ID == 'npfa160m01' || PGM_ID == 'npfa160m02' || PGM_ID == 'npfa607m01' || PGM_ID == 'npfa707m01'";
+        			}
+        			this.ds_menu.filter(filterStr);
+                }
+                else if(admin_pttn_cd == "B04" || admin_pttn_cd == "C04"){ //단기보호
+                    this.ds_menu.filter("PGM_ID == 'npfa200m03' || "+ comm_menu);
+                }
+                else if(admin_pttn_cd == "B05" || admin_pttn_cd == "C05"){ //방문간호
+                    this.ds_menu.filter("PGM_ID == 'npfa300m01' || PGM_ID == 'npfa400m02' || PGM_ID == 'npfa706m01' || PGM_ID == 'npfa801m01'"); //31111000071
+                }
+                else if(admin_pttn_cd == "U03"){ //★국정과제-통합재가2차사업[2023.03반영예정]:매뉴재구성
+                    this.ds_menu.filter("PGM_ID == 'npfa150m03' || PGM_ID == 'npfa607m01' || PGM_ID == 'npfa707m01'"); //31111000071
+                }
+            }
+            else if(this.PLN_EXEC == "PLN"){ //계획관리
+
+                if(admin_pttn_cd == "B01" || admin_pttn_cd == "C01"){ //방문요양
+                    this.ds_menu.filter("PGM_ID == 'npfa110m01'");
+                }
+                else{
+                    this.ds_menu.filter("PGM_ID == 'npfa110m01' || PGM_ID == 'npfa130m01'");
+                }
+            }
+            else{
+                this.ds_menu.filter("PGM_ID == ''");
+            }
+
+            var open_posi = this.ds_fm_cond.getColumn(0, "OPEN_POSI");
+            if(this.gfn_isEmpty(open_posi)){//첫번째 Row 세팅
+                this.ds_menu.set_rowposition(0);
+                this.div_main.set_url(this.fn_changePgmUrl(this.ds_menu.getColumn(0, "PGM_URL")));
+            }
+            else{//지정메뉴 Row 세팅
+
+
+                var row = this.ds_menu.findRow("PGM_ID", open_posi);
+                this.ds_menu.set_rowposition(row);
+                this.div_main.set_url(this.fn_changePgmUrl(this.ds_menu.getColumn(row, "PGM_URL")));
+            }
+
+            //월기준근무시간 표시
+            var selectedPgmId = this.ds_menu.getColumn(this.ds_menu.rowposition, "PGM_ID");
+            if(selectedPgmId == "npfa110m01" || selectedPgmId == "npfa300m01"){
+                this.stc_mmStdWkgTm.set_visible(true);
+            }
+
+            //메뉴그리드 높이조절
+            this.fn_setMenuGrid();
+
+        };
+
+
+        //메뉴그리드 높이조절
+        this.fn_setMenuGrid = function()
+        {
+
+            var grid_height = 40 + 10 + (this.ds_menu.rowcount * 35);
+            this.grid_menu.move(0, 0, 170, grid_height);
+
+        };
+
+
+        //Background 설정
+        this.fn_setBackground = function(head_body,pgm_id,select)
+        {
+
+            if(head_body == "HEAD"){
+                if(this.PLN_EXEC == "PRETN" || this.PLN_EXEC == "EXEC"){ //운영관리
+                    this.stc_title.set_background("#e6f4ff");
+                    //this.grid_menu.setCellProperty("head", 0, "background", "#e6f4ff");
+                    //return "URL('images::bg_menu_top_blue.png') stretch 9,9";
+                    return "bg_topblue_head";
+                }
+                else if(this.PLN_EXEC == "PLN"){ //계획관리
+                    this.stc_title.set_background("#fff2ec");
+                    //this.grid_menu.setCellProperty("head", 0, "background", "#fff2ec");
+                    //this.stc_title.style.backgroundColor = "#fff2ec";
+                    //return "URL('images::bg_menu_top_pink.png') stretch 9,9";
+                    return "bg_toppink_head";
+                }
+
+            }
+            else if(head_body == "BODY"){
+                // SELECT 시 background color처리를 따로 뺌
+                //메뉴의 pgm_id와 진행현황의 PGM_ID를 비교
+        		pgm_id_full = (""+pgm_id).toUpperCase();
+                pgm_id = (""+pgm_id).substring(0,7).toUpperCase();
+
+                if(this.PLN_EXEC == "PRETN" || this.PLN_EXEC == "EXEC"){ //운영관리
+                    if(this.ds_progStat.getColumn(0, pgm_id) > 0){
+                        return "bg_blue_sel2";
+         			} else if(this.ds_progStat.getColumn(0, pgm_id_full) > 0) {
+        				return "bg_blue_sel2";
+        			} else {
+                        return "bg_white_sel";
+                        //return "URL('images::bg_menu_body_white_unsel.png') stretch 3,3";
+                    }
+                }
+                else if(this.PLN_EXEC == "PLN"){ //계획관리
+                    if(this.ds_progStat.getColumn(0, pgm_id) > 0){
+                        //return "URL('images::bg_menu_body_pink_unsel.png') stretch 3,3";
+                        return "bg_pink_sel2";
+                    }
+                    else{
+                        //return "URL('images::bg_menu_body_white_unsel.png') stretch 3,3";
+                        return "bg_white_sel";
+                    }
+                }//운영과 계획구분
+            }//HEAD와 BODY구분
+
+        };
+
+
+        //툴팁설정
+        this.fn_setTooltip = function(pgm_id)
+        {
+
+            pgm_id = (""+pgm_id).substring(0,7).toUpperCase();
+
+            if(this.ds_progStat.getColumn(0, pgm_id) > 0){
+                if(pgm_id == "NPFA601" || pgm_id == "NPFA606"){
+                    return "결정요청 내역이 존재합니다.";
+                }
+                else if(pgm_id == "NPFA701" || pgm_id == "NPFA706"){
+                    return "결정내용이 존재합니다.";
+                }
+                else if(pgm_id == "NPFA801"){
+                    return "제출 내역이 존재합니다.";
+                }
+                else{
+                    return "제출 완료 하였습니다.";
+                }
+            }
+
+        };
+
+
+        //외부에서 메뉴 변경시 (사용법 : fn_menu_change("npfa400m01"); )
+        this.fn_menu_change = function(pgm_id)
+        {
+
+            var row = this.ds_menu.findRow("PGM_ID", pgm_id);
+            this.ds_menu.set_rowposition(row);
+            this.div_main.set_url(this.fn_changePgmUrl(this.ds_menu.getColumn(row, "PGM_URL")));
+
+        };
+
+
+        /*======================================================================================*
+         * 7. 이벤트 함수
+         *======================================================================================*
+         * 7.1 공통버튼 이벤트
+         *======================================================================================*/
+
+        /*======================================================================================*
+         * 7.2 사용자버튼 이벤트
+         *======================================================================================*/
+
+        //메뉴 변경시
+        this.grid_menu_oncellclick = function(obj,e)
+        {
+
+            var pgm_id = this.ds_menu.getColumn(e.row,"PGM_ID");
+            var pgm_url = this.fn_changePgmUrl(this.ds_menu.getColumn(e.row,"PGM_URL"));
+
+
+            //프로그램 임시 통제(4월4일까지)
+            /*if(!SPR_ABLE && pgm_id == "npfa130m01"){
+                alert("불편을 드려 죄송합니다. \n\n프로그램 및 강사 자료 보정 후 4월 5일부터 사용이 가능합니다. \n\n4월분 계획서 제출 기한을 연장하여 운영하겠습니다.");
+                ds_menu.rowposition = -1;
+                return;
+            }
+            else if(!SPR_ABLE && pgm_id == "npfa500m01"){
+                alert("불편을 드려 죄송합니다. \n\n프로그램 및 강사 자료 보정 후 청구를 시작하는 4월 5일부터 사용이 가능합니다.");
+                ds_menu.rowposition = -1;
+                return;
+            }*/
+
+            var cur_yyyymm = this.gfn_today().substring(0,6);
+            var cur_day_dd = this.gfn_today().substring(6,8);
+            if(cur_yyyymm == 201611){
+                if(cur_day_dd >=01 && cur_day_dd <= 03){
+                    if( !this.SPR_ABLE && pgm_id == "npfa701m01"){
+                        this.alert("결정내용조회는 4일 부터 사용 가능 합니다.");
+                        this.ds_menu.set_rowposition(-1);
+                        return;
+                    }
+                }
+            }else{
+                if(cur_day_dd >=01 && cur_day_dd <= 04){
+                    if( !this.SPR_ABLE && pgm_id == "npfa701m01"){
+                        this.alert("결정내용조회는 5일 부터 사용 가능 합니다.");
+                        this.ds_menu.set_rowposition(-1);
+                        return;
+                    }
+                }
+
+            }
+
+            if(this.ds_fm_cond.getColumn(0, "TGT_YYYYMM") < 201201 && pgm_id == "npfa300m01"){
+                this.gfn_msgShow(this, "XIFA0001", []);
+                var nRow = this.ds_menu.findRow("PGM_ID", "npfa801m01");
+                pgm_id = this.ds_menu.getColumn(nRow,"PGM_ID");
+                pgm_url = this.fn_changePgmUrl(this.ds_menu.getColumn(nRow,"PGM_URL"));
+                this.ds_menu.set_rowposition(nRow);
+            }
+
+
+            //페이지 연결
+            this.div_main.set_url(pgm_url);
+
+            //월기준근무시간 표시
+            if(pgm_id == "npfa110m01" || pgm_id == "npfa300m01"){
+                this.stc_mmStdWkgTm.set_visible(true);
+            }
+            else{
+                this.stc_mmStdWkgTm.set_visible(false);
+            }
+
+        	//메뉴변경시 좌측메뉴의 진행상태 갱신
+        	this.fn_selectProgStat();
+        };
+
+
+        //임시로 상태값 변경 (CTRL + ALT + SHIFT + C)
+        this.frm_onkeydown = function(obj,e)
+        {
+
+            if(e.ctrlkey && e.altkey && e.shiftkey){
+
+                if(e.keycode == 67){
+                    var sPopId      = "npfa100p02";
+                    var sScrNm      = "관리자 인증번호";
+                    var sUrl        = "biz_npf_a::npfa100p02.xfdl";
+                    var nWidth      = 350;
+                    var nHeight     = 120;
+                    var sArgs       = {
+                                        arg_LTC_ADMIN_SYM : this.LTC_ADMIN_SYM
+                                      , arg_ADMIN_PTTN_CD : this.ADMIN_PTTN_CD
+                                      , arg_YYYYMM        : this.TGT_YYYYMM
+                                      };
+                    var bIsModal    = true;
+
+        			this.gfn_showPopupByURL(this, sPopId, sScrNm, sUrl, nWidth, nHeight, sArgs, bIsModal);
+
+        /***************************************************************************
+         ** 201905 임시로 상태값 변경 (CTRL + ALT + SHIFT + C)시 PassWord를 넣을수 있도록 수정 팝업 callback으로 이동
+         ***************************************************************************
+                    this.div_main.set_url("");
+                    this.fn_setMenu();
+                    this.ds_fm_cond.setColumn(0,"CHG_ABLE", true);
+                    this.ds_fm_cond.setColumn(0,"PRN_ABLE", true);
+                    this.ds_fm_cond.setColumn(0,"SPR_ABLE", true);
+                    this.CHG_ABLE = true;
+
+        //////////////////////////////////////
+        //// 201905 변경 당월 가감산정은 false 로 셋팅
+        //          this.PRN_ABLE = true;
+
+                    if (this.TGT_YYYYMM == String(this.fv_sToday).substr(0, 6)) {
+                        this.PRN_ABLE = false;
+                    } else {
+                        this.PRN_ABLE = true;
+                    }
+        //////////////////////////////////////
+
+                    this.SPR_ABLE = true;
+                    this.stc_docStat.set_text("[자료상태 : 입력가능]");
+                    this.stc_docStat.set_color("#3380baff");
+         ***************************************************************************/
+                }
+            }
+
+        };
+
+
+        /***************************************************************************
+         ** 201905 임시로 상태값 변경 (CTRL + ALT + SHIFT + C)시 팝업 callback 추가
+         ***************************************************************************/
+        this.fn_popupCallback = function (sFrameid,sVarRtn)
+        {
+            trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            trace(">>>>> this.fn_popupCallback = function (" + sFrameid + ", " + sVarRtn + ")");
+            trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + this._variant.name);
+
+            if ( sVarRtn == "CLOSEONLY" ) {
+                return;
+            }
+
+            this.div_main.set_url("");
+            this.fn_setMenu();
+            this.ds_fm_cond.setColumn(0,"CHG_ABLE", true);
+            this.ds_fm_cond.setColumn(0,"PRN_ABLE", true);
+            this.ds_fm_cond.setColumn(0,"SPR_ABLE", true);
+            this.CHG_ABLE = true;
+
+        //////////////////////////////////////
+        //// 201905 변경 당월 가감산정은 false 로 셋팅
+        //  this.PRN_ABLE = true;
+
+            if (this.TGT_YYYYMM == String(this.fv_sToday).substr(0, 6)) {
+        		this.PRN_ABLE = false;
+            } else {
+                this.PRN_ABLE = true;
+            }
+        //////////////////////////////////////
+
+            this.SPR_ABLE = true;
+            this.stc_docStat.set_text("[자료상태 : 입력가능]");
+            this.stc_docStat.set_color("#3380baff");
+
+            /*
+            if ( typeof this._variant == "string" ) {           //string type
+                //trace("return string : " + this._variant);
+
+            } else {
+                if ( this._variant == "[object Dataset]" ) {    //dataset type
+                    //trace("return dataset : " + this._variant.saveXML());
+
+                } else {                                        //object type
+                    //trace("return object  : " + this._variant["RESULT"]);
+
+                }
+            }
+            */
+
+        };
+
+
+        //화면설명
+        this.btn_expl_onclick = function(obj,e)
+        {
+
+            trace(">>>>>>>>>>>>>>>>>> this.height : " + this.height);
+
+            var sPopId  = "npfa100p01";
+            var sScrId  = "npfa100p01";
+            var sArgs   = {};
+            var bIsModal= false;
+            var nWidth  = 1000;
+            var nHeight = 770;
+
+            this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight);
+
+        };
+
+
+        this.btn_expl_onmouseenter = function(obj,e)
+        {
+
+            //this.btn_expl.set_background("URL('images::ico_question_OV.png') stretch 0,0");
+            this.btn_expl.set_background("URL('theme://images/ico_question_OV.png') stretch 0,0");
+
+        };
+
+
+        this.btn_expl_onmouseleave = function(obj,e)
+        {
+
+            //this.btn_expl.set_background("URL('images::ico_question_OU.png') stretch 0,0");
+            this.btn_expl.set_background("URL('theme://images/ico_question_OU.png') stretch 0,0");
+
+        };
+
+
+        this.fn_changePgmUrl = function(pPgm_url)
+        {
+
+            return String(pPgm_url).replace("biz.npf.a","biz_npf_a");
+        /*
+            var rtnUrl = pPgm_url;
+            if (pPgm_url == 'biz.npf.a::npfa200m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa200m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa200m02.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa200m02.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa200m03.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa200m03.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa300m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa300m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa409m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa409m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa400m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa400m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa400m02.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa400m02.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa500m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa500m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa601m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa601m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa606m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa606m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa701m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa701m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa706m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa706m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa801m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa801m01.xfdl';
+
+            } else if (pPgm_url == 'biz.npf.a::npfa110m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa110m01.xfdl';
+            } else if (pPgm_url == 'biz.npf.a::npfa130m01.xfdl') {
+                rtnUrl = 'biz_npf_a::npfa130m01.xfdl';
+            }
+        trace("### rtnUrl = " + rtnUrl );
+            return rtnUrl;
+        */
+
+        };
+
+
+        this.fn_close = function(obj,e)
+        {
+
+            this.gfn_closePopup("CLOSEONLY");
+
+        };
+
+
+
+        /*
+        * 공통 코드 콜백 함수  ★국정과제-통합재가2차사업[2023.03반영예정]:1차,2차 반영일관리 (5R17)
+        */
+        this.fn_commonCodeCallBack = function(){
+            // 통합재가 예비사업 시작기간 세팅
+        	if(this.ds_5R17.rowcount == 0 )
+        	{
+        		this.fv_unity_oah_vis_dt = '202303';
+        	}
+        	else
+        	{
+        		this.fv_unity_oah_vis_dt = String(this.ds_5R17.getColumn(0,"ADPT_FR_DT")).substr(0, 6);
+        	}
+
+            //통합재가 2차반영시기 반영 여부
+            this.fv_unity_oah_vis_2cha_yn = (this.UNITY_OAH_SVC_YN == "Y" && this.fv_unity_oah_vis_dt <= this.TGT_YYYYMM )? "Y":"N";
+
+        };
+
+        /* 도와줘요 버튼 클릭 이벤트 */
+        this.btn_faq_onclick = function(obj,e)
+        {
+        	var sScrId      = "npca009m01";
+        	var sPopId 		= "npca009m01";
+        	var sScrNm 		= "청구심사 FAQ";
+        	var sUrl 		= "biz_npc_a::npca009m01.xfdl";
+        	var nWidth 		= 975;
+        	var nHeight 	= 700;
+        	var bIsModal 	= false;
+        	var bVscrollbar	= true;
+        	var sArgs       = "";
+
+        	var arrResult = this.gfn_showPopupByID(this, sPopId, sScrId, sArgs, bIsModal, nWidth, nHeight, bVscrollbar);
+        };
+
+        // 2025.01 고시 고시기간여부
+        // 5R17 공통코드에 등록된 코드별 기간검색 결과반환
+        this.fn_isGosiFlag = function(cd,tgtYYYYMM,ds){
+
+        	if(this.cfn_str_isNull(cd) || this.cfn_str_isNull(tgtYYYYMM) || this.cfn_str_isNull(ds))return ;
+
+        	var colNm = "GOSI_ADPT_" + cd + "_YN";
+        	var objColumnInfo = ds.getColumnInfo(colNm);
+        	if(this.cfn_str_isNull(objColumnInfo)){
+        		ds.addColumn(colNm,"string");
+        	}
+        	//초기값
+        	if(ds.rowcount == 0)ds.addRow();
+        	//초기값
+        	ds.setColumn(0,colNm,"N");
+
+        	var flag = false;
+        	if(cd == "202501"){
+        		if (nexacroApp.av_sSvrType != "PROD" ) { // 운영환경이 아닐경우
+        			//개발,로컬환경일시
+        			if(tgtYYYYMM >= "202301"){flag=true;ds.setColumn(0,colNm,"Y");}
+        		}else{
+        			//운영환경일시
+        			if(tgtYYYYMM >= "202501"){flag=true;ds.setColumn(0,colNm,"Y");}
+        		}
+        	}
+
+        	return flag;
+        };
+        });
+        
+        // Regist UI Components Event
+        this.on_initEvent = function()
+        {
+            this.addEventHandler("onload",this.frm_onload,this);
+            this.addEventHandler("onkeydown",this.frm_onkeydown,this);
+            this.grid_menu.addEventHandler("oncellclick",this.grid_menu_oncellclick,this);
+            this.stc_tgtYyyymm.addEventHandler("onclick",this.Static01_onclick,this);
+            this.stc_1px.addEventHandler("onclick",this.stc_1px_onclick,this);
+            this.btn_close.addEventHandler("onclick",this.fn_close,this);
+            this.btn_expl.addEventHandler("onclick",this.btn_expl_onclick,this);
+            this.btn_expl.addEventHandler("onmouseenter",this.btn_expl_onmouseenter,this);
+            this.btn_expl.addEventHandler("onmouseleave",this.btn_expl_onmouseleave,this);
+            this.btn_faq.addEventHandler("onclick",this.btn_faq_onclick,this);
+        };
+
+        this.loadIncludeScript("npfa100m01.xfdl");
+        this.loadPreloadList();
+        
+        // Remove Reference
+        obj = null;
+    };
+}
+)();
