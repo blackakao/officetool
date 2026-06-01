@@ -16,6 +16,9 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QDialogButtonBox,
     QMessageBox,
+    QLabel,
+    QSizePolicy,
+    QHeaderView,
 )
 
 
@@ -40,7 +43,8 @@ class BranchDialog(QDialog):
         self.setMinimumWidth(760)
         self.login_type_combo.addItems(LOGIN_TYPES)
         self.login_password_edit.setEchoMode(QLineEdit.Normal)
-        self.login_password_edit.setValidator(QRegularExpressionValidator(r"[A-Za-z0-9]*"))
+        # 허용 문자: ASCII 공백(0x20)부터 물결(0x7E)까지 — 영어, 숫자, 특수문자 포함, 한글 제외
+        self.login_password_edit.setValidator(QRegularExpressionValidator(r"[ -~]*"))
 
         # 기존 데이터가 있으면 채우기
         if branch_data:
@@ -66,8 +70,17 @@ class BranchDialog(QDialog):
         form_layout.addRow("대표자명:", self.owner_name_edit)
         form_layout.addRow("주소:", self.address_edit)
         form_layout.addRow("로그인 유형:", self.login_type_combo)
-        form_layout.addRow("로그인 아이디:", self.login_id_edit)
-        form_layout.addRow("로그인 비밀번호:", self.login_password_edit)
+
+        # 로그인 입력 칸: 라벨을 동적으로 변경할 수 있도록 QLabel을 사용
+        self.login_id_label = QLabel("로그인 아이디:")
+        self.login_password_label = QLabel("로그인 비밀번호:")
+        form_layout.addRow(self.login_id_label, self.login_id_edit)
+        form_layout.addRow(self.login_password_label, self.login_password_edit)
+
+        # 로그인 유형 변경 시 라벨 업데이트
+        self.login_type_combo.currentTextChanged.connect(self._on_login_type_changed)
+        # 초기 라벨 상태 설정
+        self._on_login_type_changed(self.login_type_combo.currentText())
 
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
@@ -90,6 +103,18 @@ class BranchDialog(QDialog):
             "login_id": self.login_id_edit.text().strip(),
             "login_password": self.login_password_edit.text(),
         }
+
+    def _on_login_type_changed(self, text: str):
+        """로그인 유형에 따라 라벨과 비밀번호 입력 모드를 변경합니다."""
+        if text == "롱텀":
+            self.login_id_label.setText("인증서명:")
+            self.login_password_label.setText("인증서 비밀번호:")
+            # 롱텀은 기존 케어포 비밀번호 입력창과 동일하게 보이도록 설정
+            self.login_password_edit.setEchoMode(QLineEdit.Normal)
+        else:
+            self.login_id_label.setText("로그인 아이디:")
+            self.login_password_label.setText("로그인 비밀번호:")
+            self.login_password_edit.setEchoMode(QLineEdit.Normal)
 
 
 class BranchPage(QWidget):
@@ -126,11 +151,14 @@ class BranchPage(QWidget):
         self.table = QTableWidget()
 
         self.table.setColumnCount(6)
+        # 테이블이 가능한 가로 공간을 모두 사용하도록 설정
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         self.table.setHorizontalHeaderLabels([
+            "지점명",
             "기관기호",
             "기관명",
-            "지점명",
             "법인명",
             "대표자명",
             "주소",
@@ -258,23 +286,23 @@ class BranchPage(QWidget):
         for row, item in enumerate(data):
             login_type = item.get("login_type", LOGIN_TYPES[0])
 
+            # 지점명
+            branch_item = QTableWidgetItem(item.get("branch_name", ""))
+            branch_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            branch_item.setFlags(branch_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row, 0, branch_item)
+            
             # 기관기호
             org_code_item = QTableWidgetItem(item.get("organization_code", ""))
             org_code_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             org_code_item.setFlags(org_code_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.table.setItem(row, 0, org_code_item)
+            self.table.setItem(row, 1, org_code_item)
             
             # 기관명
             org_name_item = QTableWidgetItem(item.get("organization_name", ""))
             org_name_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             org_name_item.setFlags(org_name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.table.setItem(row, 1, org_name_item)
-            
-            # 지점명
-            branch_item = QTableWidgetItem(item["branch_name"])
-            branch_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            branch_item.setFlags(branch_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.table.setItem(row, 2, branch_item)
+            self.table.setItem(row, 2, org_name_item)
             
             # 법인명
             corp_item = QTableWidgetItem(item["corporation_name"])

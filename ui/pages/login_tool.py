@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from pathlib import Path
 from datetime import datetime
@@ -142,8 +143,20 @@ class CareforLoginThread(QThread):
             options = webdriver.ChromeOptions()
             options.add_argument("--start-maximized")
 
+            driver_path = Path(ChromeDriverManager().install())
+            if not driver_path.name.lower().endswith(".exe"):
+                expected_driver = driver_path.parent / ("chromedriver.exe" if os.name == "nt" else "chromedriver")
+                if expected_driver.exists():
+                    driver_path = expected_driver
+                else:
+                    driver_files = list(driver_path.parent.glob("**/*chromedriver*.exe" if os.name == "nt" else "**/*chromedriver*"))
+                    if driver_files:
+                        driver_path = driver_files[0]
+                    else:
+                        raise FileNotFoundError(f"chromedriver 실행 파일을 찾을 수 없습니다: {driver_path.parent}")
+
             self.driver = webdriver.Chrome(
-                service=ChromeService(ChromeDriverManager().install()),
+                service=ChromeService(str(driver_path)),
                 options=options,
             )
 
@@ -183,6 +196,8 @@ class CareforLoginThread(QThread):
             self.finished_signal.emit("케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.", True)
         except TimeoutException:
             self.finished_signal.emit("페이지 로딩 또는 입력 필드 활성화에 실패했습니다.", False)
+        except FileNotFoundError as e:
+            self.finished_signal.emit(f"ChromeDriver 실행 파일을 찾을 수 없습니다: {e}", False)
         except WebDriverException as e:
             self.finished_signal.emit(f"Chrome 자동화 실패: {e}", False)
         except Exception as e:

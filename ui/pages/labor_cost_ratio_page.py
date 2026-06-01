@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from datetime import datetime
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -15,6 +16,8 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QDialogButtonBox,
     QMessageBox,
+    QSizePolicy,
+    QHeaderView,
 )
 
 
@@ -59,7 +62,8 @@ class LaborCostRatioPage(QWidget):
         super().__init__()
 
         self.data_file = Path(__file__).resolve().parents[2] / "data" / "labor_cost_ratio.json"
-        self.current_year = "2021"
+        current_year = datetime.now().year
+        self.current_year = str(current_year if 2021 <= current_year <= 2026 else 2026)
         self.selected_row = -1
 
         layout = QVBoxLayout()
@@ -89,6 +93,9 @@ class LaborCostRatioPage(QWidget):
         self.table = QTableWidget()
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(["구분", "장기요양요원", "비율"])
+        # 테이블이 가로 공간을 모두 사용하도록 설정
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.setSelectionBehavior(self.table.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(self.table.SelectionMode.SingleSelection)
         self.table.setEditTriggers(self.table.EditTrigger.NoEditTriggers)
