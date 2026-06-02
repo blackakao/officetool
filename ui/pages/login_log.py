@@ -1,6 +1,4 @@
-import sys
-from pathlib import Path
-from datetime import datetime
+from ui.pages.logging_util import log, LOG_FILE
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QTextEdit, QHBoxLayout
 
@@ -8,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QTextEdit, QHBo
 class LoginLogPage(QWidget):
     def __init__(self):
         super().__init__()
-        self.log_file = Path(__file__).resolve().parents[2] / "data" / "login.log"
+        self.log_file = LOG_FILE
         layout = QVBoxLayout()
         self.setLayout(layout)
 

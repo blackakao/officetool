@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
 
         self.menu.addItem("지점 목록")
         self.menu.addItem("로그인툴")
-        self.menu.addItem("로그인 로그")
+        self.menu.addItem("로그")
         self.menu.addItem("문서작성툴")
         self.menu.addItem("공단툴")
         self.menu.addItem("연도별 장기요양인건비 비율")

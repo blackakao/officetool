@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, 
     QPushButton, QDialog, QLabel, QFormLayout, QLineEdit, QMessageBox, QHeaderView, QScrollArea
 )
+from ui.pages.logging_util import log
 
 
 class DocumentTool(QWidget):
@@ -64,12 +65,15 @@ class DocumentTool(QWidget):
     
     def open_document(self, file_path):
         """문서 팝업 열기"""
+        log("DocumentTool", f"문서 열기 시도: {file_path.name}", level="INFO")
         try:
             doc = Document(file_path)
             dialog = ContentControlDialog(self, doc, file_path)
             dialog.exec()
             self.load_documents()
+            log("DocumentTool", f"문서 열기 완료: {file_path.name}", level="INFO")
         except Exception as e:
+            log("DocumentTool", f"문서 열기 실패: {e}", level="ERROR")
             QMessageBox.critical(self, "오류", f"문서를 열 수 없습니다: {e}")
     
     def showEvent(self, event):
@@ -201,6 +205,7 @@ class ContentControlDialog(QDialog):
 
     def create_from_controls(self):
         """입력한 값으로 새 문서를 생성(PDF 변환). 원본은 변경하지 않음."""
+        log("DocumentTool", f"문서 생성 시도: {self.file_path.name}", level="INFO")
         try:
             # 새 Document 로드 (원본 보존)
             new_doc = Document(self.file_path)
@@ -263,6 +268,7 @@ class ContentControlDialog(QDialog):
                         try:
                             docx2pdf = self._install_docx2pdf()
                         except Exception as e:
+                            log("DocumentTool", f"docx2pdf 설치 실패: {e}", level="ERROR")
                             QMessageBox.warning(
                                 self,
                                 '경고',
@@ -271,6 +277,7 @@ class ContentControlDialog(QDialog):
                             self.accept()
                             return
                     else:
+                        log("DocumentTool", "docx2pdf 설치 거부됨; PDF 생성 취소", level="WARNING")
                         QMessageBox.warning(
                             self,
                             '경고',
@@ -282,8 +289,10 @@ class ContentControlDialog(QDialog):
                 try:
                     out_pdf = maked_folder / (self.file_path.stem + '_filled.pdf')
                     docx2pdf.convert(str(temp_docx_path), str(out_pdf))
+                    log("DocumentTool", f"PDF 생성 완료: {out_pdf}", level="INFO")
                     QMessageBox.information(self, '완료', f'PDF 생성 완료:\n{out_pdf}\n\n원본 파일은 변경되지 않았습니다')
                 except Exception as e:
+                    log("DocumentTool", f"PDF 변환 실패: {e}", level="ERROR")
                     QMessageBox.warning(self, '경고', f'PDF 변환 실패:\n{e}')
             finally:
                 try:
@@ -294,4 +303,5 @@ class ContentControlDialog(QDialog):
 
             self.accept()
         except Exception as e:
+            log("DocumentTool", f"문서 생성 오류: {e}", level="ERROR")
             QMessageBox.critical(self, "오류", f"생성 중 오류: {e}")

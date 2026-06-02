@@ -14,6 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from ui.pages.logging_util import log
 
 
 class LoginTool(QWidget):
@@ -83,13 +84,7 @@ class LoginTool(QWidget):
             button.setChecked(button.text() == self.current_login_type)
 
     def _log(self, message, level="INFO"):
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        text = f"{ts} [{level}] {message}"
-        try:
-            with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(text + "\n")
-        except Exception:
-            pass
+        log("LoginTool", message, level=level)
 
     def on_branch_clicked(self, branch):
         """지점 버튼 클릭 시 로그인 페이지를 열고 로그인 필드를 채웁니다."""

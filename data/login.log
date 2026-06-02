@@ -38,3 +38,9 @@
 2026-06-02 09:01:24 [INFO] 롱텀 공단 로그인 절차를 완료했습니다.
 2026-06-02 09:01:27 [INFO] [분당점] 로그인 시도, 기관기호=14161000183, 타입=케어포
 2026-06-02 09:01:31 [INFO] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-02 09:22:53 [INFO] [DocumentTool] 문서 열기 시도: test.docx
+2026-06-02 09:22:55 [INFO] [DocumentTool] 문서 생성 시도: test.docx
+2026-06-02 09:23:00 [INFO] [DocumentTool] PDF 생성 완료: C:\workspace\MyTool\document\maked\test_filled.pdf
+2026-06-02 09:23:02 [INFO] [DocumentTool] 문서 열기 완료: test.docx
+2026-06-02 09:23:49 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=케어포
+2026-06-02 09:23:52 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
