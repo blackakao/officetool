@@ -1,3 +1,3 @@
-2026/06/01-17:42:46.560 59d0 Reusing MANIFEST C:\workspace\MyTool\data\chrome_profiles\gongdan\Default\Sync Data\LevelDB/MANIFEST-000001
-2026/06/01-17:42:46.566 59d0 Recovering log #3
-2026/06/01-17:42:46.566 59d0 Reusing old log C:\workspace\MyTool\data\chrome_profiles\gongdan\Default\Sync Data\LevelDB/000003.log 
+2026/06/01-17:43:22.792 4370 Reusing MANIFEST C:\workspace\MyTool\data\chrome_profiles\gongdan\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/06/01-17:43:22.799 4370 Recovering log #3
+2026/06/01-17:43:22.800 4370 Reusing old log C:\workspace\MyTool\data\chrome_profiles\gongdan\Default\Sync Data\LevelDB/000003.log 

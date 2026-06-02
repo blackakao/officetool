@@ -27,6 +27,7 @@ class LoginTool(QWidget):
         self.current_login_type = "케어포"
         self.login_type_buttons = []
         self.branch_grid_layout = QGridLayout()
+        self.login_threads = []
 
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(10, 10, 10, 10)
@@ -99,12 +100,13 @@ class LoginTool(QWidget):
 
         self._log(f"[{branch.get('branch_name','')}] 로그인 시도, 기관기호={branch_code}, 타입={self.current_login_type}")
         if self.current_login_type == "롱텀":
-            self.login_thread = LongtermLoginThread(branch)
+            login_thread = LongtermLoginThread(branch)
         else:
-            self.login_thread = CareforLoginThread(branch)
+            login_thread = CareforLoginThread(branch)
 
-        self.login_thread.finished_signal.connect(self.on_login_finished)
-        self.login_thread.start()
+        login_thread.finished_signal.connect(self.on_login_finished)
+        login_thread.start()
+        self.login_threads.append(login_thread)
 
     def on_login_finished(self, message, success):
         level = "INFO" if success else "ERROR"
