@@ -1,1 +1,142 @@
-[]
+[
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "5",
+        "category": "2.1",
+        "cost": "81540"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "4",
+        "category": "2.1",
+        "cost": "81540"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "3",
+        "category": "2.1",
+        "cost": "81540"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "2",
+        "category": "2.1",
+        "cost": "89400"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "1",
+        "category": "2.1",
+        "cost": "93070"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "5",
+        "category": "2.3",
+        "cost": "77540"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "4",
+        "category": "2.3",
+        "cost": "77540"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "3",
+        "category": "2.3",
+        "cost": "77540"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "2",
+        "category": "2.3",
+        "cost": "82120"
+    },
+    {
+        "year": "2026",
+        "type": "시설",
+        "grade": "1",
+        "category": "2.3",
+        "cost": "88520"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "5",
+        "category": "2.1",
+        "cost": "79240"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "4",
+        "category": "2.1",
+        "cost": "79240"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "3",
+        "category": "2.1",
+        "cost": "79240"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "2",
+        "category": "2.1",
+        "cost": "83910"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "1",
+        "category": "2.1",
+        "cost": "90450"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "5",
+        "category": "2.3",
+        "cost": "75360"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "4",
+        "category": "2.3",
+        "cost": "75360"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "3",
+        "category": "2.3",
+        "cost": "75360"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "2",
+        "category": "2.3",
+        "cost": "79810"
+    },
+    {
+        "year": "2025",
+        "type": "시설",
+        "grade": "1",
+        "category": "2.3",
+        "cost": "86030"
+    }
+]
