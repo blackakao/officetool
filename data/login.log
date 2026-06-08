@@ -161,3 +161,294 @@ Stacktrace:
 2026-06-05 08:46:07 [INFO] [DocumentTool] 문서 열기 완료: 표준근로계약서.docx
 2026-06-05 08:46:22 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
 2026-06-05 08:46:28 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 10:28:38 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-05 10:28:42 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 10:32:57 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=케어포
+2026-06-05 10:32:59 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 10:33:59 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-05 10:34:01 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 10:36:06 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-05 10:36:11 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 10:44:26 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-05 10:44:30 [ERROR] [LoginTool] Chrome 자동화 실패: Message: session not created: Chrome failed to start: crashed.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff76f197de5+14895]
+	chromedriver!GetHandleVerifier [0x7ff76f197e50+14900]
+	chromedriver!(No symbol) [0x7ff76eefd5ad]
+	chromedriver!(No symbol) [0x7ff76ef3f08b]
+	chromedriver!(No symbol) [0x7ff76ef3a349]
+	chromedriver!(No symbol) [0x7ff76ef8dd21]
+	chromedriver!(No symbol) [0x7ff76ef8d586]
+	chromedriver!(No symbol) [0x7ff76ef49df8]
+	chromedriver!(No symbol) [0x7ff76ef4ace3]
+	chromedriver!GetHandleVerifier [0x7ff76f4acc49+3296f9]
+	chromedriver!GetHandleVerifier [0x7ff76f4a7375+323e25]
+	chromedriver!GetHandleVerifier [0x7ff76f4cbc82+348732]
+	chromedriver!GetHandleVerifier [0x7ff76f1b6045+32af5]
+	chromedriver!GetHandleVerifier [0x7ff76f1becec+3b79c]
+	chromedriver!GetHandleVerifier [0x7ff76f1a1bc4+1e674]
+	chromedriver!GetHandleVerifier [0x7ff76f1a1d54+1e804]
+	chromedriver!GetHandleVerifier [0x7ff76f1860e7+2b97]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-05 10:44:36 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-05 10:44:42 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 11:02:07 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-05 11:02:14 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 11:05:28 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-05 11:05:33 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 11:16:21 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-05 11:16:27 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 11:24:28 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=케어포
+2026-06-05 11:24:31 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 11:34:56 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=케어포
+2026-06-05 11:34:59 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 11:53:19 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=케어포
+2026-06-05 11:53:22 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 11:53:27 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-05 11:53:34 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 13:26:01 [INFO] [LoginTool] [양평점] 로그인 시도, 기관기호=14183000182, 타입=롱텀
+2026-06-05 13:26:06 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 13:36:04 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-05 13:36:09 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 13:39:11 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-05 13:39:45 [ERROR] [LoginTool] 페이지 로딩 또는 입력 필드 활성화에 실패했습니다.
+2026-06-05 13:45:15 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-05 13:45:36 [ERROR] [LoginTool] Chrome 자동화 실패: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=148.0.7778.217); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff76f197de5+14895]
+	chromedriver!GetHandleVerifier [0x7ff76f197e50+14900]
+	chromedriver!(No symbol) [0x7ff76eefd5ad]
+	chromedriver!(No symbol) [0x7ff76eee8a92]
+	chromedriver!(No symbol) [0x7ff76ef0ee6c]
+	chromedriver!(No symbol) [0x7ff76ef871b0]
+	chromedriver!(No symbol) [0x7ff76efa4172]
+	chromedriver!(No symbol) [0x7ff76ef49df8]
+	chromedriver!(No symbol) [0x7ff76ef4ace3]
+	chromedriver!GetHandleVerifier [0x7ff76f4acc49+3296f9]
+	chromedriver!GetHandleVerifier [0x7ff76f4a7375+323e25]
+	chromedriver!GetHandleVerifier [0x7ff76f4cbc82+348732]
+	chromedriver!GetHandleVerifier [0x7ff76f1b6045+32af5]
+	chromedriver!GetHandleVerifier [0x7ff76f1becec+3b79c]
+	chromedriver!GetHandleVerifier [0x7ff76f1a1bc4+1e674]
+	chromedriver!GetHandleVerifier [0x7ff76f1a1d54+1e804]
+	chromedriver!GetHandleVerifier [0x7ff76f1860e7+2b97]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-05 13:55:57 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-05 13:56:02 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 13:58:14 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=케어포
+2026-06-05 13:58:17 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 14:05:18 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-05 14:05:20 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 14:07:27 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=케어포
+2026-06-05 14:07:30 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 14:08:00 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-06-05 14:08:05 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 14:22:23 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-06-05 14:22:28 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 14:24:42 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=케어포
+2026-06-05 14:24:44 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 14:33:18 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=케어포
+2026-06-05 14:33:21 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 16:00:27 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-05 16:00:33 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 16:13:36 [INFO] [LoginTool] [양평점] 로그인 시도, 기관기호=14183000182, 타입=롱텀
+2026-06-05 16:13:41 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 16:19:11 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-06-05 16:19:16 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 16:20:02 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-06-05 16:20:05 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 16:56:17 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-05 16:56:22 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 17:01:16 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-05 17:01:21 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 17:01:33 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-06-05 17:01:38 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 17:02:09 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-06-05 17:02:12 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 17:14:14 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-06-05 17:14:17 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 17:15:33 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-05 17:15:38 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 17:17:01 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=케어포
+2026-06-05 17:17:04 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 17:33:40 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-05 17:33:45 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 17:34:42 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=케어포
+2026-06-05 17:34:45 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 17:52:39 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=케어포
+2026-06-05 17:52:41 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 17:52:44 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=롱텀
+2026-06-05 17:52:50 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-05 17:58:39 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-05 17:58:42 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-05 17:59:38 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=케어포
+2026-06-05 17:59:41 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 08:19:24 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-08 08:19:45 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 08:21:33 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=케어포
+2026-06-08 08:21:42 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 08:31:50 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-08 08:31:56 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 08:35:32 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-08 08:35:36 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 09:05:52 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-08 09:05:58 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 09:31:24 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=케어포
+2026-06-08 09:31:28 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 09:35:42 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-08 09:35:48 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 09:36:25 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-08 09:36:29 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 10:27:23 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=케어포
+2026-06-08 10:27:26 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 10:27:31 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-08 10:27:37 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:33:45 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=롱텀
+2026-06-08 10:33:51 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:34:21 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-08 10:34:27 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:35:10 [INFO] [LoginTool] [양평점] 로그인 시도, 기관기호=14183000182, 타입=롱텀
+2026-06-08 10:35:16 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:39:06 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-08 10:39:12 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:43:49 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-08 10:43:55 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:47:22 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=케어포
+2026-06-08 10:47:25 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 10:50:27 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=케어포
+2026-06-08 10:50:29 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 10:50:32 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-06-08 10:50:38 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:51:29 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-06-08 10:51:34 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:52:43 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-08 10:52:48 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:55:38 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-06-08 10:55:43 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:56:54 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-08 10:56:59 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 10:59:28 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=케어포
+2026-06-08 10:59:30 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 11:01:27 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-08 11:01:32 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:02:01 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-08 11:02:07 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:03:51 [INFO] [FederationTool] [천안점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:03:56 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:06:56 [INFO] [FederationTool] [운양점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:07:02 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:07:21 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:07:27 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:07:45 [INFO] [FederationTool] [아산점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:07:50 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:36:52 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:38:54 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:43:10 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:45:09 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:47:49 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-08 11:47:52 [ERROR] [LoginTool] Chrome 자동화 실패: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=148.0.7778.217)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0xadb593+105d3]
+	chromedriver!GetHandleVerifier [0xadb6c4+10704]
+	chromedriver!(No symbol) [0x8e1ea0]
+	chromedriver!(No symbol) [0x8c0933]
+	chromedriver!(No symbol) [0x953aeb]
+	chromedriver!(No symbol) [0x903d7e]
+	chromedriver!(No symbol) [0x94d516]
+	chromedriver!(No symbol) [0x9208e9]
+	chromedriver!(No symbol) [0x9216a4]
+	chromedriver!GetHandleVerifier [0xd63014+298054]
+	chromedriver!GetHandleVerifier [0xd5e603+293643]
+	chromedriver!GetHandleVerifier [0xd7ea05+2b3a45]
+	chromedriver!GetHandleVerifier [0xaf54e8+2a528]
+	chromedriver!GetHandleVerifier [0xafcd1d+31d5d]
+	chromedriver!GetHandleVerifier [0xae3e68+18ea8]
+	chromedriver!GetHandleVerifier [0xae4015+19055]
+	chromedriver!GetHandleVerifier [0xacd65f+269f]
+	KERNEL32!BaseThreadInitThunk [0x75445d49+19]
+	ntdll!RtlInitializeExceptionChain [0x7775d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x7775d7c1+231]
+
+2026-06-08 11:47:54 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=케어포
+2026-06-08 11:47:56 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 11:48:35 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:51:52 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:53:35 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:54:42 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 11:55:08 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-08 11:55:14 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 11:59:40 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-08 11:59:46 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 12:59:16 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-08 12:59:21 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 13:30:27 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-08 13:30:32 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 14:09:36 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-06-08 14:09:41 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 14:21:29 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-08 14:21:34 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 14:39:05 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-06-08 14:39:11 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 14:56:57 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-08 14:57:02 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 15:09:52 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-06-08 15:09:57 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 15:14:26 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-08 15:14:31 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 15:51:26 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-08 15:51:28 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 16:02:45 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-06-08 16:02:51 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 16:11:13 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=케어포
+2026-06-08 16:11:16 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-08 16:23:59 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-08 16:24:05 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 16:31:36 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-08 16:31:42 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 16:38:18 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-08 16:38:23 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 17:25:00 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-08 17:25:06 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 18:00:23 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 18:00:45 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-08 18:00:52 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-08 18:00:52 [INFO] [FederationTool] 윈도우 전환 준비: handles=['B60E1924B454FED9A530836C8F27D682'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-08 18:00:52 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-08 18:00:53 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-08 18:01:04 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-08 18:01:13 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=148.0.7778.217)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0xadb593+105d3]
+	chromedriver!GetHandleVerifier [0xadb6c4+10704]
+	chromedriver!(No symbol) [0x8e1ea0]
+	chromedriver!(No symbol) [0x8d0dbe]
+	chromedriver!(No symbol) [0x8ef98e]
+	chromedriver!(No symbol) [0x953cdc]
+	chromedriver!(No symbol) [0x96a2a9]
+	chromedriver!(No symbol) [0x94d516]
+	chromedriver!(No symbol) [0x9208e9]
+	chromedriver!(No symbol) [0x9216a4]
+	chromedriver!GetHandleVerifier [0xd63014+298054]
+	chromedriver!GetHandleVerifier [0xd5e603+293643]
+	chromedriver!GetHandleVerifier [0xd7ea05+2b3a45]
+	chromedriver!GetHandleVerifier [0xaf54e8+2a528]
+	chromedriver!GetHandleVerifier [0xafcd1d+31d5d]
+	chromedriver!GetHandleVerifier [0xae3e68+18ea8]
+	chromedriver!GetHandleVerifier [0xae4015+19055]
+	chromedriver!GetHandleVerifier [0xacd65f+269f]
+	KERNEL32!BaseThreadInitThunk [0x75445d49+19]
+	ntdll!RtlInitializeExceptionChain [0x7775d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x7775d7c1+231]
+

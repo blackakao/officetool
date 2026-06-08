@@ -1,0 +1,195 @@
+{
+    "version": 1,
+    "timeouts": {
+        "default": 20,
+        "short": 3,
+        "long": 60,
+        "loading": 120
+    },
+    "selectors": {
+        "main_menu": {
+            "label": "상단 메뉴 - 급여비용청구",
+            "by": "xpath",
+            "value": "//*[@id=\"mainframe.VFrameSet.frameTop.form.div_menuBar.form.menuBtn_3:icontext\"]",
+            "required": true
+        },
+        "payroll_claim_dropdown": {
+            "label": "드롭다운 메뉴 - 급여비용청구",
+            "by": "xpath",
+            "value": "//*[@id=\"mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text\"]",
+            "required": true
+        },
+        "claim_page_warning_close": {
+            "label": "급여비용청구 페이지 경고 모달 닫기/확인",
+            "by": "xpath",
+            "value": "//*[@id=\"mainframe.VFrameSet.HFrameSet.VFrameSetSub.framesetWork.winnpc0109000590.form._div_bizFrameMain.form.div_warn.form.div_before.form.btn_closeDivCancelDtst:icontext\"]",
+            "required": false
+        },
+        "operation_guide_close": {
+            "label": "운영안내 팝업 닫기",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "claim_button": {
+            "label": "우측 주황색 청구하기 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "entry_notice_tab": {
+            "label": "원청구 모달 탭 - 입퇴소신고내용관리",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "entry_notice_rows": {
+            "label": "입소신고자 테이블 행 목록",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "recipient_select_all_checkbox": {
+            "label": "수급자명 테이블 상단 전체 체크박스",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "recipient_checkboxes": {
+            "label": "수급자명 테이블 개별 체크박스 목록",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "add_recipient_button": {
+            "label": "청구대상자로 넘기는 > 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "confirm_add_recipient": {
+            "label": "청구대상자로 추가 확인 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "loading_canvas": {
+            "label": "진행중 캔버스/로딩 요소",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "claim_target_created_message": {
+            "label": "청구대상자가 생성되었습니다 알림/확인",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "salary_data_tab": {
+            "label": "원청구 모달 탭 - 급여내용 자료 관리",
+            "by": "class",
+            "value": "",
+            "required": true
+        },
+        "search_button": {
+            "label": "급여내용 자료 관리 조회 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "claim_target_rows": {
+            "label": "청구대상자 테이블 행 목록",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "save_button": {
+            "label": "저장 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "confirm_save": {
+            "label": "급여자료 저장 확인 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "save_completed_confirm": {
+            "label": "저장되었습니다 알림 확인 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "generate_statement_button": {
+            "label": "명세서자동생성 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "statement_register_complete_button": {
+            "label": "자식 모달 - 명세서 등록완료 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "pay_result_select": {
+            "label": "급여제공결과등록 - 급여제공결과 셀렉트",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        },
+        "pay_result_continue_option": {
+            "label": "급여제공결과 셀렉트 옵션 - 계속",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "pay_result_save_button": {
+            "label": "급여제공결과등록 저장 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "confirm_pay_result_save": {
+            "label": "급여제공결과 저장 확인 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "statement_completed_confirm": {
+            "label": "명세서가 등록완료되었습니다 확인 버튼",
+            "by": "xpath",
+            "value": "",
+            "required": false
+        },
+        "statement_auto_modal_close": {
+            "label": "시설/단기보호 청구명세서 자동생성 닫기",
+            "by": "xpath",
+            "value": "",
+            "required": true
+        }
+    },
+    "popup_close_selectors": [
+        {
+            "label": "공통 버튼 - 닫기",
+            "by": "xpath",
+            "value": "//button[normalize-space(.)='닫기']"
+        },
+        {
+            "label": "공통 버튼 - 확인",
+            "by": "xpath",
+            "value": "//button[normalize-space(.)='확인']"
+        },
+        {
+            "label": "공통 링크 - 닫기",
+            "by": "xpath",
+            "value": "//a[normalize-space(.)='닫기']"
+        },
+        {
+            "label": "공통 링크 - 확인",
+            "by": "xpath",
+            "value": "//a[normalize-space(.)='확인']"
+        }
+    ]
+}
