@@ -28,5 +28,28 @@
             "by": "xpath",
             "value": "//a[normalize-space(.)='확인']"
         }
-    ]
+    ],
+    "browser": {
+        "window_index": -1
+    },
+    "dialog_controls": {
+        "alert": {
+            "enabled": true,
+            "action": "accept"
+        },
+        "confirm": {
+            "enabled": true,
+            "action": "accept"
+        },
+        "prompt": {
+            "enabled": true,
+            "action": "accept",
+            "text": ""
+        },
+        "extra_windows": {
+            "enabled": false,
+            "action": "keep"
+        }
+    },
+    "deleted_selector_keys": []
 }

@@ -452,3 +452,1633 @@ Stacktrace:
 	ntdll!RtlInitializeExceptionChain [0x7775d83b+6b]
 	ntdll!RtlGetAppContainerNamedObjectPath [0x7775d7c1+231]
 
+2026-06-09 08:12:00 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=케어포
+2026-06-09 08:12:04 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 08:12:09 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-09 08:12:15 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 08:29:18 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-09 08:29:24 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 08:33:52 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-09 08:33:57 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 08:42:32 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-09 08:42:37 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 08:43:29 [INFO] [LoginTool] [양평점] 로그인 시도, 기관기호=14183000182, 타입=롱텀
+2026-06-09 08:43:34 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 09:04:18 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-09 09:04:23 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 09:40:02 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-09 09:40:09 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 09:41:20 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=케어포
+2026-06-09 09:41:23 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 09:45:24 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-09 09:45:27 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 09:52:59 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-09 09:53:04 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:15:17 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-09 10:15:22 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:20:56 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-09 10:21:02 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:26:21 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-09 10:26:26 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:28:30 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-09 10:28:36 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:31:11 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-09 10:31:17 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:31:43 [INFO] [LoginTool] [양평점] 로그인 시도, 기관기호=14183000182, 타입=롱텀
+2026-06-09 10:31:49 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:34:11 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-06-09 10:34:16 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:36:27 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-09 10:36:32 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:42:47 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-09 10:42:52 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:44:51 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-06-09 10:44:56 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:47:23 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-09 10:47:28 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:50:09 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-06-09 10:50:14 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:52:19 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=롱텀
+2026-06-09 10:52:24 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:56:58 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-09 10:57:03 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 10:58:42 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-09 10:58:47 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 11:00:35 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-09 11:00:41 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 11:03:03 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-09 11:03:09 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 11:07:47 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-09 11:07:52 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 11:22:25 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-09 11:22:31 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 11:23:29 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-09 11:23:35 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 11:47:57 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-09 11:48:02 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 13:11:03 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-09 13:11:05 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 16:43:59 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-09 16:44:05 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 16:45:38 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=케어포
+2026-06-09 16:45:40 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:04:13 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=케어포
+2026-06-09 17:04:16 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:05:06 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-09 17:05:12 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-09 17:18:33 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=케어포
+2026-06-09 17:18:36 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:27:14 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=케어포
+2026-06-09 17:27:16 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:31:12 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=케어포
+2026-06-09 17:31:14 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:32:07 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-06-09 17:32:10 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:33:04 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=케어포
+2026-06-09 17:33:11 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-09 17:42:19 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=케어포
+2026-06-09 17:42:22 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-10 07:56:47 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-06-10 07:56:57 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 07:58:01 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-10 07:58:06 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 07:58:44 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-10 07:58:49 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:00:45 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-10 08:00:49 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:01:07 [INFO] [LoginTool] [양평점] 로그인 시도, 기관기호=14183000182, 타입=롱텀
+2026-06-10 08:01:11 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:01:39 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-06-10 08:01:44 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:03:48 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-10 08:03:53 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:04:34 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-10 08:04:38 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:04:43 [INFO] [LoginTool] [일산본점] 로그인 시도, 기관기호=14128001633, 타입=롱텀
+2026-06-10 08:04:49 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:10:23 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-06-10 08:10:28 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:10:53 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-06-10 08:10:59 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:11:25 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-10 08:11:31 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:12:07 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-06-10 08:12:13 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:12:48 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=롱텀
+2026-06-10 08:12:53 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:13:20 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-06-10 08:13:25 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:13:51 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-10 08:13:57 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:25:36 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-10 08:25:43 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:35:20 [INFO] [LoginTool] [장기점] 로그인 시도, 기관기호=14157000438, 타입=롱텀
+2026-06-10 08:35:27 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:44:08 [INFO] [LoginTool] [성남점] 로그인 시도, 기관기호=14113000834, 타입=롱텀
+2026-06-10 08:44:14 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:47:36 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-06-10 08:47:41 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 08:55:45 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-06-10 08:55:51 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:27:55 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:27:58 [ERROR] [FederationTool] Chrome 자동화 실패: Message: session not created: Chrome failed to start: crashed.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f710908b]
+	chromedriver!(No symbol) [0x7ff7f7104359]
+	chromedriver!(No symbol) [0x7ff7f7157f11]
+	chromedriver!(No symbol) [0x7ff7f7157776]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:28:06 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:28:11 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:28:11 [INFO] [FederationTool] 윈도우 전환 준비: handles=['D1BE5F954100223B9C0AF20D0CAD63C5'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:28:11 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:28:13 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 09:28:13 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:28:17 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:28:23 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:28:33 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:28:38 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:28:38 [INFO] [FederationTool] 윈도우 전환 준비: handles=['92F3261DF889B1268C6A2F0403646F5F'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:28:38 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:28:39 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 09:28:39 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:28:44 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:28:47 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:28:51 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-10 09:28:56 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:30:20 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-06-10 09:30:25 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:34:03 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:34:08 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:34:08 [INFO] [FederationTool] 윈도우 전환 준비: handles=['829D0E78161A014F4C052B71987533D1'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:34:08 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:34:09 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 09:34:09 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:34:13 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:34:22 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:34:41 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:34:45 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:34:45 [INFO] [FederationTool] 윈도우 전환 준비: handles=['340C64FE60AC42519B192493868B7E0A'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:34:45 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:34:47 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 09:34:47 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:34:51 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:35:00 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:35:32 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:35:36 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:35:36 [INFO] [FederationTool] 윈도우 전환 준비: handles=['0D6124AE124E36D0741DC7DE1A06B91E'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:35:36 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:35:36 [INFO] [FederationTool] 브라우저 윈도우/탭 1번째로 전환합니다.
+2026-06-10 09:35:36 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:35:41 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:35:43 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:37:39 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=케어포
+2026-06-10 09:37:41 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-10 09:51:14 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:51:27 [INFO] [FederationTool] [화성점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:51:32 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:51:32 [INFO] [FederationTool] 윈도우 전환 준비: handles=['F98485AEC2FEBEA110982E30C343A509'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:51:32 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:51:32 [INFO] [FederationTool] 브라우저 윈도우/탭 1번째로 전환합니다.
+2026-06-10 09:51:32 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:51:38 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:51:51 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 09:56:46 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 09:56:51 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 09:56:51 [INFO] [FederationTool] 윈도우 전환 준비: handles=['D5DED4A1EAFE7373B64D93F0CCE3B647'], current_url=https://www.longtermcare.or.kr/npbs/auth/login/loginForm.web?menuId=npe0000002840&rtnUrl=&zoomSize=
+2026-06-10 09:56:51 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 09:56:51 [INFO] [FederationTool] 브라우저 윈도우/탭 1번째로 전환합니다.
+2026-06-10 09:56:51 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 09:56:56 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 09:57:17 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: 
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f712195d]
+	chromedriver!(No symbol) [0x7ff7f7121c5c]
+	chromedriver!(No symbol) [0x7ff7f7171e37]
+	chromedriver!(No symbol) [0x7ff7f716e9fc]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 10:03:16 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:04:02 [ERROR] [FederationTool] Chrome 자동화 실패: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 10:20:45 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:26:26 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:29:40 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:31:56 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:32:12 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 10:32:12 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 10:32:12 [INFO] [FederationTool] 윈도우 전환 준비: handles=['05D4917A74EACB77EAB5F7CC5525B724', '8AA32D0485934914EB93B4536D01CFD9'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:32:12 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 10:32:12 [INFO] [FederationTool] 브라우저 윈도우/탭 1번째로 전환합니다.
+2026-06-10 10:32:12 [INFO] [FederationTool] [진단] 자동화 시작: handles=['05D4917A74EACB77EAB5F7CC5525B724', '8AA32D0485934914EB93B4536D01CFD9'], current=05D4917A74EACB77EAB5F7CC5525B724, title=국민건강보험공단 장기요양보험 > 마이블로그 > 마이블로그 > 마이블로그, url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:32:12 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 10:32:12 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 10:32:12 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['05D4917A74EACB77EAB5F7CC5525B724', '8AA32D0485934914EB93B4536D01CFD9'], current=05D4917A74EACB77EAB5F7CC5525B724, title=국민건강보험공단 장기요양보험 > 마이블로그 > 마이블로그 > 마이블로그, url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:32:12 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 10:32:14 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=4
+2026-06-10 10:32:14 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=1
+2026-06-10 10:32:14 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:32:14 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:32:14 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:17 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:17 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:20 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:20 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 10:32:20 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 10:32:20 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 10:32:20 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 10:32:21 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:32:21 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:32:21 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:32:21 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:32:21 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:24 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:24 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:27 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:27 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 10:32:28 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=4
+2026-06-10 10:32:28 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=1
+2026-06-10 10:32:28 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:32:28 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:32:28 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:31 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:31 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:34 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:34 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 10:32:34 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 10:32:35 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 10:32:35 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 10:32:36 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:32:36 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:32:36 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:32:36 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:32:36 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:39 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:39 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:32:42 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:32:42 [INFO] [FederationTool] [진단] 팝업 닫기 종료: handles=['05D4917A74EACB77EAB5F7CC5525B724', '8AA32D0485934914EB93B4536D01CFD9'], current=05D4917A74EACB77EAB5F7CC5525B724, title=국민건강보험공단 장기요양보험 > 마이블로그 > 마이블로그 > 마이블로그, url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:32:42 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 10:32:42 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 10:42:25 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:42:43 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 10:42:43 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 10:42:43 [INFO] [FederationTool] 윈도우 전환 준비: handles=['A17E9E449B81F33838FA3BFF4F9B52BF', '6A3BA1C03896A17B6CF210361C51690B'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:42:43 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 10:42:43 [INFO] [FederationTool] 브라우저 윈도우/탭 1번째로 전환합니다.
+2026-06-10 10:42:44 [INFO] [FederationTool] [진단] 자동화 시작: handles=['A17E9E449B81F33838FA3BFF4F9B52BF', '6A3BA1C03896A17B6CF210361C51690B'], current=A17E9E449B81F33838FA3BFF4F9B52BF, title=국민건강보험공단 장기요양보험 > 마이블로그 > 마이블로그 > 마이블로그, url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:42:44 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 10:42:44 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 10:42:44 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['A17E9E449B81F33838FA3BFF4F9B52BF', '6A3BA1C03896A17B6CF210361C51690B'], current=A17E9E449B81F33838FA3BFF4F9B52BF, title=국민건강보험공단 장기요양보험 > 마이블로그 > 마이블로그 > 마이블로그, url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:42:44 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 10:42:45 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=4
+2026-06-10 10:42:45 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=1
+2026-06-10 10:42:45 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:42:45 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:42:45 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:42:48 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:42:48 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:42:51 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:42:51 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 10:42:51 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 10:42:51 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 10:42:51 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 10:42:52 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:42:52 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:42:52 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:42:52 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:42:52 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:42:55 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:42:55 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:42:58 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:42:59 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 10:42:59 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=4
+2026-06-10 10:42:59 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=1
+2026-06-10 10:42:59 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:42:59 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:42:59 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:43:02 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:43:02 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:43:05 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:43:05 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 10:43:05 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 10:43:05 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 10:43:05 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 10:43:06 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:43:07 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:43:07 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:43:07 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:43:07 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:43:10 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:43:10 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:43:13 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:43:13 [INFO] [FederationTool] [진단] 팝업 닫기 종료: handles=['A17E9E449B81F33838FA3BFF4F9B52BF', '6A3BA1C03896A17B6CF210361C51690B'], current=A17E9E449B81F33838FA3BFF4F9B52BF, title=국민건강보험공단 장기요양보험 > 마이블로그 > 마이블로그 > 마이블로그, url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:43:13 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 10:43:13 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 10:43:58 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 10:44:16 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 10:44:16 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 10:44:16 [INFO] [FederationTool] 윈도우 전환 준비: handles=['449EF1A236BCBB368730860C2918390E', '3EC8F26DB40CC667706BB3F856ADED84'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 10:44:16 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 10:44:16 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 10:44:16 [INFO] [FederationTool] [진단] 자동화 시작: handles=['449EF1A236BCBB368730860C2918390E', '3EC8F26DB40CC667706BB3F856ADED84'], current=3EC8F26DB40CC667706BB3F856ADED84, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!pkPeTzIexy69uGeM8kUQSzvWtCpUNkYFloZ9q1tjD7mPCepDTt44oTvSI8J2Kz1o.amV1c19kb21haW4vbnBic19vcHJfbmV3MjM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 10:44:16 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 10:44:16 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 10:44:16 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['449EF1A236BCBB368730860C2918390E', '3EC8F26DB40CC667706BB3F856ADED84'], current=3EC8F26DB40CC667706BB3F856ADED84, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!pkPeTzIexy69uGeM8kUQSzvWtCpUNkYFloZ9q1tjD7mPCepDTt44oTvSI8J2Kz1o.amV1c19kb21haW4vbnBic19vcHJfbmV3MjM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 10:44:16 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 10:44:17 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:44:17 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:44:17 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:44:17 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소상태] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소클릭성공] first_modal_close
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소상태] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소클릭성공] second_modal_close
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 10:44:17 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 10:44:17 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 10:44:17 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 10:44:18 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:44:18 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:44:18 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:44:18 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:44:18 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:44:21 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:44:21 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:44:24 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 10:44:24 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 10:44:25 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 10:44:25 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 10:44:25 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 10:44:25 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 10:44:25 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 10:44:27 [INFO] [FederationTool] [선택요소클릭실패] first_modal_close: InvalidSessionIdException: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=149.0.7827.54); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f70b2c02]
+	chromedriver!(No symbol) [0x7ff7f70d8f0c]
+	chromedriver!(No symbol) [0x7ff7f71513c0]
+	chromedriver!(No symbol) [0x7ff7f716e2ed]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 10:44:27 [INFO] [FederationTool] [선택요소클릭실패] second_modal_close: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 10:44:27 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 10:44:27 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 10:44:27 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:11:49 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 11:12:06 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 11:12:06 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 11:12:06 [INFO] [FederationTool] 윈도우 전환 준비: handles=['4D2F19F42C04618BDCBC94740BBE620C', '3A90C224217E9603A80901BDEE5F29A5'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 11:12:06 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 11:12:06 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 11:12:06 [INFO] [FederationTool] [진단] 자동화 시작: handles=['4D2F19F42C04618BDCBC94740BBE620C', '3A90C224217E9603A80901BDEE5F29A5'], current=3A90C224217E9603A80901BDEE5F29A5, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!vQbNNGnIs6FeTYhp3l0Dvbrfa5aQ9zAjldd3ChktrZCp1FDXThYPIb9P71r1cgKR.amV1c19kb21haW4vbnBic19vcHJfbmV3MTE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:12:06 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 11:12:06 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 11:12:06 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['4D2F19F42C04618BDCBC94740BBE620C', '3A90C224217E9603A80901BDEE5F29A5'], current=3A90C224217E9603A80901BDEE5F29A5, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!vQbNNGnIs6FeTYhp3l0Dvbrfa5aQ9zAjldd3ChktrZCp1FDXThYPIb9P71r1cgKR.amV1c19kb21haW4vbnBic19vcHJfbmV3MTE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:12:06 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 11:12:06 [INFO] [FederationTool] [새창제어] action=close_extra handles=['4D2F19F42C04618BDCBC94740BBE620C', '3A90C224217E9603A80901BDEE5F29A5'] current=3A90C224217E9603A80901BDEE5F29A5
+2026-06-10 11:12:07 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:07 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:07 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:07 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:07 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:12:07 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:12:07 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:12:07 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:12:07 [INFO] [FederationTool] [선택요소상태] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:12:08 [INFO] [FederationTool] [선택요소클릭성공] first_modal_close
+2026-06-10 11:12:08 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:12:08 [INFO] [FederationTool] [선택요소상태] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:12:08 [INFO] [FederationTool] [선택요소클릭성공] second_modal_close
+2026-06-10 11:12:08 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:12:08 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:12:08 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:12:08 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:12:09 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:09 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:09 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:09 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:09 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:12:09 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:12:09 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:12:09 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:12:12 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:12:12 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:12:15 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:12:15 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 11:12:15 [INFO] [FederationTool] [새창제어] action=close_extra handles=['3A90C224217E9603A80901BDEE5F29A5'] current=3A90C224217E9603A80901BDEE5F29A5
+2026-06-10 11:12:16 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:16 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:16 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:16 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:16 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:12:16 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:12:16 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:12:16 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:12:19 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:12:19 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:12:22 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:12:22 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:12:22 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:12:22 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:12:22 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:12:23 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:23 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:23 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:12:23 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:12:23 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:12:23 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:12:23 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:12:23 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:12:26 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:12:26 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:12:30 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:12:30 [INFO] [FederationTool] [진단] 팝업 닫기 종료: handles=['3A90C224217E9603A80901BDEE5F29A5'], current=3A90C224217E9603A80901BDEE5F29A5, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!vQbNNGnIs6FeTYhp3l0Dvbrfa5aQ9zAjldd3ChktrZCp1FDXThYPIb9P71r1cgKR.amV1c19kb21haW4vbnBic19vcHJfbmV3MTE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:12:30 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 11:12:30 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 11:12:30 [INFO] [FederationTool] [클릭대기] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=/html/body/div[2]/div[6]/div[2]/div/div[1]/div timeout=20
+2026-06-10 11:12:51 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: 
+
+2026-06-10 11:15:32 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 11:15:47 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 11:15:47 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 11:15:47 [INFO] [FederationTool] 윈도우 전환 준비: handles=['ECD3E52819FF41CE38BCD71182970C4D', '8EDE0DE6BA1AE46A48C0EE758B064002'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 11:15:47 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 11:15:47 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 11:15:47 [INFO] [FederationTool] [진단] 자동화 시작: handles=['ECD3E52819FF41CE38BCD71182970C4D', '8EDE0DE6BA1AE46A48C0EE758B064002'], current=8EDE0DE6BA1AE46A48C0EE758B064002, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!GgQv1YFgXyOPLqLSuJZdALAEQwuWDc2glHU1zB1e4eJ5jsHuT1aaXadv4rgoMLaA.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:15:47 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 11:15:47 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 11:15:47 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['ECD3E52819FF41CE38BCD71182970C4D', '8EDE0DE6BA1AE46A48C0EE758B064002'], current=8EDE0DE6BA1AE46A48C0EE758B064002, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!GgQv1YFgXyOPLqLSuJZdALAEQwuWDc2glHU1zB1e4eJ5jsHuT1aaXadv4rgoMLaA.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:15:47 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 11:15:47 [INFO] [FederationTool] [새창제어] action=close_extra handles=['ECD3E52819FF41CE38BCD71182970C4D', '8EDE0DE6BA1AE46A48C0EE758B064002'] current=8EDE0DE6BA1AE46A48C0EE758B064002
+2026-06-10 11:15:48 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:15:48 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:15:48 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:15:48 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소상태] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소클릭성공] first_modal_close
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소상태] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소클릭성공] second_modal_close
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:15:48 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:15:48 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:15:48 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:15:49 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:15:49 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:15:49 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:15:49 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:15:49 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:15:49 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:15:49 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:15:49 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:15:52 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:15:52 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:15:56 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:15:56 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 11:15:56 [INFO] [FederationTool] [새창제어] action=close_extra handles=['8EDE0DE6BA1AE46A48C0EE758B064002'] current=8EDE0DE6BA1AE46A48C0EE758B064002
+2026-06-10 11:15:57 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:15:57 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:15:57 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:15:57 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:15:57 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:15:57 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:15:57 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:15:57 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:16:00 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:16:00 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:16:03 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:16:03 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:16:03 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:16:03 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:16:03 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:16:04 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:16:04 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:16:04 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:16:04 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:16:04 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:16:04 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:16:04 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:16:04 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:16:07 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:16:07 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:16:10 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:16:10 [INFO] [FederationTool] [진단] 팝업 닫기 종료: handles=['8EDE0DE6BA1AE46A48C0EE758B064002'], current=8EDE0DE6BA1AE46A48C0EE758B064002, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!GgQv1YFgXyOPLqLSuJZdALAEQwuWDc2glHU1zB1e4eJ5jsHuT1aaXadv4rgoMLaA.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:16:10 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 11:16:10 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 11:16:11 [INFO] [FederationTool] [클릭대기] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=20
+2026-06-10 11:16:31 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: 
+
+2026-06-10 11:19:08 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 11:19:23 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 11:19:23 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 11:19:23 [INFO] [FederationTool] 윈도우 전환 준비: handles=['416650FA13057268CA93E5CC2C590B90', 'CAEB5D5B8A144D4D118518BCBFB9E11A'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 11:19:23 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 11:19:23 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 11:19:23 [INFO] [FederationTool] [진단] 자동화 시작: handles=['416650FA13057268CA93E5CC2C590B90', 'CAEB5D5B8A144D4D118518BCBFB9E11A'], current=CAEB5D5B8A144D4D118518BCBFB9E11A, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!ynG0abiBm2e48GfW1sCMPVEI8yLsh51flV5VZQs0UzP9ijA3TXX1X8g2iMoHaMkc.amV1c19kb21haW4vbnBic19vcHJfbmV3MjE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:19:23 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 11:19:23 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 11:19:23 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['416650FA13057268CA93E5CC2C590B90', 'CAEB5D5B8A144D4D118518BCBFB9E11A'], current=CAEB5D5B8A144D4D118518BCBFB9E11A, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!ynG0abiBm2e48GfW1sCMPVEI8yLsh51flV5VZQs0UzP9ijA3TXX1X8g2iMoHaMkc.amV1c19kb21haW4vbnBic19vcHJfbmV3MjE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:19:23 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 11:19:23 [INFO] [FederationTool] [새창제어] action=close_extra handles=['416650FA13057268CA93E5CC2C590B90', 'CAEB5D5B8A144D4D118518BCBFB9E11A'] current=CAEB5D5B8A144D4D118518BCBFB9E11A
+2026-06-10 11:19:24 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:19:24 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:19:24 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:19:24 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:19:24 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:19:24 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:19:24 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:19:24 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:19:24 [INFO] [FederationTool] [선택요소상태] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:19:25 [INFO] [FederationTool] [선택요소클릭성공] first_modal_close
+2026-06-10 11:19:25 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:19:25 [INFO] [FederationTool] [선택요소상태] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:19:25 [INFO] [FederationTool] [선택요소클릭성공] second_modal_close
+2026-06-10 11:19:25 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:19:25 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:19:25 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:19:25 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:19:26 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:19:26 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:19:26 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:19:26 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:19:26 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:19:26 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:19:26 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:19:26 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:19:29 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:19:29 [INFO] [FederationTool] [선택요소검색] second_modal_close (두번째 모달을 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:19:32 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 11:19:32 [INFO] [FederationTool] [새창제어] action=close_extra handles=['CAEB5D5B8A144D4D118518BCBFB9E11A'] current=CAEB5D5B8A144D4D118518BCBFB9E11A
+2026-06-10 11:19:32 [INFO] [FederationTool] [공통팝업닫기실패] 공통 버튼 - 닫기: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:19:32 [INFO] [FederationTool] [공통팝업닫기실패] 공통 버튼 - 확인: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:19:32 [INFO] [FederationTool] [공통팝업닫기실패] 공통 링크 - 닫기: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:19:32 [INFO] [FederationTool] [공통팝업닫기실패] 공통 링크 - 확인: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소클릭실패] first_modal_close: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소클릭실패] second_modal_close: InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:19:32 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:19:32 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c7576]
+	chromedriver!(No symbol) [0x7ff7f7112ea6]
+	chromedriver!(No symbol) [0x7ff7f714a182]
+	chromedriver!(No symbol) [0x7ff7f7143f82]
+	chromedriver!(No symbol) [0x7ff7f7143742]
+	chromedriver!(No symbol) [0x7ff7f7090255]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!(No symbol) [0x7ff7f708eff8]
+	chromedriver!GetHandleVerifier [0x7ff7f7d2f358+7d0798]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 11:29:39 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 11:29:54 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 11:29:54 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 11:29:54 [INFO] [FederationTool] 윈도우 전환 준비: handles=['F7F299B08D170264DEA5E35C47611B47', 'C1EA826D3000B311D85FAE8BD1882906'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 11:29:54 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 11:29:54 [INFO] [FederationTool] 브라우저 윈도우/탭 2번째로 전환합니다.
+2026-06-10 11:29:54 [INFO] [FederationTool] [진단] 자동화 시작: handles=['F7F299B08D170264DEA5E35C47611B47', 'C1EA826D3000B311D85FAE8BD1882906'], current=C1EA826D3000B311D85FAE8BD1882906, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!quAjV46MwhQ99sjtZ3hd5YWTJZhmM7axlbzQuzc2OnzZt17RTolXkBQo5JPP3XiB.amV1c19kb21haW4vbnBic19vcHJfbmV3MzE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:29:54 [INFO] [FederationTool] [단계] 초기 팝업 닫기
+2026-06-10 11:29:54 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 11:29:54 [INFO] [FederationTool] [진단] 팝업 닫기 시작: handles=['F7F299B08D170264DEA5E35C47611B47', 'C1EA826D3000B311D85FAE8BD1882906'], current=C1EA826D3000B311D85FAE8BD1882906, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!quAjV46MwhQ99sjtZ3hd5YWTJZhmM7axlbzQuzc2OnzZt17RTolXkBQo5JPP3XiB.amV1c19kb21haW4vbnBic19vcHJfbmV3MzE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:29:54 [INFO] [FederationTool] [팝업닫기] attempt=1
+2026-06-10 11:29:54 [INFO] [FederationTool] [새창제어] action=close_extra handles=['F7F299B08D170264DEA5E35C47611B47', 'C1EA826D3000B311D85FAE8BD1882906'] current=C1EA826D3000B311D85FAE8BD1882906
+2026-06-10 11:29:55 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:29:55 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:29:55 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:29:55 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소상태] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소클릭성공] first_modal_close
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소검색] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소상태] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소클릭성공] second_modal_close
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:29:55 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:29:55 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:29:55 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:29:56 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:29:56 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:29:56 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:29:56 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:29:56 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:29:56 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:29:56 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:29:56 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:30:00 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:30:00 [INFO] [FederationTool] [선택요소검색] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:30:03 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:30:03 [INFO] [FederationTool] [팝업닫기] attempt=2
+2026-06-10 11:30:03 [INFO] [FederationTool] [새창제어] action=close_extra handles=['C1EA826D3000B311D85FAE8BD1882906'] current=C1EA826D3000B311D85FAE8BD1882906
+2026-06-10 11:30:04 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:30:04 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:30:04 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:30:04 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:30:04 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:30:04 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:30:04 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:30:04 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:30:07 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:30:07 [INFO] [FederationTool] [선택요소검색] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:30:10 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:30:10 [INFO] [FederationTool] [선택요소건너뜀] claim_page_warning_close: selector 값 없음
+2026-06-10 11:30:10 [INFO] [FederationTool] [선택요소건너뜀] operation_guide_close: selector 값 없음
+2026-06-10 11:30:10 [INFO] [FederationTool] [프레임검색] iframe found=1
+2026-06-10 11:30:10 [INFO] [FederationTool] [프레임진입] iframe 1/1
+2026-06-10 11:30:12 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:30:12 [INFO] [FederationTool] [공통팝업검색] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:30:12 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:30:12 [INFO] [FederationTool] [공통팝업검색] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:30:12 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_close: selector 값 없음
+2026-06-10 11:30:12 [INFO] [FederationTool] [선택요소건너뜀] layer_popup_confirm: selector 값 없음
+2026-06-10 11:30:12 [INFO] [FederationTool] [선택요소건너뜀] browser_popup_close_button: selector 값 없음
+2026-06-10 11:30:12 [INFO] [FederationTool] [선택요소검색] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:30:15 [INFO] [FederationTool] [선택요소없음] first_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:30:15 [INFO] [FederationTool] [선택요소검색] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:30:18 [INFO] [FederationTool] [선택요소없음] second_modal_close: 3초 안에 클릭 가능한 요소 없음
+2026-06-10 11:30:18 [INFO] [FederationTool] [진단] 팝업 닫기 종료: handles=['C1EA826D3000B311D85FAE8BD1882906'], current=C1EA826D3000B311D85FAE8BD1882906, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!quAjV46MwhQ99sjtZ3hd5YWTJZhmM7axlbzQuzc2OnzZt17RTolXkBQo5JPP3XiB.amV1c19kb21haW4vbnBic19vcHJfbmV3MzE=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:30:18 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 11:30:18 [INFO] [FederationTool] 상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭
+2026-06-10 11:30:19 [INFO] [FederationTool] [클릭대기] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=20
+2026-06-10 11:45:55 [INFO] [FederationTool] [청운점] 怨듬떒??吏??踰꾪듉 ?대┃, 濡깊? 濡쒓렇???쒖옉
+2026-06-10 11:46:11 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 11:46:11 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 11:46:11 [INFO] [FederationTool] ?덈룄???꾪솚 以鍮? handles=['8BC50E233A6E231514656A7D5A6D741D', 'F9695A9C2B4053E228E9F049C44CCBEC'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 11:46:11 [INFO] [FederationTool] 濡쒓렇????怨듬떒 泥?뎄 ?먮룞??珥덇린??以?..
+2026-06-10 11:46:11 [INFO] [FederationTool] 釉뚮씪?곗? ?덈룄????2踰덉㎏濡??꾪솚?⑸땲??
+2026-06-10 11:46:11 [INFO] [FederationTool] [吏꾨떒] ?먮룞???쒖옉: handles=['8BC50E233A6E231514656A7D5A6D741D', 'F9695A9C2B4053E228E9F049C44CCBEC'], current=F9695A9C2B4053E228E9F049C44CCBEC, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xD0MkCzqhSN5yzbTeWYgzHUS7MDvybIXl1azqHYm1zPp0qfOTWkURcWantEYT80e.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:46:11 [INFO] [FederationTool] [?④퀎] 珥덇린 ?앹뾽 ?リ린
+2026-06-10 11:46:11 [INFO] [FederationTool] ?대젮?덈뒗 ?뚮┝/紐⑤떖/?앹뾽 ?リ린 ?쒕룄
+2026-06-10 11:46:11 [INFO] [FederationTool] [吏꾨떒] ?앹뾽 ?リ린 ?쒖옉: handles=['8BC50E233A6E231514656A7D5A6D741D', 'F9695A9C2B4053E228E9F049C44CCBEC'], current=F9695A9C2B4053E228E9F049C44CCBEC, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xD0MkCzqhSN5yzbTeWYgzHUS7MDvybIXl1azqHYm1zPp0qfOTWkURcWantEYT80e.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:46:11 [INFO] [FederationTool] [?앹뾽?リ린] attempt=1
+2026-06-10 11:46:11 [INFO] [FederationTool] [?덉갹?쒖뼱] action=close_extra handles=['8BC50E233A6E231514656A7D5A6D741D', 'F9695A9C2B4053E228E9F049C44CCBEC'] current=F9695A9C2B4053E228E9F049C44CCBEC
+2026-06-10 11:46:12 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:12 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:12 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:12 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_close: selector 媛??놁쓬
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_confirm: selector 媛??놁쓬
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] browser_popup_close_button: selector 媛??놁쓬
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼寃?? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼?곹깭] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼?대┃?깃났] first_modal_close
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼寃?? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼?곹깭] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼?대┃?깃났] second_modal_close
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] claim_page_warning_close: selector 媛??놁쓬
+2026-06-10 11:46:12 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] operation_guide_close: selector 媛??놁쓬
+2026-06-10 11:46:12 [INFO] [FederationTool] [?꾨젅?꾧??? iframe found=1
+2026-06-10 11:46:12 [INFO] [FederationTool] [?꾨젅?꾩쭊?? iframe 1/1
+2026-06-10 11:46:13 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:13 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:13 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:13 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_close: selector 媛??놁쓬
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_confirm: selector 媛??놁쓬
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] browser_popup_close_button: selector 媛??놁쓬
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] first_modal_close: ?대? ?대┃ ?꾨즺
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] second_modal_close: ?대? ?대┃ ?꾨즺
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] claim_page_warning_close: selector 媛??놁쓬
+2026-06-10 11:46:13 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] operation_guide_close: selector 媛??놁쓬
+2026-06-10 11:46:13 [INFO] [FederationTool] [popup_close] clicked; stop retry: ['first_modal_close', 'second_modal_close']
+2026-06-10 11:46:13 [INFO] [FederationTool] [吏꾨떒] ?앹뾽 ?リ린 醫낅즺: handles=['F9695A9C2B4053E228E9F049C44CCBEC'], current=F9695A9C2B4053E228E9F049C44CCBEC, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xD0MkCzqhSN5yzbTeWYgzHUS7MDvybIXl1azqHYm1zPp0qfOTWkURcWantEYT80e.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:46:13 [INFO] [FederationTool] [?④퀎] 湲됱뿬鍮꾩슜泥?뎄 硫붾돱 ?닿린
+2026-06-10 11:46:13 [INFO] [FederationTool] ?곷떒 硫붾돱 '湲됱뿬鍮꾩슜泥?뎄' 留덉슦???ㅻ쾭 ???쒕∼?ㅼ슫 硫붾돱 ?대┃
+2026-06-10 11:46:14 [INFO] [FederationTool] [navbar] main_menu hover ok; click to open
+2026-06-10 11:46:14 [INFO] [FederationTool] [navbar] click payroll_claim_dropdown
+2026-06-10 11:46:14 [INFO] [FederationTool] [?대┃?湲? payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=5
+2026-06-10 11:46:14 [INFO] [FederationTool] [?대┃?깃났] payroll_claim_dropdown
+2026-06-10 11:46:14 [INFO] [FederationTool] [?④퀎] 硫붾돱 ?대룞 ???앹뾽 ?リ린
+2026-06-10 11:46:14 [INFO] [FederationTool] ?대젮?덈뒗 ?뚮┝/紐⑤떖/?앹뾽 ?リ린 ?쒕룄
+2026-06-10 11:46:14 [INFO] [FederationTool] [吏꾨떒] ?앹뾽 ?リ린 ?쒖옉: handles=['F9695A9C2B4053E228E9F049C44CCBEC'], current=F9695A9C2B4053E228E9F049C44CCBEC, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xD0MkCzqhSN5yzbTeWYgzHUS7MDvybIXl1azqHYm1zPp0qfOTWkURcWantEYT80e.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:46:14 [INFO] [FederationTool] [?앹뾽?リ린] attempt=1
+2026-06-10 11:46:14 [INFO] [FederationTool] [?덉갹?쒖뼱] action=close_extra handles=['F9695A9C2B4053E228E9F049C44CCBEC'] current=F9695A9C2B4053E228E9F049C44CCBEC
+2026-06-10 11:46:15 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:15 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:15 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:15 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:15 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_close: selector 媛??놁쓬
+2026-06-10 11:46:15 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_confirm: selector 媛??놁쓬
+2026-06-10 11:46:15 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] browser_popup_close_button: selector 媛??놁쓬
+2026-06-10 11:46:15 [INFO] [FederationTool] [?좏깮?붿냼寃?? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:19 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] first_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:19 [INFO] [FederationTool] [?좏깮?붿냼寃?? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:22 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] second_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:22 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] claim_page_warning_close: selector 媛??놁쓬
+2026-06-10 11:46:22 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] operation_guide_close: selector 媛??놁쓬
+2026-06-10 11:46:22 [INFO] [FederationTool] [?꾨젅?꾧??? iframe found=1
+2026-06-10 11:46:22 [INFO] [FederationTool] [?꾨젅?꾩쭊?? iframe 1/1
+2026-06-10 11:46:23 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:23 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:23 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:23 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:23 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_close: selector 媛??놁쓬
+2026-06-10 11:46:23 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_confirm: selector 媛??놁쓬
+2026-06-10 11:46:23 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] browser_popup_close_button: selector 媛??놁쓬
+2026-06-10 11:46:23 [INFO] [FederationTool] [?좏깮?붿냼寃?? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:26 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] first_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:26 [INFO] [FederationTool] [?좏깮?붿냼寃?? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:29 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] second_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:29 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] claim_page_warning_close: selector 媛??놁쓬
+2026-06-10 11:46:29 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] operation_guide_close: selector 媛??놁쓬
+2026-06-10 11:46:29 [INFO] [FederationTool] [?앹뾽?リ린] attempt=2
+2026-06-10 11:46:29 [INFO] [FederationTool] [?덉갹?쒖뼱] action=close_extra handles=['F9695A9C2B4053E228E9F049C44CCBEC', 'A0EA734053397A91EE871B535E6658C4'] current=F9695A9C2B4053E228E9F049C44CCBEC
+2026-06-10 11:46:30 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:30 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:30 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:30 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:30 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_close: selector 媛??놁쓬
+2026-06-10 11:46:30 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_confirm: selector 媛??놁쓬
+2026-06-10 11:46:30 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] browser_popup_close_button: selector 媛??놁쓬
+2026-06-10 11:46:30 [INFO] [FederationTool] [?좏깮?붿냼寃?? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:33 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] first_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:33 [INFO] [FederationTool] [?좏깮?붿냼寃?? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:37 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] second_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:37 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] claim_page_warning_close: selector 媛??놁쓬
+2026-06-10 11:46:37 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] operation_guide_close: selector 媛??놁쓬
+2026-06-10 11:46:37 [INFO] [FederationTool] [?꾨젅?꾧??? iframe found=1
+2026-06-10 11:46:37 [INFO] [FederationTool] [?꾨젅?꾩쭊?? iframe 1/1
+2026-06-10 11:46:38 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:38 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:38 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 11:46:38 [INFO] [FederationTool] [怨듯넻?앹뾽寃?? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 11:46:38 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_close: selector 媛??놁쓬
+2026-06-10 11:46:38 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] layer_popup_confirm: selector 媛??놁쓬
+2026-06-10 11:46:38 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] browser_popup_close_button: selector 媛??놁쓬
+2026-06-10 11:46:38 [INFO] [FederationTool] [?좏깮?붿냼寃?? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:41 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] first_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:41 [INFO] [FederationTool] [?좏깮?붿냼寃?? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 11:46:44 [INFO] [FederationTool] [?좏깮?붿냼?놁쓬] second_modal_close: 3珥??덉뿉 ?대┃ 媛?ν븳 ?붿냼 ?놁쓬
+2026-06-10 11:46:44 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] claim_page_warning_close: selector 媛??놁쓬
+2026-06-10 11:46:44 [INFO] [FederationTool] [?좏깮?붿냼嫄대꼫?] operation_guide_close: selector 媛??놁쓬
+2026-06-10 11:46:44 [INFO] [FederationTool] [吏꾨떒] ?앹뾽 ?リ린 醫낅즺: handles=['F9695A9C2B4053E228E9F049C44CCBEC'], current=F9695A9C2B4053E228E9F049C44CCBEC, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xD0MkCzqhSN5yzbTeWYgzHUS7MDvybIXl1azqHYm1zPp0qfOTWkURcWantEYT80e.amV1c19kb21haW4vbnBic19vcHJfbmV3NDQ=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 11:46:44 [INFO] [FederationTool] [?④퀎] 泥?뎄?섍린 踰꾪듉 ?대┃
+2026-06-10 11:46:44 [INFO] [FederationTool] '泥?뎄?섍린' 踰꾪듉 ?대┃
+2026-06-10 11:46:44 [ERROR] [FederationTool] 泥?뎄 紐낆꽭???먮룞??以??ㅻ쪟: ?붿냼 ?ㅼ젙???놁뒿?덈떎: claim_button
+2026-06-10 13:05:41 [INFO] [FederationTool] [청운점] ?????????깅즿????????釉먮폁???????????????????? ????? ????????????遺얘턁????????????濾?
+2026-06-10 13:05:58 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 13:05:58 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 13:05:58 [INFO] [FederationTool] ????????嶺뚮ㅎ?э㎗????????????????????????썼린?濾??轅붽틓???????????? handles=['DA1594931403C151BA0D4D947D09CC62', '19701373F227E02433F1F3B8B3B31CE1'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 13:05:58 [INFO] [FederationTool] ???????????????????깅즿???????????????????癲ル슢????????..
+2026-06-10 13:05:58 [INFO] [FederationTool] ?????????????? ????????嶺뚮ㅎ?э㎗????2????????遺얘턁??????癲ル슢???????룸챷援???????????????????遺얘턁????????
+2026-06-10 13:05:58 [INFO] [FederationTool] [????釉먮폁???????? ??????????遺얘턁????????????濾?: handles=['DA1594931403C151BA0D4D947D09CC62', '19701373F227E02433F1F3B8B3B31CE1'], current=19701373F227E02433F1F3B8B3B31CE1, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!QL2dTUJbslKm0kzs7mz1Dznk5EKwaulqlj1kRi86B7SaepfcTYP8Wq2uretJ5ISf.amV1c19kb21haW4vbnBic19vcHJfbmV3MzI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:05:58 [INFO] [FederationTool] [???????????? ??????癲ル슢????????????諛몃마嶺뚮?????????雍?????????
+2026-06-10 13:05:58 [INFO] [FederationTool] ???????????????????????釉먮폁???????????釉먮폇???????????諛몃마嶺뚮?????????雍?????????????遺얘턁???????
+2026-06-10 13:05:58 [INFO] [FederationTool] [????釉먮폁???????? ???????諛몃마嶺뚮?????????雍?????????????遺얘턁????????????濾?: handles=['DA1594931403C151BA0D4D947D09CC62', '19701373F227E02433F1F3B8B3B31CE1'], current=19701373F227E02433F1F3B8B3B31CE1, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!QL2dTUJbslKm0kzs7mz1Dznk5EKwaulqlj1kRi86B7SaepfcTYP8Wq2uretJ5ISf.amV1c19kb21haW4vbnBic19vcHJfbmV3MzI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:05:58 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 13:05:58 [INFO] [FederationTool] [??????????? action=close_extra handles=['DA1594931403C151BA0D4D947D09CC62', '19701373F227E02433F1F3B8B3B31CE1'] current=19701373F227E02433F1F3B8B3B31CE1
+2026-06-10 13:05:59 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:05:59 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:05:59 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:05:59 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:05:59 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 13:05:59 [INFO] [FederationTool] [???????????????????????????濾???? first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 13:05:59 [INFO] [FederationTool] [action] first_modal_close: click
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_click_ok] first_modal_close
+2026-06-10 13:05:59 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 13:05:59 [INFO] [FederationTool] [???????????????????????????濾???? second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 13:05:59 [INFO] [FederationTool] [action] second_modal_close: click
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_click_ok] second_modal_close
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:05:59 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:05:59 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 13:05:59 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 13:06:00 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:00 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:00 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:00 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] first_modal_close: already clicked
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] second_modal_close: already clicked
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:06:00 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:06:00 [INFO] [FederationTool] [popup_close] clicked; stop retry: ['first_modal_close', 'second_modal_close']
+2026-06-10 13:06:00 [INFO] [FederationTool] [????釉먮폁???????? ???袁⑸즴筌?，??????????????살꺎??: handles=['19701373F227E02433F1F3B8B3B31CE1'], current=19701373F227E02433F1F3B8B3B31CE1, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!QL2dTUJbslKm0kzs7mz1Dznk5EKwaulqlj1kRi86B7SaepfcTYP8Wq2uretJ5ISf.amV1c19kb21haW4vbnBic19vcHJfbmV3MzI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:06:00 [INFO] [FederationTool] [???????????? ???????곷♧?????遺얘턁??????嶺뚮ㅎ?볟퐲???ㅼ뒧??띤겫??눫???????????밸븶筌믩끃??獄??????????⑤뜤????????釉먮폁?????????????????롮쾸?椰???⑤챷寃??
+2026-06-10 13:06:00 [INFO] [FederationTool] ?????깅즽???轅붽틓?????????沅걔?癲ル슢?싩땟蹂좊쨨???辱??꾩룆梨띰㎘?곸녇???????繹먮굟爰?
+2026-06-10 13:06:01 [INFO] [FederationTool] [action] main_menu: hover_click
+2026-06-10 13:06:01 [INFO] [FederationTool] [navbar] click payroll_claim_dropdown
+2026-06-10 13:06:01 [INFO] [FederationTool] [click_wait] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=5
+2026-06-10 13:06:01 [INFO] [FederationTool] [action] payroll_claim_dropdown: click
+2026-06-10 13:06:01 [INFO] [FederationTool] [click_ok] payroll_claim_dropdown
+2026-06-10 13:06:01 [INFO] [FederationTool] [???????????? ????釉먮폁???????????????????????諛몃마嶺뚮?????????雍?????????
+2026-06-10 13:06:01 [INFO] [FederationTool] ???????????????????????釉먮폁???????????釉먮폇???????????諛몃마嶺뚮?????????雍?????????????遺얘턁???????
+2026-06-10 13:06:01 [INFO] [FederationTool] [????釉먮폁???????? ???????諛몃마嶺뚮?????????雍?????????????遺얘턁????????????濾?: handles=['19701373F227E02433F1F3B8B3B31CE1'], current=19701373F227E02433F1F3B8B3B31CE1, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!QL2dTUJbslKm0kzs7mz1Dznk5EKwaulqlj1kRi86B7SaepfcTYP8Wq2uretJ5ISf.amV1c19kb21haW4vbnBic19vcHJfbmV3MzI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:06:01 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 13:06:01 [INFO] [FederationTool] [??????????? action=close_extra handles=['19701373F227E02433F1F3B8B3B31CE1'] current=19701373F227E02433F1F3B8B3B31CE1
+2026-06-10 13:06:02 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:02 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:02 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:02 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:02 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:06:02 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:06:02 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:06:02 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:06:06 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:06:06 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:06:09 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:06:09 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:06:09 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:06:09 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 13:06:09 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 13:06:10 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:10 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:10 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:10 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:10 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:06:10 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:06:10 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:06:10 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:06:13 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:06:13 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:06:16 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:06:16 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:06:16 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:06:16 [INFO] [FederationTool] [popup_close] attempt=2
+2026-06-10 13:06:16 [INFO] [FederationTool] [??????????? action=close_extra handles=['19701373F227E02433F1F3B8B3B31CE1', '2375B0E95093894772262BAB0CEE1E13'] current=19701373F227E02433F1F3B8B3B31CE1
+2026-06-10 13:06:17 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:17 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:17 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:17 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:17 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:06:17 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:06:17 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:06:17 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:06:20 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:06:20 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:06:23 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:06:23 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:06:23 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:06:23 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 13:06:23 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 13:06:25 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:25 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:25 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:06:25 [INFO] [FederationTool] [?????????깅즽?????????諛몃마嶺뚮?????????雍????뀀맩鍮???癲???? 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:06:25 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:06:25 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:06:25 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:06:25 [INFO] [FederationTool] [??????????????????????????⑤벡????????우뒭亦낆쥋援??ㅲ뵛壤굿??뽯쑆???? first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:14:58 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=케어포
+2026-06-10 13:15:01 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-06-10 13:42:32 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-10 13:42:48 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 13:42:48 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 13:44:51 [INFO] [LoginTool] [수원점] 로그인 시도, 기관기호=14111000765, 타입=롱텀
+2026-06-10 13:45:06 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 13:45:06 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 13:46:19 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 13:46:22 [ERROR] [FederationTool] Chrome 자동화 실패: Message: session not created: Chrome failed to start: crashed.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff7f7573435+14875]
+	chromedriver!GetHandleVerifier [0x7ff7f7573490+148d0]
+	chromedriver!(No symbol) [0x7ff7f70c778d]
+	chromedriver!(No symbol) [0x7ff7f710908b]
+	chromedriver!(No symbol) [0x7ff7f7104359]
+	chromedriver!(No symbol) [0x7ff7f7157f11]
+	chromedriver!(No symbol) [0x7ff7f7157776]
+	chromedriver!(No symbol) [0x7ff7f7113eb0]
+	chromedriver!(No symbol) [0x7ff7f7114e23]
+	chromedriver!GetHandleVerifier [0x7ff7f7b56c91+5f80d1]
+	chromedriver!GetHandleVerifier [0x7ff7f7b5101b+5f245b]
+	chromedriver!GetHandleVerifier [0x7ff7f7b76305+617745]
+	chromedriver!GetHandleVerifier [0x7ff7f75903ee+3182e]
+	chromedriver!GetHandleVerifier [0x7ff7f7598b0c+39f4c]
+	chromedriver!GetHandleVerifier [0x7ff7f757cb04+1df44]
+	chromedriver!GetHandleVerifier [0x7ff7f757cc94+1e0d4]
+	chromedriver!GetHandleVerifier [0x7ff7f7560997+1dd7]
+	KERNEL32!BaseThreadInitThunk [0x7ff95d6de957+17]
+	ntdll!RtlUserThreadStart [0x7ff95ede427c+2c]
+
+2026-06-10 13:46:27 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 13:46:42 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 13:46:42 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 13:46:42 [INFO] [FederationTool] 윈도우 전환 준비: handles=['9E5F48965C6F3EC434F5DA335E43437B', '58CB1AB3731A5017DE2B24A9F4BD3779'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 13:46:42 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 13:46:42 [INFO] [FederationTool] 브라우저 윈도우/탭 2번으로 전환했습니다.
+2026-06-10 13:46:42 [INFO] [FederationTool] [스냅샷] 초기 상태: handles=['9E5F48965C6F3EC434F5DA335E43437B', '58CB1AB3731A5017DE2B24A9F4BD3779'], current=58CB1AB3731A5017DE2B24A9F4BD3779, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xZmOmeDxNfr5duSLWIV1z0kispzkmpsplvav1Pcvt9FwQ6CETeZL2g4wwmFaWjji.amV1c19kb21haW4vbnBic19vcHJfbmV3NDM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:46:42 [INFO] [FederationTool] [단계] 팝업 닫기 시작
+2026-06-10 13:46:42 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 13:46:42 [INFO] [FederationTool] [스냅샷] 팝업 닫기 전: handles=['9E5F48965C6F3EC434F5DA335E43437B', '58CB1AB3731A5017DE2B24A9F4BD3779'], current=58CB1AB3731A5017DE2B24A9F4BD3779, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xZmOmeDxNfr5duSLWIV1z0kispzkmpsplvav1Pcvt9FwQ6CETeZL2g4wwmFaWjji.amV1c19kb21haW4vbnBic19vcHJfbmV3NDM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:46:42 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 13:46:42 [INFO] [FederationTool] [창제어] action=close_extra handles=['9E5F48965C6F3EC434F5DA335E43437B', '58CB1AB3731A5017DE2B24A9F4BD3779'] current=58CB1AB3731A5017DE2B24A9F4BD3779
+2026-06-10 13:46:43 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:43 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:43 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:43 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:43 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:46:43 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:46:43 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:46:44 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 13:46:44 [INFO] [FederationTool] [요소조회] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 13:46:44 [INFO] [FederationTool] [action] first_modal_close: click
+2026-06-10 13:46:44 [INFO] [FederationTool] [optional_click_ok] first_modal_close
+2026-06-10 13:46:44 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 13:46:44 [INFO] [FederationTool] [요소조회] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 13:46:44 [INFO] [FederationTool] [action] second_modal_close: click
+2026-06-10 13:46:44 [INFO] [FederationTool] [optional_click_ok] second_modal_close
+2026-06-10 13:46:44 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:46:44 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:46:44 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 13:46:44 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 13:46:45 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:45 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:45 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:45 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] first_modal_close: already clicked
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] second_modal_close: already clicked
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:46:45 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:46:45 [INFO] [FederationTool] [popup_close] clicked; stop retry: ['first_modal_close', 'second_modal_close']
+2026-06-10 13:46:45 [INFO] [FederationTool] [스냅샷] 팝업 닫기 후: handles=['58CB1AB3731A5017DE2B24A9F4BD3779'], current=58CB1AB3731A5017DE2B24A9F4BD3779, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xZmOmeDxNfr5duSLWIV1z0kispzkmpsplvav1Pcvt9FwQ6CETeZL2g4wwmFaWjji.amV1c19kb21haW4vbnBic19vcHJfbmV3NDM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:46:45 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 13:46:45 [INFO] [FederationTool] 상단 메뉴 급여비용청구 열기
+2026-06-10 13:46:45 [INFO] [FederationTool] [action] main_menu: hover_click
+2026-06-10 13:46:46 [INFO] [FederationTool] [navbar] click payroll_claim_dropdown
+2026-06-10 13:46:46 [INFO] [FederationTool] [click_wait] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=5
+2026-06-10 13:46:46 [INFO] [FederationTool] [action] payroll_claim_dropdown: click
+2026-06-10 13:46:46 [INFO] [FederationTool] [click_ok] payroll_claim_dropdown
+2026-06-10 13:46:46 [INFO] [FederationTool] [단계] 메뉴 진입 후 팝업 정리
+2026-06-10 13:46:46 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 13:46:46 [INFO] [FederationTool] [스냅샷] 팝업 닫기 전: handles=['58CB1AB3731A5017DE2B24A9F4BD3779'], current=58CB1AB3731A5017DE2B24A9F4BD3779, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xZmOmeDxNfr5duSLWIV1z0kispzkmpsplvav1Pcvt9FwQ6CETeZL2g4wwmFaWjji.amV1c19kb21haW4vbnBic19vcHJfbmV3NDM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:46:46 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 13:46:46 [INFO] [FederationTool] [창제어] action=close_extra handles=['58CB1AB3731A5017DE2B24A9F4BD3779'] current=58CB1AB3731A5017DE2B24A9F4BD3779
+2026-06-10 13:46:47 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:47 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:47 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:47 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:47 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:46:47 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:46:47 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:46:47 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:46:50 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:46:50 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:46:54 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:46:54 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:46:54 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:46:54 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 13:46:54 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 13:46:55 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:55 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:55 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:46:55 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:46:55 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:46:55 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:46:55 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:46:55 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:46:58 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:46:58 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:47:01 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:47:01 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:47:01 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:47:01 [INFO] [FederationTool] [popup_close] attempt=2
+2026-06-10 13:47:01 [INFO] [FederationTool] [창제어] action=close_extra handles=['58CB1AB3731A5017DE2B24A9F4BD3779', '971D91C49FF84C59A638842E89537145'] current=58CB1AB3731A5017DE2B24A9F4BD3779
+2026-06-10 13:47:02 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:47:02 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:47:02 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:47:02 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:47:02 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:47:02 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:47:02 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:47:02 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:47:05 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:47:05 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:47:08 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:47:08 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:47:08 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:47:08 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 13:47:08 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 13:47:09 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 13:47:09 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 13:47:09 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 13:47:09 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 13:47:09 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 13:47:09 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 13:47:09 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 13:47:09 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:47:13 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 13:47:13 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 13:47:16 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 13:47:16 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 13:47:16 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 13:47:16 [INFO] [FederationTool] [스냅샷] 팝업 닫기 후: handles=['58CB1AB3731A5017DE2B24A9F4BD3779'], current=58CB1AB3731A5017DE2B24A9F4BD3779, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!xZmOmeDxNfr5duSLWIV1z0kispzkmpsplvav1Pcvt9FwQ6CETeZL2g4wwmFaWjji.amV1c19kb21haW4vbnBic19vcHJfbmV3NDM=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 13:47:16 [INFO] [FederationTool] [단계] 청구하기 버튼 클릭
+2026-06-10 13:47:16 [INFO] [FederationTool] 청구하기 버튼 클릭
+2026-06-10 13:47:16 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: 요소 설정이 없습니다: claim_button
+2026-06-10 14:07:46 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 14:08:02 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 14:08:02 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 14:08:02 [INFO] [FederationTool] 윈도우 전환 준비: handles=['A7B3478F62B754229503B405ABCEF4B7', 'E3D28CA1B32D67CA29F8DE30516FF0D4'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 14:08:02 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 14:08:02 [INFO] [FederationTool] 브라우저 윈도우/탭 2번으로 전환했습니다.
+2026-06-10 14:08:02 [INFO] [FederationTool] [스냅샷] 초기 상태: handles=['A7B3478F62B754229503B405ABCEF4B7', 'E3D28CA1B32D67CA29F8DE30516FF0D4'], current=E3D28CA1B32D67CA29F8DE30516FF0D4, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!b0YsHszy0x2W2nkBaYUp1ZGmQ760Sqh7lhuDb1ND6Kce5msZTxpBC51AjgMWhEkm.amV1c19kb21haW4vbnBic19vcHJfbmV3NDI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:08:02 [INFO] [FederationTool] [단계] 팝업 닫기 시작
+2026-06-10 14:08:02 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 14:08:02 [INFO] [FederationTool] [스냅샷] 팝업 닫기 전: handles=['A7B3478F62B754229503B405ABCEF4B7', 'E3D28CA1B32D67CA29F8DE30516FF0D4'], current=E3D28CA1B32D67CA29F8DE30516FF0D4, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!b0YsHszy0x2W2nkBaYUp1ZGmQ760Sqh7lhuDb1ND6Kce5msZTxpBC51AjgMWhEkm.amV1c19kb21haW4vbnBic19vcHJfbmV3NDI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:08:02 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 14:08:02 [INFO] [FederationTool] [action] first_modal_close: click
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_click_ok] first_modal_close
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 14:08:02 [INFO] [FederationTool] [action] second_modal_close: click
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_click_ok] second_modal_close
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 14:08:02 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] first_modal_close: already clicked
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] second_modal_close: already clicked
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:08:02 [INFO] [FederationTool] [popup_close] clicked; stop retry: ['first_modal_close', 'second_modal_close']
+2026-06-10 14:08:02 [INFO] [FederationTool] [스냅샷] 팝업 닫기 후: handles=['A7B3478F62B754229503B405ABCEF4B7', 'E3D28CA1B32D67CA29F8DE30516FF0D4'], current=E3D28CA1B32D67CA29F8DE30516FF0D4, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!b0YsHszy0x2W2nkBaYUp1ZGmQ760Sqh7lhuDb1ND6Kce5msZTxpBC51AjgMWhEkm.amV1c19kb21haW4vbnBic19vcHJfbmV3NDI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:08:02 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 14:08:02 [INFO] [FederationTool] 상단 메뉴 급여비용청구 열기
+2026-06-10 14:08:03 [INFO] [FederationTool] [action] main_menu: hover_click
+2026-06-10 14:08:03 [INFO] [FederationTool] [navbar] click payroll_claim_dropdown
+2026-06-10 14:08:03 [INFO] [FederationTool] [click_wait] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=5
+2026-06-10 14:08:03 [INFO] [FederationTool] [action] payroll_claim_dropdown: click
+2026-06-10 14:08:03 [INFO] [FederationTool] [click_ok] payroll_claim_dropdown
+2026-06-10 14:08:03 [INFO] [FederationTool] [단계] 메뉴 진입 후 팝업 정리
+2026-06-10 14:08:03 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 14:08:03 [INFO] [FederationTool] [스냅샷] 팝업 닫기 전: handles=['A7B3478F62B754229503B405ABCEF4B7', 'E3D28CA1B32D67CA29F8DE30516FF0D4'], current=E3D28CA1B32D67CA29F8DE30516FF0D4, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!b0YsHszy0x2W2nkBaYUp1ZGmQ760Sqh7lhuDb1ND6Kce5msZTxpBC51AjgMWhEkm.amV1c19kb21haW4vbnBic19vcHJfbmV3NDI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:08:03 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 14:08:03 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:03 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:03 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:03 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:03 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:08:03 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:08:03 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:08:03 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:06 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:08:06 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:09 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:08:09 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:08:09 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:08:10 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 14:08:10 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 14:08:10 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:10 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:10 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:10 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:10 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:08:10 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:08:10 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:08:10 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:13 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:08:13 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:16 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:08:16 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:08:16 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:08:16 [INFO] [FederationTool] [popup_close] attempt=2
+2026-06-10 14:08:16 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:16 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:16 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:16 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:16 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:08:16 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:08:16 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:08:16 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:19 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:08:19 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:22 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:08:22 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:08:22 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:08:22 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 14:08:22 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 14:08:22 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:22 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:22 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:08:22 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:08:22 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:08:22 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:08:22 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:08:22 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:25 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:08:25 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:08:28 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:08:28 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:08:28 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:08:28 [INFO] [FederationTool] [스냅샷] 팝업 닫기 후: handles=['A7B3478F62B754229503B405ABCEF4B7', 'E3D28CA1B32D67CA29F8DE30516FF0D4', 'AB6BA26B9A08E46E83EB05EBB37AE17F'], current=E3D28CA1B32D67CA29F8DE30516FF0D4, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!b0YsHszy0x2W2nkBaYUp1ZGmQ760Sqh7lhuDb1ND6Kce5msZTxpBC51AjgMWhEkm.amV1c19kb21haW4vbnBic19vcHJfbmV3NDI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:08:28 [INFO] [FederationTool] [단계] 청구하기 버튼 클릭
+2026-06-10 14:08:28 [INFO] [FederationTool] 청구하기 버튼 클릭
+2026-06-10 14:08:28 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: 요소 설정이 없습니다: claim_button
+2026-06-10 14:08:52 [INFO] [FederationTool] [청운점] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작
+2026-06-10 14:09:07 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.
+2026-06-10 14:09:07 [INFO] [FederationTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-06-10 14:09:07 [INFO] [FederationTool] 윈도우 전환 준비: handles=['E8C605B1B67789F0FF68D70F831153CF', 'F0EEFC81A805D3FE423E04D1AE5FA8D2'], current_url=https://www.longtermcare.or.kr/npbs/r/a/104/selectMyBlog.web?menuId=npe0000002835&ltcAdminSym=14183000214
+2026-06-10 14:09:07 [INFO] [FederationTool] 로그인 후 공단 청구 자동화 초기화 중...
+2026-06-10 14:09:07 [INFO] [FederationTool] 브라우저 윈도우/탭 2번으로 전환했습니다.
+2026-06-10 14:09:07 [INFO] [FederationTool] [스냅샷] 초기 상태: handles=['E8C605B1B67789F0FF68D70F831153CF', 'F0EEFC81A805D3FE423E04D1AE5FA8D2'], current=F0EEFC81A805D3FE423E04D1AE5FA8D2, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!n1umCSYU2RqbbLWBa450Ipaz2Q5jM4tvlyX9h9MPV5b7M9h1TMtUpduaCJPhWwTq.amV1c19kb21haW4vbnBic19vcHJfbmV3MjI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:09:07 [INFO] [FederationTool] [단계] 팝업 닫기 시작
+2026-06-10 14:09:07 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 14:09:07 [INFO] [FederationTool] [스냅샷] 팝업 닫기 전: handles=['E8C605B1B67789F0FF68D70F831153CF', 'F0EEFC81A805D3FE423E04D1AE5FA8D2'], current=F0EEFC81A805D3FE423E04D1AE5FA8D2, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!n1umCSYU2RqbbLWBa450Ipaz2Q5jM4tvlyX9h9MPV5b7M9h1TMtUpduaCJPhWwTq.amV1c19kb21haW4vbnBic19vcHJfbmV3MjI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:09:07 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] first_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 14:09:07 [INFO] [FederationTool] [action] first_modal_close: click
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_click_ok] first_modal_close
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=1 timeout=3
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] second_modal_close[1] displayed=True enabled=True text=닫기
+2026-06-10 14:09:07 [INFO] [FederationTool] [action] second_modal_close: click
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_click_ok] second_modal_close
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 14:09:07 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] first_modal_close: already clicked
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] second_modal_close: already clicked
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:09:07 [INFO] [FederationTool] [popup_close] clicked; stop retry: ['first_modal_close', 'second_modal_close']
+2026-06-10 14:09:07 [INFO] [FederationTool] [스냅샷] 팝업 닫기 후: handles=['E8C605B1B67789F0FF68D70F831153CF', 'F0EEFC81A805D3FE423E04D1AE5FA8D2'], current=F0EEFC81A805D3FE423E04D1AE5FA8D2, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!n1umCSYU2RqbbLWBa450Ipaz2Q5jM4tvlyX9h9MPV5b7M9h1TMtUpduaCJPhWwTq.amV1c19kb21haW4vbnBic19vcHJfbmV3MjI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:09:07 [INFO] [FederationTool] [단계] 급여비용청구 메뉴 열기
+2026-06-10 14:09:07 [INFO] [FederationTool] 상단 메뉴 급여비용청구 열기
+2026-06-10 14:09:08 [INFO] [FederationTool] [action] main_menu: hover_click
+2026-06-10 14:09:08 [INFO] [FederationTool] [navbar] click payroll_claim_dropdown
+2026-06-10 14:09:08 [INFO] [FederationTool] [click_wait] payroll_claim_dropdown (드롭다운 메뉴 - 급여비용청구) by=xpath value=//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text'] timeout=5
+2026-06-10 14:09:08 [INFO] [FederationTool] [action] payroll_claim_dropdown: click
+2026-06-10 14:09:08 [INFO] [FederationTool] [click_ok] payroll_claim_dropdown
+2026-06-10 14:09:08 [INFO] [FederationTool] [단계] 메뉴 진입 후 팝업 정리
+2026-06-10 14:09:08 [INFO] [FederationTool] 열려있는 알림/모달/팝업 닫기 시도
+2026-06-10 14:09:08 [INFO] [FederationTool] [스냅샷] 팝업 닫기 전: handles=['E8C605B1B67789F0FF68D70F831153CF', 'F0EEFC81A805D3FE423E04D1AE5FA8D2'], current=F0EEFC81A805D3FE423E04D1AE5FA8D2, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!n1umCSYU2RqbbLWBa450Ipaz2Q5jM4tvlyX9h9MPV5b7M9h1TMtUpduaCJPhWwTq.amV1c19kb21haW4vbnBic19vcHJfbmV3MjI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:09:08 [INFO] [FederationTool] [popup_close] attempt=1
+2026-06-10 14:09:08 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:08 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:08 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:08 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:08 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:09:08 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:09:08 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:09:08 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:11 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:09:11 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:15 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:09:15 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:09:15 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:09:15 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 14:09:15 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 14:09:15 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:15 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:15 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:15 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:15 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:09:15 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:09:15 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:09:15 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:18 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:09:18 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:21 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:09:21 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:09:21 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:09:21 [INFO] [FederationTool] [popup_close] attempt=2
+2026-06-10 14:09:21 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:21 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:21 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:21 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:21 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:09:21 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:09:21 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:09:21 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:24 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:09:24 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:27 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:09:27 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:09:27 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:09:27 [INFO] [FederationTool] [frame_search] iframe found=1
+2026-06-10 14:09:27 [INFO] [FederationTool] [frame_enter] iframe 1/1
+2026-06-10 14:09:27 [INFO] [FederationTool] [요소조회] 공통 버튼 - 닫기 by=xpath value=//button[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:27 [INFO] [FederationTool] [요소조회] 공통 버튼 - 확인 by=xpath value=//button[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:27 [INFO] [FederationTool] [요소조회] 공통 링크 - 닫기 by=xpath value=//a[normalize-space(.)='닫기'] found=0
+2026-06-10 14:09:27 [INFO] [FederationTool] [요소조회] 공통 링크 - 확인 by=xpath value=//a[normalize-space(.)='확인'] found=0
+2026-06-10 14:09:27 [INFO] [FederationTool] [optional_skip] layer_popup_close: selector empty
+2026-06-10 14:09:27 [INFO] [FederationTool] [optional_skip] layer_popup_confirm: selector empty
+2026-06-10 14:09:27 [INFO] [FederationTool] [optional_skip] browser_popup_close_button: selector empty
+2026-06-10 14:09:27 [INFO] [FederationTool] [요소조회] first_modal_close (첫 모달 닫기) by=xpath value=/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:30 [INFO] [FederationTool] [optional_not_found] first_modal_close: no clickable element within 3s
+2026-06-10 14:09:30 [INFO] [FederationTool] [요소조회] second_modal_close (두 번째 모달 닫기) by=xpath value=/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2] found=0 timeout=3
+2026-06-10 14:09:33 [INFO] [FederationTool] [optional_not_found] second_modal_close: no clickable element within 3s
+2026-06-10 14:09:33 [INFO] [FederationTool] [optional_skip] claim_page_warning_close: selector empty
+2026-06-10 14:09:33 [INFO] [FederationTool] [optional_skip] operation_guide_close: selector empty
+2026-06-10 14:09:33 [INFO] [FederationTool] [스냅샷] 팝업 닫기 후: handles=['E8C605B1B67789F0FF68D70F831153CF', 'F0EEFC81A805D3FE423E04D1AE5FA8D2', '64946754862A64AAF0E533FA22F97C5C'], current=F0EEFC81A805D3FE423E04D1AE5FA8D2, title=장기요양정보시스템, url=https://www.longtermcare.or.kr/npbs/xui/manage.html?SESSIONCHECK!n1umCSYU2RqbbLWBa450Ipaz2Q5jM4tvlyX9h9MPV5b7M9h1TMtUpduaCJPhWwTq.amV1c19kb21haW4vbnBic19vcHJfbmV3MjI=&gv_xgateUrl!www.longtermcare.or.kr&gv_isPMSQ!Y&gv_initMenuId!null
+2026-06-10 14:09:33 [INFO] [FederationTool] [단계] 청구하기 버튼 클릭
+2026-06-10 14:09:33 [INFO] [FederationTool] 청구하기 버튼 클릭
+2026-06-10 14:09:33 [ERROR] [FederationTool] 청구 명세서 자동화 중 오류: 요소 설정이 없습니다: claim_button

@@ -8,6 +8,7 @@ LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 def log(tool: str, message: str, level: str = "INFO") -> str:
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     text = f"{ts} [{level}] [{tool}] {message}"
+    print(text, flush=True)
     try:
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(text + "\n")

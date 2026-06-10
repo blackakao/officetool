@@ -15,6 +15,7 @@ from ui.pages.federation_tool import FederationTool
 def main():
     app = QApplication(sys.argv)
     tool = FederationTool()
+    target_branch_name = sys.argv[1] if len(sys.argv) > 1 else "화성점"
 
     data_file = Path(__file__).resolve().parents[1] / "data" / "branches.json"
     if not data_file.exists():
@@ -26,12 +27,12 @@ def main():
 
     target = None
     for b in branches:
-        if b.get("branch_name") == "화성점":
+        if b.get("branch_name") == target_branch_name:
             target = b
             break
 
     if not target and branches:
-        print("화성점이 없어 첫 번째 지점으로 대체합니다:", branches[0].get('branch_name'))
+        print(f"{target_branch_name}이 없어 첫 번째 지점으로 대체합니다:", branches[0].get('branch_name'))
         target = branches[0]
 
     if not target:
@@ -41,9 +42,9 @@ def main():
     print("선택된 지점:", target.get('branch_name'))
     tool.on_branch_clicked(target)
 
-    timeout_ms = 300000
+    timeout_ms = 60000
     QTimer.singleShot(timeout_ms, app.quit)
-    print(f"자동화 시작 — 최대 {timeout_ms // 1000}초 동안 대기합니다...")
+    print(f"자동화 시작 - 최대 {timeout_ms // 1000}초 동안 대기합니다...")
     app.exec()
     print("스크립트 종료")
 

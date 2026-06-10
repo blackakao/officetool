@@ -278,6 +278,12 @@ class LongtermLoginThread(BaseLoginThread):
         webdriver.ActionChains(self.driver).send_keys_to_element(user_pwd, certificate_password).perform()
 
         self._wait_and_click(wait, (By.ID, 'xwup_OkButton'))
+        try:
+            WebDriverWait(self.driver, 10).until(
+                lambda d: d.find_elements(By.XPATH, "//*[contains(@id, 'mainframe.VFrameSet.frameTop')]")
+            )
+        except TimeoutException:
+            log("LoginTool", "공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.", level="WARNING")
 
         self.finished_signal.emit("롱텀 공단 로그인 절차를 완료했습니다.", True)
 

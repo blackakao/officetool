@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 
 from PySide6.QtCore import QMimeData, Qt, QThread, Signal
-from PySide6.QtGui import QDrag
+from PySide6.QtGui import QAction, QDrag
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QComboBox,
@@ -13,12 +13,13 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
-    QLineEdit,
+    QMenu,
     QMessageBox,
     QPushButton,
     QRadioButton,
     QTableWidget,
     QTableWidgetItem,
+    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -43,177 +44,64 @@ BY_TYPES = {
 }
 
 
+ACTION_TYPES = {
+    "click": "클릭",
+    "hover": "호버",
+    "hover_click": "호버 후 클릭",
+}
+
+PROCESS_TYPES = {
+    "element": "요소",
+    "alert": "alert",
+    "confirm": "confirm",
+    "prompt": "prompt",
+    "window": "새창/팝업창",
+}
+
+PROCESS_ACTIONS = {
+    "element": ACTION_TYPES,
+    "alert": {"accept": "확인/수락", "dismiss": "취소/닫기"},
+    "confirm": {"accept": "확인/수락", "dismiss": "취소/닫기"},
+    "prompt": {"accept": "텍스트 입력 후 확인", "dismiss": "취소/닫기"},
+    "window": {"keep": "유지", "switch_last": "마지막 창으로 전환", "close_extra": "추가 창 닫기"},
+}
+
+
 SELECTOR_TEMPLATE = {
     "version": 1,
-    "timeouts": {
-        "default": 20,
-        "short": 3,
-        "long": 60,
-        "loading": 120,
-    },
+    "timeouts": {"default": 20, "short": 3, "long": 60, "loading": 120},
+    "browser": {"window_index": -1},
     "selectors": {
-        "main_menu": {
-            "label": "상단 메뉴 - 급여비용청구",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "payroll_claim_dropdown": {
-            "label": "드롭다운 메뉴 - 급여비용청구",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "claim_page_warning_close": {
-            "label": "급여비용청구 페이지 경고 모달 닫기/확인",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "operation_guide_close": {
-            "label": "운영안내 팝업 닫기",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "claim_button": {
-            "label": "우측 주황색 청구하기 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "entry_notice_tab": {
-            "label": "원청구 모달 탭 - 입퇴소신고내용관리",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "entry_notice_rows": {
-            "label": "입소신고자 테이블 행 목록",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "recipient_select_all_checkbox": {
-            "label": "수급자명 테이블 상단 전체 체크박스",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "recipient_checkboxes": {
-            "label": "수급자명 테이블 개별 체크박스 목록",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "add_recipient_button": {
-            "label": "청구대상자로 넘기는 > 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "confirm_add_recipient": {
-            "label": "청구대상자로 추가 확인 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "loading_canvas": {
-            "label": "진행중 캔버스/로딩 요소",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "claim_target_created_message": {
-            "label": "청구대상자가 생성되었습니다 알림/확인",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "salary_data_tab": {
-            "label": "원청구 모달 탭 - 급여내용 자료 관리",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "search_button": {
-            "label": "급여내용 자료 관리 조회 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "claim_target_rows": {
-            "label": "청구대상자 테이블 행 목록",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "save_button": {
-            "label": "저장 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "confirm_save": {
-            "label": "급여자료 저장 확인 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "save_completed_confirm": {
-            "label": "저장되었습니다 알림 확인 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "generate_statement_button": {
-            "label": "명세서자동생성 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "statement_register_complete_button": {
-            "label": "자식 모달 - 명세서 등록완료 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "pay_result_select": {
-            "label": "급여제공결과등록 - 급여제공결과 셀렉트",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
-        "pay_result_continue_option": {
-            "label": "급여제공결과 셀렉트 옵션 - 계속",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "pay_result_save_button": {
-            "label": "급여제공결과등록 저장 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "confirm_pay_result_save": {
-            "label": "급여제공결과 저장 확인 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "statement_completed_confirm": {
-            "label": "명세서가 등록완료되었습니다 확인 버튼",
-            "by": "xpath",
-            "value": "",
-            "required": False,
-        },
-        "statement_auto_modal_close": {
-            "label": "시설/단기보호 청구명세서 자동생성 닫기",
-            "by": "xpath",
-            "value": "",
-            "required": True,
-        },
+        "layer_popup_close": {"label": "레이어 팝업 닫기", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "layer_popup_confirm": {"label": "레이어 팝업 확인", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "browser_popup_close_button": {"label": "브라우저 팝업 닫기 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "main_menu": {"label": "상단 메뉴 - 급여비용청구", "type": "element", "by": "xpath", "value": "", "required": True, "action": "hover_click"},
+        "payroll_claim_dropdown": {"label": "드롭다운 메뉴 - 급여비용청구", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "claim_page_warning_close": {"label": "급여비용청구 페이지 경고 모달 닫기/확인", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "operation_guide_close": {"label": "운영안내 팝업 닫기", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "claim_button": {"label": "우측 주황색 청구하기 버튼", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "entry_notice_tab": {"label": "원청구 모달 탭 - 입퇴소신고내용관리", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "entry_notice_rows": {"label": "입소신고자 테이블 행 목록", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "recipient_select_all_checkbox": {"label": "수급자명 테이블 상단 전체 체크박스", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "recipient_checkboxes": {"label": "수급자명 테이블 개별 체크박스 목록", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "add_recipient_button": {"label": "청구대상자로 넘기는 > 버튼", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "confirm_add_recipient": {"label": "청구대상자로 추가 확인 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "loading_canvas": {"label": "진행중 캔버스/로딩 요소", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "claim_target_created_message": {"label": "청구대상자가 생성되었습니다 알림/확인", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "salary_data_tab": {"label": "원청구 모달 탭 - 급여내용 자료 관리", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "search_button": {"label": "급여내용 자료 관리 조회 버튼", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "claim_target_rows": {"label": "청구대상자 테이블 행 목록", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "save_button": {"label": "저장 버튼", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "confirm_save": {"label": "급여자료 저장 확인 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "save_completed_confirm": {"label": "저장되었습니다 알림 확인 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "generate_statement_button": {"label": "명세서자동생성 버튼", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "statement_register_complete_button": {"label": "자식 모달 - 명세서 등록완료 버튼", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "pay_result_select": {"label": "급여제공결과등록 - 급여제공결과 셀렉트", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
+        "pay_result_continue_option": {"label": "급여제공결과 셀렉트 옵션 - 계속", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "pay_result_save_button": {"label": "급여제공결과등록 저장 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "confirm_pay_result_save": {"label": "급여제공결과 저장 확인 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "statement_completed_confirm": {"label": "명세서가 등록완료되었습니다 확인 버튼", "type": "element", "by": "xpath", "value": "", "required": False, "action": "click"},
+        "statement_auto_modal_close": {"label": "시설/단기보호 청구명세서 자동생성 닫기", "type": "element", "by": "xpath", "value": "", "required": True, "action": "click"},
     },
     "popup_close_selectors": [
         {"label": "공통 버튼 - 닫기", "by": "xpath", "value": "//button[normalize-space(.)='닫기']"},
@@ -226,12 +114,8 @@ SELECTOR_TEMPLATE = {
 
 EMPTY_SELECTOR_TEMPLATE = {
     "version": 1,
-    "timeouts": {
-        "default": 20,
-        "short": 3,
-        "long": 60,
-        "loading": 120,
-    },
+    "timeouts": {"default": 20, "short": 3, "long": 60, "loading": 120},
+    "browser": {"window_index": -1},
     "selectors": {},
     "popup_close_selectors": [
         {"label": "공통 버튼 - 닫기", "by": "xpath", "value": "//button[normalize-space(.)='닫기']"},
@@ -243,20 +127,9 @@ EMPTY_SELECTOR_TEMPLATE = {
 
 
 TASK_CONFIGS = {
-    "invoice": {
-        "label": "청구 명세서 만들기",
-        "config_file": "federation_selectors_invoice.json",
-        "template": SELECTOR_TEMPLATE,
-        "implemented": True,
-    },
-    "long_service": {
-        "label": "장기근속수당 입력하기",
-        "config_file": "federation_selectors_long_service.json",
-        "template": EMPTY_SELECTOR_TEMPLATE,
-        "implemented": False,
-    },
+    "invoice": {"label": "청구 명세서 만들기", "config_file": "federation_selectors_invoice.json", "template": SELECTOR_TEMPLATE, "implemented": True},
+    "long_service": {"label": "장기근속수당 입력하기", "config_file": "federation_selectors_long_service.json", "template": EMPTY_SELECTOR_TEMPLATE, "implemented": False},
 }
-
 
 def ensure_selector_config(path: Path, template: dict | None = None) -> dict:
     template = template or SELECTOR_TEMPLATE
@@ -272,23 +145,39 @@ def ensure_selector_config(path: Path, template: dict | None = None) -> dict:
     changed = False
     data.setdefault("version", template["version"])
     data.setdefault("timeouts", {})
+    data.setdefault("browser", {})
     data.setdefault("selectors", {})
     data.setdefault("popup_close_selectors", [])
+    data.setdefault("deleted_selector_keys", [])
 
     for key, value in template["timeouts"].items():
         if key not in data["timeouts"]:
             data["timeouts"][key] = value
             changed = True
 
+    for key, value in template.get("browser", {}).items():
+        if key not in data["browser"]:
+            data["browser"][key] = value
+            changed = True
+
+    deleted_selector_keys = set(data.get("deleted_selector_keys", []))
     for key, selector in template["selectors"].items():
+        if key in deleted_selector_keys:
+            continue
         if key not in data["selectors"]:
             data["selectors"][key] = selector
             changed = True
         else:
             data["selectors"][key].setdefault("label", selector["label"])
+            data["selectors"][key].setdefault("type", selector.get("type", "element"))
             data["selectors"][key].setdefault("by", selector["by"])
             data["selectors"][key].setdefault("value", "")
             data["selectors"][key].setdefault("required", selector["required"])
+            data["selectors"][key].setdefault("action", selector.get("action", "click"))
+
+    for selector in data["selectors"].values():
+        selector.setdefault("type", "element")
+        selector.setdefault("action", "click")
 
     if not data["popup_close_selectors"]:
         data["popup_close_selectors"] = template["popup_close_selectors"]
@@ -380,9 +269,23 @@ class SelectorConfigDialog(QDialog):
         title.setWordWrap(True)
         layout.addWidget(title)
 
+        browser_layout = QHBoxLayout()
+        browser_layout.addWidget(QLabel("브라우저 윈도우/탭 번호"))
+        self.window_index_combo = QComboBox()
+        self.window_index_combo.addItem("마지막", -1)
+        for index in range(1, 51):
+            self.window_index_combo.addItem(f"{index}", index)
+        saved_window_index = int(self.config.get("browser", {}).get("window_index", -1))
+        combo_index = self.window_index_combo.findData(saved_window_index)
+        self.window_index_combo.setCurrentIndex(combo_index if combo_index >= 0 else 0)
+        browser_layout.addWidget(self.window_index_combo)
+        browser_layout.addWidget(QLabel("1부터 지정"))
+        browser_layout.addStretch()
+        layout.addLayout(browser_layout)
+
         self.table = SelectorTableWidget(self)
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["키", "설명", "유형", "값", "필수"])
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels(["키", "이름", "처리 종류", "방식", "값", "필수", "동작"])
         self.table.setDragDropMode(QAbstractItemView.DragDrop)
         self.table.setDragEnabled(True)
         self.table.setAcceptDrops(True)
@@ -393,15 +296,22 @@ class SelectorConfigDialog(QDialog):
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
         layout.addWidget(self.table)
 
         self._load_table()
 
         action_layout = QHBoxLayout()
         add_button = QPushButton("추가")
-        add_button.clicked.connect(self.add_selector_row)
+        add_menu = QMenu(add_button)
+        for type_key, type_label in PROCESS_TYPES.items():
+            action = QAction(type_label, add_menu)
+            action.triggered.connect(lambda _, t=type_key: self.add_selector_row(t))
+            add_menu.addAction(action)
+        add_button.setMenu(add_menu)
         delete_button = QPushButton("삭제")
         delete_button.clicked.connect(self.delete_selected_row)
         action_layout.addWidget(add_button)
@@ -409,7 +319,7 @@ class SelectorConfigDialog(QDialog):
         action_layout.addStretch()
         layout.addLayout(action_layout)
 
-        guide = QLabel("값 칸에 Selenium 선택자를 입력하세요. XPATH가 기본이며, 공란인 선택자는 선택 단계에 따라 건너뛰거나 실행 전에 오류로 표시됩니다.")
+        guide = QLabel("처리 종류가 요소이면 Selenium 선택자를 사용하고, prompt 행의 값은 입력할 텍스트로 사용됩니다.")
         guide.setWordWrap(True)
         layout.addWidget(guide)
 
@@ -428,12 +338,19 @@ class SelectorConfigDialog(QDialog):
         self.table.setItem(row, 0, QTableWidgetItem(key))
         self.table.setItem(row, 1, QTableWidgetItem(selector.get("label", "")))
 
+        type_combo = QComboBox()
+        for type_key, type_label in PROCESS_TYPES.items():
+            type_combo.addItem(type_label, type_key)
+        type_index = type_combo.findData(selector.get("type", "element"))
+        type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
+        self.table.setCellWidget(row, 2, type_combo)
+
         by_combo = QComboBox()
         by_combo.addItems(BY_TYPES.keys())
         by_combo.setCurrentText(selector.get("by", "xpath"))
-        self.table.setCellWidget(row, 2, by_combo)
+        self.table.setCellWidget(row, 3, by_combo)
 
-        self.table.setItem(row, 3, QTableWidgetItem(selector.get("value", "")))
+        self.table.setItem(row, 4, QTableWidgetItem(selector.get("value", "")))
 
         required_widget = QWidget()
         required_layout = QHBoxLayout()
@@ -448,21 +365,44 @@ class SelectorConfigDialog(QDialog):
         optional_radio.setChecked(not bool(selector.get("required", False)))
         required_widget.required_radio = required_radio
         required_widget.optional_radio = optional_radio
-        self.table.setCellWidget(row, 4, required_widget)
+        self.table.setCellWidget(row, 5, required_widget)
+
+        action_combo = QComboBox()
+        self.table.setCellWidget(row, 6, action_combo)
+        self._refresh_action_combo(row, selector.get("action"))
+        type_combo.currentIndexChanged.connect(lambda _, r=row: self._refresh_action_combo(r))
+
+    def _refresh_action_combo(self, row, selected_action=None):
+        type_combo = self.table.cellWidget(row, 2)
+        action_combo = self.table.cellWidget(row, 6)
+        if not action_combo:
+            return
+        process_type = type_combo.currentData() if type_combo else "element"
+        actions = PROCESS_ACTIONS.get(process_type, ACTION_TYPES)
+        selected_action = selected_action or action_combo.currentData()
+        action_combo.clear()
+        for action_key, action_label in actions.items():
+            action_combo.addItem(action_label, action_key)
+        action_index = action_combo.findData(selected_action)
+        action_combo.setCurrentIndex(action_index if action_index >= 0 else 0)
 
     def _row_data(self, row):
         key_item = self.table.item(row, 0)
         label_item = self.table.item(row, 1)
-        value_item = self.table.item(row, 3)
-        by_combo = self.table.cellWidget(row, 2)
-        required_widget = self.table.cellWidget(row, 4)
+        type_combo = self.table.cellWidget(row, 2)
+        by_combo = self.table.cellWidget(row, 3)
+        value_item = self.table.item(row, 4)
+        required_widget = self.table.cellWidget(row, 5)
+        action_combo = self.table.cellWidget(row, 6)
         return (
             key_item.text().strip() if key_item else "",
             {
                 "label": label_item.text().strip() if label_item else "",
+                "type": type_combo.currentData() if type_combo else "element",
                 "by": by_combo.currentText() if by_combo else "xpath",
                 "value": value_item.text().strip() if value_item else "",
                 "required": bool(getattr(required_widget, "required_radio", None) and required_widget.required_radio.isChecked()),
+                "action": action_combo.currentData() if action_combo else "click",
             },
         )
 
@@ -486,7 +426,7 @@ class SelectorConfigDialog(QDialog):
         self._rebuild_table(rows)
         self.table.selectRow(target_row)
 
-    def add_selector_row(self):
+    def add_selector_row(self, process_type="element"):
         existing_keys = {
             self.table.item(row, 0).text().strip()
             for row in range(self.table.rowCount())
@@ -494,23 +434,26 @@ class SelectorConfigDialog(QDialog):
         }
 
         index = 1
-        while f"custom_selector_{index}" in existing_keys:
+        prefix = "custom_selector" if process_type == "element" else f"custom_{process_type}"
+        while f"{prefix}_{index}" in existing_keys:
             index += 1
 
         row = self.table.rowCount()
         self.table.insertRow(row)
-        self._set_row(row, f"custom_selector_{index}", {
-            "label": "새 요소",
+        self._set_row(row, f"{prefix}_{index}", {
+            "label": f"새 {PROCESS_TYPES.get(process_type, '요소')}",
+            "type": process_type,
             "by": "xpath",
             "value": "",
             "required": False,
+            "action": next(iter(PROCESS_ACTIONS.get(process_type, ACTION_TYPES))),
         })
         self.table.selectRow(row)
 
     def delete_selected_row(self):
         row = self.table.currentRow()
         if row < 0:
-            QMessageBox.warning(self, "삭제 오류", "삭제할 요소를 선택하세요.")
+            QMessageBox.warning(self, "삭제 실패", "삭제할 요소를 선택하세요.")
             return
 
         key_item = self.table.item(row, 0)
@@ -530,17 +473,23 @@ class SelectorConfigDialog(QDialog):
         for row in range(self.table.rowCount()):
             key, selector = self._row_data(row)
             if not key:
-                QMessageBox.warning(self, "저장 오류", "키가 비어 있는 요소가 있습니다.")
+                QMessageBox.warning(self, "저장 실패", "요소 키는 비워둘 수 없습니다.")
                 return
             if key in seen_keys:
-                QMessageBox.warning(self, "저장 오류", f"중복된 키가 있습니다: {key}")
+                QMessageBox.warning(self, "저장 실패", f"중복된 요소 키입니다: {key}")
                 return
             seen_keys.add(key)
             selectors[key] = selector
 
         self.config["selectors"] = selectors
+        template_selector_keys = set(self.template.get("selectors", {}).keys())
+        deleted_selector_keys = set(self.config.get("deleted_selector_keys", []))
+        deleted_selector_keys.update(template_selector_keys - set(selectors.keys()))
+        deleted_selector_keys.difference_update(selectors.keys())
+        self.config["deleted_selector_keys"] = sorted(deleted_selector_keys)
+        self.config.setdefault("browser", {})["window_index"] = self.window_index_combo.currentData()
         save_selector_config(self.config_path, self.config)
-        QMessageBox.information(self, "저장 완료", "공단툴 요소 설정을 저장했습니다.")
+        QMessageBox.information(self, "저장 완료", "요소 설정을 저장했습니다.")
         self.accept()
 
 
@@ -567,7 +516,7 @@ class FederationTool(QWidget):
         top_label = QLabel("공단툴")
         self.main_layout.addWidget(top_label)
 
-        l1_label = QLabel("L1 - 원하는 작업")
+        l1_label = QLabel("L1 - 작업 선택")
         self.main_layout.addWidget(l1_label)
 
         task_layout = QHBoxLayout()
@@ -585,7 +534,7 @@ class FederationTool(QWidget):
         l2_layout = QVBoxLayout()
         l2_layout.setContentsMargins(0, 0, 0, 0)
         self.l2_container.setLayout(l2_layout)
-        l2_label = QLabel("L2 - 요소설정")
+        l2_label = QLabel("L2 - 지점선택")
         l2_layout.addWidget(l2_label)
         toolbar = QHBoxLayout()
         self.selector_button = QPushButton("요소 설정")
@@ -596,7 +545,7 @@ class FederationTool(QWidget):
         self.l2_container.setVisible(False)
         self.main_layout.addWidget(self.l2_container)
 
-        self.l3_label = QLabel("L3 - 지점 선택")
+        self.l3_label = QLabel("L3 - 작업 상태")
         self.l3_label.setVisible(False)
         self.main_layout.addWidget(self.l3_label)
 
@@ -611,6 +560,12 @@ class FederationTool(QWidget):
         self.status_label = QLabel("")
         self.status_label.setWordWrap(True)
         self.main_layout.addWidget(self.status_label)
+
+        self.log_console = QTextEdit()
+        self.log_console.setReadOnly(True)
+        self.log_console.setMinimumHeight(180)
+        self.log_console.setPlaceholderText("작업 로그가 여기에 표시됩니다.")
+        self.main_layout.addWidget(self.log_console)
 
     def open_selector_settings(self):
         if not self.current_task:
@@ -634,9 +589,9 @@ class FederationTool(QWidget):
         self.l3_label.setVisible(True)
         self.branch_container.setVisible(True)
         if task == "invoice":
-            self.status_label.setText("청구 명세서 만들기: 요소 설정을 확인한 뒤 지점을 선택하세요.")
+            self.status_label.setText("청구 명세서 만들기: 지점을 선택하면 자동화가 시작됩니다.")
         else:
-            self.status_label.setText("장기근속수당 입력하기: 작업 틀은 준비됐고, 실행 로직은 다음 단계에서 연결하면 됩니다.")
+            self.status_label.setText("장기근속수당 입력하기: 아직 준비 중입니다.")
         self.refresh_buttons()
 
     def _selector_config_path(self, task):
@@ -673,8 +628,8 @@ class FederationTool(QWidget):
 
     def on_branch_clicked(self, branch):
         if self.current_task == "long_service":
-            self.status_label.setText("장기근속수당 입력하기 자동화는 아직 연결되지 않았습니다.")
-            self._log("장기근속수당 입력하기 지점 선택 - 실행 로직 미연결", level="WARNING")
+            self.status_label.setText("장기근속수당 입력하기는 아직 구현되지 않았습니다.")
+            self._log("장기근속수당 작업 선택 - 아직 구현 안됨", level="WARNING")
             return
 
         branch_name = branch.get("branch_name", "Unknown")
@@ -725,7 +680,9 @@ class FederationTool(QWidget):
             return []
 
     def _log(self, message, level="INFO"):
-        log("FederationTool", message, level=level)
+        text = log("FederationTool", message, level=level)
+        if hasattr(self, "log_console"):
+            self.log_console.append(text)
 
 
 class InvoiceProcessor:
@@ -736,15 +693,130 @@ class InvoiceProcessor:
         self.timeouts = self.config.get("timeouts", {})
         self.timeout = int(self.timeouts.get("default", 20))
         self.wait = WebDriverWait(self.driver, self.timeout)
+        self.last_element_key = None
 
     def _log(self, message):
         self.status_callback(message)
+
+    def selector_text(self, key):
+        selector = self.config.get("selectors", {}).get(key, {})
+        return (
+            f"{key} ({selector.get('label', key)}) "
+            f"by={selector.get('by', '')} value={selector.get('value', '')}"
+        )
+
+    def ordered_selector_keys(self):
+        return list(self.config.get("selectors", {}).keys())
+
+    def run_control_steps_before(self, target_key):
+        if not self.last_element_key:
+            return
+
+        keys = self.ordered_selector_keys()
+        if self.last_element_key not in keys or target_key not in keys:
+            return
+
+        start = keys.index(self.last_element_key)
+        end = keys.index(target_key)
+        if end <= start:
+            return
+
+        for key in keys[start + 1:end]:
+            selector = self.config.get("selectors", {}).get(key, {})
+            if selector.get("type", "element") != "element":
+                self.run_control_step(key, selector)
+
+    def run_control_step(self, key, selector):
+        process_type = selector.get("type", "element")
+        action = selector.get("action", "accept")
+        label = selector.get("label", key)
+        self._log(f"[제어] {key} ({label}) type={process_type} action={action}")
+
+        if process_type in {"alert", "confirm", "prompt"}:
+            return self.handle_dialog_control(key, selector)
+        if process_type == "window":
+            return self.handle_window_control(key, selector)
+        return False
+
+    def handle_dialog_control(self, key, selector):
+        timeout = int(self.timeouts.get("short", 3))
+        required = bool(selector.get("required", False))
+        try:
+            alert = WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
+            text = (alert.text or "").strip()
+            action = selector.get("action", "accept")
+            if selector.get("type") == "prompt" and action == "accept":
+                value = selector.get("value", "")
+                alert.send_keys(value)
+                self._log(f"[prompt] send_keys: {value}")
+            self._log(f"[{selector.get('type')}] {action}: {text[:120]}")
+            if action == "dismiss":
+                alert.dismiss()
+            else:
+                alert.accept()
+            return True
+        except TimeoutException:
+            message = f"{PROCESS_TYPES.get(selector.get('type'), '제어')} 대상을 찾지 못했습니다: {key}"
+            if required:
+                raise TimeoutException(message)
+            self._log(f"[제어스킵] {message}")
+            return False
+
+    def handle_window_control(self, key, selector):
+        action = selector.get("action", "keep")
+        required = bool(selector.get("required", False))
+        try:
+            handles = self.driver.window_handles
+            current = self.driver.current_window_handle
+            self._log(f"[창제어] {key} action={action} handles={handles} current={current}")
+            if len(handles) <= 1:
+                if required:
+                    raise RuntimeError(f"추가 창/팝업창이 없습니다: {key}")
+                return False
+            if action == "switch_last":
+                self.driver.switch_to.window(handles[-1])
+            elif action == "close_extra":
+                for handle in list(handles):
+                    if handle == current:
+                        continue
+                    self.driver.switch_to.window(handle)
+                    self.driver.close()
+                self.driver.switch_to.window(current)
+            return True
+        except Exception as e:
+            if required:
+                raise
+            self._log(f"[창제어오류] {key}: {type(e).__name__}: {e}")
+            return False
+
+    def snapshot(self, label):
+        try:
+            handles = self.driver.window_handles
+        except Exception as e:
+            handles = f"unavailable: {type(e).__name__}: {e}"
+        try:
+            current = self.driver.current_window_handle
+        except Exception as e:
+            current = f"unavailable: {type(e).__name__}: {e}"
+        try:
+            title = self.driver.title
+        except Exception as e:
+            title = f"unavailable: {type(e).__name__}: {e}"
+        try:
+            url = self.driver.current_url
+        except Exception as e:
+            url = f"unavailable: {type(e).__name__}: {e}"
+        self._log(f"[스냅샷] {label}: handles={handles}, current={current}, title={title}, url={url}")
 
     def locator(self, key, required=True):
         selector = self.config.get("selectors", {}).get(key)
         if not selector:
             if required:
                 raise ValueError(f"요소 설정이 없습니다: {key}")
+            return None
+        if selector.get("type", "element") != "element":
+            if required:
+                raise ValueError(f"요소 타입이 아닌 제어 행입니다: {key}")
             return None
 
         locator = build_locator(selector)
@@ -757,23 +829,33 @@ class InvoiceProcessor:
         return None
 
     def wait_element(self, key, timeout=None, required=True):
+        self.run_control_steps_before(key)
         locator = self.locator(key, required=required)
         if not locator:
             return None
         wait = WebDriverWait(self.driver, timeout or self.timeout)
-        return wait.until(EC.presence_of_element_located(locator))
+        element = wait.until(EC.presence_of_element_located(locator))
+        self.last_element_key = key
+        return element
 
     def wait_elements(self, key, timeout=None):
+        self.run_control_steps_before(key)
         locator = self.locator(key)
         wait = WebDriverWait(self.driver, timeout or self.timeout)
-        return wait.until(lambda driver: driver.find_elements(*locator) or False)
+        elements = wait.until(lambda driver: driver.find_elements(*locator) or False)
+        self.last_element_key = key
+        return elements
 
     def click(self, key, timeout=None, required=True):
+        self.run_control_steps_before(key)
         locator = self.locator(key, required=required)
         if not locator:
             return None
+        self._log(f"[click_wait] {self.selector_text(key)} timeout={timeout or self.timeout}")
         element = WebDriverWait(self.driver, timeout or self.timeout).until(EC.element_to_be_clickable(locator))
-        self.click_element(element)
+        self.perform_action(key, element)
+        self._log(f"[click_ok] {key}")
+        self.last_element_key = key
         return element
 
     def click_element(self, element):
@@ -783,23 +865,54 @@ class InvoiceProcessor:
         except Exception:
             self.driver.execute_script("arguments[0].click();", element)
 
-    def click_if_exists(self, key, timeout=None):
-        try:
-            return bool(self.click(key, timeout=timeout or self.timeouts.get("short", 3), required=False))
-        except Exception:
-            return False
+    def perform_action(self, key, element):
+        action = self.config.get("selectors", {}).get(key, {}).get("action", "click")
+        action = action if action in ACTION_TYPES else "click"
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+        if action == "hover":
+            ActionChains(self.driver).move_to_element(element).perform()
+        elif action == "hover_click":
+            ActionChains(self.driver).move_to_element(element).perform()
+            time.sleep(0.2)
+            self.click_element(element)
+        else:
+            self.click_element(element)
+        self._log(f"[action] {key}: {action}")
 
-    def accept_alert_if_exists(self, timeout=1):
+    def click_if_exists(self, key, timeout=None):
+        timeout = timeout or self.timeouts.get("short", 3)
+        self.run_control_steps_before(key)
         try:
-            alert = WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
-            alert.accept()
+            locator = self.locator(key, required=False)
+            if not locator:
+                self._log(f"[optional_skip] {key}: selector empty")
+                return False
+
+            elements = self.driver.find_elements(*locator)
+            self._log(f"[요소조회] {self.selector_text(key)} found={len(elements)} timeout={timeout}")
+            for index, element in enumerate(elements, start=1):
+                try:
+                    text = (element.text or "").strip().replace("\n", " ")[:80]
+                    self._log(
+                        f"[요소조회] {key}[{index}] "
+                        f"displayed={element.is_displayed()} enabled={element.is_enabled()} text={text}"
+                    )
+                except Exception as e:
+                    self._log(f"[요소처리오류] {key}[{index}] {type(e).__name__}: {e}")
+
+            element = WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
+            self.perform_action(key, element)
+            self._log(f"[optional_click_ok] {key}")
+            self.last_element_key = key
             return True
-        except Exception:
+        except TimeoutException:
+            self._log(f"[optional_not_found] {key}: no clickable element within {timeout}s")
+            return False
+        except Exception as e:
+            self._log(f"[요소처리오류] {key}: {type(e).__name__}: {e}")
             return False
 
     def click_optional_confirm(self, key, timeout=None):
-        if self.accept_alert_if_exists(timeout=1):
-            return True
         return self.click_if_exists(key, timeout=timeout or self.timeouts.get("short", 3))
 
     def wait_loading_done(self):
@@ -825,44 +938,80 @@ class InvoiceProcessor:
                 continue
             try:
                 elements = self.driver.find_elements(*locator)
+                self._log(
+                    f"[요소조회] {item.get('label', '')} "
+                    f"by={item.get('by')} value={item.get('value')} found={len(elements)}"
+                )
                 for element in elements:
                     if element.is_displayed() and element.is_enabled():
                         self.click_element(element)
+                        self._log(f"[요소처리] {item.get('label', '')}")
                         time.sleep(0.2)
-            except Exception:
-                pass
+            except Exception as e:
+                self._log(f"[요소처리오류] {item.get('label', '')}: {type(e).__name__}: {e}")
 
     def close_all_popups(self):
         self._log("열려있는 알림/모달/팝업 닫기 시도")
-        for _ in range(2):
-            self.accept_alert_if_exists(timeout=1)
+        self.snapshot("팝업 닫기 전")
+        clicked_keys = set()
+        popup_keys = [
+            "layer_popup_close",
+            "layer_popup_confirm",
+            "browser_popup_close_button",
+            "first_modal_close",
+            "second_modal_close",
+            "claim_page_warning_close",
+            "operation_guide_close",
+        ]
+        for attempt in range(1, 3):
+            clicked_in_attempt = False
+            self._log(f"[popup_close] attempt={attempt}")
             self.close_configured_popups()
-            self.click_if_exists("claim_page_warning_close")
-            self.click_if_exists("operation_guide_close")
+            for key in popup_keys:
+                if key in clicked_keys:
+                    self._log(f"[optional_skip] {key}: already clicked")
+                    continue
+                if self.click_if_exists(key):
+                    clicked_keys.add(key)
+                    clicked_in_attempt = True
 
             frames = self.driver.find_elements(By.TAG_NAME, "iframe")
-            for frame in frames:
+            self._log(f"[frame_search] iframe found={len(frames)}")
+            for frame_index, frame in enumerate(frames, start=1):
                 try:
+                    self._log(f"[frame_enter] iframe {frame_index}/{len(frames)}")
                     self.driver.switch_to.frame(frame)
-                    self.accept_alert_if_exists(timeout=1)
                     self.close_configured_popups()
-                except Exception:
-                    pass
+                    for key in popup_keys:
+                        if key in clicked_keys:
+                            self._log(f"[optional_skip] {key}: already clicked")
+                            continue
+                        if self.click_if_exists(key):
+                            clicked_keys.add(key)
+                            clicked_in_attempt = True
+                except Exception as e:
+                    self._log(f"[frame_popup_close_fail] iframe {frame_index}: {type(e).__name__}: {e}")
                 finally:
                     try:
                         self.driver.switch_to.default_content()
                     except Exception:
                         pass
+            if clicked_in_attempt:
+                self._log(f"[popup_close] clicked; stop retry: {sorted(clicked_keys)}")
+                break
+        self.snapshot("팝업 닫기 후")
+
 
     def open_payroll_claim_menu(self):
-        self._log("상단 메뉴 '급여비용청구' 마우스 오버 후 드롭다운 메뉴 클릭")
+        self._log("상단 메뉴 급여비용청구 열기")
         main_menu = self.wait_element("main_menu")
-        ActionChains(self.driver).move_to_element(main_menu).perform()
+        self.perform_action("main_menu", main_menu)
         time.sleep(0.5)
-        self.click("payroll_claim_dropdown")
+        self._log("[navbar] click payroll_claim_dropdown")
+        self.click("payroll_claim_dropdown", timeout=5)
 
     def click_claim_button(self):
-        self._log("'청구하기' 버튼 클릭")
+        self._log("청구하기 버튼 클릭")
         self.click("claim_button", timeout=self.timeouts.get("long", 60))
 
     def process_claim_targets(self):
@@ -946,8 +1095,19 @@ class ClaimProcessThread(QThread):
 
     def switch_window(self):
         try:
-            WebDriverWait(self.driver, 10).until(lambda d: len(d.window_handles) > 1)
-            self.driver.switch_to.window(self.driver.window_handles[-1])
+            config = ensure_selector_config(self.config_path)
+            window_index = int(config.get("browser", {}).get("window_index", -1))
+            if window_index > 0:
+                WebDriverWait(self.driver, 10).until(lambda d: len(d.window_handles) >= window_index)
+                handles = self.driver.window_handles
+                target_index = min(window_index - 1, len(handles) - 1)
+            else:
+                WebDriverWait(self.driver, 10).until(lambda d: len(d.window_handles) > 1)
+                handles = self.driver.window_handles
+                target_index = len(handles) - 1
+
+            self.status_signal.emit(f"브라우저 윈도우/탭 {target_index + 1}번으로 전환했습니다.")
+            self.driver.switch_to.window(handles[target_index])
             try:
                 self.driver.maximize_window()
             except Exception:
@@ -961,12 +1121,20 @@ class ClaimProcessThread(QThread):
             self.switch_window()
 
             processor = InvoiceProcessor(self.driver, self.config_path, status_callback=self.status_signal.emit)
+            processor.snapshot("초기 상태")
+            self.status_signal.emit("[단계] 팝업 닫기 시작")
             processor.close_all_popups()
+            self.status_signal.emit("[단계] 급여비용청구 메뉴 열기")
             processor.open_payroll_claim_menu()
+            self.status_signal.emit("[단계] 메뉴 진입 후 팝업 정리")
             processor.close_all_popups()
+            self.status_signal.emit("[단계] 청구하기 버튼 클릭")
             processor.click_claim_button()
+            self.status_signal.emit("[단계] 청구 화면 팝업 정리")
             processor.close_all_popups()
+            self.status_signal.emit("[단계] 청구 대상자 생성")
             processor.process_claim_targets()
+            self.status_signal.emit("[단계] 청구 명세서 자동 처리")
             processor.process_all_claim_targets()
             self.finished_signal.emit("청구 명세서 자동화 작업을 완료했습니다.", True)
         except Exception as e:
