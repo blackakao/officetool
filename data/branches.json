@@ -264,5 +264,24 @@
                 "certificate_password": "*wkdtnakst1"
             }
         }
+    },
+    {
+        "organization_code": "12334087833",
+        "organization_name": "행복한요양원",
+        "branch_name": "신탄현점",
+        "corporation_name": "주식회사 일산서구",
+        "owner_name": "박은경",
+        "address": "경기도 고양시 일산서구 일현로 47, 7-8층",
+        "login_type": "케어포",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "",
+                "certificate_password": ""
+            }
+        }
     }
 ]

@@ -39,6 +39,14 @@
             "required": true,
             "action": "click"
         },
+        "wait_invoice_page": {
+            "label": "청구화면창 기다리기",
+            "type": "delay",
+            "by": "xpath",
+            "value": "3",
+            "required": true,
+            "action": "sleep"
+        },
         "invoice_page_close_popup": {
             "label": "새 새창/팝업창",
             "type": "window",

@@ -1,4 +1,5 @@
 import json
+import re
 import time
 from pathlib import Path
 
@@ -56,6 +57,9 @@ PROCESS_TYPES = {
     "confirm": "confirm",
     "prompt": "prompt",
     "window": "새창/팝업창",
+    "delay": "delay",
+    "repeat_start": "반복 시작",
+    "repeat_end": "반복 끝",
 }
 
 PROCESS_ACTIONS = {
@@ -64,6 +68,9 @@ PROCESS_ACTIONS = {
     "confirm": {"accept": "확인/수락", "dismiss": "취소/닫기"},
     "prompt": {"accept": "텍스트 입력 후 확인", "dismiss": "취소/닫기"},
     "window": {"keep": "유지", "switch_last": "마지막 창으로 전환", "close_extra": "추가 창 닫기"},
+    "delay": {"sleep": "sleep"},
+    "repeat_start": {"fixed_count": "고정 횟수", "element_text": "요소 값에서 횟수", "element_count": "요소 개수만큼"},
+    "repeat_end": {"end": "반복 끝"},
 }
 
 
@@ -204,6 +211,23 @@ def build_locator(selector: dict):
     return BY_TYPES[by], value
 
 
+def apply_runtime_context(selector: dict, context: dict | None = None) -> dict:
+    if not context:
+        return selector
+
+    result = dict(selector)
+    value = result.get("value", "")
+    if isinstance(value, str):
+        replacements = {
+            "{repeat_index}": str(context.get("repeat_index", 0)),
+            "{repeat_number}": str(context.get("repeat_number", 1)),
+        }
+        for placeholder, replacement in replacements.items():
+            value = value.replace(placeholder, replacement)
+        result["value"] = value
+    return result
+
+
 class SelectorTableWidget(QTableWidget):
     def __init__(self, owner):
         super().__init__(owner)
@@ -319,7 +343,11 @@ class SelectorConfigDialog(QDialog):
         action_layout.addStretch()
         layout.addLayout(action_layout)
 
-        guide = QLabel("처리 종류가 요소이면 Selenium 선택자를 사용하고, prompt 행의 값은 입력할 텍스트로 사용됩니다.")
+        guide = QLabel(
+            "처리 종류가 요소이면 Selenium 선택자를 사용하고, prompt 행의 값은 입력할 텍스트로 사용됩니다. "
+            "delay 행은 값에 입력한 정수 초만큼 대기합니다. 반복 시작/반복 끝 사이의 행은 반복 시작 행의 동작에 따라 반복하며, "
+            "반복 블록 안의 선택자 값에는 {repeat_index}(0부터) 또는 {repeat_number}(1부터)를 사용할 수 있습니다."
+        )
         guide.setWordWrap(True)
         layout.addWidget(guide)
 
@@ -723,10 +751,11 @@ class InvoiceProcessor:
 
         for key in keys[start + 1:end]:
             selector = self.config.get("selectors", {}).get(key, {})
-            if selector.get("type", "element") != "element":
+            if selector.get("type", "element") in {"alert", "confirm", "prompt", "window", "delay"}:
                 self.run_control_step(key, selector)
 
-    def run_control_step(self, key, selector):
+    def run_control_step(self, key, selector, context=None):
+        selector = apply_runtime_context(selector, context)
         process_type = selector.get("type", "element")
         action = selector.get("action", "accept")
         label = selector.get("label", key)
@@ -736,7 +765,19 @@ class InvoiceProcessor:
             return self.handle_dialog_control(key, selector)
         if process_type == "window":
             return self.handle_window_control(key, selector)
+        if process_type == "delay":
+            return self.handle_delay_control(key, selector)
         return False
+
+    def handle_delay_control(self, key, selector):
+        value = selector.get("value", "0")
+        try:
+            seconds = max(0, int(str(value).strip() or "0"))
+        except ValueError:
+            raise ValueError(f"delay 값은 정수여야 합니다: {key}={value}")
+        self._log(f"[delay] {key}: sleep {seconds}s")
+        time.sleep(seconds)
+        return True
 
     def handle_dialog_control(self, key, selector):
         timeout = int(self.timeouts.get("short", 3))
@@ -776,12 +817,7 @@ class InvoiceProcessor:
             if action == "switch_last":
                 self.driver.switch_to.window(handles[-1])
             elif action == "close_extra":
-                for handle in list(handles):
-                    if handle == current:
-                        continue
-                    self.driver.switch_to.window(handle)
-                    self.driver.close()
-                self.driver.switch_to.window(current)
+                self.close_extra_windows()
             return True
         except Exception as e:
             if required:
@@ -808,7 +844,7 @@ class InvoiceProcessor:
             url = f"unavailable: {type(e).__name__}: {e}"
         self._log(f"[스냅샷] {label}: handles={handles}, current={current}, title={title}, url={url}")
 
-    def locator(self, key, required=True):
+    def locator(self, key, required=True, context=None):
         selector = self.config.get("selectors", {}).get(key)
         if not selector:
             if required:
@@ -819,7 +855,7 @@ class InvoiceProcessor:
                 raise ValueError(f"요소 타입이 아닌 제어 행입니다: {key}")
             return None
 
-        locator = build_locator(selector)
+        locator = build_locator(apply_runtime_context(selector, context))
         if locator:
             return locator
 
@@ -828,9 +864,10 @@ class InvoiceProcessor:
             raise ValueError(f"필수 요소 값이 비어 있습니다: {label} ({key})")
         return None
 
-    def wait_element(self, key, timeout=None, required=True):
-        self.run_control_steps_before(key)
-        locator = self.locator(key, required=required)
+    def wait_element(self, key, timeout=None, required=True, context=None, run_controls=True):
+        if run_controls:
+            self.run_control_steps_before(key)
+        locator = self.locator(key, required=required, context=context)
         if not locator:
             return None
         wait = WebDriverWait(self.driver, timeout or self.timeout)
@@ -838,17 +875,19 @@ class InvoiceProcessor:
         self.last_element_key = key
         return element
 
-    def wait_elements(self, key, timeout=None):
-        self.run_control_steps_before(key)
-        locator = self.locator(key)
+    def wait_elements(self, key, timeout=None, context=None, run_controls=True):
+        if run_controls:
+            self.run_control_steps_before(key)
+        locator = self.locator(key, context=context)
         wait = WebDriverWait(self.driver, timeout or self.timeout)
         elements = wait.until(lambda driver: driver.find_elements(*locator) or False)
         self.last_element_key = key
         return elements
 
-    def click(self, key, timeout=None, required=True):
-        self.run_control_steps_before(key)
-        locator = self.locator(key, required=required)
+    def click(self, key, timeout=None, required=True, context=None, run_controls=True):
+        if run_controls:
+            self.run_control_steps_before(key)
+        locator = self.locator(key, required=required, context=context)
         if not locator:
             return None
         self._log(f"[click_wait] {self.selector_text(key)} timeout={timeout or self.timeout}")
@@ -879,11 +918,12 @@ class InvoiceProcessor:
             self.click_element(element)
         self._log(f"[action] {key}: {action}")
 
-    def click_if_exists(self, key, timeout=None):
+    def click_if_exists(self, key, timeout=None, context=None, run_controls=True):
         timeout = timeout or self.timeouts.get("short", 3)
-        self.run_control_steps_before(key)
+        if run_controls:
+            self.run_control_steps_before(key)
         try:
-            locator = self.locator(key, required=False)
+            locator = self.locator(key, required=False, context=context)
             if not locator:
                 self._log(f"[optional_skip] {key}: selector empty")
                 return False
@@ -914,6 +954,95 @@ class InvoiceProcessor:
 
     def click_optional_confirm(self, key, timeout=None):
         return self.click_if_exists(key, timeout=timeout or self.timeouts.get("short", 3))
+
+    def has_configured_repeats(self):
+        return any(
+            selector.get("type") == "repeat_start"
+            for selector in self.config.get("selectors", {}).values()
+        )
+
+    def find_repeat_end_index(self, items, start_index):
+        depth = 0
+        for index in range(start_index, len(items)):
+            process_type = items[index][1].get("type", "element")
+            if process_type == "repeat_start":
+                depth += 1
+            elif process_type == "repeat_end":
+                depth -= 1
+                if depth == 0:
+                    return index
+        raise ValueError(f"반복 끝 설정이 없습니다: {items[start_index][0]}")
+
+    def parse_repeat_count(self, text, key):
+        match = re.search(r"\d+", str(text or ""))
+        if not match:
+            raise ValueError(f"반복 횟수를 찾을 수 없습니다: {key}")
+        return max(0, int(match.group(0)))
+
+    def repeat_count(self, key, selector, context=None):
+        action = selector.get("action", "fixed_count")
+        runtime_selector = apply_runtime_context(selector, context)
+
+        if action == "fixed_count":
+            return self.parse_repeat_count(runtime_selector.get("value", "0"), key)
+
+        locator = build_locator(runtime_selector)
+        if not locator:
+            raise ValueError(f"반복 횟수 요소 설정이 비어 있습니다: {key}")
+
+        if action == "element_count":
+            elements = WebDriverWait(self.driver, self.timeout).until(lambda driver: driver.find_elements(*locator) or False)
+            count = len(elements)
+            self._log(f"[repeat_count] {key}: element_count={count}")
+            return count
+
+        element = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(locator))
+        text = element.get_attribute("value") or element.text or ""
+        count = self.parse_repeat_count(text, key)
+        self._log(f"[repeat_count] {key}: element_text={text} count={count}")
+        return count
+
+    def run_selector_step(self, key, selector, context=None):
+        process_type = selector.get("type", "element")
+        if process_type == "element":
+            required = bool(selector.get("required", False))
+            if required:
+                return self.click(key, context=context, run_controls=False)
+            return self.click_if_exists(key, context=context, run_controls=False)
+        if process_type in {"alert", "confirm", "prompt", "window", "delay"}:
+            return self.run_control_step(key, selector, context=context)
+        if process_type == "repeat_end":
+            return None
+        raise ValueError(f"지원하지 않는 처리 종류입니다: {key} ({process_type})")
+
+    def run_workflow_items(self, items, context=None):
+        index = 0
+        while index < len(items):
+            key, selector = items[index]
+            process_type = selector.get("type", "element")
+            if process_type == "repeat_start":
+                end_index = self.find_repeat_end_index(items, index)
+                block = items[index + 1:end_index]
+                count = self.repeat_count(key, selector, context=context)
+                self._log(f"[repeat_start] {key}: count={count}")
+                for repeat_index in range(count):
+                    child_context = dict(context or {})
+                    child_context.update({
+                        "repeat_index": repeat_index,
+                        "repeat_number": repeat_index + 1,
+                    })
+                    self._log(f"[repeat] {key}: {repeat_index + 1}/{count}")
+                    self.run_workflow_items(block, context=child_context)
+                index = end_index + 1
+                continue
+
+            self.run_selector_step(key, selector, context=context)
+            index += 1
+
+    def run_configured_workflow(self):
+        self._log("[workflow] 설정 순서 실행 시작")
+        self.run_workflow_items(list(self.config.get("selectors", {}).items()))
+        self._log("[workflow] 설정 순서 실행 완료")
 
     def wait_loading_done(self):
         locator = self.locator("loading_canvas", required=False)
@@ -950,9 +1079,33 @@ class InvoiceProcessor:
             except Exception as e:
                 self._log(f"[요소처리오류] {item.get('label', '')}: {type(e).__name__}: {e}")
 
+    def close_extra_windows(self):
+        main_window = self.driver.current_window_handle
+        all_windows = list(self.driver.window_handles)
+        closed_count = 0
+
+        for window in all_windows:
+            if window == main_window:
+                continue
+            try:
+                self.driver.switch_to.window(window)
+                self.driver.close()
+                closed_count += 1
+            except Exception as e:
+                self._log(f"[popup_window_close_error] handle={window}: {type(e).__name__}: {e}")
+
+        try:
+            self.driver.switch_to.window(main_window)
+        except Exception as e:
+            self._log(f"[popup_window_restore_error] handle={main_window}: {type(e).__name__}: {e}")
+
+        self._log(f"[popup_window_close] closed={closed_count} handles_before={all_windows}")
+        return closed_count
+
     def close_all_popups(self):
         self._log("열려있는 알림/모달/팝업 닫기 시도")
         self.snapshot("팝업 닫기 전")
+        self.close_extra_windows()
         clicked_keys = set()
         popup_keys = [
             "layer_popup_close",
@@ -1122,6 +1275,12 @@ class ClaimProcessThread(QThread):
 
             processor = InvoiceProcessor(self.driver, self.config_path, status_callback=self.status_signal.emit)
             processor.snapshot("초기 상태")
+            if processor.has_configured_repeats():
+                self.status_signal.emit("[단계] 설정 반복 구간 실행")
+                processor.run_configured_workflow()
+                self.finished_signal.emit("설정된 반복 자동화 작업이 완료되었습니다.", True)
+                return
+
             self.status_signal.emit("[단계] 팝업 닫기 시작")
             processor.close_all_popups()
             self.status_signal.emit("[단계] 급여비용청구 메뉴 열기")
