@@ -7,12 +7,60 @@ from pathlib import Path
 from docx import Document
 from docx.oxml.ns import qn
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QDate, QRegularExpression, Qt
+from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, 
-    QPushButton, QDialog, QLabel, QFormLayout, QLineEdit, QMessageBox, QHeaderView, QScrollArea
+    QPushButton, QDialog, QLabel, QFormLayout, QLineEdit, QMessageBox, QHeaderView, QScrollArea,
+    QComboBox, QCheckBox, QDateEdit
 )
 from ui.pages.logging_util import log
+
+
+FIELD_TYPES = {
+    "text": "텍스트",
+    "date": "날짜",
+    "amount": "숫자",
+    "branch_select": "지점 목록",
+    "branch_select_2": "지점 목록 2",
+    "branch_value": "지점의 값",
+}
+
+BRANCH_SOURCE_TYPES = {
+    "branch_select": "지점 목록",
+    "branch_select_2": "지점 목록 2",
+}
+
+DATE_FORMATS = {
+    "yyyy-MM-dd": "yyyy-mm-dd",
+    "yyyy년 MM월 dd일": "yyyy년 mm월 dd일",
+    "yyyy.MM.dd": "yyyy.mm.dd",
+}
+
+BRANCH_VALUE_FIELDS = {
+    "organization_code": "기관기호",
+    "organization_name": "기관명",
+    "branch_name": "지점명",
+    "corporation_name": "법인명",
+    "owner_name": "대표자명",
+    "address": "주소",
+}
+
+
+def read_json_file(path, default):
+    if not path.exists():
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return default
+
+
+def write_json_file(path, data):
+    path.parent.mkdir(exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 class DocumentTool(QWidget):
@@ -87,85 +135,34 @@ class ContentControlDialog(QDialog):
     def __init__(self, parent, doc, file_path):
         super().__init__(parent)
         self.setWindowTitle(f"{file_path.stem} 수정")
-        self.setMinimumWidth(700)
-        self.setMinimumHeight(500)
+        self.setMinimumWidth(900)
+        self.setMinimumHeight(600)
         
         self.doc = doc
         self.file_path = file_path
-        self.controls = {}  # {sdt_element: (tag, alias, placeholder, text_edit, description_label)}
+        self.root = Path(__file__).resolve().parents[2]
+        self.settings_path = self.root / "data" / "document_field_settings.json"
+        self.branches_path = self.root / "data" / "branches.json"
+        self.settings = read_json_file(self.settings_path, {"version": 1, "fields": {}})
+        self.branches = read_json_file(self.branches_path, [])
+        self.controls = {}
+        self.field_widgets = {}
         
         layout = QVBoxLayout()
 
-        # 폼 레이아웃을 스크롤 가능한 영역으로 감싼다
         form_layout = QFormLayout()
-
-        # 문서의 모든 콘텐츠 컨트롤(sdt) 추출
-        sdt_list = doc.element.findall('.//' + qn('w:sdt'))
         
-        for idx, sdt in enumerate(sdt_list):
-            # sdt 속성 추출
-            sdt_pr = sdt.find(qn('w:sdtPr'))
-            if sdt_pr is None:
-                continue
-            
-            # 태그(제목) 추출
-            tag_elem = sdt_pr.find(qn('w:tag'))
-            tag = tag_elem.get(qn('w:val')) if tag_elem is not None else f"필드 {idx+1}"
-            
-            # 별칭 추출
-            alias_elem = sdt_pr.find(qn('w:alias'))
-            alias = alias_elem.get(qn('w:val')) if alias_elem is not None else ""
-            
-            # 플레이스홀더 추출
-            placeholder_elem = sdt_pr.find(qn('w:placeholder'))
-            placeholder = ""
-            if placeholder_elem is not None:
-                placeholder_text = placeholder_elem.find(qn('w:docPart'))
-                if placeholder_text is not None:
-                    placeholder = placeholder_text.get(qn('w:val')) or ""
-            
-            # 현재 텍스트 추출
-            sdt_content = sdt.find(qn('w:sdtContent'))
-            current_text = ""
-            if sdt_content is not None:
-                t_list = sdt_content.findall('.//' + qn('w:t'))
-                if t_list:
-                    current_text = ''.join([t.text for t in t_list if t.text])
-            
-            # 제목 라벨 (콘텐츠 컨트롤 제목)
-            title_label = QLabel(f"<b>{tag}</b>")
-            
-            # 입력 필드
-            text_edit = QLineEdit()
-            text_edit.setText(current_text)
-            text_edit.setPlaceholderText(placeholder or alias or "입력하세요")
-            
-            # 설명 라벨 (태그, 별칭 등 정보)
-            description_texts = []
-            if alias:
-                description_texts.append(f"별칭: {alias}")
-            if placeholder:
-                description_texts.append(f"설명: {placeholder}")
-            description_text = " | ".join(description_texts) if description_texts else ""
-            
-            description_label = QLabel(description_text)
-            description_label.setStyleSheet("color: gray; font-size: 10px;")
-            
-            # 폼 레이아웃에 추가
-            form_layout.addRow(title_label, None)  # 제목 라인
-            form_layout.addRow("  ", text_edit)    # 입력 필드
-            if description_text:
-                form_layout.addRow("  ", description_label)  # 설명 라인
-            form_layout.addRow("", None)  # 간격
-            
-            self.controls[idx] = {
-                'sdt': sdt,
-                'tag': tag,
-                'text_edit': text_edit,
-                'sdt_content': sdt_content
-            }
+        for field_key, control in self._collect_controls(doc).items():
+            self.controls[field_key] = control
+            self._add_field_row(form_layout, field_key, control)
+        self._refresh_type_combo_options()
+        self._refresh_branch_value_source_options()
 
-        # 스크롤 영역에 폼을 넣어서 팝업 내부에서 스크롤 가능하게 함
+        self.branch_summary_label = QLabel()
+        self.branch_summary_label.setStyleSheet("font-weight: bold; color: #333;")
+        self._update_branch_summary()
+        layout.addWidget(self.branch_summary_label)
+
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         container = QWidget()
@@ -177,17 +174,445 @@ class ContentControlDialog(QDialog):
         # 버튼
         button_layout = QHBoxLayout()
         create_button = QPushButton("생성")
+        save_settings_button = QPushButton("설정 저장")
         cancel_button = QPushButton("취소")
 
         create_button.clicked.connect(self.create_from_controls)
+        save_settings_button.clicked.connect(self.save_field_settings)
         cancel_button.clicked.connect(self.reject)
         
         button_layout.addStretch()
+        button_layout.addWidget(save_settings_button)
         button_layout.addWidget(create_button)
         button_layout.addWidget(cancel_button)
         
         layout.addLayout(button_layout)
         self.setLayout(layout)
+
+    def _collect_controls(self, doc):
+        controls = {}
+        sdt_list = doc.element.findall('.//' + qn('w:sdt'))
+        for idx, sdt in enumerate(sdt_list):
+            info = self._content_control_info(sdt, idx)
+            if not info:
+                continue
+            key = info["tag"] or info["alias"] or f"필드 {idx + 1}"
+            control = controls.setdefault(key, {
+                "tag": key,
+                "alias": info["alias"],
+                "placeholder": info["placeholder"],
+                "current_text": info["current_text"],
+                "indices": [],
+            })
+            control["indices"].append(idx)
+            if not control["current_text"] and info["current_text"]:
+                control["current_text"] = info["current_text"]
+            if not control["alias"] and info["alias"]:
+                control["alias"] = info["alias"]
+            if not control["placeholder"] and info["placeholder"]:
+                control["placeholder"] = info["placeholder"]
+        return controls
+
+    def _content_control_info(self, sdt, idx):
+        sdt_pr = sdt.find(qn('w:sdtPr'))
+        if sdt_pr is None:
+            return None
+
+        tag_elem = sdt_pr.find(qn('w:tag'))
+        tag = tag_elem.get(qn('w:val')) if tag_elem is not None else f"필드 {idx + 1}"
+
+        alias_elem = sdt_pr.find(qn('w:alias'))
+        alias = alias_elem.get(qn('w:val')) if alias_elem is not None else ""
+
+        placeholder_elem = sdt_pr.find(qn('w:placeholder'))
+        placeholder = ""
+        if placeholder_elem is not None:
+            placeholder_text = placeholder_elem.find(qn('w:docPart'))
+            if placeholder_text is not None:
+                placeholder = placeholder_text.get(qn('w:val')) or ""
+
+        current_text = self._sdt_text(sdt)
+        return {
+            "tag": tag,
+            "alias": alias,
+            "placeholder": placeholder,
+            "current_text": current_text,
+        }
+
+    def _sdt_text(self, sdt):
+        sdt_content = sdt.find(qn('w:sdtContent'))
+        if sdt_content is None:
+            return ""
+        t_list = sdt_content.findall('.//' + qn('w:t'))
+        return ''.join([t.text for t in t_list if t.text])
+
+    def _add_field_row(self, form_layout, field_key, control):
+        setting = self.settings.setdefault("fields", {}).setdefault(field_key, {"type": "text"})
+
+        display_name = field_key
+        if len(control["indices"]) > 1:
+            display_name = f"{field_key}({len(control['indices'])})"
+        title_label = QLabel(f"<b>{display_name}</b>")
+        description_texts = []
+        if len(control["indices"]) > 1:
+            description_texts.append(f"동일 이름 {len(control['indices'])}개 동시 수정")
+        if control["alias"]:
+            description_texts.append(f"별칭: {control['alias']}")
+        if control["placeholder"]:
+            description_texts.append(f"설명: {control['placeholder']}")
+        description_label = QLabel(" | ".join(description_texts))
+        description_label.setStyleSheet("color: gray; font-size: 10px;")
+
+        type_combo = QComboBox()
+        for type_key, label in FIELD_TYPES.items():
+            type_combo.addItem(label, type_key)
+        type_index = type_combo.findData(setting.get("type", "text"))
+        type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
+
+        input_container = QWidget()
+        input_layout = QHBoxLayout()
+        input_layout.setContentsMargins(0, 0, 0, 0)
+        input_container.setLayout(input_layout)
+
+        self.field_widgets[field_key] = {
+            "type_combo": type_combo,
+            "input_container": input_container,
+            "input_layout": input_layout,
+            "setting": setting,
+        }
+        self._refresh_type_combo_options(field_key)
+        type_combo.currentIndexChanged.connect(lambda _, key=field_key: self._on_field_type_changed(key))
+
+        form_layout.addRow(title_label, None)
+        form_layout.addRow("형태", type_combo)
+        form_layout.addRow("값", input_container)
+        if description_texts:
+            form_layout.addRow("", description_label)
+        form_layout.addRow("", QLabel(""))
+        self._rebuild_field_input(field_key)
+
+    def _on_field_type_changed(self, field_key):
+        self._rebuild_field_input(field_key)
+        self._refresh_type_combo_options()
+        self._refresh_branch_combo_options(skip_field=field_key)
+        self._refresh_branch_value_source_options(skip_field=field_key)
+        self._update_branch_value_fields()
+        self._update_branch_summary()
+
+    def _refresh_type_combo_options(self, target_field_key=None):
+        occupied_types = {
+            widgets["type_combo"].currentData()
+            for key, widgets in self.field_widgets.items()
+            if key != target_field_key and widgets["type_combo"].currentData() in BRANCH_SOURCE_TYPES
+        }
+        targets = (
+            [target_field_key]
+            if target_field_key
+            else list(self.field_widgets.keys())
+        )
+        for field_key in targets:
+            widgets = self.field_widgets.get(field_key)
+            if not widgets:
+                continue
+            type_combo = widgets["type_combo"]
+            current_type = type_combo.currentData() or widgets["setting"].get("type", "text")
+            type_combo.blockSignals(True)
+            type_combo.clear()
+            for type_key, label in FIELD_TYPES.items():
+                if type_key in BRANCH_SOURCE_TYPES and type_key in occupied_types and type_key != current_type:
+                    continue
+                type_combo.addItem(label, type_key)
+            type_index = type_combo.findData(current_type)
+            type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
+            type_combo.blockSignals(False)
+
+    def _refresh_branch_value_source_options(self, skip_field=None):
+        for field_key, widgets in self.field_widgets.items():
+            if field_key == skip_field or widgets["type_combo"].currentData() != "branch_value":
+                continue
+            source_combo = widgets.get("source_combo")
+            if not source_combo:
+                continue
+            current_source = source_combo.currentData()
+            source_combo.blockSignals(True)
+            source_combo.clear()
+            for source_type, label in self._branch_source_options(field_key):
+                source_combo.addItem(label, source_type)
+            source_index = source_combo.findData(current_source)
+            if source_index < 0:
+                source_index = source_combo.findData(widgets["setting"].get("source_field", "branch_select"))
+            source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
+            source_combo.blockSignals(False)
+            self._update_branch_value_field(field_key)
+
+    def _clear_layout(self, layout):
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+
+    def _rebuild_field_input(self, field_key):
+        widgets = self.field_widgets[field_key]
+        layout = widgets["input_layout"]
+        self._clear_layout(layout)
+
+        field_type = widgets["type_combo"].currentData() or "text"
+        control = self.controls[field_key]
+        setting = widgets["setting"]
+        setting["type"] = field_type
+
+        if field_type == "date":
+            date_edit = QDateEdit()
+            date_edit.setCalendarPopup(True)
+            date_edit.setDisplayFormat("yyyy-MM-dd")
+            date_edit.setDate(self._parse_date(control["current_text"]))
+
+            format_combo = QComboBox()
+            for value, label in DATE_FORMATS.items():
+                format_combo.addItem(label, value)
+            format_combo.setCurrentText(setting.get("date_format", "yyyy-MM-dd"))
+            index = format_combo.findData(setting.get("date_format", "yyyy-MM-dd"))
+            format_combo.setCurrentIndex(index if index >= 0 else 0)
+
+            layout.addWidget(date_edit)
+            layout.addWidget(format_combo)
+            widgets["value_widget"] = date_edit
+            widgets["format_combo"] = format_combo
+            return
+
+        if field_type == "amount":
+            amount_edit = QLineEdit()
+            amount_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d*")))
+            amount_edit.setText(''.join(ch for ch in control["current_text"] if ch.isdigit()))
+            comma_check = QCheckBox("1000단위 쉼표")
+            comma_check.setChecked(bool(setting.get("use_comma", True)))
+            layout.addWidget(amount_edit)
+            layout.addWidget(comma_check)
+            widgets["value_widget"] = amount_edit
+            widgets["comma_check"] = comma_check
+            return
+
+        if field_type in {"branch_select", "branch_select_2"}:
+            branch_combo = QComboBox()
+            self._populate_branch_combo(field_key, branch_combo, setting.get("branch_name") or control["current_text"])
+            branch_combo.currentIndexChanged.connect(lambda _, key=field_key: self._on_branch_selection_changed(key))
+            layout.addWidget(branch_combo)
+            widgets["value_widget"] = branch_combo
+            return
+
+        if field_type == "branch_value":
+            source_combo = QComboBox()
+            for source_type, label in self._branch_source_options(field_key):
+                source_combo.addItem(label, source_type)
+            source_index = source_combo.findData(self._source_type_from_setting(setting))
+            source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
+
+            value_combo = QComboBox()
+            for value_key, label in BRANCH_VALUE_FIELDS.items():
+                value_combo.addItem(label, value_key)
+            value_index = value_combo.findData(setting.get("branch_value_key", "organization_code"))
+            value_combo.setCurrentIndex(value_index if value_index >= 0 else 0)
+
+            preview = QLineEdit()
+            preview.setReadOnly(True)
+            source_combo.currentIndexChanged.connect(lambda _: self._update_branch_value_field(field_key))
+            value_combo.currentIndexChanged.connect(lambda _: self._update_branch_value_field(field_key))
+
+            layout.addWidget(source_combo)
+            layout.addWidget(value_combo)
+            layout.addWidget(preview)
+            widgets["source_combo"] = source_combo
+            widgets["value_key_combo"] = value_combo
+            widgets["value_widget"] = preview
+            self._update_branch_value_field(field_key)
+            return
+
+        text_edit = QLineEdit()
+        text_edit.setText(control["current_text"])
+        text_edit.setPlaceholderText(control["placeholder"] or control["alias"] or "입력하세요")
+        layout.addWidget(text_edit)
+        widgets["value_widget"] = text_edit
+
+    def _parse_date(self, text):
+        digits = ''.join(ch if ch.isdigit() else '-' for ch in str(text or "")).strip('-')
+        parts = [part for part in digits.split('-') if part]
+        if len(parts) >= 3:
+            date = QDate(int(parts[0]), int(parts[1]), int(parts[2]))
+            if date.isValid():
+                return date
+        return QDate.currentDate()
+
+    def _branch_key(self, branch):
+        if not branch:
+            return ""
+        return str(branch.get("organization_code") or branch.get("branch_name") or "")
+
+    def _branch_name(self, branch):
+        return branch.get("branch_name", "") if branch else ""
+
+    def _branch_combo_current_key(self, combo):
+        return self._branch_key(combo.currentData()) if combo else ""
+
+    def _selected_branch_keys(self, exclude_field_key=None):
+        selected = set()
+        for field_key, widgets in self.field_widgets.items():
+            if field_key == exclude_field_key:
+                continue
+            if widgets["type_combo"].currentData() not in BRANCH_SOURCE_TYPES:
+                continue
+            key = self._branch_combo_current_key(widgets.get("value_widget"))
+            if key:
+                selected.add(key)
+        return selected
+
+    def _populate_branch_combo(self, field_key, combo, preferred_branch_name=None):
+        preferred_branch_name = preferred_branch_name or self._branch_name(combo.currentData())
+        excluded_keys = self._selected_branch_keys(exclude_field_key=field_key)
+
+        combo.blockSignals(True)
+        combo.clear()
+        for branch in self.branches:
+            branch_key = self._branch_key(branch)
+            if branch_key in excluded_keys:
+                continue
+            combo.addItem(branch.get("branch_name", ""), branch)
+        self._select_branch_combo(combo, preferred_branch_name)
+        combo.blockSignals(False)
+
+    def _select_branch_combo(self, combo, branch_name):
+        for index in range(combo.count()):
+            branch = combo.itemData(index)
+            if branch and branch.get("branch_name") == branch_name:
+                combo.setCurrentIndex(index)
+                return
+
+    def _refresh_branch_combo_options(self, skip_field=None):
+        for field_key, widgets in self.field_widgets.items():
+            if field_key == skip_field or widgets["type_combo"].currentData() not in BRANCH_SOURCE_TYPES:
+                continue
+            combo = widgets.get("value_widget")
+            if not isinstance(combo, QComboBox):
+                continue
+            self._populate_branch_combo(field_key, combo, self._branch_name(combo.currentData()))
+            branch = combo.currentData()
+            widgets["setting"]["branch_name"] = self._branch_name(branch)
+
+    def _on_branch_selection_changed(self, field_key):
+        widgets = self.field_widgets.get(field_key)
+        if not widgets:
+            return
+        combo = widgets.get("value_widget")
+        branch = combo.currentData() if isinstance(combo, QComboBox) else None
+        widgets["setting"]["branch_name"] = self._branch_name(branch)
+        self._refresh_branch_combo_options(skip_field=field_key)
+        self._refresh_branch_value_source_options()
+        self._update_branch_value_fields()
+        self._update_branch_summary()
+
+    def _update_branch_summary(self):
+        if not hasattr(self, "branch_summary_label"):
+            return
+        parts = []
+        for source_type, label in BRANCH_SOURCE_TYPES.items():
+            branch = self._selected_branch_from_source_type(source_type)
+            if branch:
+                parts.append(f"{label}: {self._branch_name(branch)}")
+        self.branch_summary_label.setText(" | ".join(parts) if parts else "선택된 지점 없음")
+
+    def _branch_source_options(self, current_field_key=None):
+        source_types = {
+            widgets["type_combo"].currentData()
+            for key, widgets in self.field_widgets.items()
+            if key != current_field_key and widgets["type_combo"].currentData() in BRANCH_SOURCE_TYPES
+        }
+        options = []
+        for source_type, label in BRANCH_SOURCE_TYPES.items():
+            if source_type not in source_types:
+                continue
+            branch = self._selected_branch_from_source_type(source_type)
+            branch_name = self._branch_name(branch)
+            option_label = f"{branch_name} ({label})" if branch_name else label
+            options.append((source_type, option_label))
+        return options
+
+    def _source_type_from_setting(self, setting):
+        source = setting.get("source_field", "branch_select")
+        if source in BRANCH_SOURCE_TYPES:
+            return source
+        widgets = self.field_widgets.get(source)
+        if widgets and widgets["type_combo"].currentData() in BRANCH_SOURCE_TYPES:
+            return widgets["type_combo"].currentData()
+        return "branch_select"
+
+    def _selected_branch_from_source_type(self, source_type):
+        for widgets in self.field_widgets.values():
+            if widgets["type_combo"].currentData() != source_type:
+                continue
+            value_widget = widgets.get("value_widget")
+            if isinstance(value_widget, QComboBox):
+                return value_widget.currentData()
+        return None
+
+    def _update_branch_value_fields(self):
+        for field_key, widgets in self.field_widgets.items():
+            if widgets["type_combo"].currentData() == "branch_value":
+                self._update_branch_value_field(field_key)
+
+    def _update_branch_value_field(self, field_key):
+        widgets = self.field_widgets.get(field_key, {})
+        source_combo = widgets.get("source_combo")
+        value_key_combo = widgets.get("value_key_combo")
+        preview = widgets.get("value_widget")
+        if not source_combo or not value_key_combo or not preview:
+            return
+        branch = self._selected_branch_from_source_type(source_combo.currentData())
+        value = ""
+        if branch:
+            value = str(branch.get(value_key_combo.currentData(), ""))
+        preview.setText(value)
+
+    def _field_value(self, field_key):
+        widgets = self.field_widgets[field_key]
+        field_type = widgets["type_combo"].currentData() or "text"
+        value_widget = widgets.get("value_widget")
+
+        if field_type == "date":
+            return value_widget.date().toString(widgets["format_combo"].currentData())
+        if field_type == "amount":
+            text = value_widget.text()
+            if widgets["comma_check"].isChecked() and text:
+                return f"{int(text):,}"
+            return text
+        if field_type in {"branch_select", "branch_select_2"}:
+            branch = value_widget.currentData()
+            return branch.get("branch_name", "") if branch else ""
+        if field_type == "branch_value":
+            return value_widget.text()
+        return value_widget.text() if value_widget else ""
+
+    def _collect_field_settings(self):
+        fields = {}
+        for field_key, widgets in self.field_widgets.items():
+            field_type = widgets["type_combo"].currentData() or "text"
+            setting = {"type": field_type}
+            if field_type == "date":
+                setting["date_format"] = widgets["format_combo"].currentData()
+            elif field_type == "amount":
+                setting["use_comma"] = widgets["comma_check"].isChecked()
+            elif field_type in {"branch_select", "branch_select_2"}:
+                branch = widgets["value_widget"].currentData()
+                setting["branch_name"] = branch.get("branch_name", "") if branch else ""
+            elif field_type == "branch_value":
+                setting["source_field"] = widgets["source_combo"].currentData()
+                setting["branch_value_key"] = widgets["value_key_combo"].currentData()
+            fields[field_key] = setting
+        return {"version": 1, "fields": fields}
+
+    def save_field_settings(self):
+        self.settings = self._collect_field_settings()
+        write_json_file(self.settings_path, self.settings)
+        QMessageBox.information(self, "저장 완료", "필드 설정을 저장했습니다.")
     
     def _load_docx2pdf(self):
         try:
@@ -207,21 +632,28 @@ class ContentControlDialog(QDialog):
         """입력한 값으로 새 문서를 생성(PDF 변환). 원본은 변경하지 않음."""
         log("DocumentTool", f"문서 생성 시도: {self.file_path.name}", level="INFO")
         try:
+            self.settings = self._collect_field_settings()
+            write_json_file(self.settings_path, self.settings)
+
             # 새 Document 로드 (원본 보존)
             new_doc = Document(self.file_path)
             
             # 사용자 입력값 수집
             values_dict = {}
-            for idx, ctrl_info in self.controls.items():
-                values_dict[idx] = ctrl_info['text_edit'].text()
+            for field_key in self.controls:
+                values_dict[field_key] = self._field_value(field_key)
             
             # 콘텐츠 컨트롤 업데이트
             sdt_list = new_doc.element.findall('.//' + qn('w:sdt'))
             for idx, sdt in enumerate(sdt_list):
-                if idx not in values_dict:
+                info = self._content_control_info(sdt, idx)
+                if not info:
+                    continue
+                field_key = info["tag"] or info["alias"] or f"필드 {idx + 1}"
+                if field_key not in values_dict:
                     continue
                 
-                new_text = values_dict[idx]
+                new_text = values_dict[field_key]
                 sdt_content = sdt.find(qn('w:sdtContent'))
                 if sdt_content is None:
                     continue
