@@ -21,6 +21,7 @@ from ui.pages.federation_tool import FederationTool
 from ui.pages.labor_cost_ratio_page import LaborCostRatioPage
 from ui.pages.service_fee_page import ServiceFeePage
 from ui.pages.annual_leave_page import AnnualLeavePage
+from ui.pages.monthly_work_check_page import MonthlyWorkCheckPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -54,6 +55,7 @@ class MainWindow(QMainWindow):
         self.menu.addItem("연도별 장기요양인건비 비율")
         self.menu.addItem("연도별 장기요양 수가")
         self.menu.addItem("연차 계산기")
+        self.menu.addItem("월간업무체크")
 
         layout.addWidget(self.menu)
         layout.setStretch(0, 1)
@@ -73,6 +75,7 @@ class MainWindow(QMainWindow):
         self.labor_cost_ratio_page = LaborCostRatioPage()
         self.service_fee_page = ServiceFeePage()
         self.annual_leave_page = AnnualLeavePage()
+        self.monthly_work_check_page = MonthlyWorkCheckPage()
 
         self.stacked_widget.addWidget(self.branch_page)
         self.stacked_widget.addWidget(self.login_page)
@@ -82,6 +85,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.labor_cost_ratio_page)
         self.stacked_widget.addWidget(self.service_fee_page)
         self.stacked_widget.addWidget(self.annual_leave_page)
+        self.stacked_widget.addWidget(self.monthly_work_check_page)
 
         layout.addWidget(self.stacked_widget)
         layout.setStretch(1, 3)

@@ -21,7 +21,7 @@
     {
         "organization_code": "14128000972",
         "organization_name": "행복한요양원",
-        "branch_name": "탄현점",
+        "branch_name": "(구)탄현점",
         "corporation_name": "주식회사 일산시니어",
         "owner_name": "이찬재",
         "address": "경기도 고양시 일산서구 일현로 47, 7-8층",
@@ -266,16 +266,16 @@
         }
     },
     {
-        "organization_code": "12334087833",
+        "organization_code": "14128001825",
         "organization_name": "행복한요양원",
-        "branch_name": "신탄현점",
+        "branch_name": "탄현점",
         "corporation_name": "주식회사 일산서구",
         "owner_name": "박은경",
         "address": "경기도 고양시 일산서구 일현로 47, 7-8층",
         "login_type": "케어포",
         "credentials": {
             "carefor": {
-                "login_id": "이찬재",
+                "login_id": "박은경",
                 "login_password": "*wkdtnakst1"
             },
             "longterm": {
