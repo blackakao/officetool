@@ -116,7 +116,11 @@ class LoginTool(QWidget):
         """branches.json에서 지점 목록 읽기"""
         try:
             with open(self.data_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                return [
+                    branch
+                    for branch in json.load(f)
+                    if branch.get("active", True)
+                ]
         except FileNotFoundError:
             return []
 
@@ -279,11 +283,11 @@ class LongtermLoginThread(BaseLoginThread):
 
         self._wait_and_click(wait, (By.ID, 'xwup_OkButton'))
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 2).until(
                 lambda d: d.find_elements(By.XPATH, "//*[contains(@id, 'mainframe.VFrameSet.frameTop')]")
             )
         except TimeoutException:
-            log("LoginTool", "공단 메인 프레임 확인 대기 10초 초과 - 자동화 단계로 계속 진행합니다.", level="WARNING")
+            log("LoginTool", "공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.", level="WARNING")
 
         self.finished_signal.emit("롱텀 공단 로그인 절차를 완료했습니다.", True)
 

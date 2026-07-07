@@ -16,7 +16,14 @@
                 "certificate_name": "주식회사 분당시니어1",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": "031-713-8330"
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14128000972",
@@ -35,7 +42,14 @@
                 "certificate_name": "주식회사 일산시니어 탄현점",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": "031-923-1107"
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14111000765",
@@ -54,7 +68,14 @@
                 "certificate_name": "주식회사 수원시니어",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14183000182",
@@ -73,7 +94,14 @@
                 "certificate_name": "주식회사 장수만세",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14161000224",
@@ -92,7 +120,14 @@
                 "certificate_name": "주식회사더행복2",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14157000438",
@@ -111,7 +146,14 @@
                 "certificate_name": "주식회사 경기시니어",
                 "certificate_password": "wkdtnakst1*"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14183000214",
@@ -130,7 +172,14 @@
                 "certificate_name": "(주) 양평시니어",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14128001633",
@@ -149,7 +198,14 @@
                 "certificate_name": "주식회사 더행복고양",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14413000646",
@@ -168,7 +224,14 @@
                 "certificate_name": "천안행복한요양원",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14420000352",
@@ -187,7 +250,14 @@
                 "certificate_name": "주식회사 일산시니어2",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14113000834",
@@ -206,7 +276,14 @@
                 "certificate_name": "강남시니어타운",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "11147000548",
@@ -225,7 +302,14 @@
                 "certificate_name": "주식회사 서울시니어타운",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14159000792",
@@ -244,7 +328,14 @@
                 "certificate_name": "주식회사 양천시니어",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14157000521",
@@ -263,7 +354,14 @@
                 "certificate_name": "주식회사 케어플러스3",
                 "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     },
     {
         "organization_code": "14128001825",
@@ -272,16 +370,23 @@
         "corporation_name": "주식회사 일산서구",
         "owner_name": "박은경",
         "address": "경기도 고양시 일산서구 일현로 47, 7-8층",
-        "login_type": "케어포",
+        "login_type": "롱텀",
         "credentials": {
             "carefor": {
                 "login_id": "박은경",
                 "login_password": "*wkdtnakst1"
             },
             "longterm": {
-                "certificate_name": "",
-                "certificate_password": ""
+                "certificate_name": "주식회사 일산서구",
+                "certificate_password": "*wkdtnakst1"
             }
-        }
+        },
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "active": true
     }
 ]

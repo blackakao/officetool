@@ -6,7 +6,98 @@
         "long": 60,
         "loading": 120
     },
-    "selectors": {},
+    "selectors": {
+        "element_001": {
+            "label": "첫 모달 닫기",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div/div[2]/div/div[5]/div",
+            "required": true,
+            "action": "click"
+        },
+        "element_002": {
+            "label": "네비-급여비용청구",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "//*[@id=\"mainframe.VFrameSet.frameTop.form.div_menuBar.form.menuBtn_3:icontext\"]",
+            "required": true,
+            "action": "hover_click"
+        },
+        "element_003": {
+            "label": "네비-급여비용청구-장기근속장려금",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "//*[text()='장기근속장려금' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text']",
+            "required": true,
+            "action": "hover_click"
+        },
+        "element_004": {
+            "label": "네비-급여비용청구-장기근속장려금-장기근속장려금 청구",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "//*[text()='장기근속장려금 청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.menupopupmenu.popupmenuitem.popupmenuitemtext:text']",
+            "required": true,
+            "action": "hover_click"
+        },
+        "delay_005": {
+            "label": "장기근속수당 청구 페이지 대기",
+            "type": "delay",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "1",
+            "required": true,
+            "action": "sleep"
+        },
+        "element_006": {
+            "label": "장기근속장려금 페이지 장기근속장려금 청구 버튼 클릭",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[1]/div/div[3]/div/div[3]/div/div[2]/div/div/div[1]/div/div[1]/div/div[1]/div/div[3]/div/div[1]/div/div[1]/div/div[9]",
+            "required": true,
+            "action": "click"
+        },
+        "repeat_start_007": {
+            "label": "반복지점 시작",
+            "type": "repeat_start",
+            "repeat_mode": "increment",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div/div[3]/div/div[45]/div/div[2]/div/div/div/div/div/div[1]/div",
+            "required": true,
+            "action": "element_text"
+        },
+        "table_008": {
+            "label": "새 테이블",
+            "type": "table",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div/div[3]/div/div[33]/div[1]/div[2]/div/div/div[1]",
+            "required": true,
+            "action": "verify_click_increment"
+        },
+        "delay_009": {
+            "label": "반복 테스트",
+            "type": "delay",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "1",
+            "required": true,
+            "action": "sleep"
+        },
+        "repeat_end_010": {
+            "label": "반복지점 종료",
+            "type": "repeat_end",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "end"
+        }
+    },
     "popup_close_selectors": [
         {
             "label": "공통 버튼 - 닫기",
@@ -30,7 +121,7 @@
         }
     ],
     "browser": {
-        "window_index": -1
+        "window_index": 2
     },
     "dialog_controls": {
         "alert": {

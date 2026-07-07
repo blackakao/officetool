@@ -6,6 +6,9 @@ import importlib
 from pathlib import Path
 from docx import Document
 from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+from docx.shared import Mm
+from docx.text.paragraph import Paragraph
 
 from PySide6.QtCore import QDate, QRegularExpression, Qt
 from PySide6.QtGui import QRegularExpressionValidator
@@ -37,7 +40,7 @@ DATE_FORMATS = {
     "yyyy.MM.dd": "yyyy.mm.dd",
 }
 
-BRANCH_VALUE_FIELDS = {
+STANDARD_BRANCH_VALUE_FIELDS = {
     "organization_code": "기관기호",
     "organization_name": "기관명",
     "branch_name": "지점명",
@@ -143,8 +146,14 @@ class ContentControlDialog(QDialog):
         self.root = Path(__file__).resolve().parents[2]
         self.settings_path = self.root / "data" / "document_field_settings.json"
         self.branches_path = self.root / "data" / "branches.json"
+        self.branch_fields_path = self.root / "data" / "branch_fields.json"
         self.settings = read_json_file(self.settings_path, {"version": 1, "fields": {}})
-        self.branches = read_json_file(self.branches_path, [])
+        self.branches = [
+            branch
+            for branch in read_json_file(self.branches_path, [])
+            if branch.get("active", True)
+        ]
+        self.branch_fields = read_json_file(self.branch_fields_path, [])
         self.controls = {}
         self.field_widgets = {}
         
@@ -409,7 +418,7 @@ class ContentControlDialog(QDialog):
             source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
 
             value_combo = QComboBox()
-            for value_key, label in BRANCH_VALUE_FIELDS.items():
+            for value_key, label in self._branch_value_field_options().items():
                 value_combo.addItem(label, value_key)
             value_index = value_combo.findData(setting.get("branch_value_key", "organization_code"))
             value_combo.setCurrentIndex(value_index if value_index >= 0 else 0)
@@ -479,6 +488,46 @@ class ContentControlDialog(QDialog):
             combo.addItem(branch.get("branch_name", ""), branch)
         self._select_branch_combo(combo, preferred_branch_name)
         combo.blockSignals(False)
+
+    def _branch_value_field_options(self):
+        options = dict(STANDARD_BRANCH_VALUE_FIELDS)
+        for field in self.branch_fields:
+            key = field.get("key")
+            label = field.get("label", key)
+            if key and label:
+                options[key] = label
+        return options
+
+    def _branch_field_definition(self, key):
+        for field in self.branch_fields:
+            if field.get("key") == key:
+                return field
+        return None
+
+    def _branch_value(self, branch, key):
+        if not branch:
+            return ""
+        if key in STANDARD_BRANCH_VALUE_FIELDS:
+            return str(branch.get(key, ""))
+
+        field = self._branch_field_definition(key)
+        custom_value = branch.get("custom_fields", {}).get(key, {})
+        if not isinstance(custom_value, dict):
+            return str(custom_value)
+        if field and field.get("type") == "image":
+            path_text = custom_value.get("path", "")
+            if not path_text:
+                return {"type": "image", "path": "", "width": 30, "height": 30}
+            path = Path(path_text)
+            if path_text and not path.is_absolute():
+                path = self.root / path_text
+            return {
+                "type": "image",
+                "path": str(path),
+                "width": int(custom_value.get("width", 30) or 30),
+                "height": int(custom_value.get("height", 30) or 30),
+            }
+        return str(custom_value.get("value", ""))
 
     def _select_branch_combo(self, combo, branch_name):
         for index in range(combo.count()):
@@ -569,7 +618,9 @@ class ContentControlDialog(QDialog):
         branch = self._selected_branch_from_source_type(source_combo.currentData())
         value = ""
         if branch:
-            value = str(branch.get(value_key_combo.currentData(), ""))
+            value = self._branch_value(branch, value_key_combo.currentData())
+            if isinstance(value, dict):
+                value = value.get("path", "")
         preview.setText(value)
 
     def _field_value(self, field_key):
@@ -588,7 +639,8 @@ class ContentControlDialog(QDialog):
             branch = value_widget.currentData()
             return branch.get("branch_name", "") if branch else ""
         if field_type == "branch_value":
-            return value_widget.text()
+            branch = self._selected_branch_from_source_type(widgets["source_combo"].currentData())
+            return self._branch_value(branch, widgets["value_key_combo"].currentData())
         return value_widget.text() if value_widget else ""
 
     def _collect_field_settings(self):
@@ -653,16 +705,20 @@ class ContentControlDialog(QDialog):
                 if field_key not in values_dict:
                     continue
                 
-                new_text = values_dict[field_key]
+                new_value = values_dict[field_key]
                 sdt_content = sdt.find(qn('w:sdtContent'))
                 if sdt_content is None:
+                    continue
+
+                if isinstance(new_value, dict) and new_value.get("type") == "image":
+                    self._set_sdt_image(new_doc, sdt_content, new_value)
                     continue
                 
                 # 모든 w:t 요소에서 텍스트 업데이트
                 t_list = sdt_content.findall('.//' + qn('w:t'))
                 if t_list:
                     # 첫 번째 텍스트 요소에 값 할당
-                    t_list[0].text = new_text
+                    t_list[0].text = str(new_value)
                     # 나머지는 제거
                     for t in t_list[1:]:
                         parent = t.getparent()
@@ -672,10 +728,9 @@ class ContentControlDialog(QDialog):
                             pass
                 else:
                     # w:t 요소가 없으면 생성
-                    from docx.oxml import OxmlElement
                     run = OxmlElement('w:r')
                     t = OxmlElement('w:t')
-                    t.text = new_text
+                    t.text = str(new_value)
                     run.append(t)
                     sdt_content.append(run)
             
@@ -737,3 +792,21 @@ class ContentControlDialog(QDialog):
         except Exception as e:
             log("DocumentTool", f"문서 생성 오류: {e}", level="ERROR")
             QMessageBox.critical(self, "오류", f"생성 중 오류: {e}")
+
+    def _set_sdt_image(self, doc, sdt_content, value):
+        image_path = Path(value.get("path", ""))
+        if not value.get("path") or not image_path.exists():
+            return
+
+        for child in list(sdt_content):
+            sdt_content.remove(child)
+
+        paragraph_element = OxmlElement('w:p')
+        sdt_content.append(paragraph_element)
+        paragraph = Paragraph(paragraph_element, doc)
+        run = paragraph.add_run()
+        run.add_picture(
+            str(image_path),
+            width=Mm(int(value.get("width", 30) or 30)),
+            height=Mm(int(value.get("height", 30) or 30)),
+        )

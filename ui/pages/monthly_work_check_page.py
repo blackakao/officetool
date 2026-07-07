@@ -61,6 +61,7 @@ class MonthlyWorkCheckPage(QWidget):
         self.base_dir = Path(__file__).resolve().parents[2]
         self.data_file = self.base_dir / "data" / "monthly_work_check.json"
         self.branches_file = self.base_dir / "data" / "branches.json"
+        self.is_summary_mode = False
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -77,8 +78,11 @@ class MonthlyWorkCheckPage(QWidget):
         task_layout = QHBoxLayout()
         self.task_combo = QComboBox()
         self.add_task_button = QPushButton("업무 추가")
+        self.summary_button = QPushButton("월간 업무 총괄 확인")
+        self.summary_button.setCheckable(True)
         task_layout.addWidget(self.task_combo)
         task_layout.addWidget(self.add_task_button)
+        task_layout.addWidget(self.summary_button)
         task_layout.addStretch()
         layout.addLayout(task_layout)
 
@@ -101,6 +105,7 @@ class MonthlyWorkCheckPage(QWidget):
         self.month_combo.currentIndexChanged.connect(self.load_data)
         self.task_combo.currentTextChanged.connect(self.load_data)
         self.add_task_button.clicked.connect(self.add_task)
+        self.summary_button.clicked.connect(self.toggle_summary_mode)
 
     def _setup_month_picker(self):
         current_year = datetime.now().year
@@ -173,13 +178,29 @@ class MonthlyWorkCheckPage(QWidget):
     def _selected_task(self):
         return self.task_combo.currentText()
 
-    def _completed_at(self, data, branch_key):
+    def _completed_at(self, data, branch_key, task_name=None):
+        task_name = task_name or self._selected_task()
         return (
             data.get("records", {})
             .get(self._month_key(), {})
-            .get(self._selected_task(), {})
+            .get(task_name, {})
             .get(branch_key, "")
         )
+
+    def _make_status_button(self, text, completed_at, branch_key, task_name):
+        button = QPushButton(text)
+        button.setStyleSheet(
+            "QPushButton {"
+            f"background-color: {'#2563eb' if completed_at else '#dc2626'};"
+            "color: white;"
+            "font-weight: 600;"
+            "padding: 6px 10px;"
+            "}"
+        )
+        button.clicked.connect(
+            lambda checked=False, key=branch_key, task=task_name: self.toggle_completion(key, task)
+        )
+        return button
 
     def add_task(self):
         dialog = TaskDialog(self)
@@ -202,11 +223,16 @@ class MonthlyWorkCheckPage(QWidget):
         self.task_combo.setCurrentText(task_name)
         self.load_data()
 
-    def toggle_completion(self, branch_key):
+    def toggle_summary_mode(self):
+        self.is_summary_mode = self.summary_button.isChecked()
+        self.load_data()
+
+    def toggle_completion(self, branch_key, task_name=None):
+        task_name = task_name or self._selected_task()
         data = self._load_data()
         records = data.setdefault("records", {})
         month_records = records.setdefault(self._month_key(), {})
-        task_records = month_records.setdefault(self._selected_task(), {})
+        task_records = month_records.setdefault(task_name, {})
 
         if branch_key in task_records:
             del task_records[branch_key]
@@ -220,27 +246,65 @@ class MonthlyWorkCheckPage(QWidget):
         if self.task_combo.count() == 0:
             return
 
+        if self.is_summary_mode:
+            self.load_summary_data()
+            return
+
         data = self._load_data()
         branches = self._load_branches()
+        selected_task = self._selected_task()
+        sorted_branches = sorted(
+            branches,
+            key=lambda branch: (
+                self._completed_at(data, self._branch_key(branch), selected_task) == "",
+                self._completed_at(data, self._branch_key(branch), selected_task),
+                branch.get("branch_name", ""),
+            ),
+        )
 
-        self.table.setRowCount(len(branches))
+        self.table.clear()
+        self.table.setColumnCount(2)
+        self.table.setHorizontalHeaderLabels(["지점목록", "완료 시간"])
+        self.table.setRowCount(len(sorted_branches))
+        self.table.setVerticalHeaderLabels([str(row + 1) for row in range(len(sorted_branches))])
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
-        for row, branch in enumerate(branches):
+        for row, branch in enumerate(sorted_branches):
             branch_key = self._branch_key(branch)
-            completed_at = self._completed_at(data, branch_key)
-
-            branch_button = QPushButton(branch.get("branch_name", ""))
-            branch_button.setStyleSheet(
-                "QPushButton {"
-                f"background-color: {'#2563eb' if completed_at else '#dc2626'};"
-                "color: white;"
-                "font-weight: 600;"
-                "padding: 6px 10px;"
-                "}"
+            completed_at = self._completed_at(data, branch_key, selected_task)
+            branch_button = self._make_status_button(
+                branch.get("branch_name", ""),
+                completed_at,
+                branch_key,
+                selected_task,
             )
-            branch_button.clicked.connect(lambda checked=False, key=branch_key: self.toggle_completion(key))
             self.table.setCellWidget(row, 0, branch_button)
 
             completed_item = QTableWidgetItem(completed_at)
             completed_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.table.setItem(row, 1, completed_item)
+
+    def load_summary_data(self):
+        data = self._load_data()
+        branches = self._load_branches()
+        tasks = data.get("tasks", DEFAULT_TASKS)
+
+        self.table.clear()
+        self.table.setColumnCount(len(tasks))
+        self.table.setHorizontalHeaderLabels(tasks)
+        self.table.setRowCount(len(branches))
+        self.table.verticalHeader().setVisible(True)
+
+        for column in range(len(tasks)):
+            self.table.horizontalHeader().setSectionResizeMode(column, QHeaderView.Stretch)
+
+        for row, branch in enumerate(branches):
+            branch_key = self._branch_key(branch)
+            self.table.setVerticalHeaderItem(row, QTableWidgetItem(branch.get("branch_name", "")))
+
+            for column, task_name in enumerate(tasks):
+                completed_at = self._completed_at(data, branch_key, task_name)
+                status_text = "완료" if completed_at else "미완료"
+                status_button = self._make_status_button(status_text, completed_at, branch_key, task_name)
+                self.table.setCellWidget(row, column, status_button)

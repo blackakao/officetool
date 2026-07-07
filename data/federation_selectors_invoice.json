@@ -11,15 +11,7 @@
             "label": "첫 모달 닫기",
             "type": "element",
             "by": "xpath",
-            "value": "/html/body/div[2]/div[3]/div/div[1]/div/div/div/div/div/div[3]/div/div[2]",
-            "required": true,
-            "action": "click"
-        },
-        "second_modal_close": {
-            "label": "두 번째 모달 닫기",
-            "type": "element",
-            "by": "xpath",
-            "value": "/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2]",
+            "value": "/html/body/div[2]/div[2]/div/div[2]/div/div[5]/div",
             "required": true,
             "action": "click"
         },

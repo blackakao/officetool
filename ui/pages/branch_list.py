@@ -1,4 +1,6 @@
 import json
+import shutil
+import uuid
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -20,16 +22,94 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QHeaderView,
     QButtonGroup,
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QSpinBox,
+    QScrollArea,
 )
 
 
 LOGIN_TYPES = ["케어포", "롱텀"]
+BASE_BRANCH_FIELDS = {
+    "organization_code": "기관기호",
+    "organization_name": "기관명",
+    "branch_name": "지점명",
+    "corporation_name": "법인명",
+    "owner_name": "대표자명",
+    "address": "주소",
+}
+CUSTOM_FIELD_TYPES = {
+    "text": "텍스트",
+    "image": "이미지",
+}
+
+
+def read_json_file(path, default):
+    if not path.exists():
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return default
+
+
+def write_json_file(path, data):
+    path.parent.mkdir(exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+def field_key_from_label(label, existing_keys):
+    base = "".join(ch if ch.isalnum() else "_" for ch in label.strip().lower()).strip("_")
+    if not base:
+        base = "field"
+    key = f"custom_{base}"
+    index = 2
+    while key in existing_keys:
+        key = f"custom_{base}_{index}"
+        index += 1
+    return key
+
+
+class AddFieldDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("항목 추가")
+
+        self.name_edit = QLineEdit()
+        self.type_combo = QComboBox()
+        for value, label in CUSTOM_FIELD_TYPES.items():
+            self.type_combo.addItem(label, value)
+
+        form_layout = QFormLayout()
+        form_layout.addRow("항목명:", self.name_edit)
+        form_layout.addRow("유형:", self.type_combo)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+
+        layout = QVBoxLayout()
+        layout.addLayout(form_layout)
+        layout.addWidget(buttons)
+        self.setLayout(layout)
+
+    def get_data(self):
+        return {
+            "label": self.name_edit.text().strip(),
+            "type": self.type_combo.currentData() or "text",
+        }
 
 
 class BranchDialog(QDialog):
-    def __init__(self, parent=None, branch_data=None):
+    def __init__(self, parent=None, branch_data=None, custom_fields=None, image_dir=None):
         super().__init__(parent)
         self.setWindowTitle("지점 추가" if branch_data is None else "지점 수정")
+        self.custom_fields = custom_fields or []
+        self.image_dir = image_dir or Path(__file__).resolve().parents[2] / "data" / "branch_images"
+        self.custom_field_widgets = {}
 
         self.organization_code_edit = QLineEdit()
         self.organization_name_edit = QLineEdit()
@@ -37,6 +117,8 @@ class BranchDialog(QDialog):
         self.corporation_name_edit = QLineEdit()
         self.owner_name_edit = QLineEdit()
         self.address_edit = QLineEdit()
+        self.active_check = QCheckBox("활성")
+        self.active_check.setChecked(True)
 
         # 로그인 유형: 라디오 버튼 그룹으로 변경
         self.login_type_group = QButtonGroup()
@@ -71,6 +153,7 @@ class BranchDialog(QDialog):
             self.corporation_name_edit.setText(branch_data.get("corporation_name", ""))
             self.owner_name_edit.setText(branch_data.get("owner_name", ""))
             self.address_edit.setText(branch_data.get("address", ""))
+            self.active_check.setChecked(branch_data.get("active", True))
             
             # 자격증 정보를 새 구조 또는 기존 구조에서 읽기 (호환성)
             credentials = branch_data.get("credentials", {})
@@ -118,7 +201,11 @@ class BranchDialog(QDialog):
         form_layout.addRow("법인명:", self.corporation_name_edit)
         form_layout.addRow("대표자명:", self.owner_name_edit)
         form_layout.addRow("주소:", self.address_edit)
+
+        self._add_custom_field_rows(form_layout, branch_data or {})
+
         form_layout.addRow("로그인 유형:", login_type_layout)
+        form_layout.addRow("활성/비활성:", self.active_check)
 
         # 라벨
         self.carefor_id_label = QLabel("로그인 아이디:")
@@ -151,9 +238,108 @@ class BranchDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout()
-        layout.addLayout(form_layout)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        container = QWidget()
+        container.setLayout(form_layout)
+        scroll.setWidget(container)
+        layout.addWidget(scroll)
         layout.addWidget(buttons)
         self.setLayout(layout)
+
+    def _add_custom_field_rows(self, form_layout, branch_data):
+        custom_values = branch_data.get("custom_fields", {})
+        for field in self.custom_fields:
+            key = field.get("key", "")
+            label = field.get("label", key)
+            field_type = field.get("type", "text")
+            value = custom_values.get(key, {})
+            if not isinstance(value, dict):
+                value = {"value": str(value)}
+
+            if field_type == "image":
+                path_edit = QLineEdit()
+                path_edit.setReadOnly(True)
+                path_edit.setText(value.get("path", ""))
+
+                width_spin = QSpinBox()
+                width_spin.setRange(1, 1000)
+                width_spin.setSuffix(" mm")
+                width_spin.setValue(int(value.get("width", 30) or 30))
+
+                height_spin = QSpinBox()
+                height_spin.setRange(1, 1000)
+                height_spin.setSuffix(" mm")
+                height_spin.setValue(int(value.get("height", 30) or 30))
+
+                browse_button = QPushButton("업로드")
+                browse_button.clicked.connect(
+                    lambda _, edit=path_edit: self._select_image_file(edit)
+                )
+
+                field_layout = QHBoxLayout()
+                field_layout.addWidget(path_edit)
+                field_layout.addWidget(browse_button)
+                field_layout.addWidget(QLabel("가로"))
+                field_layout.addWidget(width_spin)
+                field_layout.addWidget(QLabel("세로"))
+                field_layout.addWidget(height_spin)
+                form_layout.addRow(f"{label}:", field_layout)
+                self.custom_field_widgets[key] = {
+                    "type": "image",
+                    "path_edit": path_edit,
+                    "width_spin": width_spin,
+                    "height_spin": height_spin,
+                }
+                continue
+
+            edit = QLineEdit()
+            edit.setText(value.get("value", ""))
+            form_layout.addRow(f"{label}:", edit)
+            self.custom_field_widgets[key] = {
+                "type": "text",
+                "value_edit": edit,
+            }
+
+    def _select_image_file(self, path_edit):
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "이미지 선택",
+            "",
+            "이미지 파일 (*.png *.jpg *.jpeg *.bmp *.gif);;모든 파일 (*.*)",
+        )
+        if not file_path:
+            return
+
+        source = Path(file_path)
+        self.image_dir.mkdir(parents=True, exist_ok=True)
+        target = self.image_dir / f"{uuid.uuid4().hex}{source.suffix.lower()}"
+        shutil.copy2(source, target)
+        try:
+            path_edit.setText(str(target.relative_to(Path(__file__).resolve().parents[2])))
+        except ValueError:
+            path_edit.setText(str(target))
+
+    def _custom_field_data(self):
+        values = {}
+        for field in self.custom_fields:
+            key = field.get("key", "")
+            widgets = self.custom_field_widgets.get(key)
+            if not widgets:
+                continue
+            if widgets["type"] == "image":
+                values[key] = {
+                    "type": "image",
+                    "path": widgets["path_edit"].text().strip(),
+                    "width": widgets["width_spin"].value(),
+                    "height": widgets["height_spin"].value(),
+                }
+            else:
+                values[key] = {
+                    "type": "text",
+                    "value": widgets["value_edit"].text().strip(),
+                }
+        return values
 
     def get_data(self):
         login_type = "롱텀" if self.longterm_radio.isChecked() else "케어포"
@@ -165,6 +351,8 @@ class BranchDialog(QDialog):
             "corporation_name": self.corporation_name_edit.text().strip(),
             "owner_name": self.owner_name_edit.text().strip(),
             "address": self.address_edit.text().strip(),
+            "active": self.active_check.isChecked(),
+            "custom_fields": self._custom_field_data(),
             "login_type": login_type,
             "credentials": {
                 "carefor": {
@@ -215,6 +403,8 @@ class BranchPage(QWidget):
         super().__init__()
 
         self.data_file = Path(__file__).resolve().parents[2] / "data" / "branches.json"
+        self.fields_file = Path(__file__).resolve().parents[2] / "data" / "branch_fields.json"
+        self.image_dir = Path(__file__).resolve().parents[2] / "data" / "branch_images"
         self.selected_row = -1
 
         layout = QVBoxLayout()
@@ -226,10 +416,12 @@ class BranchPage(QWidget):
         button_layout = QHBoxLayout()
 
         add_button = QPushButton("추가")
+        add_field_button = QPushButton("항목 추가")
         self.edit_button = QPushButton("수정")
         self.delete_button = QPushButton("삭제")
 
         button_layout.addWidget(add_button)
+        button_layout.addWidget(add_field_button)
         button_layout.addWidget(self.edit_button)
         button_layout.addWidget(self.delete_button)
 
@@ -242,7 +434,7 @@ class BranchPage(QWidget):
         # =================================================
         self.table = QTableWidget()
 
-        self.table.setColumnCount(6)
+        self.table.setColumnCount(5)
         # 테이블이 가능한 가로 공간을 모두 사용하도록 설정
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -253,7 +445,6 @@ class BranchPage(QWidget):
             "기관명",
             "법인명",
             "대표자명",
-            "주소",
         ])
 
         # 행 전체 선택 모드 설정
@@ -269,6 +460,7 @@ class BranchPage(QWidget):
         # 버튼 이벤트 연결
         # =================================================
         add_button.clicked.connect(self.add_branch)
+        add_field_button.clicked.connect(self.add_field)
         self.edit_button.clicked.connect(self.edit_branch)
         self.delete_button.clicked.connect(self.delete_branch)
         
@@ -281,12 +473,34 @@ class BranchPage(QWidget):
         self.load_data()
 
     def _load_data(self):
-        with open(self.data_file, "r", encoding="utf-8") as f:
-            return json.load(f)
+        return read_json_file(self.data_file, [])
 
     def _save_data(self, data):
-        with open(self.data_file, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        write_json_file(self.data_file, data)
+
+    def _load_custom_fields(self):
+        return read_json_file(self.fields_file, [])
+
+    def _save_custom_fields(self, fields):
+        write_json_file(self.fields_file, fields)
+
+    def _ensure_custom_field_values(self, data, fields):
+        changed = False
+        for branch in data:
+            custom_values = branch.setdefault("custom_fields", {})
+            if "active" not in branch:
+                branch["active"] = True
+                changed = True
+            for field in fields:
+                key = field.get("key")
+                if not key or key in custom_values:
+                    continue
+                if field.get("type") == "image":
+                    custom_values[key] = {"type": "image", "path": "", "width": 30, "height": 30}
+                else:
+                    custom_values[key] = {"type": "text", "value": ""}
+                changed = True
+        return changed
 
     def on_row_selected(self):
         """행이 선택되었을 때 호출"""
@@ -299,7 +513,8 @@ class BranchPage(QWidget):
             return
 
         branch_data = data[row]
-        dialog = BranchDialog(self, branch_data)
+        custom_fields = self._load_custom_fields()
+        dialog = BranchDialog(self, branch_data, custom_fields, self.image_dir)
         if dialog.exec() != QDialog.Accepted:
             self.load_data()
             return
@@ -311,7 +526,7 @@ class BranchPage(QWidget):
         self.table.selectRow(row)
 
     def add_branch(self):
-        dialog = BranchDialog(self)
+        dialog = BranchDialog(self, custom_fields=self._load_custom_fields(), image_dir=self.image_dir)
         if dialog.exec() != QDialog.Accepted:
             return
 
@@ -328,6 +543,32 @@ class BranchPage(QWidget):
         self.load_data()
         self.table.selectRow(self.table.rowCount() - 1)
 
+    def add_field(self):
+        dialog = AddFieldDialog(self)
+        if dialog.exec() != QDialog.Accepted:
+            return
+
+        field_data = dialog.get_data()
+        label = field_data["label"]
+        if not label:
+            QMessageBox.warning(self, "입력 오류", "항목명을 입력해주세요.")
+            return
+
+        fields = self._load_custom_fields()
+        existing_keys = set(BASE_BRANCH_FIELDS) | {field.get("key", "") for field in fields}
+        fields.append({
+            "key": field_key_from_label(label, existing_keys),
+            "label": label,
+            "type": field_data["type"],
+        })
+        self._save_custom_fields(fields)
+
+        data = self._load_data()
+        if self._ensure_custom_field_values(data, fields):
+            self._save_data(data)
+
+        QMessageBox.information(self, "추가 완료", f"'{label}' 항목을 추가했습니다.")
+
     def edit_branch(self):
         """선택된 행 수정"""
         if self.selected_row < 0:
@@ -337,7 +578,7 @@ class BranchPage(QWidget):
         data = self._load_data()
         branch_data = data[self.selected_row]
         
-        dialog = BranchDialog(self, branch_data)
+        dialog = BranchDialog(self, branch_data, self._load_custom_fields(), self.image_dir)
         if dialog.exec() != QDialog.Accepted:
             return
 
@@ -374,12 +615,13 @@ class BranchPage(QWidget):
 
     def load_data(self):
         data = self._load_data()
+        fields = self._load_custom_fields()
+        if self._ensure_custom_field_values(data, fields):
+            self._save_data(data)
 
         self.table.setRowCount(len(data))
 
         for row, item in enumerate(data):
-            login_type = item.get("login_type", LOGIN_TYPES[0])
-
             # 지점명
             branch_item = QTableWidgetItem(item.get("branch_name", ""))
             branch_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -409,10 +651,4 @@ class BranchPage(QWidget):
             owner_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             owner_item.setFlags(owner_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.table.setItem(row, 4, owner_item)
-            
-            # 주소
-            address_item = QTableWidgetItem(item["address"])
-            address_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            address_item.setFlags(address_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.table.setItem(row, 5, address_item)
 
