@@ -45,12 +45,12 @@
         },
         "delay_005": {
             "label": "장기근속수당 청구 페이지 대기",
-            "type": "delay",
+            "type": "legacy_action",
             "repeat_mode": "fixed",
             "by": "xpath",
             "value": "1",
             "required": true,
-            "action": "sleep"
+            "action": "short_wait"
         },
         "element_006": {
             "label": "장기근속장려금 페이지 장기근속장려금 청구 버튼 클릭",
@@ -77,18 +77,73 @@
             "by": "xpath",
             "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div/div[3]/div/div[33]/div[1]/div[2]/div/div/div[1]",
             "required": true,
-            "action": "verify_click_increment"
+            "action": "verify_click_increment",
+            "number_cell_selector": "div[id$='cell_0_0:text']"
         },
-        "delay_009": {
-            "label": "반복 테스트",
-            "type": "delay",
+        "legacy_action_009": {
+            "label": "새 레거시 동작",
+            "type": "legacy_action",
             "repeat_mode": "fixed",
             "by": "xpath",
-            "value": "1",
+            "value": "0.1",
             "required": true,
-            "action": "sleep"
+            "action": "last_table_force_double_click"
         },
-        "repeat_end_010": {
+        "element_010": {
+            "label": "명세서자동생성",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div/div[3]/div/div[36]",
+            "required": true,
+            "action": "click"
+        },
+        "alert_011": {
+            "label": "명세서 생성이 완료되었습니다.",
+            "type": "alert",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "element_012": {
+            "label": "명세서등록완료",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div/div[3]/div/div[42]",
+            "required": true,
+            "action": "click"
+        },
+        "confirm_013": {
+            "label": "명세서 등록 완료를 하시겠습니까?",
+            "type": "confirm",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "alert_014": {
+            "label": "명세서 등록완료가 되었습니다.",
+            "type": "alert",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "legacy_action_015": {
+            "label": "다음행 클릭",
+            "type": "legacy_action",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "0.1",
+            "required": true,
+            "action": "last_table_next_row_click"
+        },
+        "repeat_end_016": {
             "label": "반복지점 종료",
             "type": "repeat_end",
             "repeat_mode": "fixed",

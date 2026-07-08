@@ -1,0 +1,73 @@
+{
+    "version": 1,
+    "timeouts": {
+        "default": 20,
+        "short": 3,
+        "long": 60,
+        "loading": 120
+    },
+    "browser": {
+        "window_index": -1
+    },
+    "selectors": {
+        "repeat_start_001": {
+            "label": "반복지점 시작",
+            "type": "repeat_start",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "element_text"
+        },
+        "alert_002": {
+            "label": "새 alert",
+            "type": "alert",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "repeat_end_003": {
+            "label": "반복지점 종료",
+            "type": "repeat_end",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "end"
+        },
+        "prompt_004": {
+            "label": "새 prompt",
+            "type": "prompt",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        }
+    },
+    "popup_close_selectors": [
+        {
+            "label": "공통 버튼 - 닫기",
+            "by": "xpath",
+            "value": "//button[normalize-space(.)='닫기']"
+        },
+        {
+            "label": "공통 버튼 - 확인",
+            "by": "xpath",
+            "value": "//button[normalize-space(.)='확인']"
+        },
+        {
+            "label": "공통 링크 - 닫기",
+            "by": "xpath",
+            "value": "//a[normalize-space(.)='닫기']"
+        },
+        {
+            "label": "공통 링크 - 확인",
+            "by": "xpath",
+            "value": "//a[normalize-space(.)='확인']"
+        }
+    ],
+    "deleted_selector_keys": []
+}

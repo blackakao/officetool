@@ -1,0 +1,24 @@
+{
+    "version": 1,
+    "tasks": {
+        "invoice": {
+            "label": "청구 명세서 만들기",
+            "config_file": "federation_selectors_invoice.json",
+            "template_name": "selector",
+            "implemented": true
+        },
+        "long_service": {
+            "label": "장기근속수당 입력하기",
+            "config_file": "federation_selectors_long_service.json",
+            "template_name": "empty",
+            "implemented": true
+        },
+        "test": {
+            "label": "test",
+            "config_file": "test.json",
+            "template_name": "empty",
+            "implemented": true
+        }
+    },
+    "deleted_task_keys": []
+}

@@ -7,69 +7,222 @@
         "loading": 120
     },
     "selectors": {
-        "first_modal_close": {
+        "element_001": {
             "label": "첫 모달 닫기",
             "type": "element",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "/html/body/div[2]/div[2]/div/div[2]/div/div[5]/div",
             "required": true,
             "action": "click"
         },
-        "main_menu": {
+        "element_002": {
             "label": "상단 메뉴 - 급여비용청구",
             "type": "element",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "//*[@id=\"mainframe.VFrameSet.frameTop.form.div_menuBar.form.menuBtn_3:icontext\"]",
             "required": true,
             "action": "hover_click"
         },
-        "payroll_claim_dropdown": {
+        "element_003": {
             "label": "드롭다운 메뉴 - 급여비용청구",
             "type": "element",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "//*[text()='급여비용청구' and @id='mainframe.VFrameSet.frameTop.form.pmnu_subMenu.popupmenuitem.popupmenuitemtext:text']",
             "required": true,
             "action": "click"
         },
-        "wait_invoice_page": {
+        "delay_004": {
             "label": "청구화면창 기다리기",
-            "type": "delay",
+            "type": "legacy_action",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "3",
             "required": true,
-            "action": "sleep"
+            "action": "short_wait"
         },
-        "invoice_page_close_popup": {
+        "window_005": {
             "label": "새 새창/팝업창",
             "type": "window",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "",
             "required": true,
             "action": "close_extra"
         },
-        "invoice_page_layerpopup_close": {
+        "element_006": {
             "label": "청구창 모달 닫기",
             "type": "element",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "/html/body/div[2]/div[1]/div/div[3]/div/div[3]/div/div[2]/div/div/div[1]/div/div[1]/div/div[1]/div/div[3]/div/div[13]/div/div/div/div[5]/div/div[1]/div/div[4]",
             "required": true,
             "action": "click"
         },
-        "invoice_page_invoice_btn": {
+        "element_007": {
             "label": "청구하기 버튼 누르기",
             "type": "element",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "/html/body/div[2]/div[1]/div/div[3]/div/div[3]/div/div[2]/div/div/div[1]/div/div[1]/div/div[1]/div/div[3]/div/div[5]/div/div[1]/div/div[13]",
             "required": true,
             "action": "click"
         },
-        "invoice_page_invoice_create_bills_page": {
+        "element_008": {
             "label": "청구 > 급여내용 자료관리",
             "type": "element",
+            "repeat_mode": "fixed",
             "by": "xpath",
             "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[3]/div/div[1]/div/div[2]",
             "required": true,
             "action": "click"
+        },
+        "delay_009": {
+            "label": "급여내용 자료관리 열릴시간",
+            "type": "legacy_action",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "1",
+            "required": true,
+            "action": "short_wait"
+        },
+        "element_010": {
+            "label": "조회",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[11]",
+            "required": true,
+            "action": "click"
+        },
+        "repeat_start_011": {
+            "label": "반복지점 시작",
+            "type": "repeat_start",
+            "repeat_mode": "increment",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[30]/div/span/span/b",
+            "required": true,
+            "action": "element_text"
+        },
+        "table_012": {
+            "label": "입소자 명단 테이블",
+            "type": "table",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[25]/div[1]/div[2]/div/div/div[1]",
+            "required": true,
+            "action": "verify_click_increment",
+            "number_cell_selector": "div[id$='cell_0_0:text']"
+        },
+        "legacy_action_013": {
+            "label": "컬럼 클릭",
+            "type": "legacy_action",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "0.3",
+            "required": true,
+            "action": "last_table_click"
+        },
+        "element_014": {
+            "label": "저장",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[1]",
+            "required": true,
+            "action": "click"
+        },
+        "confirm_015": {
+            "label": "급여자료를 저장하시겠습니까?",
+            "type": "confirm",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "alert_016": {
+            "label": "저장되었습니다.",
+            "type": "alert",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "element_017": {
+            "label": "명세서자동생성",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[5]",
+            "required": true,
+            "action": "click"
+        },
+        "element_018": {
+            "label": "명세서등록완료",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[3]/div[1]/div[1]/div/div/div/div/div/div[3]/div/div[46]",
+            "required": true,
+            "action": "click"
+        },
+        "element_019": {
+            "label": "저장",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[4]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]",
+            "required": true,
+            "action": "click"
+        },
+        "confirm_020": {
+            "label": "수급자 상태인데 저장할래?",
+            "type": "confirm",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "alert_021": {
+            "label": "저장되었습니다.(2)",
+            "type": "alert",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "accept"
+        },
+        "element_022": {
+            "label": "닫기(자식모달)",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[3]/div[1]/div[1]/div/div/div/div/div/div[3]/div/div[45]",
+            "required": true,
+            "action": "click"
+        },
+        "legacy_action_023": {
+            "label": "컬럼 강제 클릭",
+            "type": "legacy_action",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "0.3",
+            "required": true,
+            "action": "last_table_next_row_click"
+        },
+        "repeat_end_024": {
+            "label": "반복지점 종료",
+            "type": "repeat_end",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "end"
         }
     },
     "popup_close_selectors": [
@@ -132,10 +285,12 @@
         "layer_popup_close",
         "layer_popup_confirm",
         "loading_canvas",
+        "main_menu",
         "operation_guide_close",
         "pay_result_continue_option",
         "pay_result_save_button",
         "pay_result_select",
+        "payroll_claim_dropdown",
         "recipient_checkboxes",
         "recipient_select_all_checkbox",
         "salary_data_tab",

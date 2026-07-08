@@ -34,7 +34,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from ui.pages.login_tool import LongtermLoginThread
-from ui.pages.logging_util import log
+from ui.pages.logging_util import log, should_log_message
 
 
 BY_TYPES = {
@@ -53,15 +53,24 @@ ACTION_TYPES = {
     "hover_click": "호버 후 클릭",
 }
 
+REPEAT_MODES = {
+    "fixed": "고정 반복",
+    "increment": "증가 반복",
+}
+
 PROCESS_TYPES = {
-    "element": "요소",
+    "element": "엘레멘트",
     "table": "테이블",
     "text_assert": "텍스트 검증",
     "alert": "alert",
     "confirm": "confirm",
     "prompt": "prompt",
     "window": "새창/팝업창",
-    "delay": "delay",
+    "legacy_action": "레거시 동작",
+    "condition_start": "조건처리의 조건",
+    "condition_true": "조건처리-참",
+    "condition_false": "조건처리-거짓",
+    "condition_end": "조건처리 종료",
     "repeat_start": "반복지점 시작",
     "repeat_end": "반복지점 종료",
 }
@@ -79,16 +88,27 @@ PROCESS_ACTIONS = {
     "confirm": {"accept": "확인/수락", "dismiss": "취소/닫기"},
     "prompt": {"accept": "텍스트 입력 후 확인", "dismiss": "취소/닫기"},
     "window": {"keep": "유지", "switch_last": "마지막 창으로 전환", "close_extra": "추가 창 닫기"},
-    "delay": {"sleep": "sleep"},
-    "repeat_start": {"manual_count": "직접입력", "element_text": "특정값"},
+    "legacy_action": {
+        "last_table_click": "마지막 테이블 행 다시 클릭",
+        "last_table_next_row_click": "마지막 테이블의 다음 행 클릭",
+        "last_table_double_click": "마지막 테이블 행 더블클릭",
+        "last_table_force_click": "마지막 테이블 행 강제 클릭",
+        "last_table_force_double_click": "마지막 테이블 행 강제 더블클릭",
+        "short_wait": "짧은 대기",
+    },
+    "condition_start": {
+        "text_exists": "텍스트 존재",
+        "equals_value": "조건값과 일치",
+        "contains_value": "조건값 포함",
+        "equals_repeat_number": "반복번호와 일치",
+        "contains_repeat_number": "반복번호 포함",
+    },
+    "condition_true": {"branch": "참 구역"},
+    "condition_false": {"branch": "거짓 구역"},
+    "condition_end": {"end": "종료"},
+    "repeat_start": REPEAT_MODES,
     "repeat_end": {"end": "종료"},
 }
-
-REPEAT_MODES = {
-    "fixed": "고정 반복",
-    "increment": "증가 반복",
-}
-
 
 SELECTOR_TEMPLATE = {
     "version": 1,
@@ -240,6 +260,11 @@ def ensure_selector_config(path: Path, template: dict | None = None) -> dict:
     for selector in data["selectors"].values():
         selector.setdefault("type", "element")
         selector.setdefault("action", "click")
+        if selector.get("type") == "delay":
+            selector["type"] = "legacy_action"
+            selector["action"] = "short_wait"
+            selector.setdefault("label", "짧은 대기")
+            changed = True
 
     if not data["popup_close_selectors"]:
         data["popup_close_selectors"] = template["popup_close_selectors"]
@@ -351,7 +376,7 @@ class SelectorConfigDialog(QDialog):
         self.config_path = config_path
         self.template = template or SELECTOR_TEMPLATE
         self.config = ensure_selector_config(config_path, self.template)
-        self.setWindowTitle(f"공단툴 요소 설정 - {task_label}" if task_label else "공단툴 요소 설정")
+        self.setWindowTitle(f"공단툴 매크로 설정 - {task_label}" if task_label else "공단툴 매크로 설정")
         self.resize(1100, 760)
 
         layout = QVBoxLayout()
@@ -376,33 +401,11 @@ class SelectorConfigDialog(QDialog):
         browser_layout.addStretch()
         layout.addLayout(browser_layout)
 
-        self.table = SelectorTableWidget(self)
-        self.table.setColumnCount(8)
-        self.table.setHorizontalHeaderLabels(["반복", "이름", "처리 종류", "반복 방식", "방식", "값/반복설정", "번호 셀", "동작"])
-        self.table.setDragDropMode(QAbstractItemView.DragDrop)
-        self.table.setDragEnabled(True)
-        self.table.setAcceptDrops(True)
-        self.table.setDropIndicatorShown(True)
-        self.table.setDefaultDropAction(Qt.MoveAction)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(7, QHeaderView.ResizeToContents)
-        layout.addWidget(self.table)
-
-        self._load_table()
-
         action_layout = QHBoxLayout()
         add_button = QPushButton("추가")
         add_menu = QMenu(add_button)
         for type_key, type_label in PROCESS_TYPES.items():
-            if type_key in {"repeat_start", "repeat_end"}:
+            if type_key in {"repeat_start", "repeat_end", "condition_start", "condition_true", "condition_false", "condition_end"}:
                 continue
             action = QAction(type_label, add_menu)
             action.triggered.connect(lambda _, t=type_key: self.add_selector_row(t))
@@ -411,17 +414,45 @@ class SelectorConfigDialog(QDialog):
         repeat_action = QAction("반복지점 생성", add_menu)
         repeat_action.triggered.connect(self.add_repeat_rows)
         add_menu.addAction(repeat_action)
+        condition_action = QAction("조건처리 생성", add_menu)
+        condition_action.triggered.connect(self.add_condition_rows)
+        add_menu.addAction(condition_action)
         add_button.setMenu(add_menu)
+        copy_button = QPushButton("복사")
+        copy_button.clicked.connect(self.copy_selected_row)
         delete_button = QPushButton("삭제")
         delete_button.clicked.connect(self.delete_selected_row)
         action_layout.addWidget(add_button)
+        action_layout.addWidget(copy_button)
         action_layout.addWidget(delete_button)
         action_layout.addStretch()
         layout.addLayout(action_layout)
 
+        self.table = SelectorTableWidget(self)
+        self.table.setColumnCount(6)
+        self.table.setHorizontalHeaderLabels(["이름", "작업종류", "요소", "메인값", "보조값", "동작"])
+        self.table.setDragDropMode(QAbstractItemView.DragDrop)
+        self.table.setDragEnabled(True)
+        self.table.setAcceptDrops(True)
+        self.table.setDropIndicatorShown(True)
+        self.table.setDefaultDropAction(Qt.MoveAction)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.itemSelectionChanged.connect(self._refresh_selected_row_font)
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        layout.addWidget(self.table)
+
+        self._load_table()
+
         guide = QLabel(
-            "처리 종류가 요소이면 Selenium 선택자를 사용하고, prompt 행의 값은 입력할 텍스트로 사용됩니다. "
-            "delay 행은 값에 입력한 정수 초만큼 대기합니다. 반복지점 시작은 동작에서 직접입력/특정값을 고르고 값 칸에 반복 횟수 또는 셀렉터를 입력합니다. "
+            "작업종류가 엘레멘트이면 Selenium 선택자를 사용하고, prompt 행의 값은 입력할 텍스트로 사용됩니다. "
+            "짧은 대기는 레거시 동작에서 설정합니다. 반복지점 시작은 특정값 방식으로 고정되며, 동작에서 고정 반복/증가 반복을 고르고 메인값에 반복 횟수 셀렉터를 입력합니다. "
+            "조건처리는 메인값에 조건 대상 셀렉터를, 보조값에 비교값을 입력합니다. "
             "텍스트 검증은 요소의 text/value를 읽어 반복번호와 비교하며, XPath에는 {repeat_number+32} 같은 반복식도 사용할 수 있습니다. "
             "테이블은 기준 행 XPath의 숫자 인덱스를 1씩 올리며 텍스트 숫자를 검증하고 클릭합니다."
         )
@@ -439,55 +470,49 @@ class SelectorConfigDialog(QDialog):
         for row, (key, selector) in enumerate(selectors.items()):
             self._set_row(row, key, selector)
         self._refresh_repeat_indentation()
+        self._refresh_selected_row_font()
 
     def _set_row(self, row, key, selector):
         selector = dict(selector)
-        indent_item = QTableWidgetItem("")
-        indent_item.setFlags(indent_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-        self.table.setItem(row, 0, indent_item)
         label = selector.get("label", "") or key
-        self.table.setItem(row, 1, QTableWidgetItem(label))
+        self.table.setItem(row, 0, QTableWidgetItem(label))
 
         type_combo = QComboBox()
         for type_key, type_label in PROCESS_TYPES.items():
             type_combo.addItem(type_label, type_key)
         type_index = type_combo.findData(selector.get("type", "element"))
         type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
-        self.table.setCellWidget(row, 2, type_combo)
-
-        repeat_mode_combo = QComboBox()
-        for mode_key, mode_label in REPEAT_MODES.items():
-            repeat_mode_combo.addItem(mode_label, mode_key)
-        repeat_mode_index = repeat_mode_combo.findData(selector.get("repeat_mode", "fixed"))
-        repeat_mode_combo.setCurrentIndex(repeat_mode_index if repeat_mode_index >= 0 else 0)
-        self.table.setCellWidget(row, 3, repeat_mode_combo)
+        type_combo.setEnabled(False)
+        self.table.setCellWidget(row, 1, type_combo)
 
         by_combo = QComboBox()
         by_combo.addItems(BY_TYPES.keys())
         by_combo.setCurrentText(selector.get("by", "xpath"))
-        self.table.setCellWidget(row, 4, by_combo)
+        self.table.setCellWidget(row, 2, by_combo)
 
-        self.table.setItem(row, 5, QTableWidgetItem(selector.get("value", "")))
+        self.table.setItem(row, 3, QTableWidgetItem(selector.get("value", "")))
 
-        number_cell_selector = selector.get("number_cell_selector", "div[id$='cell_0_0:text']")
-        self.table.setItem(row, 6, QTableWidgetItem(number_cell_selector))
+        extra_value = ""
+        if selector.get("type") == "table":
+            extra_value = selector.get("number_cell_selector", "div[id$='cell_0_0:text']")
+        elif selector.get("type") == "condition_start":
+            extra_value = selector.get("expected_value", "")
+        self.table.setItem(row, 4, QTableWidgetItem(extra_value))
 
         action_combo = QComboBox()
-        self.table.setCellWidget(row, 7, action_combo)
-        self._refresh_action_combo(row, selector.get("action"))
-        type_combo.currentIndexChanged.connect(lambda _, r=row: self._refresh_action_combo(r))
-        type_combo.currentIndexChanged.connect(lambda _: self._refresh_repeat_indentation())
-        repeat_mode_combo.currentIndexChanged.connect(lambda _, r=row: self._refresh_row_controls(r))
+        self.table.setCellWidget(row, 5, action_combo)
+        selected_action = selector.get("repeat_mode", "fixed") if selector.get("type") == "repeat_start" else selector.get("action")
+        self._refresh_action_combo(row, selected_action)
         action_combo.currentIndexChanged.connect(lambda _, r=row: self._refresh_row_controls(r))
         self._refresh_row_controls(row)
 
     def _refresh_action_combo(self, row, selected_action=None):
-        type_combo = self.table.cellWidget(row, 2)
-        action_combo = self.table.cellWidget(row, 7)
+        type_combo = self.table.cellWidget(row, 1)
+        action_combo = self.table.cellWidget(row, 5)
         if not action_combo:
             return
         process_type = type_combo.currentData() if type_combo else "element"
-        actions = PROCESS_ACTIONS.get(process_type, ACTION_TYPES)
+        actions = REPEAT_MODES if process_type == "repeat_start" else PROCESS_ACTIONS.get(process_type, ACTION_TYPES)
         selected_action = selected_action or action_combo.currentData()
         action_combo.clear()
         for action_key, action_label in actions.items():
@@ -497,48 +522,45 @@ class SelectorConfigDialog(QDialog):
         self._refresh_row_controls(row)
 
     def _refresh_row_controls(self, row):
-        type_combo = self.table.cellWidget(row, 2)
-        repeat_mode_combo = self.table.cellWidget(row, 3)
-        by_combo = self.table.cellWidget(row, 4)
-        number_cell_item = self.table.item(row, 6)
+        type_combo = self.table.cellWidget(row, 1)
+        by_combo = self.table.cellWidget(row, 2)
+        number_cell_item = self.table.item(row, 4)
         process_type = type_combo.currentData() if type_combo else "element"
-        if repeat_mode_combo:
-            repeat_mode_combo.setEnabled(process_type == "repeat_start")
         if by_combo:
-            action_combo = self.table.cellWidget(row, 7)
-            action = action_combo.currentData() if action_combo else ""
             by_combo.setEnabled(
-                process_type in {"element", "table", "text_assert"}
-                or (process_type == "repeat_start" and action == "element_text")
+                process_type in {"element", "table", "text_assert", "condition_start"}
+                or process_type == "repeat_start"
             )
         if number_cell_item:
             number_cell_item.setFlags(
                 number_cell_item.flags() | Qt.ItemFlag.ItemIsEditable
-                if process_type == "table"
+                if process_type in {"table", "condition_start"}
                 else number_cell_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
 
     def _row_data(self, row):
-        label_item = self.table.item(row, 1)
-        type_combo = self.table.cellWidget(row, 2)
-        repeat_mode_combo = self.table.cellWidget(row, 3)
-        by_combo = self.table.cellWidget(row, 4)
-        value_item = self.table.item(row, 5)
-        number_cell_item = self.table.item(row, 6)
-        action_combo = self.table.cellWidget(row, 7)
+        label_item = self.table.item(row, 0)
+        type_combo = self.table.cellWidget(row, 1)
+        by_combo = self.table.cellWidget(row, 2)
+        value_item = self.table.item(row, 3)
+        number_cell_item = self.table.item(row, 4)
+        action_combo = self.table.cellWidget(row, 5)
         number_cell_selector = number_cell_item.text().strip() if number_cell_item else ""
         process_type = type_combo.currentData() if type_combo else "element"
+        action = action_combo.currentData() if action_combo else "click"
         selector = {
             "label": label_item.text().strip() if label_item else "",
             "type": process_type,
-            "repeat_mode": repeat_mode_combo.currentData() if repeat_mode_combo else "fixed",
+            "repeat_mode": action if process_type == "repeat_start" else "fixed",
             "by": by_combo.currentText() if by_combo else "xpath",
             "value": value_item.text().strip() if value_item else "",
             "required": True,
-            "action": action_combo.currentData() if action_combo else "click",
+            "action": "element_text" if process_type == "repeat_start" else action,
         }
         if process_type == "table" and number_cell_selector:
             selector["number_cell_selector"] = number_cell_selector
+        if process_type == "condition_start" and number_cell_selector:
+            selector["expected_value"] = number_cell_selector
         return (
             "",
             selector,
@@ -553,6 +575,7 @@ class SelectorConfigDialog(QDialog):
         for row, (key, selector) in enumerate(rows):
             self._set_row(row, key, selector)
         self._refresh_repeat_indentation()
+        self._refresh_selected_row_font()
 
     def move_selector_row(self, source_row, target_row):
         if source_row == target_row or source_row < 0 or target_row < 0:
@@ -560,31 +583,150 @@ class SelectorConfigDialog(QDialog):
         rows = self._all_row_data()
         if source_row >= len(rows) or target_row >= len(rows):
             return
-        item = rows.pop(source_row)
-        rows.insert(target_row, item)
+        move_indices = self._paired_move_indices(rows, source_row)
+        if target_row in move_indices:
+            return
+        moving_rows = [rows[index] for index in move_indices]
+        remaining_rows = [row for index, row in enumerate(rows) if index not in move_indices]
+        insert_row = target_row - sum(1 for index in move_indices if index < target_row)
+        insert_row = max(0, min(insert_row, len(remaining_rows)))
+        rows = remaining_rows[:insert_row] + moving_rows + remaining_rows[insert_row:]
         self._rebuild_table(rows)
-        self.table.selectRow(target_row)
+        self.table.selectRow(insert_row)
 
-    def _refresh_repeat_indentation(self):
+    def _paired_move_indices(self, rows, source_row):
+        process_type = rows[source_row][1].get("type", "element")
+        if process_type in {"repeat_start", "repeat_end"}:
+            return self._repeat_marker_indices(rows, source_row)
+        if process_type in {"condition_start", "condition_true", "condition_false", "condition_end"}:
+            return self._condition_marker_indices(rows, source_row)
+        return [source_row]
+
+    def _repeat_marker_indices(self, rows, source_row):
+        process_type = rows[source_row][1].get("type", "element")
+        if process_type == "repeat_start":
+            start_index = source_row
+            end_index = self._matching_repeat_end(rows, source_row)
+        else:
+            start_index = self._matching_repeat_start(rows, source_row)
+            end_index = source_row
+        if start_index is None or end_index is None:
+            return [source_row]
+        return sorted([start_index, end_index])
+
+    def _matching_repeat_end(self, rows, start_row):
         depth = 0
-        for row in range(self.table.rowCount()):
-            type_combo = self.table.cellWidget(row, 2)
-            process_type = type_combo.currentData() if type_combo else "element"
-            display_depth = depth
-            if process_type == "repeat_end":
-                display_depth = max(0, depth - 1)
-            item = self.table.item(row, 0)
-            if item:
-                item.setText("  " * display_depth + ("안쪽" if display_depth else ""))
-            self._apply_repeat_row_style(row, display_depth)
+        for index in range(start_row, len(rows)):
+            process_type = rows[index][1].get("type", "element")
             if process_type == "repeat_start":
                 depth += 1
             elif process_type == "repeat_end":
-                depth = max(0, depth - 1)
+                depth -= 1
+                if depth == 0:
+                    return index
+        return None
 
-    def _apply_repeat_row_style(self, row, display_depth):
-        color = QColor("#eeeeee") if display_depth else QColor("#ffffff")
-        widget_style = "background-color: #eeeeee;" if display_depth else ""
+    def _matching_repeat_start(self, rows, end_row):
+        depth = 0
+        for index in range(end_row, -1, -1):
+            process_type = rows[index][1].get("type", "element")
+            if process_type == "repeat_end":
+                depth += 1
+            elif process_type == "repeat_start":
+                depth -= 1
+                if depth == 0:
+                    return index
+        return None
+
+    def _condition_marker_indices(self, rows, source_row):
+        start_index = self._condition_start_index(rows, source_row)
+        if start_index is None:
+            return [source_row]
+        indices = self._matching_condition_indices(rows, start_index)
+        return indices or [source_row]
+
+    def _condition_start_index(self, rows, source_row):
+        process_type = rows[source_row][1].get("type", "element")
+        if process_type == "condition_start":
+            return source_row
+
+        for index, (_, selector) in enumerate(rows):
+            if selector.get("type", "element") != "condition_start":
+                continue
+            indices = self._matching_condition_indices(rows, index)
+            if indices and source_row in indices:
+                return index
+        return None
+
+    def _matching_condition_indices(self, rows, start_row):
+        depth = 0
+        true_index = None
+        false_index = None
+        for index in range(start_row, len(rows)):
+            process_type = rows[index][1].get("type", "element")
+            if process_type == "condition_start":
+                depth += 1
+            elif process_type == "condition_true" and depth == 1:
+                true_index = index
+            elif process_type == "condition_false" and depth == 1:
+                false_index = index
+            elif process_type == "condition_end":
+                if depth == 1:
+                    if true_index is None or false_index is None:
+                        return None
+                    return [start_row, true_index, false_index, index]
+                depth -= 1
+        return None
+
+    def _refresh_repeat_indentation(self):
+        repeat_depth = 0
+        condition_stack = []
+        for row in range(self.table.rowCount()):
+            type_combo = self.table.cellWidget(row, 1)
+            process_type = type_combo.currentData() if type_combo else "element"
+
+            if process_type == "condition_false" and condition_stack and condition_stack[-1] == "condition_true":
+                condition_stack.pop()
+            elif process_type == "condition_end" and condition_stack:
+                if condition_stack[-1] in {"condition_true", "condition_false"}:
+                    condition_stack.pop()
+                if condition_stack and condition_stack[-1] == "condition":
+                    condition_stack.pop()
+
+            if repeat_depth > 0 or process_type in {"repeat_start", "repeat_end"}:
+                color_role = "repeat"
+            elif process_type == "condition_start":
+                color_role = "condition"
+            elif process_type == "condition_true":
+                color_role = "condition_true"
+            elif process_type == "condition_false":
+                color_role = "condition_false"
+            else:
+                color_role = condition_stack[-1] if condition_stack else None
+
+            self._apply_repeat_row_style(row, color_role)
+
+            if process_type == "repeat_start":
+                repeat_depth += 1
+            elif process_type == "repeat_end":
+                repeat_depth = max(0, repeat_depth - 1)
+            elif process_type == "condition_start":
+                condition_stack.append("condition")
+            elif process_type == "condition_true":
+                condition_stack.append("condition_true")
+            elif process_type == "condition_false":
+                condition_stack.append("condition_false")
+
+    def _apply_repeat_row_style(self, row, color_role):
+        colors = {
+            "repeat": "#eeeeee",
+            "condition": "#f4f7fb",
+            "condition_true": "#dbeafe",
+            "condition_false": "#fee2e2",
+        }
+        color_value = colors.get(color_role, "#ffffff")
+        color = QColor(color_value)
+        widget_style = f"background-color: {color_value};" if color_role else ""
         for column in range(self.table.columnCount()):
             item = self.table.item(row, column)
             if item:
@@ -592,6 +734,23 @@ class SelectorConfigDialog(QDialog):
             widget = self.table.cellWidget(row, column)
             if widget:
                 widget.setStyleSheet(widget_style)
+        self._refresh_selected_row_font()
+
+    def _refresh_selected_row_font(self):
+        current_row = self.table.currentRow()
+        for row in range(self.table.rowCount()):
+            bold = row == current_row
+            for column in range(self.table.columnCount()):
+                item = self.table.item(row, column)
+                if item:
+                    font = item.font()
+                    font.setBold(bold)
+                    item.setFont(font)
+                widget = self.table.cellWidget(row, column)
+                if widget:
+                    font = widget.font()
+                    font.setBold(bold)
+                    widget.setFont(font)
 
     def _auto_selector_key(self, row, selector):
         process_type = selector.get("type", "element")
@@ -629,9 +788,9 @@ class SelectorConfigDialog(QDialog):
             "type": "repeat_start",
             "repeat_mode": "fixed",
             "by": "xpath",
-            "value": "1",
+            "value": "",
             "required": True,
-            "action": "manual_count",
+            "action": "element_text",
         })
         self.table.insertRow(insert_row + 1)
         self._set_row(insert_row + 1, self._auto_selector_key(insert_row + 1, {"type": "repeat_end"}), {
@@ -646,37 +805,142 @@ class SelectorConfigDialog(QDialog):
         self._refresh_repeat_indentation()
         self.table.selectRow(insert_row)
 
+    def add_condition_rows(self):
+        insert_row = self.table.currentRow()
+        if insert_row < 0:
+            insert_row = self.table.rowCount()
+        else:
+            insert_row += 1
+
+        rows = [
+            {
+                "label": "조건처리의 조건",
+                "type": "condition_start",
+                "repeat_mode": "fixed",
+                "by": "xpath",
+                "value": "",
+                "expected_value": "",
+                "required": True,
+                "action": "text_exists",
+            },
+            {
+                "label": "조건처리-참",
+                "type": "condition_true",
+                "repeat_mode": "fixed",
+                "by": "xpath",
+                "value": "",
+                "required": True,
+                "action": "branch",
+            },
+            {
+                "label": "조건처리-거짓",
+                "type": "condition_false",
+                "repeat_mode": "fixed",
+                "by": "xpath",
+                "value": "",
+                "required": True,
+                "action": "branch",
+            },
+            {
+                "label": "조건처리 종료",
+                "type": "condition_end",
+                "repeat_mode": "fixed",
+                "by": "xpath",
+                "value": "",
+                "required": True,
+                "action": "end",
+            },
+        ]
+        for offset, selector in enumerate(rows):
+            self.table.insertRow(insert_row + offset)
+            self._set_row(
+                insert_row + offset,
+                self._auto_selector_key(insert_row + offset, selector),
+                selector,
+            )
+        self._refresh_repeat_indentation()
+        self.table.selectRow(insert_row)
+
+    def copy_selected_row(self):
+        row = self.table.currentRow()
+        if row < 0:
+            QMessageBox.warning(self, "복사 실패", "복사할 작업을 선택하세요.")
+            return
+
+        rows = self._all_row_data()
+        if row >= len(rows):
+            return
+        copy_indices = self._paired_move_indices(rows, row)
+        copied_rows = [
+            ("", json.loads(json.dumps(rows[index][1], ensure_ascii=False)))
+            for index in copy_indices
+        ]
+        insert_row = max(copy_indices) + 1
+        rows = rows[:insert_row] + copied_rows + rows[insert_row:]
+        self._rebuild_table(rows)
+        self.table.selectRow(insert_row)
+
     def delete_selected_row(self):
         row = self.table.currentRow()
         if row < 0:
             QMessageBox.warning(self, "삭제 실패", "삭제할 요소를 선택하세요.")
             return
 
-        label_item = self.table.item(row, 1)
+        rows = self._all_row_data()
+        if row >= len(rows):
+            return
+        delete_indices = self._paired_move_indices(rows, row)
+        label_item = self.table.item(row, 0)
         label = label_item.text() if label_item else ""
+        delete_count = len(delete_indices)
+        suffix = f" 외 {delete_count - 1}개" if delete_count > 1 else ""
         reply = QMessageBox.question(
             self,
             "삭제 확인",
-            f"'{label}' 요소를 삭제하시겠습니까?",
+            f"'{label}'{suffix} 작업을 삭제하시겠습니까?",
             QMessageBox.Yes | QMessageBox.No,
         )
         if reply == QMessageBox.Yes:
-            self.table.removeRow(row)
-            self._refresh_repeat_indentation()
+            remaining_rows = [item for index, item in enumerate(rows) if index not in delete_indices]
+            self._rebuild_table(remaining_rows)
+            if remaining_rows:
+                self.table.selectRow(min(min(delete_indices), len(remaining_rows) - 1))
 
     def _validate_repeat_pairs(self, rows):
         stack = []
         for key, selector in rows:
             process_type = selector.get("type", "element")
             if process_type == "repeat_start":
-                stack.append(key)
+                stack.append(("repeat_start", key))
+            elif process_type == "condition_start":
+                stack.append(("condition_start", key))
+            elif process_type == "condition_true":
+                if not stack or stack[-1][0] != "condition_start":
+                    QMessageBox.warning(self, "저장 실패", f"조건처리의 조건 없이 참 구역이 나타났습니다: {key}")
+                    return False
+                stack.append(("condition_true", key))
+            elif process_type == "condition_false":
+                if not stack or stack[-1][0] != "condition_true":
+                    QMessageBox.warning(self, "저장 실패", f"조건처리-참 없이 거짓 구역이 나타났습니다: {key}")
+                    return False
+                stack.pop()
+                stack.append(("condition_false", key))
             elif process_type == "repeat_end":
-                if not stack:
+                if not stack or stack[-1][0] != "repeat_start":
                     QMessageBox.warning(self, "저장 실패", f"반복지점 종료에 맞는 시작이 없습니다: {key}")
                     return False
                 stack.pop()
+            elif process_type == "condition_end":
+                if not stack or stack[-1][0] != "condition_false":
+                    QMessageBox.warning(self, "저장 실패", f"조건처리-거짓 없이 종료가 나타났습니다: {key}")
+                    return False
+                stack.pop()
+                if not stack or stack[-1][0] != "condition_start":
+                    QMessageBox.warning(self, "저장 실패", f"조건처리 시작에 맞는 종료가 아닙니다: {key}")
+                    return False
+                stack.pop()
         if stack:
-            QMessageBox.warning(self, "저장 실패", f"반복지점 시작에 맞는 종료가 없습니다: {stack[-1]}")
+            QMessageBox.warning(self, "저장 실패", f"시작에 맞는 종료가 없습니다: {stack[-1][1]}")
             return False
         return True
 
@@ -705,7 +969,7 @@ class SelectorConfigDialog(QDialog):
         self.config["deleted_selector_keys"] = sorted(deleted_selector_keys)
         self.config.setdefault("browser", {})["window_index"] = self.window_index_combo.currentData()
         save_selector_config(self.config_path, self.config)
-        QMessageBox.information(self, "저장 완료", "요소 설정을 저장했습니다.")
+        QMessageBox.information(self, "저장 완료", "매크로 설정을 저장했습니다.")
         self.accept()
 
 
@@ -818,20 +1082,19 @@ class FederationTool(QWidget):
         l2_layout = QVBoxLayout()
         l2_layout.setContentsMargins(0, 0, 0, 0)
         self.l2_container.setLayout(l2_layout)
-        l2_label = QLabel("지점선택")
-        l2_layout.addWidget(l2_label)
         toolbar = QHBoxLayout()
-        self.selector_button = QPushButton("요소 설정")
+        self.selector_button = QPushButton("매크로 설정")
         self.selector_button.clicked.connect(self.open_selector_settings)
         toolbar.addWidget(self.selector_button)
         toolbar.addStretch()
         l2_layout.addLayout(toolbar)
+        l2_label = QLabel("지점선택")
+        l2_layout.addWidget(l2_label)
         self.l2_container.setVisible(False)
         self.main_layout.addWidget(self.l2_container)
 
-        self.l3_label = QLabel("작업 상태")
+        self.l3_label = QLabel("작업 상태", self)
         self.l3_label.setVisible(False)
-        self.main_layout.addWidget(self.l3_label)
 
         self.branch_grid_layout = QGridLayout()
         self.branch_grid_layout.setSpacing(10)
@@ -841,15 +1104,16 @@ class FederationTool(QWidget):
         self.branch_container.setVisible(False)
         self.main_layout.addWidget(self.branch_container)
 
-        self.status_label = QLabel("")
+        self.status_label = QLabel("", self)
         self.status_label.setWordWrap(True)
-        self.main_layout.addWidget(self.status_label)
+        self.status_label.setVisible(False)
 
         self.log_console = QTextEdit()
         self.log_console.setReadOnly(True)
         self.log_console.setMinimumHeight(180)
         self.log_console.setPlaceholderText("작업 로그가 여기에 표시됩니다.")
         self.main_layout.addWidget(self.log_console)
+
         self.refresh_task_buttons()
 
     def _load_task_configs(self):
@@ -898,12 +1162,25 @@ class FederationTool(QWidget):
 
     def refresh_task_buttons(self):
         self._clear_layout(self.task_button_layout)
+        self.task_buttons = {}
         for task_key, task_config in self.task_configs.items():
             button = QPushButton(task_config["label"])
             button.clicked.connect(lambda _, t=task_key: self.select_task(t))
             self.task_button_layout.addWidget(button)
+            self.task_buttons[task_key] = button
         self.task_button_layout.addStretch()
+        self.update_task_button_styles()
         self.refresh_delete_task_buttons()
+
+    def update_task_button_styles(self):
+        for task_key, button in getattr(self, "task_buttons", {}).items():
+            if task_key == self.current_task:
+                button.setStyleSheet(
+                    "QPushButton { background-color: #2563eb; color: white; font-weight: bold; "
+                    "border: 1px solid #1d4ed8; padding: 6px 10px; }"
+                )
+            else:
+                button.setStyleSheet("")
 
     def open_add_task_dialog(self):
         dialog = TaskConfigDialog(self, set(self.task_configs.keys()))
@@ -976,10 +1253,11 @@ class FederationTool(QWidget):
 
     def select_task(self, task):
         self.current_task = task
+        self.update_task_button_styles()
         task_config = self.task_configs[task]
         self.selector_config_file = self._ensure_task_selector_config(task)
         self.l2_container.setVisible(True)
-        self.l3_label.setVisible(True)
+        self.l3_label.setVisible(False)
         self.branch_container.setVisible(True)
         self.status_label.setText(f"{task_config['label']}: 지점을 선택하면 자동화가 시작됩니다.")
         self.refresh_buttons()
@@ -1085,9 +1363,13 @@ class FederationTool(QWidget):
             return []
 
     def _log(self, message, level="INFO"):
+        if not should_log_message(message):
+            return
         text = log("FederationTool", message, level=level)
         if hasattr(self, "log_console"):
             self.log_console.append(text)
+            scroll_bar = self.log_console.verticalScrollBar()
+            scroll_bar.setValue(scroll_bar.maximum())
 
 
 class InvoiceProcessor:
@@ -1099,6 +1381,9 @@ class InvoiceProcessor:
         self.timeout = int(self.timeouts.get("default", 20))
         self.wait = WebDriverWait(self.driver, self.timeout)
         self.last_element_key = None
+        self.last_table_row = None
+        self.last_table_selector = None
+        self.last_table_expected_number = None
 
     def _log(self, message):
         self.status_callback(message)
@@ -1128,7 +1413,7 @@ class InvoiceProcessor:
 
         for key in keys[start + 1:end]:
             selector = self.config.get("selectors", {}).get(key, {})
-            if selector.get("type", "element") in {"alert", "confirm", "prompt", "window", "delay"}:
+            if selector.get("type", "element") in {"alert", "confirm", "prompt", "window", "delay", "legacy_action"}:
                 self.run_control_step(key, selector)
 
     def run_control_step(self, key, selector, context=None):
@@ -1144,6 +1429,8 @@ class InvoiceProcessor:
             return self.handle_window_control(key, selector)
         if process_type == "delay":
             return self.handle_delay_control(key, selector)
+        if process_type == "legacy_action":
+            return self.handle_legacy_action_control(key, selector)
         return False
 
     def handle_delay_control(self, key, selector):
@@ -1154,6 +1441,80 @@ class InvoiceProcessor:
             raise ValueError(f"delay 값은 정수여야 합니다: {key}={value}")
         self._log(f"[delay] {key}: sleep {seconds}s")
         time.sleep(seconds)
+        return True
+
+    def legacy_wait_seconds(self, selector, default=0.2):
+        value = str(selector.get("value", "")).strip()
+        if not value:
+            return default
+        try:
+            return max(0, float(value))
+        except ValueError:
+            raise ValueError(f"레거시 동작 값은 초 단위 숫자여야 합니다: {value}")
+
+    def handle_legacy_action_control(self, key, selector):
+        action = selector.get("action", "last_table_click")
+        seconds = self.legacy_wait_seconds(selector)
+        if seconds:
+            self._log(f"[legacy] {key}: wait {seconds}s")
+            time.sleep(seconds)
+
+        if action == "short_wait":
+            return True
+
+        if not self.last_table_row or not self.last_table_selector or self.last_table_expected_number is None:
+            raise ValueError(f"레거시 동작 실패: 마지막 테이블 행 정보가 없습니다: {key}")
+
+        if action == "last_table_next_row_click":
+            next_expected_number = self.last_table_expected_number + 1
+            self.scroll_last_table_row_slightly(key)
+            element, row_path, text = self.find_virtual_table_row_for_number(
+                self.last_table_selector,
+                next_expected_number,
+                key=key,
+            )
+            if not element:
+                self._log(
+                    f"[legacy] {key}: {next_expected_number}번 다음 행 가상 스크롤 탐색 실패, XPath fallback 시작"
+                )
+                element, row_path, text = self.find_table_row_for_number(
+                    self.last_table_selector,
+                    next_expected_number,
+                    key=key,
+                    debug=True,
+                )
+            if not element:
+                raise ValueError(
+                    f"레거시 동작 실패: {key} 다음 행({next_expected_number}번)을 찾을 수 없습니다."
+                )
+
+            self._log(f"[legacy] {key}: next_row expected={next_expected_number} path={row_path} text={text}")
+            self.click_table_row(key, element, self.last_table_selector, next_expected_number)
+            return True
+
+        repeat = 2 if action in {"last_table_double_click", "last_table_force_double_click"} else 1
+        self._log(
+            f"[legacy] {key}: action={action} repeat={repeat} "
+            f"expected={self.last_table_expected_number}"
+        )
+        for index in range(repeat):
+            if index:
+                time.sleep(0.15)
+            if action in {"last_table_force_click", "last_table_force_double_click"}:
+                self.force_click_table_row(
+                    key,
+                    self.last_table_row,
+                    self.last_table_selector,
+                    self.last_table_expected_number,
+                    dblclick=(action == "last_table_force_double_click" and index == repeat - 1),
+                )
+            else:
+                self.click_table_row(
+                    key,
+                    self.last_table_row,
+                    self.last_table_selector,
+                    self.last_table_expected_number,
+                )
         return True
 
     def handle_dialog_control(self, key, selector):
@@ -1225,7 +1586,7 @@ class InvoiceProcessor:
         selector = self.config.get("selectors", {}).get(key)
         if not selector:
             if required:
-                raise ValueError(f"요소 설정이 없습니다: {key}")
+                raise ValueError(f"매크로 설정이 없습니다: {key}")
             return None
         if selector.get("type", "element") != "element":
             if required:
@@ -1427,6 +1788,142 @@ class InvoiceProcessor:
             pass
         return self.element_number_text(row)
 
+    def table_click_target(self, row, base_selector):
+        try:
+            return row.find_element(By.CSS_SELECTOR, self.table_number_cell_selector(base_selector))
+        except Exception:
+            return row
+
+    def log_table_click_state(self, key, row, base_selector, phase):
+        try:
+            row_text, row_number = self.table_row_number_text(row, base_selector)
+            row_class = row.get_attribute("class") or ""
+            active_text = self.driver.execute_script(
+                "return document.activeElement ? (document.activeElement.innerText || document.activeElement.value || '') : '';"
+            )
+            self._log(
+                f"[table_click] {key}: {phase} row_number={row_number} "
+                f"displayed={row.is_displayed()} enabled={row.is_enabled()} "
+                f"class={row_class} text={row_text} active={str(active_text).strip()[:80]}"
+            )
+        except Exception as e:
+            self._log(f"[table_click] {key}: {phase}_state_error={type(e).__name__}: {e}")
+
+    def click_table_row(self, key, row, base_selector, expected_number):
+        self.log_table_click_state(key, row, base_selector, "before")
+        target = self.table_click_target(row, base_selector)
+        action = self.config.get("selectors", {}).get(key, {}).get("action", "click")
+        action = action if action in ACTION_TYPES else "click"
+
+        try:
+            ActionChains(self.driver).move_to_element(target).click(target).perform()
+        except Exception as e:
+            self._log(f"[table_click] {key}: actionchains_error={type(e).__name__}: {e}")
+            try:
+                target.click()
+            except Exception as inner:
+                self._log(f"[table_click] {key}: native_click_error={type(inner).__name__}: {inner}")
+                self.driver.execute_script("arguments[0].click();", target)
+
+        time.sleep(0.15)
+        self.log_table_click_state(key, row, base_selector, "after")
+        text, actual_number = self.table_row_number_text(row, base_selector)
+        if actual_number != expected_number:
+            self._log(
+                f"[table_click] {key}: click 후 행 번호 변경 감지 expected={expected_number} "
+                f"actual={actual_number} text={text}"
+            )
+        self.last_table_row = row
+        self.last_table_selector = base_selector
+        self.last_table_expected_number = expected_number
+        self._log(f"[action] {key}: {action}")
+
+    def force_click_table_row(self, key, row, base_selector, expected_number, dblclick=False):
+        self.log_table_click_state(key, row, base_selector, "force_before")
+        target = self.table_click_target(row, base_selector)
+        try:
+            result = self.driver.execute_script(
+                """
+                const el = arguments[0];
+                const dbl = arguments[1];
+                const rect = el.getBoundingClientRect();
+                const x = Math.floor(rect.left + rect.width / 2);
+                const y = Math.floor(rect.top + rect.height / 2);
+                const opts = {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                    clientX: x,
+                    clientY: y,
+                    screenX: window.screenX + x,
+                    screenY: window.screenY + y,
+                    button: 0,
+                    buttons: 1
+                };
+                const eventNames = ['mousemove', 'mousedown', 'mouseup', 'click'];
+                for (const name of eventNames) {
+                    el.dispatchEvent(new MouseEvent(name, opts));
+                }
+                if (dbl) {
+                    el.dispatchEvent(new MouseEvent('mousedown', opts));
+                    el.dispatchEvent(new MouseEvent('mouseup', opts));
+                    el.dispatchEvent(new MouseEvent('click', opts));
+                    el.dispatchEvent(new MouseEvent('dblclick', opts));
+                }
+                return {x, y, id: el.id || '', className: el.className || '', text: el.innerText || ''};
+                """,
+                target,
+                dblclick,
+            )
+            self._log(f"[table_click] {key}: force_result={result}")
+        except Exception as e:
+            self._log(f"[table_click] {key}: force_error={type(e).__name__}: {e}")
+            ActionChains(self.driver).move_to_element(target).click(target).perform()
+
+        time.sleep(0.2)
+        self.log_table_click_state(key, row, base_selector, "force_after")
+        text, actual_number = self.table_row_number_text(row, base_selector)
+        if actual_number != expected_number:
+            self._log(
+                f"[table_click] {key}: force click 후 행 번호 변경 감지 expected={expected_number} "
+                f"actual={actual_number} text={text}"
+            )
+        self.last_table_row = row
+        self.last_table_selector = base_selector
+        self.last_table_expected_number = expected_number
+        self._log(f"[action] {key}: {'force_double_click' if dblclick else 'force_click'}")
+
+    def scroll_last_table_row_slightly(self, key):
+        try:
+            scrolled = self.driver.execute_script(
+                """
+                let el = arguments[0];
+                while (el) {
+                    const style = window.getComputedStyle(el);
+                    const overflow = `${style.overflowY} ${style.overflow}`;
+                    if (el.scrollHeight > el.clientHeight && /(auto|scroll)/.test(overflow)) {
+                        const before = el.scrollTop;
+                        el.scrollTop = Math.min(el.scrollTop + 40, el.scrollHeight - el.clientHeight);
+                        return {
+                            method: 'scrollTop',
+                            before,
+                            after: el.scrollTop,
+                            id: el.id || '',
+                            className: el.className || ''
+                        };
+                    }
+                    el = el.parentElement;
+                }
+                return {method: 'none'};
+                """,
+                self.last_table_row,
+            )
+            self._log(f"[legacy] {key}: slight_scroll={scrolled}")
+            if scrolled and scrolled.get("method") != "none" and scrolled.get("before") != scrolled.get("after"):
+                time.sleep(0.1)
+        except Exception as e:
+            self._log(f"[legacy] {key}: slight_scroll_error={type(e).__name__}: {e}")
+
     def table_visible_signature(self, rows, base_selector):
         signature = []
         for row in rows:
@@ -1624,7 +2121,7 @@ class InvoiceProcessor:
                 )
 
             self._log(f"[table] {key}: {expected_number}번 검증 OK path={row_path} text={text}")
-            self.perform_action(key, element)
+            self.click_table_row(key, element, base_selector, expected_number)
             return 1
 
         expected_number = 1
@@ -1646,7 +2143,7 @@ class InvoiceProcessor:
                 break
 
             self._log(f"[table] {key}: {expected_number}번 검증 OK path={row_path} text={text}")
-            self.perform_action(key, element)
+            self.click_table_row(key, element, base_selector, expected_number)
             success_count += 1
             expected_number += 1
 
@@ -1661,7 +2158,7 @@ class InvoiceProcessor:
             return self.run_table_step(key, selector, context=context)
         if process_type == "text_assert":
             return self.verify_text_step(key, selector, context=context)
-        if process_type in {"alert", "confirm", "prompt", "window", "delay"}:
+        if process_type in {"alert", "confirm", "prompt", "window", "delay", "legacy_action"}:
             return self.run_control_step(key, selector, context=context)
         if process_type in {"repeat_start", "repeat_end"}:
             self._log(f"[workflow_skip] {key}: repeat marker")
@@ -1669,7 +2166,7 @@ class InvoiceProcessor:
         raise ValueError(f"지원하지 않는 처리 종류입니다: {key} ({process_type})")
 
     def repeat_count(self, key, selector, context=None):
-        action = selector.get("action", "manual_count")
+        action = selector.get("action", "element_text")
         value = str(apply_runtime_context(selector, context).get("value", "")).strip()
         if action == "element_text":
             locator = build_locator(apply_runtime_context(selector, context))
@@ -1698,6 +2195,60 @@ class InvoiceProcessor:
                     return index
         raise ValueError(f"반복지점 종료를 찾을 수 없습니다: {items[start_index][0]}")
 
+    def find_condition_indices(self, items, start_index):
+        depth = 0
+        true_index = None
+        false_index = None
+        for index in range(start_index, len(items)):
+            process_type = items[index][1].get("type", "element")
+            if process_type == "condition_start":
+                depth += 1
+            elif process_type == "condition_true" and depth == 1:
+                true_index = index
+            elif process_type == "condition_false" and depth == 1:
+                false_index = index
+            elif process_type == "condition_end":
+                if depth == 1:
+                    if true_index is None or false_index is None:
+                        raise ValueError(f"조건처리 참/거짓 구역을 찾을 수 없습니다: {items[start_index][0]}")
+                    return true_index, false_index, index
+                depth -= 1
+        raise ValueError(f"조건처리 종료를 찾을 수 없습니다: {items[start_index][0]}")
+
+    def runtime_text_value(self, value, context=None):
+        return apply_runtime_context({"value": str(value or "")}, context).get("value", "")
+
+    def condition_result(self, key, selector, context=None):
+        runtime_selector = apply_runtime_context(selector, context)
+        locator = build_locator(runtime_selector)
+        if not locator:
+            raise ValueError(f"조건처리 대상 셀렉터가 비어 있습니다: {key}")
+
+        element = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(locator))
+        actual = (element.text or element.get_attribute("value") or "").strip()
+        action = selector.get("action", "text_exists")
+        expected = self.runtime_text_value(selector.get("expected_value", ""), context).strip()
+        repeat_number = str((context or {}).get("repeat_number", "")).strip()
+
+        if action == "text_exists":
+            result = bool(actual)
+        elif action == "equals_value":
+            result = actual == expected
+        elif action == "contains_value":
+            result = bool(expected) and expected in actual
+        elif action == "equals_repeat_number":
+            result = actual == repeat_number
+        elif action == "contains_repeat_number":
+            result = bool(repeat_number) and repeat_number in actual
+        else:
+            raise ValueError(f"지원하지 않는 조건처리 동작입니다: {key} ({action})")
+
+        self._log(
+            f"[condition] {key}: action={action} result={result} "
+            f"actual={actual[:120]} expected={expected or repeat_number}"
+        )
+        return result
+
     def run_workflow_items_once(self, items, context=None):
         index = 0
         while index < len(items):
@@ -1717,8 +2268,23 @@ class InvoiceProcessor:
                 self._log(f"[repeat_end] {key}")
                 index = end_index + 1
                 continue
+            if selector.get("type", "element") == "condition_start":
+                true_index, false_index, end_index = self.find_condition_indices(items, index)
+                is_true = self.condition_result(key, selector, context=context)
+                if is_true:
+                    branch_items = items[true_index + 1:false_index]
+                    self._log(f"[condition_true] {key}")
+                else:
+                    branch_items = items[false_index + 1:end_index]
+                    self._log(f"[condition_false] {key}")
+                self.run_workflow_items_once(branch_items, context=context)
+                self._log(f"[condition_end] {key}")
+                index = end_index + 1
+                continue
             if selector.get("type", "element") == "repeat_end":
                 raise ValueError(f"반복지점 시작 없이 종료가 나타났습니다: {key}")
+            if selector.get("type", "element") in {"condition_true", "condition_false", "condition_end"}:
+                raise ValueError(f"조건처리 시작 없이 구역/종료가 나타났습니다: {key}")
             self.run_selector_step(key, selector, context=context)
             index += 1
 
@@ -1974,7 +2540,7 @@ class ClaimProcessThread(QThread):
                 return
 
             if not self.use_invoice_fallback:
-                self.finished_signal.emit("설정된 요소가 없어 자동화를 시작할 수 없습니다. 요소 설정을 먼저 입력하세요.", False)
+                self.finished_signal.emit("설정된 매크로가 없어 자동화를 시작할 수 없습니다. 매크로 설정을 먼저 입력하세요.", False)
                 return
 
             self.status_signal.emit("[단계] 팝업 닫기 시작")
