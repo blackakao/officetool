@@ -91,10 +91,12 @@ PROCESS_ACTIONS = {
     "legacy_action": {
         "last_table_click": "마지막 테이블 행 다시 클릭",
         "last_table_next_row_click": "마지막 테이블의 다음 행 클릭",
+        "last_table_previous_row_click": "마지막 테이블의 이전 행 클릭",
         "last_table_double_click": "마지막 테이블 행 더블클릭",
         "last_table_force_click": "마지막 테이블 행 강제 클릭",
         "last_table_force_double_click": "마지막 테이블 행 강제 더블클릭",
         "short_wait": "짧은 대기",
+        "wait_loading_done": "로딩 사라짐 대기",
     },
     "condition_start": {
         "text_exists": "텍스트 존재",
@@ -1452,8 +1454,35 @@ class InvoiceProcessor:
         except ValueError:
             raise ValueError(f"레거시 동작 값은 초 단위 숫자여야 합니다: {value}")
 
+    def wait_loading_selector_done(self, key, selector):
+        loading_selector = dict(selector)
+        if not str(loading_selector.get("value", "")).strip():
+            loading_selector = self.config.get("selectors", {}).get("loading_canvas", {})
+
+        locator = build_locator(loading_selector)
+        if not locator:
+            self._log(f"[loading_wait] {key}: 로딩 셀렉터가 비어 있어 0.5초 대기")
+            time.sleep(0.5)
+            return True
+
+        short_timeout = int(self.timeouts.get("short", 3))
+        loading_timeout = int(self.timeouts.get("loading", 120))
+        try:
+            WebDriverWait(self.driver, short_timeout).until(EC.presence_of_element_located(locator))
+            self._log(f"[loading_wait] {key}: 로딩 요소 감지, 사라짐 대기 timeout={loading_timeout}")
+        except TimeoutException:
+            self._log(f"[loading_wait] {key}: 로딩 요소 없음, 진행")
+            return True
+
+        WebDriverWait(self.driver, loading_timeout).until(EC.invisibility_of_element_located(locator))
+        self._log(f"[loading_wait] {key}: 로딩 완료")
+        return True
+
     def handle_legacy_action_control(self, key, selector):
         action = selector.get("action", "last_table_click")
+        if action == "wait_loading_done":
+            return self.wait_loading_selector_done(key, selector)
+
         seconds = self.legacy_wait_seconds(selector)
         if seconds:
             self._log(f"[legacy] {key}: wait {seconds}s")
@@ -1465,31 +1494,41 @@ class InvoiceProcessor:
         if not self.last_table_row or not self.last_table_selector or self.last_table_expected_number is None:
             raise ValueError(f"레거시 동작 실패: 마지막 테이블 행 정보가 없습니다: {key}")
 
-        if action == "last_table_next_row_click":
-            next_expected_number = self.last_table_expected_number + 1
-            self.scroll_last_table_row_slightly(key)
+        if action in {"last_table_next_row_click", "last_table_previous_row_click"}:
+            delta = 1 if action == "last_table_next_row_click" else -1
+            row_label = "다음" if delta > 0 else "이전"
+            log_label = "next_row" if delta > 0 else "previous_row"
+            expected_number = self.last_table_expected_number + delta
+            if expected_number < 1:
+                raise ValueError(
+                    f"레거시 동작 실패: {key} {row_label} 행({expected_number}번)은 유효하지 않습니다."
+                )
+
+            self.scroll_last_table_row_slightly(key, delta)
             element, row_path, text = self.find_virtual_table_row_for_number(
                 self.last_table_selector,
-                next_expected_number,
+                expected_number,
                 key=key,
+                direction=delta,
             )
             if not element:
                 self._log(
-                    f"[legacy] {key}: {next_expected_number}번 다음 행 가상 스크롤 탐색 실패, XPath fallback 시작"
+                    f"[legacy] {key}: {expected_number}번 {row_label} 행 가상 스크롤 탐색 실패, XPath fallback 시작"
                 )
                 element, row_path, text = self.find_table_row_for_number(
                     self.last_table_selector,
-                    next_expected_number,
+                    expected_number,
                     key=key,
                     debug=True,
+                    direction=delta,
                 )
             if not element:
                 raise ValueError(
-                    f"레거시 동작 실패: {key} 다음 행({next_expected_number}번)을 찾을 수 없습니다."
+                    f"레거시 동작 실패: {key} {row_label} 행({expected_number}번)을 찾을 수 없습니다."
                 )
 
-            self._log(f"[legacy] {key}: next_row expected={next_expected_number} path={row_path} text={text}")
-            self.click_table_row(key, element, self.last_table_selector, next_expected_number)
+            self._log(f"[legacy] {key}: {log_label} expected={expected_number} path={row_path} text={text}")
+            self.click_table_row(key, element, self.last_table_selector, expected_number)
             return True
 
         repeat = 2 if action in {"last_table_double_click", "last_table_force_double_click"} else 1
@@ -1893,21 +1932,26 @@ class InvoiceProcessor:
         self.last_table_expected_number = expected_number
         self._log(f"[action] {key}: {'force_double_click' if dblclick else 'force_click'}")
 
-    def scroll_last_table_row_slightly(self, key):
+    def scroll_last_table_row_slightly(self, key, direction=1):
         try:
             scrolled = self.driver.execute_script(
                 """
                 let el = arguments[0];
+                const direction = arguments[1] < 0 ? -1 : 1;
                 while (el) {
                     const style = window.getComputedStyle(el);
                     const overflow = `${style.overflowY} ${style.overflow}`;
                     if (el.scrollHeight > el.clientHeight && /(auto|scroll)/.test(overflow)) {
                         const before = el.scrollTop;
-                        el.scrollTop = Math.min(el.scrollTop + 40, el.scrollHeight - el.clientHeight);
+                        el.scrollTop = Math.max(
+                            0,
+                            Math.min(el.scrollTop + (direction * 40), el.scrollHeight - el.clientHeight)
+                        );
                         return {
                             method: 'scrollTop',
                             before,
                             after: el.scrollTop,
+                            direction,
                             id: el.id || '',
                             className: el.className || ''
                         };
@@ -1917,6 +1961,7 @@ class InvoiceProcessor:
                 return {method: 'none'};
                 """,
                 self.last_table_row,
+                direction,
             )
             self._log(f"[legacy] {key}: slight_scroll={scrolled}")
             if scrolled and scrolled.get("method") != "none" and scrolled.get("before") != scrolled.get("after"):
@@ -1932,26 +1977,32 @@ class InvoiceProcessor:
             signature.append(f"{actual_number}:{row_id}:{text[:40]}")
         return "|".join(signature)
 
-    def scroll_virtual_table(self, key, base_selector, rows):
-        target = rows[-1] if rows else None
+    def scroll_virtual_table(self, key, base_selector, rows, direction=1):
+        target = rows[-1] if direction >= 0 and rows else rows[0] if rows else None
         try:
             if target:
                 scrolled = self.driver.execute_script(
                     """
                     let el = arguments[0];
+                    const direction = arguments[1] < 0 ? -1 : 1;
                     while (el) {
                         const style = window.getComputedStyle(el);
                         const overflow = `${style.overflowY} ${style.overflow}`;
                         if (el.scrollHeight > el.clientHeight && /(auto|scroll)/.test(overflow)) {
                             const before = el.scrollTop;
-                            el.scrollTop = before + Math.max(el.clientHeight - 20, 80);
-                            return {method: 'scrollTop', before, after: el.scrollTop, id: el.id || ''};
+                            const amount = Math.max(el.clientHeight - 20, 80);
+                            el.scrollTop = Math.max(
+                                0,
+                                Math.min(before + (direction * amount), el.scrollHeight - el.clientHeight)
+                            );
+                            return {method: 'scrollTop', before, after: el.scrollTop, direction, id: el.id || ''};
                         }
                         el = el.parentElement;
                     }
                     return {method: 'none'};
                     """,
                     target,
+                    direction,
                 )
                 self._log(f"[table_scroll] {key}: js={scrolled}")
                 if scrolled and scrolled.get("method") != "none" and scrolled.get("before") != scrolled.get("after"):
@@ -1964,15 +2015,18 @@ class InvoiceProcessor:
             if not candidate:
                 continue
             try:
-                candidate.send_keys(Keys.PAGE_DOWN)
-                self._log(f"[table_scroll] {key}: PAGE_DOWN sent")
+                key_to_send = Keys.PAGE_DOWN if direction >= 0 else Keys.PAGE_UP
+                candidate.send_keys(key_to_send)
+                self._log(f"[table_scroll] {key}: {'PAGE_DOWN' if direction >= 0 else 'PAGE_UP'} sent")
                 time.sleep(0.2)
                 return True
             except Exception as e:
-                self._log(f"[table_scroll] {key}: PAGE_DOWN_error={type(e).__name__}: {e}")
+                self._log(
+                    f"[table_scroll] {key}: {'PAGE_DOWN' if direction >= 0 else 'PAGE_UP'}_error={type(e).__name__}: {e}"
+                )
         return False
 
-    def find_virtual_table_row_for_number(self, base_selector, expected_number, key=None, debug=False):
+    def find_virtual_table_row_for_number(self, base_selector, expected_number, key=None, debug=False, direction=1):
         max_scrolls = int(base_selector.get("max_scrolls", 50))
         seen_signatures = set()
         for attempt in range(max_scrolls + 1):
@@ -1999,7 +2053,7 @@ class InvoiceProcessor:
                 self._log(f"[table_virtual] {key}: visible rows unchanged after scroll, stop")
                 break
             seen_signatures.add(signature)
-            if not self.scroll_virtual_table(key, base_selector, rows):
+            if not self.scroll_virtual_table(key, base_selector, rows, direction=direction):
                 self._log(f"[table_virtual] {key}: scroll failed, stop")
                 break
 
@@ -2038,7 +2092,7 @@ class InvoiceProcessor:
             f"candidate_count={len(candidates)}"
         )
 
-    def find_table_row_for_number(self, base_selector, expected_number, key=None, debug=False):
+    def find_table_row_for_number(self, base_selector, expected_number, key=None, debug=False, direction=1):
         expected_offset = expected_number - 1
         by = base_selector.get("by", "xpath")
         value = base_selector.get("value", "").strip()
@@ -2055,7 +2109,13 @@ class InvoiceProcessor:
                 )
             if actual_number == expected_number:
                 return element, value, text
-            return self.find_virtual_table_row_for_number(base_selector, expected_number, key=key, debug=debug)
+            return self.find_virtual_table_row_for_number(
+                base_selector,
+                expected_number,
+                key=key,
+                debug=debug,
+                direction=direction,
+            )
 
         candidates = self.table_xpath_candidates(value, expected_offset)
         if debug:
@@ -2093,7 +2153,13 @@ class InvoiceProcessor:
                         f"[table_debug] {key}: candidate[{index}] error={type(e).__name__}: {e} "
                         f"path={candidate_xpath}"
                     )
-        return self.find_virtual_table_row_for_number(base_selector, expected_number, key=key, debug=debug)
+        return self.find_virtual_table_row_for_number(
+            base_selector,
+            expected_number,
+            key=key,
+            debug=debug,
+            direction=direction,
+        )
 
     def run_table_step(self, key, selector, context=None):
         base_selector = apply_runtime_context(selector, context)
