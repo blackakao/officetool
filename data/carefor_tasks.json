@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "tasks": {
+        "carefor_work": {
+            "label": "케어포 업무",
+            "config_file": "carefor_selectors_work.json",
+            "template_name": "empty",
+            "implemented": true
+        },
+        "get_payexcel": {
+            "label": "납부확인서 다운로드",
+            "config_file": "get_payexcel.json",
+            "template_name": "empty",
+            "implemented": true
+        }
+    },
+    "deleted_task_keys": [
+        "invoice",
+        "long_service"
+    ]
+}

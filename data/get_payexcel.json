@@ -1,0 +1,128 @@
+{
+    "version": 1,
+    "timeouts": {
+        "default": 20,
+        "short": 3,
+        "long": 60,
+        "loading": 120
+    },
+    "browser": {
+        "window_index": -1
+    },
+    "selectors": {
+        "element_001": {
+            "label": "1팝업 닫기",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[7]/section/div[1]/a",
+            "required": true,
+            "action": "click"
+        },
+        "element_002": {
+            "label": "7. 본인부담금 관리",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[3]/div[1]/div[4]/ul/li[7]",
+            "required": true,
+            "action": "click"
+        },
+        "element_003": {
+            "label": "7-2. 본인부담금 입금관리",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[3]/div[1]/div[4]/ul/li[7]/div/div[2]/table/tbody/tr[2]/td/div/ul/li[2]",
+            "required": true,
+            "action": "hover_click"
+        },
+        "element_004": {
+            "label": "<",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[3]/div[2]/div[2]/section/section[1]/section[1]/div/div/span[1]",
+            "required": true,
+            "action": "click"
+        },
+        "repeat_start_005": {
+            "label": "반복지점 시작",
+            "type": "repeat_start",
+            "repeat_mode": "increment",
+            "by": "xpath",
+            "value": "/html/body/div[3]/div[2]/div[2]/section/section[1]/section[1]/g-t/g-f/g-th[1]",
+            "required": true,
+            "action": "element_text"
+        },
+        "table_006": {
+            "label": "입소자 목록 테이블",
+            "type": "table",
+            "repeat_mode": "fixed",
+            "by": "css",
+            "value": "[patient_list_table g-b g-td[data-field=\"index\"]",
+            "required": true,
+            "action": "verify_click_increment",
+            "number_cell_selector": "div[id$='cell_0_0:text']"
+        },
+        "text_assert_007": {
+            "label": "번호검증",
+            "type": "text_assert",
+            "repeat_mode": "fixed",
+            "by": "css",
+            "value": "[patient_list_table g-b g-td[data-field=\"index\"]",
+            "required": true,
+            "action": "equals_repeat_number"
+        },
+        "element_008": {
+            "label": "2025년 장기요양급여비납부확인서 출력",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[3]/div[2]/div[2]/section/section[2]/section/section[2]/section[1]/section[2]/span[2]",
+            "required": true,
+            "action": "click"
+        },
+        "element_009": {
+            "label": "엑셀 저장",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div/div/div[1]/table/tr/td/div/nobr/button[3]",
+            "required": true,
+            "action": "hover_click"
+        },
+        "repeat_end_010": {
+            "label": "반복지점 종료",
+            "type": "repeat_end",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "end"
+        }
+    },
+    "popup_close_selectors": [
+        {
+            "label": "공통 버튼 - 닫기",
+            "by": "xpath",
+            "value": "//button[normalize-space(.)='닫기']"
+        },
+        {
+            "label": "공통 버튼 - 확인",
+            "by": "xpath",
+            "value": "//button[normalize-space(.)='확인']"
+        },
+        {
+            "label": "공통 링크 - 닫기",
+            "by": "xpath",
+            "value": "//a[normalize-space(.)='닫기']"
+        },
+        {
+            "label": "공통 링크 - 확인",
+            "by": "xpath",
+            "value": "//a[normalize-space(.)='확인']"
+        }
+    ],
+    "deleted_selector_keys": []
+}

@@ -59,6 +59,7 @@ REPEAT_MODES = {
 }
 
 PROCESS_TYPES = {
+    "url_navigation": "URL 이동",
     "element": "엘레멘트",
     "table": "테이블",
     "text_assert": "텍스트 검증",
@@ -76,6 +77,7 @@ PROCESS_TYPES = {
 }
 
 PROCESS_ACTIONS = {
+    "url_navigation": {"navigate": "이동"},
     "element": ACTION_TYPES,
     "table": {"verify_click_increment": "증가 검증 후 클릭"},
     "text_assert": {
@@ -373,12 +375,20 @@ class SelectorTableWidget(QTableWidget):
 
 
 class SelectorConfigDialog(QDialog):
-    def __init__(self, parent, config_path: Path, template: dict | None = None, task_label: str = ""):
+    def __init__(
+        self,
+        parent,
+        config_path: Path,
+        template: dict | None = None,
+        task_label: str = "",
+        tool_name: str = "공단툴",
+    ):
         super().__init__(parent)
         self.config_path = config_path
         self.template = template or SELECTOR_TEMPLATE
         self.config = ensure_selector_config(config_path, self.template)
-        self.setWindowTitle(f"공단툴 매크로 설정 - {task_label}" if task_label else "공단툴 매크로 설정")
+        title = f"{tool_name} 매크로 설정"
+        self.setWindowTitle(f"{title} - {task_label}" if task_label else title)
         self.resize(1100, 760)
 
         layout = QVBoxLayout()
@@ -489,7 +499,10 @@ class SelectorConfigDialog(QDialog):
 
         by_combo = QComboBox()
         by_combo.addItems(BY_TYPES.keys())
-        by_combo.setCurrentText(selector.get("by", "xpath"))
+        if selector.get("type") == "url_navigation":
+            by_combo.setCurrentIndex(-1)
+        else:
+            by_combo.setCurrentText(selector.get("by", "xpath"))
         self.table.setCellWidget(row, 2, by_combo)
 
         self.table.setItem(row, 3, QTableWidgetItem(selector.get("value", "")))
@@ -499,6 +512,8 @@ class SelectorConfigDialog(QDialog):
             extra_value = selector.get("number_cell_selector", "div[id$='cell_0_0:text']")
         elif selector.get("type") == "condition_start":
             extra_value = selector.get("expected_value", "")
+        elif selector.get("type") == "url_navigation":
+            extra_value = selector.get("payload", "")
         self.table.setItem(row, 4, QTableWidgetItem(extra_value))
 
         action_combo = QComboBox()
@@ -536,7 +551,7 @@ class SelectorConfigDialog(QDialog):
         if number_cell_item:
             number_cell_item.setFlags(
                 number_cell_item.flags() | Qt.ItemFlag.ItemIsEditable
-                if process_type in {"table", "condition_start"}
+                if process_type in {"table", "condition_start", "url_navigation"}
                 else number_cell_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
 
@@ -554,7 +569,7 @@ class SelectorConfigDialog(QDialog):
             "label": label_item.text().strip() if label_item else "",
             "type": process_type,
             "repeat_mode": action if process_type == "repeat_start" else "fixed",
-            "by": by_combo.currentText() if by_combo else "xpath",
+            "by": "" if process_type == "url_navigation" else (by_combo.currentText() if by_combo else "xpath"),
             "value": value_item.text().strip() if value_item else "",
             "required": True,
             "action": "element_text" if process_type == "repeat_start" else action,
@@ -563,6 +578,8 @@ class SelectorConfigDialog(QDialog):
             selector["number_cell_selector"] = number_cell_selector
         if process_type == "condition_start" and number_cell_selector:
             selector["expected_value"] = number_cell_selector
+        if process_type == "url_navigation":
+            selector["payload"] = number_cell_selector
         return (
             "",
             selector,
@@ -1030,14 +1047,26 @@ class TaskConfigDialog(QDialog):
 
 
 class FederationTool(QWidget):
-    def __init__(self):
+    def __init__(
+        self,
+        tool_name="공단툴",
+        task_config_name="federation_tasks.json",
+        legacy_selector_name="federation_selectors.json",
+        login_thread_class=LongtermLoginThread,
+        login_label="롱텀",
+        log_source="FederationTool",
+    ):
         super().__init__()
 
         root = Path(__file__).resolve().parents[2]
         self.root = root
+        self.tool_name = tool_name
+        self.login_thread_class = login_thread_class
+        self.login_label = login_label
+        self.log_source = log_source
         self.data_file = root / "data" / "branches.json"
-        self.task_config_file = root / "data" / "federation_tasks.json"
-        self.legacy_selector_config_file = root / "data" / "federation_selectors.json"
+        self.task_config_file = root / "data" / task_config_name
+        self.legacy_selector_config_file = root / "data" / legacy_selector_name
         self.deleted_task_keys = set()
         self.task_configs = self._load_task_configs()
         self.selector_config_file = None
@@ -1052,7 +1081,7 @@ class FederationTool(QWidget):
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(self.main_layout)
 
-        top_label = QLabel("공단툴")
+        top_label = QLabel(self.tool_name)
         self.main_layout.addWidget(top_label)
 
         l1_label = QLabel("작업 선택")
@@ -1251,6 +1280,7 @@ class FederationTool(QWidget):
             config_path,
             template=task_config["template"],
             task_label=task_config["label"],
+            tool_name=self.tool_name,
         ).exec()
 
     def select_task(self, task):
@@ -1302,11 +1332,11 @@ class FederationTool(QWidget):
             return
 
         branch_name = branch.get("branch_name", "Unknown")
-        self._log(f"[{branch_name}] 공단툴 지점 버튼 클릭, 롱텀 로그인 시작")
+        self._log(f"[{branch_name}] {self.tool_name} 지점 버튼 클릭, {self.login_label} 로그인 시작")
         selected_task = self.current_task
         selected_config_file = self.selector_config_file
 
-        login_thread = LongtermLoginThread(branch)
+        login_thread = self.login_thread_class(branch)
         login_thread.finished_signal.connect(
             lambda msg, ok, lt=login_thread, task=selected_task, config_file=selected_config_file:
             self._on_longterm_finished(msg, ok, lt, task, config_file)
@@ -1367,7 +1397,7 @@ class FederationTool(QWidget):
     def _log(self, message, level="INFO"):
         if not should_log_message(message):
             return
-        text = log("FederationTool", message, level=level)
+        text = log(self.log_source, message, level=level)
         if hasattr(self, "log_console"):
             self.log_console.append(text)
             scroll_bar = self.log_console.verticalScrollBar()
@@ -2218,6 +2248,15 @@ class InvoiceProcessor:
 
     def run_selector_step(self, key, selector, context=None):
         process_type = selector.get("type", "element")
+        if process_type == "url_navigation":
+            base_url = str(selector.get("value", "")).strip()
+            payload = str(selector.get("payload", ""))
+            if not base_url:
+                raise ValueError(f"URL 이동 주소가 비어 있습니다: {key}")
+            target_url = f"{base_url}?{payload}"
+            self._log(f"[url_navigation] {key}: {target_url}")
+            self.driver.get(target_url)
+            return True
         if process_type == "element":
             return self.click(key, context=context, run_controls=False)
         if process_type == "table":

@@ -388,5 +388,31 @@
             }
         },
         "active": true
+    },
+    {
+        "organization_code": "24163000613",
+        "organization_name": "송추더힐시니어타운 병설 주야간보호센터",
+        "branch_name": "송추주야간",
+        "corporation_name": "개인",
+        "owner_name": "이찬재",
+        "address": "경기도 양주시 장흥면 권율로 512",
+        "active": true,
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": ""
+            }
+        },
+        "login_type": "롱텀",
+        "credentials": {
+            "carefor": {
+                "login_id": "",
+                "login_password": ""
+            },
+            "longterm": {
+                "certificate_name": "송추더힐시니어타운",
+                "certificate_password": "*wkdtnakst1"
+            }
+        }
     }
 ]

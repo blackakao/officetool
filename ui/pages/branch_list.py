@@ -466,6 +466,7 @@ class BranchPage(QWidget):
         
         # 테이블 행 선택 이벤트
         self.table.itemClicked.connect(self.on_row_selected)
+        self.table.cellDoubleClicked.connect(self.on_row_double_clicked)
 
         # =================================================
         # 데이터 로드
@@ -505,6 +506,12 @@ class BranchPage(QWidget):
     def on_row_selected(self):
         """행이 선택되었을 때 호출"""
         self.selected_row = self.table.currentRow()
+
+    def on_row_double_clicked(self, row, _column):
+        """더블 클릭한 행을 선택하고 지점 수정 창을 엽니다."""
+        self.selected_row = row
+        self.table.selectRow(row)
+        self.edit_branch()
 
     def on_login_tool_changed(self, row):
         """로그인툴 콤보 변경 시 로그인 정보 팝업을 엽니다."""
