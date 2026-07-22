@@ -73,6 +73,24 @@ def field_key_from_label(label, existing_keys):
     return key
 
 
+def apply_image_dimensions_to_all_branches(data, source_branch):
+    """수정한 지점의 이미지 규격을 같은 항목의 모든 지점에 적용한다."""
+    source_values = source_branch.get("custom_fields", {})
+    image_dimensions = {
+        key: (value.get("width", 30), value.get("height", 30))
+        for key, value in source_values.items()
+        if isinstance(value, dict) and value.get("type") == "image"
+    }
+
+    for branch in data:
+        custom_values = branch.get("custom_fields", {})
+        for key, (width, height) in image_dimensions.items():
+            value = custom_values.get(key)
+            if isinstance(value, dict) and value.get("type") == "image":
+                value["width"] = width
+                value["height"] = height
+
+
 class AddFieldDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -528,6 +546,7 @@ class BranchPage(QWidget):
 
         updated_data = dialog.get_data()
         data[row] = updated_data
+        apply_image_dimensions_to_all_branches(data, updated_data)
         self._save_data(data)
         self.load_data()
         self.table.selectRow(row)
@@ -599,6 +618,7 @@ class BranchPage(QWidget):
         # 기존 데이터를 보존하고 업데이트된 필드로만 병합
         branch_data.update(updated_data)
         data[self.selected_row] = branch_data
+        apply_image_dimensions_to_all_branches(data, branch_data)
         self._save_data(data)
         self.load_data()
         self.table.selectRow(self.selected_row)

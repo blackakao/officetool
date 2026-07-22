@@ -13,7 +13,7 @@
             "type": "branch_select_2",
             "source_field": "branch_select",
             "branch_value_key": "organization_name",
-            "branch_name": "(구)탄현점"
+            "branch_name": "한마음"
         },
         "계약 시작 연월일": {
             "type": "date",
@@ -78,6 +78,105 @@
         },
         "필드 4": {
             "type": "text"
+        },
+        "인감잼": {
+            "type": "branch_value"
+        },
+        "인감잼2": {
+            "type": "branch_value"
+        },
+        "종사자명": {
+            "type": "text"
+        },
+        "근로시작일": {
+            "type": "date"
+        },
+        "근무장소": {
+            "type": "branch_value"
+        },
+        "직종": {
+            "type": "text"
+        },
+        "업무내용": {
+            "type": "text"
+        },
+        "근무형태": {
+            "type": "text"
+        },
+        "근무시간": {
+            "type": "text"
+        },
+        "휴게시간": {
+            "type": "text"
+        },
+        "근무일": {
+            "type": "text"
+        },
+        "휴일": {
+            "type": "text"
+        },
+        "근무시작일": {
+            "type": "date"
+        },
+        "근무종료일": {
+            "type": "date"
+        },
+        "통상임금 산정시간": {
+            "type": "text"
+        },
+        "기본급 산정시간": {
+            "type": "text"
+        },
+        "기본급 금액": {
+            "type": "text"
+        },
+        "연장수당 산정시간": {
+            "type": "text"
+        },
+        "야간수당 산정시간": {
+            "type": "text"
+        },
+        "야간수당 금액": {
+            "type": "amount"
+        },
+        "휴일수당 산정시간": {
+            "type": "text"
+        },
+        "식비 금액": {
+            "type": "amount"
+        },
+        "임금 합계": {
+            "type": "amount"
+        },
+        "은행명": {
+            "type": "text"
+        },
+        "계좌번호": {
+            "type": "text"
+        },
+        "예금주": {
+            "type": "text"
+        },
+        "insurance_employment": {
+            "type": "text"
+        },
+        "insurance_industrial": {
+            "type": "text"
+        },
+        "insurance_pension": {
+            "type": "text"
+        },
+        "insurance_health": {
+            "type": "text"
+        },
+        "근로계약일": {
+            "type": "date"
+        },
+        "종사자 생년월일": {
+            "type": "date"
+        },
+        "종사자 주소": {
+            "type": "text"
         }
     },
     "documents": {
@@ -100,7 +199,12 @@
                 },
                 "필드 4": {
                     "type": "branch_select",
-                    "branch_name": "분당점"
+                    "branch_name": "운양점"
+                },
+                "image_test": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_법인인감"
                 }
             }
         },
@@ -118,7 +222,7 @@
                 },
                 "위탁급식업체명": {
                     "type": "branch_select_2",
-                    "branch_name": "(구)탄현점"
+                    "branch_name": "한마음"
                 },
                 "계약 시작 연월일": {
                     "type": "date",
@@ -182,6 +286,101 @@
                     "source_field": "branch_select_2",
                     "branch_value_key": "address"
                 },
+                "필드 21": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_법인인감"
+                },
+                "위탁급식업체 대표자": {
+                    "type": "branch_value",
+                    "source_field": "branch_select_2",
+                    "branch_value_key": "owner_name"
+                },
+                "필드 23": {
+                    "type": "branch_value",
+                    "source_field": "branch_select_2",
+                    "branch_value_key": "custom_법인인감"
+                }
+            }
+        },
+        "위탁급식계약서_.docx": {
+            "version": 1,
+            "fields": {
+                "장기요양기관명": {
+                    "type": "branch_select",
+                    "branch_name": "분당점"
+                },
+                "장기요양기관 대표자": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "owner_name"
+                },
+                "위탁급식업체명": {
+                    "type": "branch_select_2",
+                    "branch_name": "한마음"
+                },
+                "계약 시작 연월일": {
+                    "type": "date",
+                    "date_format": "yyyy-MM-dd",
+                    "default_value": "2026-07-22"
+                },
+                "계약종료연월일": {
+                    "type": "date",
+                    "date_format": "yyyy-MM-dd",
+                    "default_value": "2026-07-22"
+                },
+                "식대 한글 금액": {
+                    "type": "text",
+                    "default_value": "구천구백구십원"
+                },
+                "식대 숫자금액 3끼": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "9999"
+                },
+                "식대 단가": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "3333"
+                },
+                "간식비 한글금액": {
+                    "type": "text",
+                    "default_value": "한글금액"
+                },
+                "간식비 단가": {
+                    "type": "text",
+                    "default_value": "4,000"
+                },
+                "요양기관 정원": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "164"
+                },
+                "정원에 따른 기준인력": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "101"
+                },
+                "최소 식수 인원": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "265"
+                },
+                "계약일": {
+                    "type": "date",
+                    "date_format": "yyyy-MM-dd",
+                    "default_value": "2026-07-22"
+                },
+                "장기요양기관 주소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_code"
+                },
+                "위탁급식업체 주소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_code"
+                },
                 "장기요양기관 법인인감": {
                     "type": "branch_value",
                     "source_field": "branch_select",
@@ -189,13 +388,175 @@
                 },
                 "위탁급식업체 대표자": {
                     "type": "branch_value",
-                    "source_field": "branch_select_2",
-                    "branch_value_key": "owner_name"
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_code"
                 },
                 "위탁급식업체 법인인감": {
                     "type": "branch_value",
-                    "source_field": "branch_select_2",
+                    "source_field": "branch_select",
                     "branch_value_key": "organization_code"
+                },
+                "인감잼": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_법인인감"
+                },
+                "인감잼2": {
+                    "type": "branch_value",
+                    "source_field": "branch_select_2",
+                    "branch_value_key": "custom_법인인감"
+                }
+            }
+        },
+        "표준근로계약서.docx": {
+            "version": 1,
+            "fields": {
+                "장기요양기관명": {
+                    "type": "branch_select",
+                    "branch_name": "분당점"
+                },
+                "종사자명": {
+                    "type": "text",
+                    "default_value": "홍길동"
+                },
+                "근로시작일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "default_value": "2026년 07월 22일"
+                },
+                "근무장소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "address"
+                },
+                "직종": {
+                    "type": "text",
+                    "default_value": "요양보호사"
+                },
+                "업무내용": {
+                    "type": "text",
+                    "default_value": "입소자 신체관리, 생활지원"
+                },
+                "근무형태": {
+                    "type": "text",
+                    "default_value": "근무형태"
+                },
+                "근무시간": {
+                    "type": "text",
+                    "default_value": "근무시간"
+                },
+                "휴게시간": {
+                    "type": "text",
+                    "default_value": "휴게시간"
+                },
+                "근무일": {
+                    "type": "text",
+                    "default_value": "근무일"
+                },
+                "휴일": {
+                    "type": "text",
+                    "default_value": "휴일"
+                },
+                "근무시작일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "default_value": "2027년 07월 22일"
+                },
+                "근무종료일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "default_value": "2026년 07월 22일"
+                },
+                "통상임금 산정시간": {
+                    "type": "text",
+                    "default_value": "-"
+                },
+                "기본급 산정시간": {
+                    "type": "text",
+                    "default_value": "-"
+                },
+                "기본급 금액": {
+                    "type": "text",
+                    "default_value": "2,000,000"
+                },
+                "연장수당 산정시간": {
+                    "type": "text",
+                    "default_value": "      시간"
+                },
+                "야간수당 산정시간": {
+                    "type": "text",
+                    "default_value": "      시간"
+                },
+                "야간수당 금액": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "200000"
+                },
+                "휴일수당 산정시간": {
+                    "type": "text",
+                    "default_value": "      시간"
+                },
+                "식비 금액": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "100000"
+                },
+                "임금 합계": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "2300000"
+                },
+                "은행명": {
+                    "type": "text",
+                    "default_value": "시난은행"
+                },
+                "계좌번호": {
+                    "type": "text",
+                    "default_value": "1111-1234-5678"
+                },
+                "예금주": {
+                    "type": "text",
+                    "default_value": "홍길동"
+                },
+                "insurance_employment": {
+                    "type": "text",
+                    "default_value": "■ 적용"
+                },
+                "insurance_industrial": {
+                    "type": "text",
+                    "default_value": "■ 적용"
+                },
+                "insurance_pension": {
+                    "type": "text",
+                    "default_value": "■ 적용"
+                },
+                "insurance_health": {
+                    "type": "text",
+                    "default_value": "■ 적용"
+                },
+                "근로계약일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "default_value": "2026년 07월 22일"
+                },
+                "장기요양기관 주소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "address"
+                },
+                "장기요양기관 대표자": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "owner_name"
+                },
+                "종사자 생년월일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "default_value": "1988년 10월 17일"
+                },
+                "종사자 주소": {
+                    "type": "text",
+                    "default_value": "경기도 고양시 일산서구 어딘가..."
                 }
             }
         }

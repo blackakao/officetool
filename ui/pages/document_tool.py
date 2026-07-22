@@ -9,6 +9,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.shared import Mm
 from docx.text.paragraph import Paragraph
+from docx.text.run import Run
 
 from PySide6.QtCore import QDate, QRegularExpression, QStandardPaths, Qt, QUrl
 from PySide6.QtGui import QDesktopServices, QRegularExpressionValidator
@@ -28,6 +29,29 @@ FIELD_TYPES = {
     "branch_select_2": "지점 목록 2",
     "branch_value": "지점의 값",
 }
+
+TABLE_LIST_TYPE_PREFIX = "table_list:"
+
+
+def table_list_type(table_id):
+    return f"{TABLE_LIST_TYPE_PREFIX}{table_id}"
+
+
+def table_list_id(field_type):
+    if isinstance(field_type, str) and field_type.startswith(TABLE_LIST_TYPE_PREFIX):
+        return field_type[len(TABLE_LIST_TYPE_PREFIX):]
+    return ""
+
+
+def table_list_options(table):
+    options = []
+    for row in table.get("cells", []):
+        if not isinstance(row, list):
+            continue
+        values = [str(value).strip() for value in row]
+        if any(values):
+            options.append(" / ".join(value for value in values if value))
+    return options
 
 BRANCH_SOURCE_TYPES = {
     "branch_select": "지점 목록",
@@ -162,7 +186,7 @@ class DocumentTool(QWidget):
             doc = Document(file_path)
             dialog = ContentControlDialog(self, doc, file_path, mode="generate")
             dialog.exec()
-            log("DocumentTool", f"문서 생성 열기 완료: {file_path.name}", level="INFO")
+            log("DocumentTool", f"문서 생성 창 닫힘: {file_path.name}", level="INFO")
         except Exception as e:
             log("DocumentTool", f"문서 생성 열기 실패: {e}", level="ERROR")
             QMessageBox.critical(self, "오류", f"문서를 열 수 없습니다: {e}")
@@ -180,8 +204,10 @@ class DocumentTool(QWidget):
 
     def _excel_headers(self, file_path):
         settings = self._load_document_settings(file_path)
+        tables = read_json_file(self.document_folder.parent / "data" / "table_lists.json", {}).get("tables", [])
+        table_names = {table_list_type(table.get("id", "")): table.get("name", "테이블 목록") for table in tables}
         return [
-            f"{field_name}({FIELD_TYPES.get(field_setting.get('type', 'text'), '텍스트')})"
+            f"{field_name}({table_names.get(field_setting.get('type'), FIELD_TYPES.get(field_setting.get('type', 'text'), '텍스트'))})"
             for field_name, field_setting in settings.get("fields", {}).items()
         ]
 
@@ -312,6 +338,7 @@ class ContentControlDialog(QDialog):
         self.settings_path = self.root / "data" / "document_field_settings.json"
         self.branches_path = self.root / "data" / "branches.json"
         self.branch_fields_path = self.root / "data" / "branch_fields.json"
+        self.table_lists_path = self.root / "data" / "table_lists.json"
         self.all_settings = read_json_file(self.settings_path, {"version": 1, "fields": {}, "documents": {}})
         self.settings = self.settings_for_file(self.all_settings, file_path)
         self.branches = [
@@ -320,6 +347,7 @@ class ContentControlDialog(QDialog):
             if branch.get("active", True)
         ]
         self.branch_fields = read_json_file(self.branch_fields_path, [])
+        self.table_lists = read_json_file(self.table_lists_path, {"version": 1, "tables": []}).get("tables", [])
         self.controls = {}
         self.field_widgets = {}
         self.generate_widgets = {}
@@ -452,7 +480,7 @@ class ContentControlDialog(QDialog):
         description_label.setStyleSheet("color: gray; font-size: 10px;")
 
         type_combo = QComboBox()
-        for type_key, label in FIELD_TYPES.items():
+        for type_key, label in self._field_type_options():
             type_combo.addItem(label, type_key)
         type_index = type_combo.findData(setting.get("type", "text"))
         type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
@@ -490,7 +518,7 @@ class ContentControlDialog(QDialog):
                 continue
             type_combo = QComboBox()
             field_type = setting.get("type", "text")
-            type_combo.addItem(FIELD_TYPES.get(field_type, "텍스트"), field_type)
+            type_combo.addItem(self._field_type_label(field_type), field_type)
 
             input_container = QWidget()
             input_layout = QHBoxLayout()
@@ -527,7 +555,28 @@ class ContentControlDialog(QDialog):
             if isinstance(value, dict):
                 return value.get("path", "")
             return str(value)
+        if table_list_id(field_type):
+            return setting.get("default_value") or current_text
         return setting.get("default_value") or current_text
+
+    def _field_type_options(self):
+        options = list(FIELD_TYPES.items())
+        options.extend(
+            (table_list_type(table.get("id", "")), str(table.get("name", "테이블 목록")))
+            for table in self.table_lists
+            if table.get("id")
+        )
+        return options
+
+    def _field_type_label(self, field_type):
+        for type_key, label in self._field_type_options():
+            if type_key == field_type:
+                return label
+        return "삭제된 테이블 목록" if table_list_id(field_type) else FIELD_TYPES.get(field_type, "텍스트")
+
+    def _table_list(self, field_type):
+        target_id = table_list_id(field_type)
+        return next((table for table in self.table_lists if table.get("id") == target_id), None)
 
     def _branch_value_from_setting(self, setting):
         source_type = self._source_type_from_setting(setting)
@@ -571,10 +620,12 @@ class ContentControlDialog(QDialog):
             current_type = type_combo.currentData() or widgets["setting"].get("type", "text")
             type_combo.blockSignals(True)
             type_combo.clear()
-            for type_key, label in FIELD_TYPES.items():
+            for type_key, label in self._field_type_options():
                 if type_key in BRANCH_SOURCE_TYPES and type_key in occupied_types and type_key != current_type:
                     continue
                 type_combo.addItem(label, type_key)
+            if table_list_id(current_type) and type_combo.findData(current_type) < 0:
+                type_combo.addItem("삭제된 테이블 목록", current_type)
             type_index = type_combo.findData(current_type)
             type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
             type_combo.blockSignals(False)
@@ -689,6 +740,19 @@ class ContentControlDialog(QDialog):
             widgets["value_key_combo"] = value_combo
             widgets["value_widget"] = preview
             self._update_branch_value_field(field_key)
+            return
+
+        if table_list_id(field_type):
+            value_combo = QComboBox()
+            table = self._table_list(field_type)
+            for value in table_list_options(table or {}):
+                value_combo.addItem(value, value)
+            preferred = setting.get("default_value") or control["current_text"]
+            preferred_index = value_combo.findData(preferred)
+            if preferred_index >= 0:
+                value_combo.setCurrentIndex(preferred_index)
+            layout.addWidget(value_combo)
+            widgets["value_widget"] = value_combo
             return
 
         text_edit = QLineEdit()
@@ -907,6 +971,8 @@ class ContentControlDialog(QDialog):
             value_key = value_key_combo.currentData() if value_key_combo else widgets.get("setting", {}).get("branch_value_key", "organization_code")
             branch = self._selected_branch_from_source_type(source_type)
             return self._branch_value(branch, value_key)
+        if table_list_id(field_type):
+            return value_widget.currentData() or "" if value_widget else ""
         return value_widget.text() if value_widget else ""
 
     def _validate_generation_inputs(self):
@@ -924,6 +990,9 @@ class ContentControlDialog(QDialog):
             elif field_type in {"branch_select", "branch_select_2"}:
                 if not value_widget or value_widget.currentData() is None:
                     errors.append(f"{field_key}: 지점을 선택해 주세요.")
+            elif table_list_id(field_type):
+                if not value_widget or value_widget.currentData() is None:
+                    errors.append(f"{field_key}: 테이블 값을 선택해 주세요.")
         return errors
 
     def _collect_field_settings(self):
@@ -943,6 +1012,8 @@ class ContentControlDialog(QDialog):
             elif field_type == "branch_value":
                 setting["source_field"] = widgets["source_combo"].currentData()
                 setting["branch_value_key"] = widgets["value_key_combo"].currentData()
+            elif table_list_id(field_type):
+                setting["default_value"] = widgets["value_widget"].currentData() or ""
             else:
                 value_widget = widgets.get("value_widget")
                 setting["default_value"] = value_widget.text() if value_widget else ""
@@ -998,7 +1069,7 @@ class ContentControlDialog(QDialog):
                 progress.close()
             if out_pdf is None:
                 return
-            QMessageBox.information(self, '완료', f'PDF 생성 완료:\n{out_pdf}\n\n원본 파일은 변경되지 않았습니다')
+            QMessageBox.information(self, '완료', f'PDF 생성 완료:\n{out_pdf}\n\n')
 
             self.accept()
         except Exception as e:
@@ -1163,10 +1234,19 @@ class ContentControlDialog(QDialog):
         for child in list(sdt_content):
             sdt_content.remove(child)
 
-        paragraph_element = OxmlElement('w:p')
-        sdt_content.append(paragraph_element)
-        paragraph = Paragraph(paragraph_element, doc)
-        run = paragraph.add_run()
+        # 문단 안에 위치한 run-level 콘텐츠 컨트롤에는 w:r만 들어갈 수 있다.
+        # 여기에 w:p를 넣으면 문단 안에 문단이 중첩되어 Word가 DOCX를 손상된
+        # 파일로 판단한다. block-level 컨트롤일 때만 새 문단을 만든다.
+        parent = sdt_content.getparent().getparent()
+        if parent is not None and parent.tag == qn('w:p'):
+            run_element = OxmlElement('w:r')
+            sdt_content.append(run_element)
+            run = Run(run_element, doc)
+        else:
+            paragraph_element = OxmlElement('w:p')
+            sdt_content.append(paragraph_element)
+            paragraph = Paragraph(paragraph_element, doc)
+            run = paragraph.add_run()
         run.add_picture(
             str(image_path),
             width=Mm(int(value.get("width", 30) or 30)),
