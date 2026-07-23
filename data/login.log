@@ -245,3 +245,34 @@
 2026-07-22 17:30:47 [INFO] [DocumentTool] 문서 설정 열기 완료: 위탁급식계약서.docx
 2026-07-22 17:50:07 [INFO] [DocumentTool] 문서 설정 열기 시도: test.docx
 2026-07-22 17:50:11 [INFO] [DocumentTool] 문서 설정 열기 완료: test.docx
+2026-07-23 11:11:34 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=롱텀
+2026-07-23 11:11:45 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-07-23 11:11:45 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-07-23 11:38:36 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=케어포
+2026-07-23 11:38:38 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-07-23 11:42:12 [INFO] [LoginTool] [(구)탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-07-23 11:42:19 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-07-23 11:42:19 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-07-23 11:53:44 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128001825, 타입=롱텀
+2026-07-23 11:53:51 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-07-23 11:53:51 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-07-23 12:57:47 [INFO] [DocumentTool] 문서 설정 열기 시도: test.docx
+2026-07-23 12:57:48 [INFO] [DocumentTool] 문서 설정 열기 완료: test.docx
+2026-07-23 12:57:49 [INFO] [DocumentTool] 문서 생성 열기 시도: test.docx
+2026-07-23 12:57:58 [INFO] [DocumentTool] 문서 생성 창 닫힘: test.docx
+2026-07-23 12:57:59 [INFO] [DocumentTool] 문서 설정 열기 시도: test.docx
+2026-07-23 12:58:01 [INFO] [DocumentTool] 문서 설정 열기 완료: test.docx
+2026-07-23 12:58:01 [INFO] [DocumentTool] 문서 생성 열기 시도: test.docx
+2026-07-23 12:58:02 [INFO] [DocumentTool] 문서 생성 창 닫힘: test.docx
+2026-07-23 12:58:02 [INFO] [DocumentTool] 문서 설정 열기 시도: test.docx
+2026-07-23 12:58:23 [INFO] [DocumentTool] 문서 설정 열기 완료: test.docx
+2026-07-23 12:58:23 [INFO] [DocumentTool] 문서 생성 열기 시도: test.docx
+2026-07-23 12:58:38 [INFO] [DocumentTool] 문서 생성 창 닫힘: test.docx
+2026-07-23 13:06:08 [INFO] [DocumentTool] 문서 설정 열기 시도: 위탁급식계약서.docx
+2026-07-23 13:06:57 [INFO] [DocumentTool] 문서 설정 열기 완료: 위탁급식계약서.docx
+2026-07-23 13:06:58 [INFO] [DocumentTool] 문서 생성 열기 시도: 위탁급식계약서.docx
+2026-07-23 13:07:14 [INFO] [DocumentTool] 문서 생성 시도: 위탁급식계약서.docx
+2026-07-23 13:07:23 [INFO] [DocumentTool] PDF 생성 완료: C:\workspace\MyTool\document\maked\위탁급식계약서(1).pdf
+2026-07-23 13:07:24 [INFO] [DocumentTool] 문서 생성 창 닫힘: 위탁급식계약서.docx
+2026-07-23 13:07:57 [INFO] [DocumentTool] 문서 설정 열기 시도: 위탁급식계약서.docx
+2026-07-23 13:10:59 [INFO] [DocumentTool] 문서 설정 열기 완료: 위탁급식계약서.docx

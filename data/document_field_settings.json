@@ -182,6 +182,10 @@
     "documents": {
         "test.docx": {
             "version": 1,
+            "branches": {
+                "branch_select": "운양점",
+                "branch_select_2": "분당점"
+            },
             "fields": {
                 "숫자만": {
                     "type": "amount",
@@ -198,8 +202,9 @@
                     "default_value": "가나다라"
                 },
                 "필드 4": {
-                    "type": "branch_select",
-                    "branch_name": "운양점"
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "branch_name"
                 },
                 "image_test": {
                     "type": "branch_value",
@@ -210,10 +215,15 @@
         },
         "위탁급식계약서.docx": {
             "version": 1,
+            "branches": {
+                "branch_select": "분당점",
+                "branch_select_2": "한마음"
+            },
             "fields": {
                 "장기요양기관명": {
-                    "type": "branch_select",
-                    "branch_name": "분당점"
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_name"
                 },
                 "장기요양기관 대표자": {
                     "type": "branch_value",
@@ -221,8 +231,9 @@
                     "branch_value_key": "owner_name"
                 },
                 "위탁급식업체명": {
-                    "type": "branch_select_2",
-                    "branch_name": "한마음"
+                    "type": "branch_value",
+                    "source_field": "branch_select_2",
+                    "branch_value_key": "corporation_name"
                 },
                 "계약 시작 연월일": {
                     "type": "date",
@@ -253,8 +264,9 @@
                     "default_value": "한글금액"
                 },
                 "간식비 단가": {
-                    "type": "text",
-                    "default_value": "4,000"
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "4000"
                 },
                 "요양기관 정원": {
                     "type": "amount",
@@ -430,7 +442,8 @@
                     "branch_value_key": "address"
                 },
                 "직종": {
-                    "type": "text",
+                    "type": "table_list",
+                    "table_list_id": "6526677c3def46cd93acdfad54ed637a",
                     "default_value": "요양보호사"
                 },
                 "업무내용": {

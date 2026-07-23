@@ -25,9 +25,8 @@ FIELD_TYPES = {
     "text": "텍스트",
     "date": "날짜",
     "amount": "숫자",
-    "branch_select": "지점 목록",
-    "branch_select_2": "지점 목록 2",
     "branch_value": "지점의 값",
+    "table_list": "테이블 목록",
 }
 
 TABLE_LIST_TYPE_PREFIX = "table_list:"
@@ -48,9 +47,7 @@ def table_list_options(table):
     for row in table.get("cells", []):
         if not isinstance(row, list):
             continue
-        values = [str(value).strip() for value in row]
-        if any(values):
-            options.append(" / ".join(value for value in values if value))
+        options.extend(str(value).strip() for value in row if str(value).strip())
     return options
 
 BRANCH_SOURCE_TYPES = {
@@ -205,9 +202,15 @@ class DocumentTool(QWidget):
     def _excel_headers(self, file_path):
         settings = self._load_document_settings(file_path)
         tables = read_json_file(self.document_folder.parent / "data" / "table_lists.json", {}).get("tables", [])
-        table_names = {table_list_type(table.get("id", "")): table.get("name", "테이블 목록") for table in tables}
+        table_names = {table.get("id", ""): table.get("name", "테이블 목록") for table in tables}
+        def field_type_name(field_setting):
+            field_type = field_setting.get("type", "text")
+            target_id = field_setting.get("table_list_id") or table_list_id(field_type)
+            if field_type == "table_list" or target_id:
+                return table_names.get(target_id, "테이블 목록")
+            return FIELD_TYPES.get(field_type, "텍스트")
         return [
-            f"{field_name}({table_names.get(field_setting.get('type'), FIELD_TYPES.get(field_setting.get('type', 'text'), '텍스트'))})"
+            f"{field_name}({field_type_name(field_setting)})"
             for field_name, field_setting in settings.get("fields", {}).items()
         ]
 
@@ -322,7 +325,11 @@ class ContentControlDialog(QDialog):
         documents = settings.get("documents", {})
         if isinstance(documents, dict) and file_key in documents:
             return documents[file_key]
-        return {"version": 1, "fields": settings.get("fields", {})}
+        return {
+            "version": 1,
+            "branches": settings.get("branches", {}),
+            "fields": settings.get("fields", {}),
+        }
 
     def __init__(self, parent, doc, file_path, mode="settings"):
         super().__init__(parent)
@@ -348,12 +355,28 @@ class ContentControlDialog(QDialog):
         ]
         self.branch_fields = read_json_file(self.branch_fields_path, [])
         self.table_lists = read_json_file(self.table_lists_path, {"version": 1, "tables": []}).get("tables", [])
+        self._migrate_branch_source_settings()
         self.controls = {}
         self.field_widgets = {}
         self.generate_widgets = {}
         self.title_edit = None
+        self.branch_combos = {}
         
         layout = QVBoxLayout()
+
+        branch_title = QLabel("<b>지점 선택</b>")
+        layout.addWidget(branch_title)
+        branch_layout = QFormLayout()
+        for source_type, label in BRANCH_SOURCE_TYPES.items():
+            combo = QComboBox()
+            for branch in self.branches:
+                combo.addItem(self._branch_name(branch), branch)
+            preferred_name = self.settings.get("branches", {}).get(source_type, "")
+            self._select_branch_combo(combo, preferred_name)
+            combo.currentIndexChanged.connect(self._on_global_branch_changed)
+            self.branch_combos[source_type] = combo
+            branch_layout.addRow(label, combo)
+        layout.addLayout(branch_layout)
 
         form_layout = QFormLayout()
         
@@ -372,11 +395,6 @@ class ContentControlDialog(QDialog):
                 form_layout.addRow("저장 제목", self.title_edit)
                 form_layout.addRow("", QLabel(""))
             self._add_generate_rows(form_layout)
-
-        self.branch_summary_label = QLabel()
-        self.branch_summary_label.setStyleSheet("font-weight: bold; color: #333;")
-        self._update_branch_summary()
-        layout.addWidget(self.branch_summary_label)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -404,6 +422,20 @@ class ContentControlDialog(QDialog):
         
         layout.addLayout(button_layout)
         self.setLayout(layout)
+
+    def _migrate_branch_source_settings(self):
+        selected_branches = self.settings.setdefault("branches", {})
+        for setting in self.settings.get("fields", {}).values():
+            field_type = setting.get("type")
+            if field_type not in BRANCH_SOURCE_TYPES:
+                continue
+            if setting.get("branch_name") and not selected_branches.get(field_type):
+                selected_branches[field_type] = setting["branch_name"]
+            setting["type"] = "branch_value"
+            setting["source_field"] = field_type
+            setting["branch_value_key"] = "branch_name"
+            setting.pop("branch_name", None)
+            setting.pop("default_value", None)
 
     def _collect_controls(self, doc):
         controls = {}
@@ -464,6 +496,10 @@ class ContentControlDialog(QDialog):
 
     def _add_field_row(self, form_layout, field_key, control):
         setting = self.settings.setdefault("fields", {}).setdefault(field_key, {"type": "text"})
+        legacy_table_id = table_list_id(setting.get("type", ""))
+        if legacy_table_id:
+            setting["type"] = "table_list"
+            setting.setdefault("table_list_id", legacy_table_id)
 
         display_name = field_key
         if len(control["indices"]) > 1:
@@ -555,27 +591,23 @@ class ContentControlDialog(QDialog):
             if isinstance(value, dict):
                 return value.get("path", "")
             return str(value)
-        if table_list_id(field_type):
+        if field_type == "table_list" or table_list_id(field_type):
             return setting.get("default_value") or current_text
         return setting.get("default_value") or current_text
 
     def _field_type_options(self):
-        options = list(FIELD_TYPES.items())
-        options.extend(
-            (table_list_type(table.get("id", "")), str(table.get("name", "테이블 목록")))
-            for table in self.table_lists
-            if table.get("id")
-        )
-        return options
+        return list(FIELD_TYPES.items())
 
     def _field_type_label(self, field_type):
+        if table_list_id(field_type):
+            return FIELD_TYPES["table_list"]
         for type_key, label in self._field_type_options():
             if type_key == field_type:
                 return label
         return "삭제된 테이블 목록" if table_list_id(field_type) else FIELD_TYPES.get(field_type, "텍스트")
 
-    def _table_list(self, field_type):
-        target_id = table_list_id(field_type)
+    def _table_list(self, field_type="", setting=None):
+        target_id = (setting or {}).get("table_list_id") or table_list_id(field_type)
         return next((table for table in self.table_lists if table.get("id") == target_id), None)
 
     def _branch_value_from_setting(self, setting):
@@ -584,14 +616,7 @@ class ContentControlDialog(QDialog):
         return self._branch_value(branch, setting.get("branch_value_key", "organization_code"))
 
     def _branch_from_source_setting(self, source_type):
-        for field_setting in self.settings.get("fields", {}).values():
-            if field_setting.get("type") != source_type:
-                continue
-            branch_name = field_setting.get("branch_name", "")
-            for branch in self.branches:
-                if self._branch_name(branch) == branch_name:
-                    return branch
-        return None
+        return self._selected_branch_from_source_type(source_type)
 
     def _on_field_type_changed(self, field_key):
         self._rebuild_field_input(field_key)
@@ -618,14 +643,14 @@ class ContentControlDialog(QDialog):
                 continue
             type_combo = widgets["type_combo"]
             current_type = type_combo.currentData() or widgets["setting"].get("type", "text")
+            if table_list_id(current_type):
+                current_type = "table_list"
             type_combo.blockSignals(True)
             type_combo.clear()
             for type_key, label in self._field_type_options():
                 if type_key in BRANCH_SOURCE_TYPES and type_key in occupied_types and type_key != current_type:
                     continue
                 type_combo.addItem(label, type_key)
-            if table_list_id(current_type) and type_combo.findData(current_type) < 0:
-                type_combo.addItem("삭제된 테이블 목록", current_type)
             type_index = type_combo.findData(current_type)
             type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
             type_combo.blockSignals(False)
@@ -648,6 +673,10 @@ class ContentControlDialog(QDialog):
             source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
             source_combo.blockSignals(False)
             self._update_branch_value_field(field_key)
+
+    def _on_global_branch_changed(self, _index=None):
+        self._refresh_branch_value_source_options()
+        self._update_branch_value_fields()
 
     def _clear_layout(self, layout):
         while layout.count():
@@ -742,16 +771,41 @@ class ContentControlDialog(QDialog):
             self._update_branch_value_field(field_key)
             return
 
-        if table_list_id(field_type):
+        if field_type == "table_list" or table_list_id(field_type):
+            legacy_table_id = table_list_id(field_type)
+            if legacy_table_id and not setting.get("table_list_id"):
+                setting["table_list_id"] = legacy_table_id
+            setting["type"] = "table_list"
+
+            table_combo = QComboBox()
+            for table in self.table_lists:
+                if table.get("id"):
+                    table_combo.addItem(str(table.get("name", "테이블 목록")), table.get("id"))
+
             value_combo = QComboBox()
-            table = self._table_list(field_type)
-            for value in table_list_options(table or {}):
-                value_combo.addItem(value, value)
-            preferred = setting.get("default_value") or control["current_text"]
-            preferred_index = value_combo.findData(preferred)
-            if preferred_index >= 0:
-                value_combo.setCurrentIndex(preferred_index)
+            preferred_table_id = setting.get("table_list_id", "")
+            table_index = table_combo.findData(preferred_table_id)
+            if table_index >= 0:
+                table_combo.setCurrentIndex(table_index)
+
+            def populate_values():
+                preferred = setting.get("default_value") or control["current_text"]
+                value_combo.clear()
+                table = next(
+                    (item for item in self.table_lists if item.get("id") == table_combo.currentData()),
+                    None,
+                )
+                for value in table_list_options(table or {}):
+                    value_combo.addItem(value, value)
+                preferred_index = value_combo.findData(preferred)
+                if preferred_index >= 0:
+                    value_combo.setCurrentIndex(preferred_index)
+
+            populate_values()
+            table_combo.currentIndexChanged.connect(lambda _: populate_values())
+            layout.addWidget(table_combo)
             layout.addWidget(value_combo)
+            widgets["table_combo"] = table_combo
             widgets["value_widget"] = value_combo
             return
 
@@ -894,15 +948,8 @@ class ContentControlDialog(QDialog):
         self.branch_summary_label.setText(" | ".join(parts) if parts else "선택된 지점 없음")
 
     def _branch_source_options(self, current_field_key=None):
-        source_types = {
-            widgets["type_combo"].currentData()
-            for key, widgets in self.field_widgets.items()
-            if key != current_field_key and widgets["type_combo"].currentData() in BRANCH_SOURCE_TYPES
-        }
         options = []
         for source_type, label in BRANCH_SOURCE_TYPES.items():
-            if source_type not in source_types:
-                continue
             branch = self._selected_branch_from_source_type(source_type)
             branch_name = self._branch_name(branch)
             option_label = f"{branch_name} ({label})" if branch_name else label
@@ -919,13 +966,8 @@ class ContentControlDialog(QDialog):
         return "branch_select"
 
     def _selected_branch_from_source_type(self, source_type):
-        for widgets in self.field_widgets.values():
-            if widgets["type_combo"].currentData() != source_type:
-                continue
-            value_widget = widgets.get("value_widget")
-            if isinstance(value_widget, QComboBox):
-                return value_widget.currentData()
-        return None
+        combo = self.branch_combos.get(source_type)
+        return combo.currentData() if combo else None
 
     def _update_branch_value_fields(self):
         for field_key, widgets in self.field_widgets.items():
@@ -971,7 +1013,7 @@ class ContentControlDialog(QDialog):
             value_key = value_key_combo.currentData() if value_key_combo else widgets.get("setting", {}).get("branch_value_key", "organization_code")
             branch = self._selected_branch_from_source_type(source_type)
             return self._branch_value(branch, value_key)
-        if table_list_id(field_type):
+        if field_type == "table_list" or table_list_id(field_type):
             return value_widget.currentData() or "" if value_widget else ""
         return value_widget.text() if value_widget else ""
 
@@ -990,7 +1032,7 @@ class ContentControlDialog(QDialog):
             elif field_type in {"branch_select", "branch_select_2"}:
                 if not value_widget or value_widget.currentData() is None:
                     errors.append(f"{field_key}: 지점을 선택해 주세요.")
-            elif table_list_id(field_type):
+            elif field_type == "table_list" or table_list_id(field_type):
                 if not value_widget or value_widget.currentData() is None:
                     errors.append(f"{field_key}: 테이블 값을 선택해 주세요.")
         return errors
@@ -1012,13 +1054,22 @@ class ContentControlDialog(QDialog):
             elif field_type == "branch_value":
                 setting["source_field"] = widgets["source_combo"].currentData()
                 setting["branch_value_key"] = widgets["value_key_combo"].currentData()
-            elif table_list_id(field_type):
+            elif field_type == "table_list" or table_list_id(field_type):
+                setting["type"] = "table_list"
+                setting["table_list_id"] = widgets["table_combo"].currentData() or ""
                 setting["default_value"] = widgets["value_widget"].currentData() or ""
             else:
                 value_widget = widgets.get("value_widget")
                 setting["default_value"] = value_widget.text() if value_widget else ""
             fields[field_key] = setting
-        return {"version": 1, "fields": fields}
+        return {
+            "version": 1,
+            "branches": {
+                source_type: self._branch_name(combo.currentData())
+                for source_type, combo in self.branch_combos.items()
+            },
+            "fields": fields,
+        }
 
     def save_field_settings(self):
         self.settings = self._collect_field_settings()

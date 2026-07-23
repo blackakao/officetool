@@ -4,6 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
@@ -33,22 +34,92 @@ def normalize_table_data(data):
     }
 
 
-def table_dimensions(table):
-    cells = table.get("cells", [])
-    row_count = len(cells)
-    column_count = max((len(row) for row in cells if isinstance(row, list)), default=0)
-    return row_count, column_count
-
-
-def table_row_options(table):
-    options = []
+def table_values(table):
+    """Return table storage as a one-dimensional list of cell values."""
+    values = []
     for row in table.get("cells", []):
-        if not isinstance(row, list):
-            continue
-        values = [str(value).strip() for value in row]
-        if any(values):
-            options.append(" / ".join(value for value in values if value))
-    return options
+        if isinstance(row, list):
+            values.extend(str(value) for value in row)
+    return values
+
+
+def table_item_count(table):
+    return len(table_values(table))
+
+
+def reordered_values(values, source_row, insertion_row):
+    values = list(values)
+    if source_row < 0 or source_row >= len(values):
+        return values, source_row
+    insertion_row = max(0, min(insertion_row, len(values)))
+    value = values.pop(source_row)
+    if insertion_row > source_row:
+        insertion_row -= 1
+    values.insert(insertion_row, value)
+    return values, insertion_row
+
+
+class ReorderableTableWidget(QTableWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._drag_row = -1
+        self._drag_start = None
+        self._dragging = False
+
+    def _values(self):
+        return [
+            self.item(row, 0).text() if self.item(row, 0) else ""
+            for row in range(self.rowCount())
+        ]
+
+    def _replace_values(self, values, selected_row):
+        self.setRowCount(0)
+        for value in values:
+            row = self.rowCount()
+            self.insertRow(row)
+            self.setItem(row, 0, QTableWidgetItem(value))
+        if 0 <= selected_row < self.rowCount():
+            self.selectRow(selected_row)
+
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+        if event.button() == Qt.LeftButton:
+            self._drag_row = self.indexAt(event.position().toPoint()).row()
+            self._drag_start = event.position().toPoint()
+            self._dragging = False
+
+    def mouseMoveEvent(self, event):
+        if self._drag_row < 0 or self._drag_start is None or not (event.buttons() & Qt.LeftButton):
+            super().mouseMoveEvent(event)
+            return
+        if not self._dragging:
+            distance = (event.position().toPoint() - self._drag_start).manhattanLength()
+            if distance < QApplication.startDragDistance():
+                super().mouseMoveEvent(event)
+                return
+            self._dragging = True
+
+        target_row = self.indexAt(event.position().toPoint()).row()
+        if target_row < 0:
+            target_row = self.rowCount() - 1 if event.position().y() > 0 else 0
+        if target_row == self._drag_row:
+            return
+
+        values = self._values()
+        moved_value = values.pop(self._drag_row)
+        values.insert(target_row, moved_value)
+        self._replace_values(values, target_row)
+        self._drag_row = target_row
+
+    def mouseReleaseEvent(self, event):
+        was_dragging = self._dragging
+        self._drag_row = -1
+        self._drag_start = None
+        self._dragging = False
+        if was_dragging:
+            event.accept()
+            return
+        super().mouseReleaseEvent(event)
 
 
 class TableEditorDialog(QDialog):
@@ -62,27 +133,24 @@ class TableEditorDialog(QDialog):
         name_layout = QFormLayout()
         name_layout.addRow("테이블명", self.name_edit)
 
-        self.table = QTableWidget()
-        self.table.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectItems)
+        self.table = ReorderableTableWidget()
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setColumnCount(1)
+        self.table.setHorizontalHeaderLabels(["값"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.horizontalHeader().sectionClicked.connect(self.table.selectColumn)
-        self.table.verticalHeader().sectionClicked.connect(self.table.selectRow)
         self._load_cells(self.table_data.get("cells", [[""]]))
 
         add_row_button = QPushButton("줄추가")
-        add_column_button = QPushButton("칸추가")
-        delete_button = QPushButton("삭제")
+        delete_button = QPushButton("선택 줄 삭제")
         add_row_button.clicked.connect(self._add_row)
-        add_column_button.clicked.connect(self._add_column)
         delete_button.clicked.connect(self._delete_selected)
 
         tools = QHBoxLayout()
         tools.addWidget(add_row_button)
-        tools.addWidget(add_column_button)
         tools.addWidget(delete_button)
         tools.addStretch()
-        tools.addWidget(QLabel("행/열 헤더를 클릭하면 전체를 선택할 수 있습니다."))
+        tools.addWidget(QLabel("줄을 드래그하면 순서를 바꿀 수 있습니다."))
 
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self._accept_if_valid)
@@ -95,50 +163,21 @@ class TableEditorDialog(QDialog):
         layout.addWidget(buttons)
 
     def _load_cells(self, cells):
-        rows = [row for row in cells if isinstance(row, list)] or [[""]]
-        columns = max((len(row) for row in rows), default=1) or 1
-        self.table.setRowCount(len(rows))
-        self.table.setColumnCount(columns)
-        for row_index, row in enumerate(rows):
-            for column_index in range(columns):
-                value = row[column_index] if column_index < len(row) else ""
-                self.table.setItem(row_index, column_index, QTableWidgetItem(str(value)))
+        values = table_values({"cells": cells}) or [""]
+        self.table.setRowCount(len(values))
+        for row_index, value in enumerate(values):
+            self.table.setItem(row_index, 0, QTableWidgetItem(value))
 
     def _add_row(self):
         self.table.insertRow(self.table.rowCount())
 
-    def _add_column(self):
-        self.table.insertColumn(self.table.columnCount())
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
     def _delete_selected(self):
         selected_rows = sorted({index.row() for index in self.table.selectedIndexes()}, reverse=True)
-        selected_columns = sorted({index.column() for index in self.table.selectedIndexes()}, reverse=True)
-        all_columns = self.table.columnCount() > 0 and all(
-            self.table.item(row, column) is None or self.table.item(row, column).isSelected()
-            for row in range(self.table.rowCount())
-            for column in selected_columns
-        )
-        all_rows = self.table.rowCount() > 0 and all(
-            self.table.item(row, column) is None or self.table.item(row, column).isSelected()
-            for row in selected_rows
-            for column in range(self.table.columnCount())
-        )
-
-        if all_columns and selected_columns:
-            for column in selected_columns:
-                self.table.removeColumn(column)
-        elif all_rows and selected_rows:
-            for row in selected_rows:
-                self.table.removeRow(row)
-        else:
-            for item in self.table.selectedItems():
-                item.setText("")
+        for row in selected_rows:
+            self.table.removeRow(row)
 
         if self.table.rowCount() == 0:
             self.table.insertRow(0)
-        if self.table.columnCount() == 0:
-            self.table.insertColumn(0)
 
     def _accept_if_valid(self):
         if not self.name_edit.text().strip():
@@ -149,10 +188,8 @@ class TableEditorDialog(QDialog):
     def get_data(self):
         cells = []
         for row in range(self.table.rowCount()):
-            cells.append([
-                self.table.item(row, column).text().strip() if self.table.item(row, column) else ""
-                for column in range(self.table.columnCount())
-            ])
+            item = self.table.item(row, 0)
+            cells.append([item.text().strip() if item else ""])
         return {
             "id": self.table_data.get("id") or uuid.uuid4().hex,
             "name": self.name_edit.text().strip(),
@@ -176,7 +213,7 @@ class TableListPage(QWidget):
         tools.addStretch()
 
         self.table = QTableWidget(0, 2)
-        self.table.setHorizontalHeaderLabels(["테이블명", "컬럼수"])
+        self.table.setHorizontalHeaderLabels(["테이블명", "개수"])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -199,9 +236,8 @@ class TableListPage(QWidget):
         tables = self._load()["tables"]
         self.table.setRowCount(len(tables))
         for row, table in enumerate(tables):
-            rows, columns = table_dimensions(table)
             name_item = QTableWidgetItem(str(table.get("name", "")))
-            size_item = QTableWidgetItem(f"{rows} X {columns}")
+            size_item = QTableWidgetItem(str(table_item_count(table)))
             name_item.setData(Qt.UserRole, table.get("id"))
             self.table.setItem(row, 0, name_item)
             self.table.setItem(row, 1, size_item)
