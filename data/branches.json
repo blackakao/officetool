@@ -452,7 +452,7 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\5f6fc4996add4d55b3097c4afb20bd30.png",
                 "width": 20,
                 "height": 20
             }
@@ -723,11 +723,11 @@
                 "height": 20
             }
         },
-        "login_type": "롱텀",
+        "login_type": "케어포",
         "credentials": {
             "carefor": {
-                "login_id": "",
-                "login_password": ""
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
             },
             "longterm": {
                 "certificate_name": "송추더힐시니어타운",
@@ -811,6 +811,52 @@
             "custom_기관직인": {
                 "type": "image",
                 "path": "",
+                "width": 20,
+                "height": 20
+            }
+        },
+        "login_type": "케어포",
+        "credentials": {
+            "carefor": {
+                "login_id": "",
+                "login_password": ""
+            },
+            "longterm": {
+                "certificate_name": "",
+                "certificate_password": ""
+            }
+        }
+    },
+    {
+        "organization_code": "",
+        "organization_name": "일산시니어타운 요양원",
+        "branch_name": "본점3관",
+        "corporation_name": "주식회사 삼성케어",
+        "owner_name": "박은경",
+        "address": "경기도 고양시 일산동구 공릉천로 300-20(지영동)",
+        "active": true,
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": "070-4131-6868"
+            },
+            "custom_사업자등록번호": {
+                "type": "text",
+                "value": "611-86-03567"
+            },
+            "custom_법인등록번호": {
+                "type": "text",
+                "value": "280211-0029488"
+            },
+            "custom_법인인감": {
+                "type": "image",
+                "path": "",
+                "width": 15,
+                "height": 15
+            },
+            "custom_기관직인": {
+                "type": "image",
+                "path": "data\\branch_images\\402180677e244e02aaab0c4ec6572495.png",
                 "width": 20,
                 "height": 20
             }

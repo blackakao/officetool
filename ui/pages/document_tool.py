@@ -27,7 +27,10 @@ FIELD_TYPES = {
     "amount": "숫자",
     "branch_value": "지점의 값",
     "table_list": "테이블 목록",
+    "folder": "폴더의 이미지",
 }
+
+IMAGE_EXTENSIONS = {".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 
 TABLE_LIST_TYPE_PREFIX = "table_list:"
 
@@ -98,7 +101,9 @@ class DocumentTool(QWidget):
     def __init__(self):
         super().__init__()
         
-        self.document_folder = Path(__file__).resolve().parents[2] / "document"
+        self.document_folder = Path(__file__).resolve().parents[2] / getattr(self, "document_folder_name", "document")
+        self.document_pattern = getattr(self, "document_pattern", "*.docx")
+        self.tool_title = getattr(self, "tool_title", "문서 작성 도구(워드)")
         self.document_folder.mkdir(exist_ok=True)
         
         layout = QVBoxLayout()
@@ -106,7 +111,7 @@ class DocumentTool(QWidget):
         layout.setSpacing(10)
         
         title_layout = QHBoxLayout()
-        title = QLabel("문서 작성 도구")
+        title = QLabel(self.tool_title)
         title.setStyleSheet("font-weight: bold; font-size: 14px;")
         open_folder_button = QPushButton("폴더 열기")
         open_folder_button.clicked.connect(self.open_document_folder)
@@ -128,13 +133,13 @@ class DocumentTool(QWidget):
         self.load_documents()
     
     def load_documents(self):
-        """document 폴더의 .docx 파일 로드"""
+        """문서 폴더에서 이 도구가 지원하는 파일을 로드한다."""
         self.table.setRowCount(0)
         
         if not self.document_folder.exists():
             return
         
-        docx_files = list(self.document_folder.glob("*.docx"))
+        docx_files = list(self.document_folder.glob(self.document_pattern))
         self.table.setRowCount(len(docx_files))
         
         for row, file_path in enumerate(docx_files):
@@ -167,8 +172,7 @@ class DocumentTool(QWidget):
         """문서 설정 팝업 열기"""
         log("DocumentTool", f"문서 설정 열기 시도: {file_path.name}", level="INFO")
         try:
-            doc = Document(file_path)
-            dialog = ContentControlDialog(self, doc, file_path, mode="settings")
+            dialog = self._create_dialog(file_path, mode="settings")
             dialog.exec()
             self.load_documents()
             log("DocumentTool", f"문서 설정 열기 완료: {file_path.name}", level="INFO")
@@ -180,8 +184,7 @@ class DocumentTool(QWidget):
         """문서 생성 팝업 열기"""
         log("DocumentTool", f"문서 생성 열기 시도: {file_path.name}", level="INFO")
         try:
-            doc = Document(file_path)
-            dialog = ContentControlDialog(self, doc, file_path, mode="generate")
+            dialog = self._create_dialog(file_path, mode="generate")
             dialog.exec()
             log("DocumentTool", f"문서 생성 창 닫힘: {file_path.name}", level="INFO")
         except Exception as e:
@@ -189,7 +192,12 @@ class DocumentTool(QWidget):
             QMessageBox.critical(self, "오류", f"문서를 열 수 없습니다: {e}")
 
     def _settings_path(self):
-        return Path(__file__).resolve().parents[2] / "data" / "document_field_settings.json"
+        filename = getattr(self, "settings_filename", "document_field_settings.json")
+        return Path(__file__).resolve().parents[2] / "data" / filename
+
+    def _create_dialog(self, file_path, mode):
+        doc = Document(file_path)
+        return ContentControlDialog(self, doc, file_path, mode=mode)
 
     def _load_document_settings(self, file_path):
         settings = read_json_file(self._settings_path(), {"version": 1, "fields": {}, "documents": {}})
@@ -197,7 +205,15 @@ class DocumentTool(QWidget):
 
     def _configured_field_names(self, file_path):
         settings = self._load_document_settings(file_path)
-        return list(settings.get("fields", {}).keys())
+        return [
+            field_name
+            for field_name, field_setting in settings.get("fields", {}).items()
+            if field_setting.get("type") != "folder"
+            and not (
+                field_setting.get("type") == "date"
+                and field_setting.get("date_default_type") == "field_calculation"
+            )
+        ]
 
     def _excel_headers(self, file_path):
         settings = self._load_document_settings(file_path)
@@ -212,12 +228,30 @@ class DocumentTool(QWidget):
         return [
             f"{field_name}({field_type_name(field_setting)})"
             for field_name, field_setting in settings.get("fields", {}).items()
+            if field_setting.get("type") != "folder"
+            and not (
+                field_setting.get("type") == "date"
+                and field_setting.get("date_default_type") == "field_calculation"
+            )
         ]
 
     def _document_control_names(self, file_path):
-        doc = Document(file_path)
-        dialog = ContentControlDialog(self, doc, file_path, mode="batch")
+        dialog = self._create_dialog(file_path, mode="batch")
         return list(dialog.controls.keys())
+
+    def _excel_sample_values(self, file_path):
+        field_names = self._configured_field_names(file_path)
+        dialog = self._create_dialog(file_path, mode="batch")
+        sample_values = []
+        for field_name in field_names:
+            if field_name not in dialog.generate_widgets:
+                sample_values.append("")
+                continue
+            value = dialog._field_value(field_name)
+            if isinstance(value, dict):
+                value = value.get("path", "")
+            sample_values.append(value)
+        return sample_values
 
     def download_excel_template(self, file_path):
         openpyxl = import_openpyxl()
@@ -252,6 +286,7 @@ class DocumentTool(QWidget):
         ws = wb.active
         ws.title = "문서생성"
         ws.append(excel_headers)
+        ws.append(self._excel_sample_values(file_path))
         for column_index, header in enumerate(excel_headers, 1):
             ws.column_dimensions[openpyxl.utils.get_column_letter(column_index)].width = max(14, len(header) + 4)
         wb.save(save_path)
@@ -303,8 +338,7 @@ class DocumentTool(QWidget):
                 QMessageBox.warning(self, "데이터 없음", "생성할 데이터 행이 없습니다.")
                 return
 
-            doc = Document(file_path)
-            dialog = ContentControlDialog(self, doc, file_path, mode="batch")
+            dialog = self._create_dialog(file_path, mode="batch")
             outputs = dialog.create_documents_from_rows(rows)
             QMessageBox.information(self, "완료", f"{len(outputs)}개 문서를 생성했습니다.")
         except Exception as e:
@@ -336,13 +370,17 @@ class ContentControlDialog(QDialog):
         self.mode = mode
         title_action = "설정" if mode == "settings" else "생성"
         self.setWindowTitle(f"{file_path.stem} {title_action}")
-        self.setMinimumWidth(900)
+        self.setMinimumWidth(760)
         self.setMinimumHeight(600)
         
         self.doc = doc
         self.file_path = file_path
         self.root = Path(__file__).resolve().parents[2]
-        self.settings_path = self.root / "data" / "document_field_settings.json"
+        self.settings_path = self.root / "data" / getattr(
+            self,
+            "settings_filename",
+            "document_field_settings.json",
+        )
         self.branches_path = self.root / "data" / "branches.json"
         self.branch_fields_path = self.root / "data" / "branch_fields.json"
         self.table_lists_path = self.root / "data" / "table_lists.json"
@@ -369,6 +407,7 @@ class ContentControlDialog(QDialog):
         branch_layout = QFormLayout()
         for source_type, label in BRANCH_SOURCE_TYPES.items():
             combo = QComboBox()
+            combo.setMaximumWidth(240)
             for branch in self.branches:
                 combo.addItem(self._branch_name(branch), branch)
             preferred_name = self.settings.get("branches", {}).get(source_type, "")
@@ -379,6 +418,7 @@ class ContentControlDialog(QDialog):
         layout.addLayout(branch_layout)
 
         form_layout = QFormLayout()
+        form_layout.setRowWrapPolicy(QFormLayout.WrapLongRows)
         
         collected_controls = self._collect_controls(doc)
         for field_key, control in collected_controls.items():
@@ -395,9 +435,11 @@ class ContentControlDialog(QDialog):
                 form_layout.addRow("저장 제목", self.title_edit)
                 form_layout.addRow("", QLabel(""))
             self._add_generate_rows(form_layout)
+        self._update_calculated_date_fields()
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         container = QWidget()
         container.setLayout(form_layout)
         scroll.setWidget(container)
@@ -514,8 +556,10 @@ class ContentControlDialog(QDialog):
             description_texts.append(f"설명: {control['placeholder']}")
         description_label = QLabel(" | ".join(description_texts))
         description_label.setStyleSheet("color: gray; font-size: 10px;")
+        description_label.setWordWrap(True)
 
         type_combo = QComboBox()
+        type_combo.setMaximumWidth(220)
         for type_key, label in self._field_type_options():
             type_combo.addItem(label, type_key)
         type_index = type_combo.findData(setting.get("type", "text"))
@@ -574,6 +618,7 @@ class ContentControlDialog(QDialog):
         self._refresh_branch_combo_options()
         self._update_branch_value_fields()
         self._update_branch_summary()
+        self._update_calculated_date_fields()
 
     def _default_value_for_generation(self, field_key, setting):
         field_type = setting.get("type", "text")
@@ -581,7 +626,9 @@ class ContentControlDialog(QDialog):
         current_text = control.get("current_text", "")
 
         if field_type == "date":
-            return setting.get("default_value") or current_text
+            if setting.get("date_default_type", "today") == "field_calculation":
+                return ""
+            return QDate.currentDate().toString(setting.get("date_format", "yyyy-MM-dd"))
         if field_type == "amount":
             return setting.get("default_value") or ''.join(ch for ch in current_text if ch.isdigit())
         if field_type in {"branch_select", "branch_select_2"}:
@@ -593,6 +640,8 @@ class ContentControlDialog(QDialog):
             return str(value)
         if field_type == "table_list" or table_list_id(field_type):
             return setting.get("default_value") or current_text
+        if field_type == "folder":
+            return setting.get("folder_path", "")
         return setting.get("default_value") or current_text
 
     def _field_type_options(self):
@@ -699,24 +748,103 @@ class ContentControlDialog(QDialog):
             date_edit = QDateEdit()
             date_edit.setCalendarPopup(True)
             date_edit.setDisplayFormat("yyyy-MM-dd")
-            date_edit.setDate(self._parse_date(setting.get("default_value") or control["current_text"]))
+            date_default_type = setting.get("date_default_type", "today")
+            if date_default_type == "field_calculation":
+                date_edit.setDate(QDate.currentDate())
+            else:
+                date_edit.setDate(QDate.currentDate())
 
             format_combo = QComboBox()
+            format_combo.setMaximumWidth(170)
             for value, label in DATE_FORMATS.items():
                 format_combo.addItem(label, value)
             format_combo.setCurrentText(setting.get("date_format", "yyyy-MM-dd"))
             index = format_combo.findData(setting.get("date_format", "yyyy-MM-dd"))
             format_combo.setCurrentIndex(index if index >= 0 else 0)
 
-            layout.addWidget(date_edit)
             if self.mode == "settings":
-                layout.addWidget(format_combo)
+                default_type_combo = QComboBox()
+                default_type_combo.setMaximumWidth(150)
+                default_type_combo.addItem("오늘", "today")
+                default_type_combo.addItem("특정 필드 계산", "field_calculation")
+                type_index = default_type_combo.findData(date_default_type)
+                default_type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
+
+                source_combo = QComboBox()
+                source_combo.setMaximumWidth(200)
+                for source_key, source_setting in self.settings.get("fields", {}).items():
+                    if source_key != field_key and source_setting.get("type") == "date":
+                        source_combo.addItem(source_key, source_key)
+                source_index = source_combo.findData(setting.get("source_date_field", ""))
+                source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
+
+                sign_combo = QComboBox()
+                sign_combo.addItem("+", 1)
+                sign_combo.addItem("-", -1)
+                sign_index = sign_combo.findData(int(setting.get("date_offset_sign", 1) or 1))
+                sign_combo.setCurrentIndex(sign_index if sign_index >= 0 else 0)
+
+                days_edit = QLineEdit(str(setting.get("date_offset_days", 0) or 0))
+                days_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d{0,5}")))
+                days_edit.setMaximumWidth(65)
+
+                date_options = QWidget()
+                date_options_layout = QVBoxLayout()
+                date_options_layout.setContentsMargins(0, 0, 0, 0)
+                first_row = QHBoxLayout()
+                first_row.addWidget(QLabel("날짜"))
+                first_row.addWidget(date_edit)
+                first_row.addWidget(QLabel("표시 형식"))
+                first_row.addWidget(format_combo)
+                first_row.addWidget(QLabel("기준"))
+                first_row.addWidget(default_type_combo)
+                first_row.addStretch()
+                calculation_row = QHBoxLayout()
+                calculation_label = QLabel("계산")
+                calculation_row.addWidget(calculation_label)
+                calculation_row.addWidget(source_combo)
+                calculation_row.addWidget(sign_combo)
+                calculation_row.addWidget(days_edit)
+                days_label = QLabel("일")
+                calculation_row.addWidget(days_label)
+                calculation_row.addStretch()
+                date_options_layout.addLayout(first_row)
+                date_options_layout.addLayout(calculation_row)
+                date_options.setLayout(date_options_layout)
+                layout.addWidget(date_options)
+
+                def update_calculation_controls():
+                    calculated = default_type_combo.currentData() == "field_calculation"
+                    date_edit.setReadOnly(calculated)
+                    source_combo.setVisible(calculated)
+                    sign_combo.setVisible(calculated)
+                    days_edit.setVisible(calculated)
+                    calculation_label.setVisible(calculated)
+                    days_label.setVisible(calculated)
+
+                default_type_combo.currentIndexChanged.connect(lambda _: update_calculation_controls())
+                default_type_combo.currentIndexChanged.connect(lambda _: self._update_calculated_date_fields())
+                source_combo.currentIndexChanged.connect(lambda _: self._update_calculated_date_fields())
+                sign_combo.currentIndexChanged.connect(lambda _: self._update_calculated_date_fields())
+                days_edit.textChanged.connect(lambda _: self._update_calculated_date_fields())
+                update_calculation_controls()
+                widgets["date_default_type_combo"] = default_type_combo
+                widgets["source_date_combo"] = source_combo
+                widgets["date_offset_sign_combo"] = sign_combo
+                widgets["date_offset_days_edit"] = days_edit
+            elif date_default_type == "field_calculation":
+                date_edit.setReadOnly(True)
+                layout.addWidget(date_edit)
+            else:
+                layout.addWidget(date_edit)
             widgets["value_widget"] = date_edit
             widgets["format_combo"] = format_combo
+            date_edit.dateChanged.connect(lambda _: self._update_calculated_date_fields())
             return
 
         if field_type == "amount":
             amount_edit = QLineEdit()
+            amount_edit.setMaximumWidth(220)
             amount_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d*")))
             amount_edit.setText(''.join(ch for ch in str(setting.get("default_value") or control["current_text"]) if ch.isdigit()))
             comma_check = QCheckBox("1000단위 쉼표")
@@ -730,6 +858,7 @@ class ContentControlDialog(QDialog):
 
         if field_type in {"branch_select", "branch_select_2"}:
             branch_combo = QComboBox()
+            branch_combo.setMaximumWidth(240)
             self._populate_branch_combo(field_key, branch_combo, setting.get("branch_name") or control["current_text"])
             branch_combo.currentIndexChanged.connect(lambda _, key=field_key: self._on_branch_selection_changed(key))
             layout.addWidget(branch_combo)
@@ -746,12 +875,14 @@ class ContentControlDialog(QDialog):
                 return
 
             source_combo = QComboBox()
+            source_combo.setMaximumWidth(180)
             for source_type, label in self._branch_source_options(field_key):
                 source_combo.addItem(label, source_type)
             source_index = source_combo.findData(self._source_type_from_setting(setting))
             source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
 
             value_combo = QComboBox()
+            value_combo.setMaximumWidth(220)
             for value_key, label in self._branch_value_field_options().items():
                 value_combo.addItem(label, value_key)
             value_index = value_combo.findData(setting.get("branch_value_key", "organization_code"))
@@ -778,11 +909,13 @@ class ContentControlDialog(QDialog):
             setting["type"] = "table_list"
 
             table_combo = QComboBox()
+            table_combo.setMaximumWidth(220)
             for table in self.table_lists:
                 if table.get("id"):
                     table_combo.addItem(str(table.get("name", "테이블 목록")), table.get("id"))
 
             value_combo = QComboBox()
+            value_combo.setMaximumWidth(260)
             preferred_table_id = setting.get("table_list_id", "")
             table_index = table_combo.findData(preferred_table_id)
             if table_index >= 0:
@@ -809,6 +942,71 @@ class ContentControlDialog(QDialog):
             widgets["value_widget"] = value_combo
             return
 
+        if field_type == "folder":
+            folder_edit = QLineEdit(setting.get("folder_path", ""))
+            folder_edit.setReadOnly(True)
+
+            if self.mode == "settings":
+                select_button = QPushButton("폴더 선택")
+
+                def select_folder():
+                    selected = QFileDialog.getExistingDirectory(
+                        self,
+                        "이미지 폴더 선택",
+                        folder_edit.text() or str(self.root),
+                    )
+                    if selected:
+                        folder_edit.setText(selected)
+
+                select_button.clicked.connect(select_folder)
+                source_combo = QComboBox()
+                source_combo.setMaximumWidth(220)
+                for source_key in self.controls:
+                    if source_key != field_key:
+                        source_combo.addItem(source_key, source_key)
+                source_index = source_combo.findData(setting.get("value_field", ""))
+                source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
+
+                size_validator = QRegularExpressionValidator(QRegularExpression(r"[1-9]\d{0,2}"))
+                width_edit = QLineEdit(str(setting.get("width", 30) or 30))
+                width_edit.setValidator(size_validator)
+                width_edit.setMaximumWidth(55)
+                height_edit = QLineEdit(str(setting.get("height", 30) or 30))
+                height_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"[1-9]\d{0,2}")))
+                height_edit.setMaximumWidth(55)
+
+                folder_options = QWidget()
+                folder_options_layout = QVBoxLayout()
+                folder_options_layout.setContentsMargins(0, 0, 0, 0)
+                folder_row = QHBoxLayout()
+                folder_row.addWidget(folder_edit)
+                folder_row.addWidget(select_button)
+                setting_row = QHBoxLayout()
+                setting_row.addWidget(QLabel("값필드"))
+                setting_row.addWidget(source_combo)
+                setting_row.addWidget(QLabel("너비(mm)"))
+                setting_row.addWidget(width_edit)
+                setting_row.addWidget(QLabel("높이(mm)"))
+                setting_row.addWidget(height_edit)
+                setting_row.addStretch()
+                folder_options_layout.addLayout(folder_row)
+                folder_options_layout.addLayout(setting_row)
+                folder_options.setLayout(folder_options_layout)
+                layout.addWidget(folder_options)
+                widgets["source_field_combo"] = source_combo
+                widgets["width_edit"] = width_edit
+                widgets["height_edit"] = height_edit
+            else:
+                source_name = setting.get("value_field", "")
+                width = setting.get("width", 30) or 30
+                height = setting.get("height", 30) or 30
+                folder_edit.setText(
+                    f"{setting.get('folder_path', '')}  ←  {source_name}  ({width}×{height}mm)"
+                )
+                layout.addWidget(folder_edit)
+            widgets["value_widget"] = folder_edit
+            return
+
         text_edit = QLineEdit()
         text_edit.setText(setting.get("default_value") or control["current_text"])
         text_edit.setPlaceholderText(control["placeholder"] or control["alias"] or "입력하세요")
@@ -827,6 +1025,57 @@ class ContentControlDialog(QDialog):
             if date.isValid():
                 return date
         return None
+
+    def _date_field_value(self, field_key, visited=None):
+        visited = set(visited or ())
+        if field_key in visited:
+            return ""
+        visited.add(field_key)
+        widgets = self.field_widgets.get(field_key)
+        if not widgets:
+            return ""
+        setting = widgets.get("setting", {})
+        default_type_combo = widgets.get("date_default_type_combo")
+        default_type = (
+            default_type_combo.currentData()
+            if default_type_combo
+            else setting.get("date_default_type", "today")
+        )
+        date_format = widgets["format_combo"].currentData()
+        if default_type != "field_calculation":
+            return widgets["value_widget"].date().toString(date_format)
+
+        source_combo = widgets.get("source_date_combo")
+        source_key = source_combo.currentData() if source_combo else setting.get("source_date_field", "")
+        source_text = self._date_field_value(source_key, visited)
+        source_date = self._parse_date_or_none(source_text)
+        if not source_date:
+            return ""
+        sign_combo = widgets.get("date_offset_sign_combo")
+        days_edit = widgets.get("date_offset_days_edit")
+        sign = sign_combo.currentData() if sign_combo else int(setting.get("date_offset_sign", 1) or 1)
+        days = int(days_edit.text() or 0) if days_edit else int(setting.get("date_offset_days", 0) or 0)
+        return source_date.addDays(sign * days).toString(date_format)
+
+    def _update_calculated_date_fields(self):
+        for field_key, widgets in self.field_widgets.items():
+            if widgets["type_combo"].currentData() != "date":
+                continue
+            setting = widgets.get("setting", {})
+            default_type_combo = widgets.get("date_default_type_combo")
+            default_type = (
+                default_type_combo.currentData()
+                if default_type_combo
+                else setting.get("date_default_type", "today")
+            )
+            if default_type != "field_calculation":
+                continue
+            calculated = self._parse_date_or_none(self._date_field_value(field_key))
+            if calculated:
+                date_edit = widgets["value_widget"]
+                date_edit.blockSignals(True)
+                date_edit.setDate(calculated)
+                date_edit.blockSignals(False)
 
     def _branch_key(self, branch):
         if not branch:
@@ -997,7 +1246,7 @@ class ContentControlDialog(QDialog):
         value_widget = widgets.get("value_widget")
 
         if field_type == "date":
-            return value_widget.date().toString(widgets["format_combo"].currentData())
+            return self._date_field_value(field_key)
         if field_type == "amount":
             text = value_widget.text()
             if widgets["comma_check"].isChecked() and text:
@@ -1015,6 +1264,11 @@ class ContentControlDialog(QDialog):
             return self._branch_value(branch, value_key)
         if field_type == "table_list" or table_list_id(field_type):
             return value_widget.currentData() or "" if value_widget else ""
+        if field_type == "folder":
+            setting = widgets.get("setting", {})
+            source_key = setting.get("value_field", "")
+            source_value = self._field_value(source_key) if source_key in self.field_widgets else ""
+            return self._folder_image_value(setting, source_value)
         return value_widget.text() if value_widget else ""
 
     def _validate_generation_inputs(self):
@@ -1044,7 +1298,16 @@ class ContentControlDialog(QDialog):
             setting = {"type": field_type}
             if field_type == "date":
                 setting["date_format"] = widgets["format_combo"].currentData()
-                setting["default_value"] = widgets["value_widget"].date().toString(setting["date_format"])
+                setting["date_default_type"] = widgets["date_default_type_combo"].currentData()
+                if setting["date_default_type"] == "field_calculation":
+                    setting["source_date_field"] = widgets["source_date_combo"].currentData() or ""
+                    setting["date_offset_sign"] = widgets["date_offset_sign_combo"].currentData() or 1
+                    setting["date_offset_days"] = int(widgets["date_offset_days_edit"].text() or 0)
+                else:
+                    setting.pop("source_date_field", None)
+                    setting.pop("date_offset_sign", None)
+                    setting.pop("date_offset_days", None)
+                setting.pop("default_value", None)
             elif field_type == "amount":
                 setting["use_comma"] = widgets["comma_check"].isChecked()
                 setting["default_value"] = widgets["value_widget"].text()
@@ -1058,6 +1321,11 @@ class ContentControlDialog(QDialog):
                 setting["type"] = "table_list"
                 setting["table_list_id"] = widgets["table_combo"].currentData() or ""
                 setting["default_value"] = widgets["value_widget"].currentData() or ""
+            elif field_type == "folder":
+                setting["folder_path"] = widgets["value_widget"].text().strip()
+                setting["value_field"] = widgets["source_field_combo"].currentData() or ""
+                setting["width"] = int(widgets["width_edit"].text() or 0)
+                setting["height"] = int(widgets["height_edit"].text() or 0)
             else:
                 value_widget = widgets.get("value_widget")
                 setting["default_value"] = value_widget.text() if value_widget else ""
@@ -1072,7 +1340,44 @@ class ContentControlDialog(QDialog):
         }
 
     def save_field_settings(self):
-        self.settings = self._collect_field_settings()
+        settings = self._collect_field_settings()
+        errors = []
+        for field_key, setting in settings.get("fields", {}).items():
+            if setting.get("type") == "date" and setting.get("date_default_type") == "field_calculation":
+                source_key = setting.get("source_date_field", "")
+                if not source_key or settings["fields"].get(source_key, {}).get("type") != "date":
+                    errors.append(f"{field_key}: 계산 기준이 될 날짜 필드를 선택해 주세요.")
+            if setting.get("type") != "folder":
+                continue
+            folder_path = setting.get("folder_path", "")
+            source_key = setting.get("value_field", "")
+            if not folder_path or not Path(folder_path).is_dir():
+                errors.append(f"{field_key}: 사용할 이미지 폴더를 선택해 주세요.")
+            if not source_key:
+                errors.append(f"{field_key}: 파일명과 비교할 값필드를 선택해 주세요.")
+            elif settings["fields"].get(source_key, {}).get("type") == "folder":
+                errors.append(f"{field_key}: 폴더의 이미지 형태가 아닌 값필드를 선택해 주세요.")
+            if setting.get("width", 0) <= 0 or setting.get("height", 0) <= 0:
+                errors.append(f"{field_key}: 이미지 너비와 높이를 1~999mm로 입력해 주세요.")
+        for field_key, setting in settings.get("fields", {}).items():
+            if setting.get("type") != "date" or setting.get("date_default_type") != "field_calculation":
+                continue
+            visited = {field_key}
+            source_key = setting.get("source_date_field", "")
+            while source_key:
+                if source_key in visited:
+                    errors.append(f"{field_key}: 날짜 계산 필드가 서로 순환 참조하고 있습니다.")
+                    break
+                visited.add(source_key)
+                source_setting = settings["fields"].get(source_key, {})
+                if source_setting.get("date_default_type") != "field_calculation":
+                    break
+                source_key = source_setting.get("source_date_field", "")
+        if errors:
+            QMessageBox.warning(self, "폴더 설정 확인", "\n".join(errors))
+            return
+
+        self.settings = settings
         self.all_settings.setdefault("documents", {})[self.file_path.name] = self.settings
         write_json_file(self.settings_path, self.all_settings)
         QMessageBox.information(self, "저장 완료", "필드 설정을 저장했습니다.")
@@ -1113,9 +1418,20 @@ class ContentControlDialog(QDialog):
                 QMessageBox.warning(self, "설정 필요", "생성할 콘텐츠 컨트롤 필드가 없습니다.")
                 return
 
-            progress = self._show_progress("문서 생성", "PDF 문서를 생성하고 있습니다...")
+            progress = self._show_progress("문서 생성", "문서 값을 적용하고 있습니다...", 4)
+
+            def update_progress(step, message):
+                progress.setLabelText(message)
+                progress.setValue(step)
+                QApplication.processEvents()
+
             try:
-                out_pdf = self._create_pdf(values_dict, output_title=title, ask_on_duplicate=True)
+                out_pdf = self._create_pdf(
+                    values_dict,
+                    output_title=title,
+                    ask_on_duplicate=True,
+                    status_callback=update_progress,
+                )
             finally:
                 progress.close()
             if out_pdf is None:
@@ -1132,15 +1448,76 @@ class ContentControlDialog(QDialog):
         progress = self._show_progress("문서 일괄 생성", f"PDF 문서를 생성하고 있습니다... (0/{len(rows)})", len(rows))
         try:
             for index, values_dict in enumerate(rows, 1):
+                values_dict = self._prepare_excel_row_values(values_dict, row_number=index + 1)
                 self._validate_row_values(values_dict, row_number=index + 1)
                 output_title = f"{self.file_path.stem}_filled_{index:03d}"
-                outputs.append(self._create_pdf(values_dict, output_title=output_title, ask_on_duplicate=False))
+
+                def update_batch_status(_step, message, current=index):
+                    progress.setLabelText(f"{message} ({current}/{len(rows)})")
+                    QApplication.processEvents()
+
+                outputs.append(
+                    self._create_pdf(
+                        values_dict,
+                        output_title=output_title,
+                        ask_on_duplicate=False,
+                        status_callback=update_batch_status,
+                    )
+                )
                 progress.setLabelText(f"PDF 문서를 생성하고 있습니다... ({index}/{len(rows)})")
                 progress.setValue(index)
                 QApplication.processEvents()
         finally:
             progress.close()
         return outputs
+
+    def _prepare_excel_row_values(self, values_dict, row_number):
+        """엑셀의 이미지 필드 경로를 문서 삽입용 이미지 값으로 변환한다."""
+        prepared = dict(values_dict)
+        for field_key, setting in self.settings.get("fields", {}).items():
+            if not self._is_image_field_setting(setting):
+                continue
+
+            path_text = str(prepared.get(field_key, "") or "").strip().strip('"')
+            if not path_text:
+                prepared[field_key] = ""
+                continue
+
+            image_path = Path(path_text)
+            if not image_path.is_absolute():
+                image_path = self.root / image_path
+            if not image_path.is_file():
+                raise ValueError(f"{row_number}행 {field_key}: 이미지 파일을 찾을 수 없습니다.\n{image_path}")
+            if image_path.suffix.casefold() not in IMAGE_EXTENSIONS:
+                raise ValueError(f"{row_number}행 {field_key}: 지원하지 않는 이미지 형식입니다.\n{image_path}")
+
+            width, height = self._image_size_for_field(field_key)
+            prepared[field_key] = {
+                "type": "image",
+                "path": str(image_path),
+                "width": width,
+                "height": height,
+            }
+        return prepared
+
+    def _is_image_field_setting(self, setting):
+        if setting.get("type") == "image":
+            return True
+        if setting.get("type") != "branch_value":
+            return False
+        field = self._branch_field_definition(setting.get("branch_value_key", ""))
+        return bool(field and field.get("type") == "image")
+
+    def _image_size_for_field(self, field_key):
+        """선택된 지점의 이미지 규격을 재사용하고, 없으면 30mm를 사용한다."""
+        if field_key in self.field_widgets:
+            current_value = self._field_value(field_key)
+            if isinstance(current_value, dict) and current_value.get("type") == "image":
+                return (
+                    int(current_value.get("width", 30) or 30),
+                    int(current_value.get("height", 30) or 30),
+                )
+        return 30, 30
 
     def _show_progress(self, title, message, maximum=0):
         progress = QProgressDialog(message, "", 0, maximum, self)
@@ -1155,7 +1532,12 @@ class ContentControlDialog(QDialog):
         QApplication.processEvents()
         return progress
 
-    def _create_pdf(self, values_dict, output_title=None, ask_on_duplicate=False):
+    def _create_pdf(self, values_dict, output_title=None, ask_on_duplicate=False, status_callback=None):
+        def report(step, message):
+            if status_callback:
+                status_callback(step, message)
+
+        report(1, "문서 값을 적용하고 있습니다...")
         new_doc = Document(self.file_path)
         self._apply_values_to_doc(new_doc, values_dict)
 
@@ -1168,9 +1550,12 @@ class ContentControlDialog(QDialog):
         with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as tmp_file:
             temp_docx_path = Path(tmp_file.name)
         try:
+            report(2, "변환할 Word 문서를 준비하고 있습니다...")
             new_doc.save(str(temp_docx_path))
             docx2pdf = self._ensure_docx2pdf()
+            report(3, "Word에서 PDF로 변환하고 있습니다...")
             docx2pdf.convert(str(temp_docx_path), str(out_pdf))
+            report(4, "PDF 저장을 완료하고 있습니다...")
             log("DocumentTool", f"PDF 생성 완료: {out_pdf}", level="INFO")
             return out_pdf
         finally:
@@ -1243,6 +1628,39 @@ class ContentControlDialog(QDialog):
         return self._install_docx2pdf()
 
     def _apply_values_to_doc(self, doc, values_dict):
+        values_dict = dict(values_dict)
+
+        def resolve_date(field_key, visited=None):
+            visited = set(visited or ())
+            if field_key in visited:
+                return None
+            visited.add(field_key)
+            setting = self.settings.get("fields", {}).get(field_key, {})
+            if setting.get("type") != "date":
+                return None
+            if setting.get("date_default_type", "today") != "field_calculation":
+                return self._parse_date_or_none(values_dict.get(field_key, "")) or QDate.currentDate()
+            source_date = resolve_date(setting.get("source_date_field", ""), visited)
+            if not source_date:
+                return None
+            sign = int(setting.get("date_offset_sign", 1) or 1)
+            days = int(setting.get("date_offset_days", 0) or 0)
+            return source_date.addDays(sign * days)
+
+        for field_key, setting in self.settings.get("fields", {}).items():
+            if setting.get("type") == "date" and setting.get("date_default_type") == "field_calculation":
+                calculated_date = resolve_date(field_key)
+                values_dict[field_key] = (
+                    calculated_date.toString(setting.get("date_format", "yyyy-MM-dd"))
+                    if calculated_date
+                    else ""
+                )
+        for field_key, setting in self.settings.get("fields", {}).items():
+            if setting.get("type") == "folder":
+                values_dict[field_key] = self._folder_image_value(
+                    setting,
+                    values_dict.get(setting.get("value_field", ""), ""),
+                )
         sdt_list = doc.element.findall('.//' + qn('w:sdt'))
         for idx, sdt in enumerate(sdt_list):
             info = self._content_control_info(sdt, idx)
@@ -1276,6 +1694,31 @@ class ContentControlDialog(QDialog):
                 t.text = str(new_value)
                 run.append(t)
                 sdt_content.append(run)
+
+    @staticmethod
+    def _folder_image_value(setting, source_value):
+        folder = Path(setting.get("folder_path", ""))
+        target_name = str(source_value or "").strip()
+        if not target_name or not folder.is_dir():
+            return ""
+        target_name = target_name.casefold()
+        matches = sorted(
+            (
+                path for path in folder.iterdir()
+                if path.is_file()
+                and path.suffix.casefold() in IMAGE_EXTENSIONS
+                and path.stem.casefold() == target_name
+            ),
+            key=lambda path: path.name.casefold(),
+        )
+        if not matches:
+            return ""
+        return {
+            "type": "image",
+            "path": str(matches[0]),
+            "width": int(setting.get("width", 30) or 30),
+            "height": int(setting.get("height", 30) or 30),
+        }
 
     def _set_sdt_image(self, doc, sdt_content, value):
         image_path = Path(value.get("path", ""))

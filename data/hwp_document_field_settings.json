@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "documents": {
+        "범노장.hwp": {
+            "version": 1,
+            "branches": {
+                "branch_select": "분당점",
+                "branch_select_2": "분당점"
+            },
+            "fields": {
+                "성명": {
+                    "type": "text",
+                    "default_value": "박재범"
+                },
+                "주민번호": {
+                    "type": "text",
+                    "default_value": "881017-1234567"
+                },
+                "주소": {
+                    "type": "text",
+                    "default_value": "경기도 고양시 일산서구 일산로 488, 1306-702"
+                },
+                "연락처": {
+                    "type": "text",
+                    "default_value": "010-1234-5678"
+                },
+                "작성일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "today"
+                }
+            }
+        }
+    }
+}

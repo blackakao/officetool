@@ -15,6 +15,7 @@ from ui.pages.branch_list import BranchPage
 from ui.pages.login_tool import LoginTool
 from ui.pages.login_log import LoginLogPage
 from ui.pages.document_tool import DocumentTool
+from ui.pages.hwp_document_tool import HwpDocumentTool
 from ui.pages.table_list_page import TableListPage
 from ui.pages.federation_tool import FederationTool
 from ui.pages.carefor_tool import CareforTool
@@ -22,6 +23,7 @@ from ui.pages.labor_cost_ratio_page import LaborCostRatioPage
 from ui.pages.service_fee_page import ServiceFeePage
 from ui.pages.annual_leave_page import AnnualLeavePage
 from ui.pages.monthly_work_check_page import MonthlyWorkCheckPage
+from ui.pages.memo_page import MemoPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -84,6 +86,7 @@ class MainWindow(QMainWindow):
         self.login_page = LoginTool()
         self.login_log_page = LoginLogPage()
         self.document_page = DocumentTool()
+        self.hwp_document_page = HwpDocumentTool()
         self.table_list_page = TableListPage()
         self.federation_page = FederationTool()
         self.carefor_page = CareforTool()
@@ -91,17 +94,25 @@ class MainWindow(QMainWindow):
         self.service_fee_page = ServiceFeePage()
         self.annual_leave_page = AnnualLeavePage()
         self.monthly_work_check_page = MonthlyWorkCheckPage()
+        self.memo_page = MemoPage()
 
         menu_groups = (
             ("필수도구", (("로그인툴", self.login_page),)),
             (
                 "문서작성툴",
                 (
-                    ("문서작성툴", self.document_page),
+                    ("문서작성툴(한글)", self.hwp_document_page),
+                    ("문서작성툴(워드)", self.document_page),
                     ("테이블 목록 관리", self.table_list_page),
                 ),
             ),
-            ("개인 업무", (("월간업무체크", self.monthly_work_check_page),)),
+            (
+                "개인 업무",
+                (
+                    ("월간업무체크", self.monthly_work_check_page),
+                    ("메모장", self.memo_page),
+                ),
+            ),
             ("설정", (("지점 관리", self.branch_page),)),
             (
                 "정보",
