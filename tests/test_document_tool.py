@@ -1,10 +1,39 @@
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-from ui.pages.document_tool import ContentControlDialog
+from ui.pages.document_tool import ContentControlDialog, branch_control_parts
+
+
+def test_branch_control_name_parsing():
+    assert branch_control_parts("분기_시설종류_요양원") == ("시설종류", "요양원")
+    assert branch_control_parts("분기_시설종류_주야간_보호") == ("시설종류", "주야간_보호")
+    assert branch_control_parts("시설종류_요양원") is None
+    assert branch_control_parts("분기__요양원") is None
+
+
+def test_branch_generation_only_updates_selected_control():
+    dialog = ContentControlDialog.__new__(ContentControlDialog)
+    combo = lambda value: SimpleNamespace(currentData=lambda: value)
+    dialog.generate_widgets = {
+        "분기_변경전_대표자": {
+            "type_combo": combo("branch"),
+            "branch_option_combo": combo("분기_변경전_시설명칭"),
+            "branch_members": [
+                "분기_변경전_대표자",
+                "분기_변경전_시설명칭",
+                "분기_변경전_시설소재지",
+            ],
+        }
+    }
+    dialog._field_value = lambda field_key: f"입력:{field_key}"
+
+    assert dialog._generation_values() == {
+        "분기_변경전_시설명칭": "입력:분기_변경전_시설명칭"
+    }
 
 
 def test_inline_image_control_contains_run_instead_of_nested_paragraph():

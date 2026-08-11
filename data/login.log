@@ -3101,3 +3101,82 @@ Stacktrace:
 2026-08-10 17:24:07 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
 2026-08-10 17:25:33 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
 2026-08-10 17:25:35 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-10 18:00:03 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=롱텀
+2026-08-10 18:00:10 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-10 18:00:10 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-11 08:04:41 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=케어포
+2026-08-11 08:04:48 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-11 08:09:40 [INFO] [DocumentTool] 문서 설정 열기 시도: 13-1. 장기요양기관(노인요양시설) 차입금 사전 신고서.hwp
+2026-08-11 08:09:44 [INFO] [DocumentTool] 문서 설정 열기 완료: 13-1. 장기요양기관(노인요양시설) 차입금 사전 신고서.hwp
+2026-08-11 08:09:47 [INFO] [DocumentTool] 문서 설정 열기 시도: 범노장.hwp
+2026-08-11 08:10:24 [INFO] [DocumentTool] 문서 설정 열기 완료: 범노장.hwp
+2026-08-11 08:10:26 [INFO] [DocumentTool] 문서 설정 열기 시도: test.docx
+2026-08-11 08:10:34 [INFO] [DocumentTool] 문서 설정 열기 완료: test.docx
+2026-08-11 08:45:22 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=케어포
+2026-08-11 08:45:24 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-11 09:00:54 [INFO] [DocumentTool] 문서 설정 열기 시도: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:01:00 [INFO] [DocumentTool] 문서 설정 열기 완료: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:01:04 [INFO] [DocumentTool] 문서 설정 열기 시도: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:01:11 [INFO] [DocumentTool] 문서 설정 열기 완료: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:01:13 [INFO] [DocumentTool] 문서 설정 열기 시도: 3.장기요양기관 변경신고서.hwp
+2026-08-11 09:01:16 [INFO] [DocumentTool] 문서 설정 열기 완료: 3.장기요양기관 변경신고서.hwp
+2026-08-11 09:02:08 [INFO] [DocumentTool] 문서 설정 열기 시도: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:02:14 [INFO] [DocumentTool] 문서 설정 열기 완료: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:02:21 [INFO] [DocumentTool] 문서 설정 열기 시도: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:03:49 [INFO] [DocumentTool] 문서 설정 열기 완료: 4.장기요양기관 변경지정 신청서.hwp
+2026-08-11 09:04:01 [INFO] [LoginTool] [송추주야간] 로그인 시도, 기관기호=24163000613, 타입=롱텀
+2026-08-11 09:04:07 [ERROR] [LoginTool] Chrome 자동화 실패: Alert Text: 인증서 암호를 입력하십시오.
+Message: unexpected alert open: {Alert text : 인증서 암호를 입력하십시오.}
+  (Session info: chrome=151.0.7922.76)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff74d6e8935+14ce5]
+	chromedriver!GetHandleVerifier [0x7ff74d6e8990+14d40]
+	chromedriver!(No symbol) [0x7ff74d215afd]
+	chromedriver!(No symbol) [0x7ff74d2bef4a]
+	chromedriver!(No symbol) [0x7ff74d26308c]
+	chromedriver!(No symbol) [0x7ff74d263fb3]
+	chromedriver!GetHandleVerifier [0x7ff74dd1e5fb+64a9ab]
+	chromedriver!GetHandleVerifier [0x7ff74dd18b02+644eb2]
+	chromedriver!GetHandleVerifier [0x7ff74dd3e39e+66a74e]
+	chromedriver!GetHandleVerifier [0x7ff74d705d6e+3211e]
+	chromedriver!GetHandleVerifier [0x7ff74d70e51c+3a8cc]
+	chromedriver!GetHandleVerifier [0x7ff74d6f2844+1ebf4]
+	chromedriver!GetHandleVerifier [0x7ff74d6f29d4+1ed84]
+	chromedriver!GetHandleVerifier [0x7ff74d6d5d07+20b7]
+	KERNEL32!BaseThreadInitThunk [0x7ff8be79e957+17]
+	ntdll!RtlUserThreadStart [0x7ff8c0aead6c+2c]
+
+2026-08-11 09:04:10 [INFO] [LoginTool] [송추주야간] 로그인 시도, 기관기호=24163000613, 타입=롱텀
+2026-08-11 09:04:18 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-11 09:04:18 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-11 09:33:24 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:33:32 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 09:33:37 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:33:45 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 09:33:46 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:33:54 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 09:42:25 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:42:35 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 09:43:02 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:46:26 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 09:46:28 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:57:42 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 09:57:55 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 09:58:06 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 10:01:09 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 10:08:39 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-11 10:08:44 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
+2026-08-11 10:08:53 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-11 10:08:53 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-11 10:57:06 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=케어포
+2026-08-11 10:57:09 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-11 11:37:58 [INFO] [LoginTool] [청운점] 로그인 시도, 기관기호=14183000214, 타입=롱텀
+2026-08-11 11:38:06 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-11 11:38:06 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-11 11:39:53 [INFO] [LoginTool] [(구)탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-08-11 11:40:00 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-11 11:40:00 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-11 11:55:41 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=케어포
+2026-08-11 11:55:44 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-11 13:00:06 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-11 13:01:53 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp

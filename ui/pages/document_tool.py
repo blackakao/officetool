@@ -16,19 +16,30 @@ from PySide6.QtGui import QDesktopServices, QRegularExpressionValidator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, 
     QPushButton, QDialog, QLabel, QFormLayout, QLineEdit, QMessageBox, QHeaderView, QScrollArea,
-    QApplication, QComboBox, QCheckBox, QDateEdit, QFileDialog, QProgressDialog
+    QApplication, QComboBox, QCheckBox, QDateEdit, QFileDialog, QProgressDialog, QStackedWidget
 )
 from ui.pages.logging_util import log
 
 
 FIELD_TYPES = {
     "text": "텍스트",
+    "branch": "분기",
     "date": "날짜",
     "amount": "숫자",
     "branch_value": "지점의 값",
     "table_list": "테이블 목록",
     "folder": "폴더의 이미지",
 }
+
+
+def branch_control_parts(field_key):
+    """Return (group name, option name) for 분기_<field>_<option> controls."""
+    if not isinstance(field_key, str):
+        return None
+    parts = field_key.split("_", 2)
+    if len(parts) != 3 or parts[0] != "분기" or not parts[1].strip() or not parts[2].strip():
+        return None
+    return parts[1].strip(), parts[2].strip()
 
 IMAGE_EXTENSIONS = {".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 
@@ -421,9 +432,22 @@ class ContentControlDialog(QDialog):
         form_layout.setRowWrapPolicy(QFormLayout.WrapLongRows)
         
         collected_controls = self._collect_controls(doc)
-        for field_key, control in collected_controls.items():
-            self.controls[field_key] = control
-            if self.mode == "settings":
+        # The naming convention is the source of truth. This also makes newly
+        # added HWP fields appear as a branch without requiring a first save.
+        for field_key in collected_controls:
+            if branch_control_parts(field_key):
+                self.settings.setdefault("fields", {}).setdefault(field_key, {})["type"] = "branch"
+        self.controls.update(collected_controls)
+        if self.mode == "settings":
+            rendered_groups = set()
+            for field_key, control in collected_controls.items():
+                parts = branch_control_parts(field_key)
+                if parts:
+                    if parts[0] not in rendered_groups:
+                        members = [key for key in collected_controls if branch_control_parts(key) and branch_control_parts(key)[0] == parts[0]]
+                        self._add_branch_settings_group(form_layout, parts[0], members)
+                        rendered_groups.add(parts[0])
+                    continue
                 self._add_field_row(form_layout, field_key, control)
         if self.mode == "settings":
             self._refresh_type_combo_options()
@@ -536,8 +560,10 @@ class ContentControlDialog(QDialog):
         t_list = sdt_content.findall('.//' + qn('w:t'))
         return ''.join([t.text for t in t_list if t.text])
 
-    def _add_field_row(self, form_layout, field_key, control):
+    def _add_field_row(self, form_layout, field_key, control, branch_member=False):
         setting = self.settings.setdefault("fields", {}).setdefault(field_key, {"type": "text"})
+        if branch_member:
+            setting["type"] = setting.get("field_type", "text")
         legacy_table_id = table_list_id(setting.get("type", ""))
         if legacy_table_id:
             setting["type"] = "table_list"
@@ -561,6 +587,8 @@ class ContentControlDialog(QDialog):
         type_combo = QComboBox()
         type_combo.setMaximumWidth(220)
         for type_key, label in self._field_type_options():
+            if branch_member and type_key == "branch":
+                continue
             type_combo.addItem(label, type_key)
         type_index = type_combo.findData(setting.get("type", "text"))
         type_combo.setCurrentIndex(type_index if type_index >= 0 else 0)
@@ -575,17 +603,39 @@ class ContentControlDialog(QDialog):
             "input_container": input_container,
             "input_layout": input_layout,
             "setting": setting,
+            "branch_member": branch_member,
         }
         self._refresh_type_combo_options(field_key)
         type_combo.currentIndexChanged.connect(lambda _, key=field_key: self._on_field_type_changed(key))
 
-        form_layout.addRow(title_label, None)
-        form_layout.addRow("형태", type_combo)
+        if not branch_member:
+            form_layout.addRow(title_label, None)
+        form_layout.addRow("항목 형태" if branch_member else "형태", type_combo)
         form_layout.addRow("기본값", input_container)
-        if description_texts:
+        if description_texts and not branch_member:
             form_layout.addRow("", description_label)
-        form_layout.addRow("", QLabel(""))
+        if not branch_member:
+            form_layout.addRow("", QLabel(""))
         self._rebuild_field_input(field_key)
+
+    def _add_branch_settings_group(self, form_layout, group_name, members):
+        title_label = QLabel(f"<b>분기_{group_name}</b>")
+        branch_type_combo = QComboBox()
+        branch_type_combo.addItem(FIELD_TYPES["branch"], "branch")
+        option_combo = QComboBox()
+        stack = QStackedWidget()
+        for member in members:
+            option_combo.addItem(branch_control_parts(member)[1], member)
+            page = QWidget()
+            page_layout = QFormLayout(page)
+            self._add_field_row(page_layout, member, self.controls[member], branch_member=True)
+            stack.addWidget(page)
+        option_combo.currentIndexChanged.connect(stack.setCurrentIndex)
+        form_layout.addRow(title_label, None)
+        form_layout.addRow("형태", branch_type_combo)
+        form_layout.addRow("분기 항목", option_combo)
+        form_layout.addRow("항목 설정", stack)
+        form_layout.addRow("", QLabel(""))
 
     def _add_generate_rows(self, form_layout):
         configured_fields = self.settings.get("fields", {})
@@ -593,8 +643,67 @@ class ContentControlDialog(QDialog):
             form_layout.addRow(QLabel("설정된 콘텐츠 컨트롤 필드가 없습니다."), None)
             return
 
+        rendered_branch_groups = set()
         for field_key, setting in configured_fields.items():
             if field_key not in self.controls:
+                continue
+            branch_parts = branch_control_parts(field_key) if setting.get("type") == "branch" else None
+            if branch_parts:
+                group_name, _option_name = branch_parts
+                if group_name in rendered_branch_groups:
+                    continue
+                members = [
+                    key for key, candidate in configured_fields.items()
+                    if candidate.get("type") == "branch"
+                    and branch_control_parts(key)
+                    and branch_control_parts(key)[0] == group_name
+                    and key in self.controls
+                ]
+                rendered_branch_groups.add(group_name)
+                group_key = members[0]
+                option_combo = QComboBox()
+                option_combo.setMaximumWidth(220)
+                stack = QStackedWidget()
+                member_widgets = {}
+                for member in members:
+                    option_combo.addItem(branch_control_parts(member)[1], member)
+                    member_setting = configured_fields[member]
+                    member_type = member_setting.get("field_type", "text")
+                    type_combo = QComboBox()
+                    type_combo.addItem(self._field_type_label(member_type), member_type)
+                    page = QWidget()
+                    page_layout = QHBoxLayout(page)
+                    page_layout.setContentsMargins(0, 0, 0, 0)
+                    member_data = {
+                        "type_combo": type_combo,
+                        "input_container": page,
+                        "input_layout": page_layout,
+                        "setting": member_setting,
+                        "branch_member": True,
+                    }
+                    self.field_widgets[member] = member_data
+                    self._rebuild_field_input(member)
+                    member_widgets[member] = member_data
+                    stack.addWidget(page)
+                option_combo.currentIndexChanged.connect(stack.setCurrentIndex)
+                container = QWidget()
+                container_layout = QVBoxLayout(container)
+                container_layout.setContentsMargins(0, 0, 0, 0)
+                select_row = QHBoxLayout()
+                select_row.addWidget(option_combo)
+                select_row.addStretch()
+                container_layout.addLayout(select_row)
+                container_layout.addWidget(stack)
+                branch_type_combo = QComboBox()
+                branch_type_combo.addItem(FIELD_TYPES["branch"], "branch")
+                group_widgets = {
+                    "type_combo": branch_type_combo,
+                    "branch_members": members,
+                    "branch_option_combo": option_combo,
+                    "member_widgets": member_widgets,
+                }
+                form_layout.addRow(f"분기_{group_name}", container)
+                self.generate_widgets[group_key] = group_widgets
                 continue
             type_combo = QComboBox()
             field_type = setting.get("type", "text")
@@ -611,6 +720,8 @@ class ContentControlDialog(QDialog):
                 "input_layout": input_layout,
                 "setting": setting,
             }
+            if branch_parts:
+                self.field_widgets[field_key]["branch_members"] = members
             form_layout.addRow(field_key, input_container)
             self._rebuild_field_input(field_key)
             self.generate_widgets[field_key] = self.field_widgets[field_key]
@@ -697,6 +808,8 @@ class ContentControlDialog(QDialog):
             type_combo.blockSignals(True)
             type_combo.clear()
             for type_key, label in self._field_type_options():
+                if widgets.get("branch_member") and type_key == "branch":
+                    continue
                 if type_key in BRANCH_SOURCE_TYPES and type_key in occupied_types and type_key != current_type:
                     continue
                 type_combo.addItem(label, type_key)
@@ -743,6 +856,33 @@ class ContentControlDialog(QDialog):
         control = self.controls[field_key]
         setting = widgets["setting"]
         setting["type"] = field_type
+
+        if field_type == "branch":
+            parts = branch_control_parts(field_key)
+            branch_members = widgets.get("branch_members", [field_key])
+            if self.mode == "settings":
+                hint = QLabel(
+                    f"{parts[0]} 그룹 / {parts[1]} 항목" if parts else
+                    "이름을 분기_필드명_내용명 형식으로 지정해 주세요."
+                )
+                hint.setStyleSheet("color: gray;")
+                layout.addWidget(hint)
+                widgets["value_widget"] = hint
+                return
+
+            option_combo = QComboBox()
+            option_combo.setMaximumWidth(220)
+            for member in branch_members:
+                member_parts = branch_control_parts(member)
+                if member_parts:
+                    option_combo.addItem(member_parts[1], member)
+            value_edit = QLineEdit()
+            value_edit.setPlaceholderText("선택한 칸에 입력할 내용")
+            layout.addWidget(option_combo)
+            layout.addWidget(value_edit)
+            widgets["branch_option_combo"] = option_combo
+            widgets["value_widget"] = value_edit
+            return
 
         if field_type == "date":
             date_edit = QDateEdit()
@@ -1271,6 +1411,17 @@ class ContentControlDialog(QDialog):
             return self._folder_image_value(setting, source_value)
         return value_widget.text() if value_widget else ""
 
+    def _generation_values(self):
+        values = {}
+        for field_key, widgets in self.generate_widgets.items():
+            if widgets["type_combo"].currentData() != "branch":
+                values[field_key] = self._field_value(field_key)
+                continue
+            selected = widgets.get("branch_option_combo").currentData()
+            if selected:
+                values[selected] = self._field_value(selected)
+        return values
+
     def _validate_generation_inputs(self):
         errors = []
         for field_key, widgets in self.generate_widgets.items():
@@ -1326,10 +1477,25 @@ class ContentControlDialog(QDialog):
                 setting["value_field"] = widgets["source_field_combo"].currentData() or ""
                 setting["width"] = int(widgets["width_edit"].text() or 0)
                 setting["height"] = int(widgets["height_edit"].text() or 0)
+            elif field_type == "branch":
+                setting = {"type": "branch"}
             else:
                 value_widget = widgets.get("value_widget")
                 setting["default_value"] = value_widget.text() if value_widget else ""
+            if widgets.get("branch_member"):
+                setting["field_type"] = setting.pop("type")
+                setting["type"] = "branch"
             fields[field_key] = setting
+        # Selecting 분기 on one member configures every matching member together.
+        branch_groups = {
+            branch_control_parts(key)[0]
+            for key, setting in fields.items()
+            if setting.get("type") == "branch" and branch_control_parts(key)
+        }
+        for key in self.controls:
+            parts = branch_control_parts(key)
+            if parts and parts[0] in branch_groups:
+                fields.setdefault(key, {"type": "branch", "field_type": "text"})
         return {
             "version": 1,
             "branches": {
@@ -1343,6 +1509,8 @@ class ContentControlDialog(QDialog):
         settings = self._collect_field_settings()
         errors = []
         for field_key, setting in settings.get("fields", {}).items():
+            if setting.get("type") == "branch" and not branch_control_parts(field_key):
+                errors.append(f"{field_key}: 분기_필드명_내용명 형식의 필드 이름이 필요합니다.")
             if setting.get("type") == "date" and setting.get("date_default_type") == "field_calculation":
                 source_key = setting.get("source_date_field", "")
                 if not source_key or settings["fields"].get(source_key, {}).get("type") != "date":
@@ -1374,7 +1542,7 @@ class ContentControlDialog(QDialog):
                     break
                 source_key = source_setting.get("source_date_field", "")
         if errors:
-            QMessageBox.warning(self, "폴더 설정 확인", "\n".join(errors))
+            QMessageBox.warning(self, "필드 설정 확인", "\n".join(errors))
             return
 
         self.settings = settings
@@ -1410,9 +1578,7 @@ class ContentControlDialog(QDialog):
                 QMessageBox.warning(self, "입력 확인", "\n".join(validation_errors))
                 return
 
-            values_dict = {}
-            for field_key in self.generate_widgets:
-                values_dict[field_key] = self._field_value(field_key)
+            values_dict = self._generation_values()
 
             if not values_dict:
                 QMessageBox.warning(self, "설정 필요", "생성할 콘텐츠 컨트롤 필드가 없습니다.")
