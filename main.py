@@ -24,6 +24,7 @@ from ui.pages.service_fee_page import ServiceFeePage
 from ui.pages.annual_leave_page import AnnualLeavePage
 from ui.pages.monthly_work_check_page import MonthlyWorkCheckPage
 from ui.pages.memo_page import MemoPage
+from ui.pages.branch_task_settings import BranchTaskSettingsPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -95,6 +96,7 @@ class MainWindow(QMainWindow):
         self.annual_leave_page = AnnualLeavePage()
         self.monthly_work_check_page = MonthlyWorkCheckPage()
         self.memo_page = MemoPage()
+        self.branch_task_settings_page = BranchTaskSettingsPage()
 
         menu_groups = (
             ("필수도구", (("로그인툴", self.login_page),)),
@@ -113,7 +115,13 @@ class MainWindow(QMainWindow):
                     ("메모장", self.memo_page),
                 ),
             ),
-            ("설정", (("지점 관리", self.branch_page),)),
+            (
+                "설정",
+                (
+                    ("지점 관리", self.branch_page),
+                    ("업무별 지점 설정", self.branch_task_settings_page),
+                ),
+            ),
             (
                 "정보",
                 (

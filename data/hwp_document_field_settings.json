@@ -38,6 +38,26 @@
                 "branch_select_2": "분당점"
             },
             "fields": {
+                "분기_시설종류_주거복지": {
+                    "default_value": "■",
+                    "field_type": "text",
+                    "type": "branch"
+                },
+                "분기_시설종류_의료복지": {
+                    "default_value": "■",
+                    "field_type": "text",
+                    "type": "branch"
+                },
+                "분기_시설종류_여가복지": {
+                    "default_value": "■",
+                    "field_type": "text",
+                    "type": "branch"
+                },
+                "분기_시설종류_재가복지": {
+                    "default_value": "■",
+                    "field_type": "text",
+                    "type": "branch"
+                },
                 "장기요양기관 법인명": {
                     "type": "branch_value",
                     "source_field": "branch_select",

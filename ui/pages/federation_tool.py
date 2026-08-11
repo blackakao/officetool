@@ -35,6 +35,7 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from ui.pages.login_tool import LongtermLoginThread
 from ui.pages.logging_util import log, should_log_message
+from ui.pages.branch_task_settings import filter_branches_for_task
 
 
 BY_TYPES = {
@@ -1386,11 +1387,10 @@ class FederationTool(QWidget):
     def _load_branches(self):
         try:
             with open(self.data_file, "r", encoding="utf-8") as f:
-                return [
-                    branch
-                    for branch in json.load(f)
-                    if branch.get("active", True)
-                ]
+                task_key = "carefor" if self.tool_name == "케어포툴" else "federation"
+                return filter_branches_for_task(
+                    json.load(f), task_key, self.root / "data" / "branch_task_settings.json"
+                )
         except FileNotFoundError:
             return []
 

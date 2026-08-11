@@ -2,12 +2,27 @@ from ui.pages.memo_page import content_preview, filter_memos, normalize_memo_dat
 
 
 def test_invalid_memo_storage_is_normalized():
-    assert normalize_memo_data(None) == {"version": 1, "tags": [], "memos": []}
+    assert normalize_memo_data(None) == {
+        "version": 2,
+        "tags": [],
+        "tag_colors": {},
+        "memos": [],
+    }
 
 
 def test_tags_are_trimmed_and_deduplicated():
     data = normalize_memo_data({"tags": [" 업무 ", "업무", "", "중요"], "memos": []})
     assert data["tags"] == ["업무", "중요"]
+    assert data["tag_colors"] == {"업무": "#607d8b", "중요": "#607d8b"}
+
+
+def test_tag_colors_are_normalized_and_invalid_colors_use_default():
+    data = normalize_memo_data({
+        "tags": ["업무", "개인"],
+        "tag_colors": {"업무": "#ff0000", "개인": "invalid"},
+        "memos": [],
+    })
+    assert data["tag_colors"] == {"업무": "#ff0000", "개인": "#607d8b"}
 
 
 def test_content_preview_collapses_whitespace_and_limits_length():

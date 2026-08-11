@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from ui.pages.branch_task_settings import filter_branches_for_task
 
 
 DEFAULT_TASKS = [
@@ -152,7 +153,9 @@ class MonthlyWorkCheckPage(QWidget):
             return []
 
         with open(self.branches_file, "r", encoding="utf-8") as f:
-            return json.load(f)
+            return filter_branches_for_task(
+                json.load(f), "monthly_work", self.base_dir / "data" / "branch_task_settings.json"
+            )
 
     def _load_tasks_to_combo(self):
         current_task = self.task_combo.currentText()

@@ -5,7 +5,11 @@ from unittest.mock import patch
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-from ui.pages.document_tool import ContentControlDialog, branch_control_parts
+from ui.pages.document_tool import (
+    ContentControlDialog,
+    branch_child_type_options,
+    branch_control_parts,
+)
 
 
 def test_branch_control_name_parsing():
@@ -13,6 +17,12 @@ def test_branch_control_name_parsing():
     assert branch_control_parts("분기_시설종류_주야간_보호") == ("시설종류", "주야간_보호")
     assert branch_control_parts("시설종류_요양원") is None
     assert branch_control_parts("분기__요양원") is None
+
+
+def test_branch_child_cannot_select_branch_type():
+    option_keys = [key for key, _label in branch_child_type_options()]
+    assert "branch" not in option_keys
+    assert "text" in option_keys
 
 
 def test_branch_generation_only_updates_selected_control():

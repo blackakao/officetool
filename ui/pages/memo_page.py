@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QBrush
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QComboBox,
@@ -14,6 +15,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QListWidget,
+    QListWidgetItem,
     QMessageBox,
     QPushButton,
     QTableWidget,
@@ -21,17 +23,19 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QWidget,
+    QColorDialog,
 )
 
 from ui.pages.document_tool import read_json_file, write_json_file
 
 
-EMPTY_MEMO_DATA = {"version": 1, "tags": [], "memos": []}
+DEFAULT_TAG_COLOR = "#607d8b"
+EMPTY_MEMO_DATA = {"version": 2, "tags": [], "tag_colors": {}, "memos": []}
 
 
 def normalize_memo_data(data):
     if not isinstance(data, dict):
-        return {"version": 1, "tags": [], "memos": []}
+        return dict(EMPTY_MEMO_DATA)
     tags = []
     for tag in data.get("tags", []):
         name = str(tag).strip()
@@ -48,7 +52,14 @@ def normalize_memo_data(data):
             "content": str(memo.get("content", "")),
             "created_at": str(memo.get("created_at", "")),
         })
-    return {"version": 1, "tags": tags, "memos": memos}
+    source_colors = data.get("tag_colors", {}) if isinstance(data.get("tag_colors", {}), dict) else {}
+    tag_colors = {
+        tag: QColor(str(source_colors.get(tag, DEFAULT_TAG_COLOR))).name()
+        if QColor(str(source_colors.get(tag, DEFAULT_TAG_COLOR))).isValid()
+        else DEFAULT_TAG_COLOR
+        for tag in tags
+    }
+    return {"version": 2, "tags": tags, "tag_colors": tag_colors, "memos": memos}
 
 
 def content_preview(content, length=10):
@@ -70,7 +81,7 @@ def filter_memos(memos, query="", tag=""):
 
 
 class MemoEditorDialog(QDialog):
-    def __init__(self, parent=None, memo=None, tags=None):
+    def __init__(self, parent=None, memo=None, tags=None, tag_colors=None):
         super().__init__(parent)
         self.memo = memo or {}
         self.setWindowTitle("메모 수정" if memo else "메모 추가")
@@ -81,6 +92,11 @@ class MemoEditorDialog(QDialog):
         self.tag_combo.addItem("태그 없음", "")
         for tag in tags or []:
             self.tag_combo.addItem(tag, tag)
+            self.tag_combo.setItemData(
+                self.tag_combo.count() - 1,
+                QBrush(QColor((tag_colors or {}).get(tag, DEFAULT_TAG_COLOR))),
+                Qt.ForegroundRole,
+            )
         current_tag = str(self.memo.get("tag", ""))
         index = self.tag_combo.findData(current_tag)
         self.tag_combo.setCurrentIndex(max(0, index))
@@ -117,18 +133,25 @@ class MemoEditorDialog(QDialog):
 
 
 class TagManagerDialog(QDialog):
-    def __init__(self, parent=None, tags=None):
+    def __init__(self, parent=None, tags=None, tag_colors=None, tag_counts=None):
         super().__init__(parent)
         self.original_tags = list(tags or [])
+        self.tag_colors = dict(tag_colors or {})
+        self.tag_counts = dict(tag_counts or {})
         self.rename_map = {}
         self.setWindowTitle("태그 관리")
         self.resize(420, 430)
 
         self.tag_list = QListWidget()
-        self.tag_list.addItems(self.original_tags)
+        for tag in self.original_tags:
+            self._add_list_item(tag, self.tag_colors.get(tag, DEFAULT_TAG_COLOR))
         self.name_edit = QLineEdit()
         self.name_edit.setPlaceholderText("태그 이름")
-        self.tag_list.currentTextChanged.connect(self.name_edit.setText)
+        self.tag_list.currentItemChanged.connect(self._on_tag_selected)
+
+        self.color_button = QPushButton("상징색 선택")
+        self.color_button.clicked.connect(self._choose_color)
+        self._set_color_button(DEFAULT_TAG_COLOR)
 
         add_button = QPushButton("추가")
         rename_button = QPushButton("이름 변경")
@@ -143,6 +166,11 @@ class TagManagerDialog(QDialog):
         tools.addWidget(rename_button)
         tools.addWidget(delete_button)
 
+        color_tools = QHBoxLayout()
+        color_tools.addWidget(QLabel("태그 상징색"))
+        color_tools.addWidget(self.color_button)
+        color_tools.addStretch()
+
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
@@ -150,11 +178,47 @@ class TagManagerDialog(QDialog):
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel("메모를 분류하고 검색할 태그를 관리합니다."))
         layout.addLayout(tools)
+        layout.addLayout(color_tools)
         layout.addWidget(self.tag_list)
         layout.addWidget(buttons)
 
     def _names(self):
-        return [self.tag_list.item(i).text() for i in range(self.tag_list.count())]
+        return [self.tag_list.item(i).data(Qt.UserRole) for i in range(self.tag_list.count())]
+
+    def _add_list_item(self, name, color):
+        item = QListWidgetItem()
+        item.setData(Qt.UserRole, name)
+        item.setData(Qt.UserRole + 1, QColor(color).name())
+        self._refresh_item(item)
+        self.tag_list.addItem(item)
+
+    def _refresh_item(self, item):
+        name = item.data(Qt.UserRole)
+        color = item.data(Qt.UserRole + 1) or DEFAULT_TAG_COLOR
+        item.setText(f"●  {name}  ({self.tag_counts.get(name, 0)}개)")
+        item.setForeground(QBrush(QColor(color)))
+
+    def _on_tag_selected(self, current, _previous=None):
+        if not current:
+            return
+        self.name_edit.setText(current.data(Qt.UserRole))
+        self._set_color_button(current.data(Qt.UserRole + 1) or DEFAULT_TAG_COLOR)
+
+    def _set_color_button(self, color):
+        color = QColor(color).name()
+        self.color_button.setProperty("tagColor", color)
+        self.color_button.setStyleSheet(f"background-color: {color}; color: white;")
+
+    def _choose_color(self):
+        item = self.tag_list.currentItem()
+        initial = QColor(item.data(Qt.UserRole + 1) if item else self.color_button.property("tagColor"))
+        color = QColorDialog.getColor(initial, self, "태그 상징색 선택")
+        if not color.isValid():
+            return
+        self._set_color_button(color.name())
+        if item:
+            item.setData(Qt.UserRole + 1, color.name())
+            self._refresh_item(item)
 
     def _validated_name(self):
         name = self.name_edit.text().strip()
@@ -169,7 +233,7 @@ class TagManagerDialog(QDialog):
         if name in self._names():
             QMessageBox.warning(self, "입력 확인", "이미 존재하는 태그입니다.")
             return
-        self.tag_list.addItem(name)
+        self._add_list_item(name, self.color_button.property("tagColor") or DEFAULT_TAG_COLOR)
         self.name_edit.clear()
 
     def _rename(self):
@@ -177,11 +241,14 @@ class TagManagerDialog(QDialog):
         name = self._validated_name()
         if not item or not name:
             return
-        old_name = item.text()
+        old_name = item.data(Qt.UserRole)
         if name != old_name and name in self._names():
             QMessageBox.warning(self, "입력 확인", "이미 존재하는 태그입니다.")
             return
-        item.setText(name)
+        item.setData(Qt.UserRole, name)
+        if old_name in self.tag_counts:
+            self.tag_counts[name] = self.tag_counts.pop(old_name)
+        self._refresh_item(item)
         for original, current in list(self.rename_map.items()):
             if current == old_name:
                 self.rename_map[original] = name
@@ -202,7 +269,11 @@ class TagManagerDialog(QDialog):
         for original in self.original_tags:
             mapped = self.rename_map.get(original, original)
             mapping[original] = mapped if mapped in tags else ""
-        return tags, mapping
+        colors = {
+            self.tag_list.item(i).data(Qt.UserRole): self.tag_list.item(i).data(Qt.UserRole + 1)
+            for i in range(self.tag_list.count())
+        }
+        return tags, mapping, colors
 
 
 class MemoPage(QWidget):
@@ -262,15 +333,22 @@ class MemoPage(QWidget):
         self.tag_filter.blockSignals(True)
         self.tag_filter.clear()
         self.tag_filter.addItem("전체 태그", "")
-        for tag in self._load()["tags"]:
+        data = self._load()
+        for tag in data["tags"]:
             self.tag_filter.addItem(tag, tag)
+            self.tag_filter.setItemData(
+                self.tag_filter.count() - 1,
+                QBrush(QColor(data["tag_colors"].get(tag, DEFAULT_TAG_COLOR))),
+                Qt.ForegroundRole,
+            )
         index = self.tag_filter.findData(selected)
         self.tag_filter.setCurrentIndex(max(0, index))
         self.tag_filter.blockSignals(False)
 
     def load_data(self):
+        data = self._load()
         memos = filter_memos(
-            self._load()["memos"], self.search_edit.text(), self.tag_filter.currentData() or ""
+            data["memos"], self.search_edit.text(), self.tag_filter.currentData() or ""
         )
         memos.sort(key=lambda memo: memo.get("created_at", ""), reverse=True)
         self.table.setRowCount(len(memos))
@@ -280,6 +358,10 @@ class MemoPage(QWidget):
                 item = QTableWidgetItem(value)
                 if column == 0:
                     item.setData(Qt.UserRole, memo["id"])
+                elif column == 1 and memo["tag"]:
+                    color = QColor(data["tag_colors"].get(memo["tag"], DEFAULT_TAG_COLOR))
+                    item.setText(f"●  {memo['tag']}")
+                    item.setForeground(QBrush(color))
                 self.table.setItem(row, column, item)
 
     def showEvent(self, event):
@@ -294,7 +376,7 @@ class MemoPage(QWidget):
 
     def add_memo(self):
         data = self._load()
-        dialog = MemoEditorDialog(self, tags=data["tags"])
+        dialog = MemoEditorDialog(self, tags=data["tags"], tag_colors=data["tag_colors"])
         if dialog.exec() == QDialog.Accepted:
             data["memos"].append(dialog.get_data())
             self._save(data)
@@ -310,7 +392,9 @@ class MemoPage(QWidget):
         if index < 0:
             QMessageBox.warning(self, "선택 확인", "수정할 메모를 선택해 주세요.")
             return
-        dialog = MemoEditorDialog(self, data["memos"][index], data["tags"])
+        dialog = MemoEditorDialog(
+            self, data["memos"][index], data["tags"], data["tag_colors"]
+        )
         if dialog.exec() == QDialog.Accepted:
             data["memos"][index] = dialog.get_data()
             self._save(data)
@@ -331,10 +415,16 @@ class MemoPage(QWidget):
 
     def manage_tags(self):
         data = self._load()
-        dialog = TagManagerDialog(self, data["tags"])
+        tag_counts = {
+            tag: sum(1 for memo in data["memos"] if memo.get("tag") == tag)
+            for tag in data["tags"]
+        }
+        dialog = TagManagerDialog(
+            self, data["tags"], data["tag_colors"], tag_counts
+        )
         if dialog.exec() != QDialog.Accepted:
             return
-        data["tags"], mapping = dialog.get_changes()
+        data["tags"], mapping, data["tag_colors"] = dialog.get_changes()
         for memo in data["memos"]:
             if memo["tag"] in mapping:
                 memo["tag"] = mapping[memo["tag"]]

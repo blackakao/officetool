@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QApplication, QComboBox, QCheckBox, QDateEdit, QFileDialog, QProgressDialog, QStackedWidget
 )
 from ui.pages.logging_util import log
+from ui.pages.branch_task_settings import filter_branches_for_task
 
 
 FIELD_TYPES = {
@@ -40,6 +41,11 @@ def branch_control_parts(field_key):
     if len(parts) != 3 or parts[0] != "분기" or not parts[1].strip() or not parts[2].strip():
         return None
     return parts[1].strip(), parts[2].strip()
+
+
+def branch_child_type_options():
+    return [(key, label) for key, label in FIELD_TYPES.items() if key != "branch"]
+
 
 IMAGE_EXTENSIONS = {".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 
@@ -397,17 +403,18 @@ class ContentControlDialog(QDialog):
         self.table_lists_path = self.root / "data" / "table_lists.json"
         self.all_settings = read_json_file(self.settings_path, {"version": 1, "fields": {}, "documents": {}})
         self.settings = self.settings_for_file(self.all_settings, file_path)
-        self.branches = [
-            branch
-            for branch in read_json_file(self.branches_path, [])
-            if branch.get("active", True)
-        ]
+        self.branches = filter_branches_for_task(
+            read_json_file(self.branches_path, []),
+            "document",
+            self.root / "data" / "branch_task_settings.json",
+        )
         self.branch_fields = read_json_file(self.branch_fields_path, [])
         self.table_lists = read_json_file(self.table_lists_path, {"version": 1, "tables": []}).get("tables", [])
         self._migrate_branch_source_settings()
         self.controls = {}
         self.field_widgets = {}
         self.generate_widgets = {}
+        self.branch_setting_members = set()
         self.title_edit = None
         self.branch_combos = {}
         
@@ -622,19 +629,14 @@ class ContentControlDialog(QDialog):
         title_label = QLabel(f"<b>분기_{group_name}</b>")
         branch_type_combo = QComboBox()
         branch_type_combo.addItem(FIELD_TYPES["branch"], "branch")
-        option_combo = QComboBox()
-        stack = QStackedWidget()
-        for member in members:
-            option_combo.addItem(branch_control_parts(member)[1], member)
-            page = QWidget()
-            page_layout = QFormLayout(page)
-            self._add_field_row(page_layout, member, self.controls[member], branch_member=True)
-            stack.addWidget(page)
-        option_combo.currentIndexChanged.connect(stack.setCurrentIndex)
+        self.branch_setting_members.update(members)
+        option_names = ", ".join(branch_control_parts(member)[1] for member in members)
+        member_label = QLabel(option_names)
+        member_label.setWordWrap(True)
+        member_label.setStyleSheet("color: gray;")
         form_layout.addRow(title_label, None)
         form_layout.addRow("형태", branch_type_combo)
-        form_layout.addRow("분기 항목", option_combo)
-        form_layout.addRow("항목 설정", stack)
+        form_layout.addRow("묶인 항목", member_label)
         form_layout.addRow("", QLabel(""))
 
     def _add_generate_rows(self, form_layout):
@@ -667,22 +669,38 @@ class ContentControlDialog(QDialog):
                 member_widgets = {}
                 for member in members:
                     option_combo.addItem(branch_control_parts(member)[1], member)
-                    member_setting = configured_fields[member]
-                    member_type = member_setting.get("field_type", "text")
+                    # Generation widgets may normalize ``setting['type']``.
+                    # Keep the persisted branch marker untouched so the later
+                    # members are not rendered again as ordinary fields.
+                    member_type = "text"
+                    member_setting = {"type": member_type}
                     type_combo = QComboBox()
-                    type_combo.addItem(self._field_type_label(member_type), member_type)
+                    for type_key, label in branch_child_type_options():
+                        type_combo.addItem(label, type_key)
                     page = QWidget()
-                    page_layout = QHBoxLayout(page)
+                    page_layout = QVBoxLayout(page)
                     page_layout.setContentsMargins(0, 0, 0, 0)
+                    type_row = QHBoxLayout()
+                    type_row.addWidget(QLabel("형태"))
+                    type_row.addWidget(type_combo)
+                    type_row.addStretch()
+                    input_container = QWidget()
+                    input_layout = QHBoxLayout(input_container)
+                    input_layout.setContentsMargins(0, 0, 0, 0)
+                    page_layout.addLayout(type_row)
+                    page_layout.addWidget(input_container)
                     member_data = {
                         "type_combo": type_combo,
-                        "input_container": page,
-                        "input_layout": page_layout,
+                        "input_container": input_container,
+                        "input_layout": input_layout,
                         "setting": member_setting,
                         "branch_member": True,
                     }
                     self.field_widgets[member] = member_data
                     self._rebuild_field_input(member)
+                    type_combo.currentIndexChanged.connect(
+                        lambda _index, key=member: self._on_field_type_changed(key)
+                    )
                     member_widgets[member] = member_data
                     stack.addWidget(page)
                 option_combo.currentIndexChanged.connect(stack.setCurrentIndex)
@@ -1443,7 +1461,10 @@ class ContentControlDialog(QDialog):
         return errors
 
     def _collect_field_settings(self):
-        fields = {}
+        fields = {
+            field_key: {"type": "branch"}
+            for field_key in self.branch_setting_members
+        }
         for field_key, widgets in self.field_widgets.items():
             field_type = widgets["type_combo"].currentData() or "text"
             setting = {"type": field_type}
