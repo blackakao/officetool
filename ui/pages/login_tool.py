@@ -100,13 +100,33 @@ class LoginTool(QWidget):
         else:
             login_thread = CareforLoginThread(branch)
 
-        login_thread.finished_signal.connect(self.on_login_finished)
+        login_thread.finished_signal.connect(
+            lambda message, success, thread=login_thread: self.on_login_finished(
+                message, success, thread
+            )
+        )
         login_thread.start()
         self.login_threads.append(login_thread)
 
-    def on_login_finished(self, message, success):
+    def on_login_finished(self, message, success, login_thread=None):
         level = "INFO" if success else "ERROR"
         self._log(message, level=level)
+        if success and login_thread and login_thread.driver:
+            self.watch_browser(login_thread.driver)
+
+    def watch_browser(self, driver):
+        """마지막 브라우저 창이 닫히면 WebDriver 프로세스도 종료합니다."""
+        monitor = BrowserCloseMonitor(driver)
+        monitor.closed_signal.connect(
+            lambda: self._log("브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.")
+        )
+        monitor.finished.connect(lambda m=monitor: self._remove_thread(m))
+        self.login_threads.append(monitor)
+        monitor.start()
+
+    def _remove_thread(self, thread):
+        if thread in self.login_threads:
+            self.login_threads.remove(thread)
 
     def showEvent(self, event):
         """페이지가 보여질 때마다 새로고침"""
@@ -196,6 +216,75 @@ class BaseLoginThread(QThread):
 
     def perform_login(self, wait):
         raise NotImplementedError("Subclasses must implement perform_login")
+
+
+class BrowserCloseMonitor(QThread):
+    """브라우저의 마지막 창이 닫힐 때 Selenium 세션과 서비스를 정리합니다."""
+
+    closed_signal = Signal()
+
+    def __init__(self, driver, poll_interval_ms: int = 1000):
+        super().__init__()
+        self.driver = driver
+        self.poll_interval_ms = poll_interval_ms
+
+    def run(self):
+        while not self.isInterruptionRequested():
+            try:
+                if self.driver.window_handles:
+                    self.msleep(self.poll_interval_ms)
+                    continue
+            except WebDriverException:
+                # 사용자가 Chrome 자체를 종료한 경우 세션 조회도 실패합니다.
+                pass
+            except Exception:
+                pass
+
+            self._quit_driver()
+            self.closed_signal.emit()
+            return
+
+    def _quit_driver(self):
+        try:
+            self.driver.quit()
+        except Exception:
+            pass
+        finally:
+            self._stop_driver_service()
+
+    def _stop_driver_service(self):
+        """quit 결과와 관계없이 이 드라이버가 실행한 ChromeDriver를 종료합니다."""
+        service = getattr(self.driver, "service", None)
+        if not service:
+            return
+
+        process = getattr(service, "process", None)
+        try:
+            service.stop()
+        except Exception:
+            pass
+
+        if not process:
+            return
+
+        try:
+            process.wait(timeout=3)
+            return
+        except Exception:
+            pass
+
+        try:
+            process.terminate()
+            process.wait(timeout=2)
+            return
+        except Exception:
+            pass
+
+        try:
+            process.kill()
+            process.wait(timeout=2)
+        except Exception:
+            pass
 
 
 class CareforLoginThread(BaseLoginThread):

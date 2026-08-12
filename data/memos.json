@@ -11,7 +11,7 @@
         "정보": "#ff0000",
         "API": "#00aa00",
         "설비": "#607d8b",
-        "개념": "#607d8b",
+        "개념": "#ffff00",
         "로그인정보": "#0000ff"
     },
     "memos": [
@@ -133,6 +133,20 @@
             "tag": "로그인정보",
             "content": "id: silverking2021\npwd: *장수만ㅅ1",
             "created_at": "2026-08-11 16:17"
+        },
+        {
+            "id": "e3385b5019e7484caee63795b97c9da6",
+            "title": "본사 5층 와이파이",
+            "tag": "설비",
+            "content": "ID: silverking\npwd: a12345678",
+            "created_at": "2026-08-12 08:16"
+        },
+        {
+            "id": "2fc6324ae52440cf8d1fe2ed0b8a511f",
+            "title": "결제선생",
+            "tag": "로그인정보",
+            "content": "id: silverking0615@yoyangin.com\npwd: EhmffuTsl??dk5...\n(또틀렸니??아5...)",
+            "created_at": "2026-08-12 08:16"
         }
     ]
 }

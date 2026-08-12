@@ -33,7 +33,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
-from ui.pages.login_tool import LongtermLoginThread
+from ui.pages.login_tool import BrowserCloseMonitor, LongtermLoginThread
 from ui.pages.logging_util import log, should_log_message
 from ui.pages.branch_task_settings import filter_branches_for_task
 
@@ -1373,11 +1373,26 @@ class FederationTool(QWidget):
         def _on_finished(m, ok):
             self.status_label.setText(m)
             self._log(m, level=("INFO" if ok else "ERROR"))
+            self._watch_browser(driver)
 
         claim_thread.status_signal.connect(_update_status)
         claim_thread.finished_signal.connect(_on_finished)
         claim_thread.start()
         self.login_threads.append(claim_thread)
+
+    def _watch_browser(self, driver):
+        """후속 자동화가 끝난 뒤 브라우저 종료를 감시합니다."""
+        monitor = BrowserCloseMonitor(driver)
+        monitor.closed_signal.connect(
+            lambda: self._log("브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.")
+        )
+        monitor.finished.connect(lambda m=monitor: self._remove_thread(m))
+        self.login_threads.append(monitor)
+        monitor.start()
+
+    def _remove_thread(self, thread):
+        if thread in self.login_threads:
+            self.login_threads.remove(thread)
 
     def showEvent(self, event):
         super().showEvent(event)

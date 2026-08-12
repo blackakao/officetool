@@ -3208,3 +3208,60 @@ Stacktrace:
 2026-08-11 17:45:58 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=롱텀
 2026-08-11 17:46:06 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
 2026-08-11 17:46:06 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-12 09:02:08 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=케어포
+2026-08-12 09:02:16 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 09:22:56 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-08-12 09:23:04 [ERROR] [LoginTool] Chrome 자동화 실패: Alert Text: 인증서 암호를 입력하십시오.
+Message: unexpected alert open: {Alert text : 인증서 암호를 입력하십시오.}
+  (Session info: chrome=151.0.7922.109)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff665d8abb5+151b5]
+	chromedriver!GetHandleVerifier [0x7ff665d8ac10+15210]
+	chromedriver!(No symbol) [0x7ff6658b5d6d]
+	chromedriver!(No symbol) [0x7ff66595f69e]
+	chromedriver!(No symbol) [0x7ff6659037cc]
+	chromedriver!(No symbol) [0x7ff6659046f3]
+	chromedriver!GetHandleVerifier [0x7ff6663ab79b+635d9b]
+	chromedriver!GetHandleVerifier [0x7ff6663a5ac6+6300c6]
+	chromedriver!GetHandleVerifier [0x7ff6663cbcee+6562ee]
+	chromedriver!GetHandleVerifier [0x7ff665da8ffe+335fe]
+	chromedriver!GetHandleVerifier [0x7ff665db147c+3ba7c]
+	chromedriver!GetHandleVerifier [0x7ff665d94d64+1f364]
+	chromedriver!GetHandleVerifier [0x7ff665d94ef4+1f4f4]
+	chromedriver!GetHandleVerifier [0x7ff665d77d97+2397]
+	KERNEL32!BaseThreadInitThunk [0x7ffbd8cde957+17]
+	ntdll!RtlUserThreadStart [0x7ffbd9c6ad6c+2c]
+
+2026-08-12 09:23:07 [INFO] [LoginTool] [운양점] 로그인 시도, 기관기호=14157000521, 타입=롱텀
+2026-08-12 09:23:14 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-12 09:23:14 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-12 09:26:18 [INFO] [LoginTool] [천안점] 로그인 시도, 기관기호=14413000646, 타입=롱텀
+2026-08-12 09:26:26 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-12 09:26:26 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-12 09:31:23 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-08-12 09:31:25 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 09:41:52 [INFO] [LoginTool] [화성점] 로그인 시도, 기관기호=14159000792, 타입=케어포
+2026-08-12 09:41:54 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 09:46:12 [INFO] [LoginTool] [아산점] 로그인 시도, 기관기호=14420000352, 타입=케어포
+2026-08-12 09:46:15 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 10:22:43 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-08-12 10:22:53 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-12 10:22:53 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-12 10:43:58 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-08-12 10:44:01 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 10:44:04 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=롱텀
+2026-08-12 10:44:12 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-12 10:44:12 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-12 10:44:57 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-08-12 10:45:00 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 11:52:33 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=케어포
+2026-08-12 11:52:35 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 11:55:47 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=롱텀
+2026-08-12 11:55:56 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-12 11:55:56 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-12 11:59:59 [INFO] [LoginTool] [분당3관] 로그인 시도, 기관기호=14161000224, 타입=케어포
+2026-08-12 12:00:02 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 12:00:11 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-12 12:58:07 [INFO] [LoginTool] [분당점] 로그인 시도, 기관기호=14161000183, 타입=케어포
+2026-08-12 12:58:11 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-12 12:58:32 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
