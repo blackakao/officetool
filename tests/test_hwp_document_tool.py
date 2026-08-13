@@ -1,7 +1,7 @@
 from ui.pages.hwp_document_tool import HwpAutomation
 
 
-def test_hwp_field_names_remove_duplicate_suffixes():
+def test_hwp_field_names_preserve_duplicates_after_removing_suffixes():
     automation = HwpAutomation()
 
     class FakeHwp:
@@ -11,7 +11,7 @@ def test_hwp_field_names_remove_duplicate_suffixes():
 
     automation.hwp = FakeHwp()
 
-    assert automation.field_names() == ["이름", "주소"]
+    assert automation.field_names() == ["이름", "주소", "이름"]
 
 
 def test_hwp_base_field_name_only_removes_numeric_suffix():

@@ -38,24 +38,46 @@
                 "branch_select_2": "분당점"
             },
             "fields": {
-                "분기_시설종류_주거복지": {
-                    "default_value": "■",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_시설종류_의료복지": {
-                    "default_value": "■",
-                    "field_type": "text",
-                    "type": "branch"
-                },
                 "분기_시설종류_여가복지": {
-                    "default_value": "■",
-                    "field_type": "text",
+                    "type": "branch"
+                },
+                "분기_변경전_정원": {
+                    "type": "branch"
+                },
+                "분기_시설종류_주거복지": {
                     "type": "branch"
                 },
                 "분기_시설종류_재가복지": {
-                    "default_value": "■",
-                    "field_type": "text",
+                    "type": "branch"
+                },
+                "분기_변경전_시설장이름": {
+                    "type": "branch"
+                },
+                "분기_변경전_시설명칭": {
+                    "type": "branch"
+                },
+                "분기_변경전_시설장주소": {
+                    "type": "branch"
+                },
+                "분기_변경후_시설장이름": {
+                    "type": "branch"
+                },
+                "분기_변경후_시설장민번": {
+                    "type": "branch"
+                },
+                "분기_시설종류_의료복지": {
+                    "type": "branch"
+                },
+                "분기_변경전_시설소재지": {
+                    "type": "branch"
+                },
+                "분기_변경전_대표자": {
+                    "type": "branch"
+                },
+                "분기_변경후_시설장주소": {
+                    "type": "branch"
+                },
+                "분기_변경전_시설장민번": {
                     "type": "branch"
                 },
                 "장기요양기관 법인명": {
@@ -65,68 +87,152 @@
                 },
                 "대표자 주소": {
                     "type": "table_list",
-                    "table_list_id": "6526677c3def46cd93acdfad54ed637a",
-                    "default_value": "시설장"
+                    "table_list_id": "ffcdb5f65d684f8d8aecfcc0e674ed7b",
+                    "default_value": "경기도 고양시 일산동구 강송로 33, 104-5902"
                 },
                 "전화번호": {
                     "type": "branch_value",
                     "source_field": "branch_select",
                     "branch_value_key": "custom_전화번호"
                 },
-                "분기_변경전_대표자": {
-                    "default_value": "ㅁㄴㅇ",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경전_시설명칭": {
-                    "default_value": "ㅁㄴㅇ",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경전_시설소재지": {
-                    "default_value": "ㅁㄴㅇ",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경전_정원": {
-                    "default_value": "123",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경전_시설장이름": {
-                    "default_value": "홍길동",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경전_시설장민번": {
-                    "default_value": "881017-1075327",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경전_시설장주소": {
-                    "default_value": "경기도 고양시 일산서구 일산로 488, 1306-702",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경후_시설장이름": {
-                    "default_value": "홍길동",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경후_시설장민번": {
-                    "default_value": "881017-1075327",
-                    "field_type": "text",
-                    "type": "branch"
-                },
-                "분기_변경후_시설장주소": {
-                    "default_value": "경기도 고양시 일산서구 일산로 488, 1306-702",
-                    "field_type": "text",
-                    "type": "branch"
-                },
                 "법인 대표자": {
                     "type": "branch_value",
                     "source_field": "branch_select",
                     "branch_value_key": "owner_name"
+                }
+            }
+        },
+        "근로계약서.hwp": {
+            "version": 1,
+            "branches": {
+                "branch_select": "분당점",
+                "branch_select_2": "분당점"
+            },
+            "fields": {
+                "장기요양기관명": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_name"
+                },
+                "종사자명": {
+                    "type": "text",
+                    "default_value": "홍길동"
+                },
+                "근무시작일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "today"
+                },
+                "근무종료일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "field_calculation",
+                    "source_date_field": "근무시작일",
+                    "date_offset_sign": 1,
+                    "date_offset_days": 30
+                },
+                "장기요양기관 주소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "address"
+                },
+                "종사자 직종": {
+                    "type": "table_list",
+                    "table_list_id": "6526677c3def46cd93acdfad54ed637a",
+                    "default_value": "시설장"
+                },
+                "종사자 근무내용": {
+                    "type": "table_list",
+                    "table_list_id": "24c96c91e13e43cfa65d2c3b94c957ba",
+                    "default_value": "시설 업무 총괄"
+                },
+                "종사자 근무형태": {
+                    "type": "table_list",
+                    "table_list_id": "ac7c005d85204ba6aa3a4c6a0470abc9",
+                    "default_value": "주간근무"
+                },
+                "종사자 근무시간": {
+                    "type": "table_list",
+                    "table_list_id": "138c4b91adb349e385a8388ee6f04a0c",
+                    "default_value": "매주 5일 주간 근무"
+                },
+                "종사자 휴게시간": {
+                    "type": "table_list",
+                    "table_list_id": "97f92eaf7d154f2290aace431cd831af",
+                    "default_value": "12:00~13:00"
+                },
+                "종사자 근무일": {
+                    "type": "table_list",
+                    "table_list_id": "edf9b3b9392d44b393159fb7325e29f5",
+                    "default_value": "근무일정표(근무편성표)에 따른다."
+                },
+                "종사자 휴일": {
+                    "type": "table_list",
+                    "table_list_id": "5af64b9f44664437b87eb2e621b5ef88",
+                    "default_value": "근무일정표에 따라 사전에 지정한 주 1일"
+                },
+                "월근무시간": {
+                    "type": "amount",
+                    "use_comma": false,
+                    "default_value": "209"
+                },
+                "기본급": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "2200000"
+                },
+                "night_time": {
+                    "type": "amount",
+                    "use_comma": false,
+                    "default_value": "0"
+                },
+                "야간수당": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "225000"
+                },
+                "종사자 식비": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "100000"
+                },
+                "급여합계": {
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "2350000"
+                },
+                "은행명": {
+                    "type": "table_list",
+                    "table_list_id": "f14bcfb6ca9c4c48b190527bf22bf82c",
+                    "default_value": "KB국민은행"
+                },
+                "account_num": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "sign": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_기관직인"
+                },
+                "근로계약일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "today"
+                },
+                "장기요양기관 대표": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "owner_name"
+                },
+                "종사자 생년월일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "today"
+                },
+                "종사자 주소": {
+                    "type": "text",
+                    "default_value": ""
                 }
             }
         }

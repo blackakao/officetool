@@ -5,14 +5,16 @@
         "API",
         "설비",
         "개념",
-        "로그인정보"
+        "로그인정보",
+        "미비된일"
     ],
     "tag_colors": {
         "정보": "#ff0000",
         "API": "#00aa00",
         "설비": "#607d8b",
         "개념": "#ffff00",
-        "로그인정보": "#0000ff"
+        "로그인정보": "#0000ff",
+        "미비된일": "#ff00ff"
     },
     "memos": [
         {
@@ -124,7 +126,7 @@
             "id": "7a6d16ceb0a943ddb937b3f57d3ba740",
             "title": "국민 공공데이터 포럼(Open API)",
             "tag": "로그인정보",
-            "content": "id: aktgoa1017\npwd: 03-----",
+            "content": "ID: aktgoa1017\npwd: 03-----",
             "created_at": "2026-08-11 16:16"
         },
         {
@@ -145,8 +147,29 @@
             "id": "2fc6324ae52440cf8d1fe2ed0b8a511f",
             "title": "결제선생",
             "tag": "로그인정보",
-            "content": "id: silverking0615@yoyangin.com\npwd: EhmffuTsl??dk5...\n(또틀렸니??아5...)",
+            "content": "ID: silverking0615@yoyangin.com\npwd: EhmffuTsl??dk5...\n(또틀렸니??아5...)",
             "created_at": "2026-08-12 08:16"
+        },
+        {
+            "id": "9181140c76f94ab29e75c939af8b1e18",
+            "title": "정부24",
+            "tag": "로그인정보",
+            "content": "ID: aktgoa1017\npwd: djWj*****",
+            "created_at": "2026-08-12 17:39"
+        },
+        {
+            "id": "9319625c30e44b6fb9c9c76881eeb64a",
+            "title": "본점3관",
+            "tag": "미비된일",
+            "content": "서류 제출\n- 설비구조내역서\n- 평면도\n- 시설현황\n- 전기안전점검\n\n사진 제출\n- 간호실 카우보이 문 장착\n- CCTV 해상도 보정 사진\n- CCTV 화각 조정 사진\n\n응대\n- 소방: 수직구조대를 이번주중 설치해서 소방점검 완료해서 줄거다?",
+            "created_at": "2026-08-13 08:27"
+        },
+        {
+            "id": "1d316107de9f4d88aa4818e541f58a38",
+            "title": "서초점 설치담당자",
+            "tag": "미비된일",
+            "content": "02-2155-8876",
+            "created_at": "2026-08-13 11:02"
         }
     ]
 }

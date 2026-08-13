@@ -69,7 +69,7 @@ class HwpAutomation:
         names = []
         for name in re.split(r"[\x02\r\n]+", str(raw)):
             name = self._base_field_name(name)
-            if name and name not in names:
+            if name:
                 names.append(name)
         return names
 
@@ -113,13 +113,14 @@ class HwpContentControlDialog(ContentControlDialog):
         with HwpAutomation() as automation:
             automation.open(self.file_path)
             for index, field_name in enumerate(automation.field_names()):
-                controls[field_name] = {
+                control = controls.setdefault(field_name, {
                     "tag": field_name,
                     "alias": "",
                     "placeholder": "",
                     "current_text": automation.field_text(field_name),
-                    "indices": [index],
-                }
+                    "indices": [],
+                })
+                control["indices"].append(index)
         return controls
 
     def _resolved_hwp_values(self, values_dict):
@@ -201,4 +202,3 @@ class HwpDocumentTool(DocumentTool):
 
     def _create_dialog(self, file_path, mode):
         return HwpContentControlDialog(self, None, file_path, mode=mode)
-
