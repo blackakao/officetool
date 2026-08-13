@@ -3473,3 +3473,84 @@ Stacktrace:
 2026-08-13 13:09:56 [INFO] [DocumentTool] 문서 설정 열기 시도: 근로계약서.hwp
 2026-08-13 13:10:42 [INFO] [DocumentTool] 문서 설정 열기 완료: 근로계약서.hwp
 2026-08-13 13:10:44 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 13:27:37 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 13:28:10 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-08-13 13:28:13 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-13 14:04:22 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-13 14:04:29 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 14:11:51 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 14:11:52 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 14:12:33 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 14:22:52 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 14:23:14 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 14:23:33 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 14:23:39 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 14:23:40 [INFO] [DocumentTool] 문서 생성 열기 시도: 변경신고.hwp
+2026-08-13 14:23:52 [INFO] [DocumentTool] 문서 생성 창 닫힘: 변경신고.hwp
+2026-08-13 14:24:01 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 14:24:05 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 14:25:23 [INFO] [DocumentTool] 문서 설정 열기 시도: 변경신고.hwp
+2026-08-13 16:29:24 [INFO] [DocumentTool] 문서 설정 열기 완료: 변경신고.hwp
+2026-08-13 16:36:43 [INFO] [LoginTool] [(구)탄현점] 로그인 시도, 기관기호=14128000972, 타입=케어포
+2026-08-13 16:36:46 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-13 16:37:00 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-13 16:41:35 [INFO] [LoginTool] [(구)탄현점] 로그인 시도, 기관기호=14128000972, 타입=롱텀
+2026-08-13 16:41:42 [WARNING] [LoginTool] 공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.
+2026-08-13 16:41:42 [INFO] [LoginTool] 롱텀 공단 로그인 절차를 완료했습니다.
+2026-08-13 16:43:47 [INFO] [LoginTool] [탄현점] 로그인 시도, 기관기호=14128001825, 타입=케어포
+2026-08-13 16:43:49 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-13 16:43:50 [INFO] [LoginTool] [(구)탄현점] 로그인 시도, 기관기호=14128000972, 타입=케어포
+2026-08-13 16:43:51 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-13 16:43:53 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-13 16:45:25 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-13 16:45:27 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-13 16:47:09 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 16:48:31 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 16:50:13 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 16:53:45 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 16:53:47 [INFO] [HwpDocumentTool] PDF 생성 완료: C:\workspace\MyTool\document_hwp\maked\사직서.pdf
+2026-08-13 16:53:47 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 16:54:11 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-08-13 16:54:14 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-13 16:57:05 [INFO] [LoginTool] 브라우저 종료를 감지해 자동화 프로세스를 종료했습니다.
+2026-08-13 17:02:05 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:02:28 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:02:29 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:03:37 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:03:43 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:03:45 [INFO] [HwpDocumentTool] PDF 생성 완료: C:\workspace\MyTool\document_hwp\maked\김혜진 사직서.pdf
+2026-08-13 17:03:46 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 17:04:02 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:04:13 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:04:16 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:04:29 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 17:04:30 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:04:59 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:05:00 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:05:08 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:05:13 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:05:14 [INFO] [HwpDocumentTool] PDF 생성 완료: C:\workspace\MyTool\document_hwp\maked\김혜진 사직서222.pdf
+2026-08-13 17:05:33 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 17:05:35 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:05:44 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:05:46 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:06:14 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:06:16 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:06:35 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:06:36 [INFO] [HwpDocumentTool] PDF 생성 완료: C:\workspace\MyTool\document_hwp\maked\김혜진 사직서333.pdf
+2026-08-13 17:08:14 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 17:08:17 [INFO] [LoginTool] [양천점] 로그인 시도, 기관기호=11147000548, 타입=케어포
+2026-08-13 17:08:20 [INFO] [LoginTool] 케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.
+2026-08-13 17:45:16 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:45:20 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:45:22 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:45:33 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 17:45:34 [INFO] [DocumentTool] 문서 설정 열기 시도: 사직서.hwp
+2026-08-13 17:46:00 [INFO] [DocumentTool] 문서 설정 열기 완료: 사직서.hwp
+2026-08-13 17:46:03 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:57:18 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp
+2026-08-13 17:57:35 [INFO] [DocumentTool] 문서 생성 열기 시도: 사직서.hwp
+2026-08-13 17:57:44 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:57:51 [INFO] [DocumentTool] 문서 생성 시도: 사직서.hwp
+2026-08-13 17:57:53 [INFO] [HwpDocumentTool] PDF 생성 완료: C:\workspace\MyTool\document_hwp\maked\김혜진 사직서_다시.pdf
+2026-08-13 17:57:54 [INFO] [DocumentTool] 문서 생성 창 닫힘: 사직서.hwp

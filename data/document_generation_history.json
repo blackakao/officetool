@@ -1,0 +1,80 @@
+{
+    "version": 1,
+    "documents": {
+        "hwp_document_field_settings.json::사직서.hwp": [
+            {
+                "title": "김혜진 사직서_다시",
+                "created_at": "2026-08-13T17:57:53",
+                "values": {
+                    "Job": "시설장",
+                    "BirthDate": "1972.01.14",
+                    "Name": "김혜진",
+                    "EnterDate": "2026.04.01",
+                    "Content": "개인사유",
+                    "EndDate": "2026.08.12",
+                    "EndYear": "2026",
+                    "EndMonth": "08",
+                    "EndDay": "03",
+                    "Sign": {
+                        "type": "image",
+                        "path": "C:\\workspace\\MyTool\\images\\sign\\김혜진.png",
+                        "width": 30,
+                        "height": 30
+                    },
+                    "장기요양기관명": "서울시니어타운"
+                },
+                "branches": {
+                    "branch_select": "양천점",
+                    "branch_select_2": "분당점"
+                }
+            },
+            {
+                "title": "김혜진 사직서333",
+                "created_at": "2026-08-13T17:06:36",
+                "values": {
+                    "Job": "시설장",
+                    "BirthDate": "1972.01.14",
+                    "Name": "김혜진",
+                    "EnterDate": "2026.04.01",
+                    "Content": "개인사유",
+                    "EndDate": "2026.08.12",
+                    "EndYear": "2026",
+                    "EndMonth": "08",
+                    "EndDay": "03",
+                    "Sign": "",
+                    "장기요양기관명": "서울시니어타운"
+                },
+                "branches": {
+                    "branch_select": "양천점",
+                    "branch_select_2": "분당점"
+                }
+            },
+            {
+                "title": "김혜진 사직서222",
+                "created_at": "2026-08-13T17:05:15",
+                "values": {
+                    "Job": "시설장",
+                    "BirthDate": "1972.01.14",
+                    "Name": "김혜진",
+                    "EnterDate": "2026.04.01",
+                    "Content": "개인사유",
+                    "EndDate": "2026.08.12",
+                    "EndYear": "2026",
+                    "EndMonth": "08",
+                    "EndDay": "03",
+                    "Sign": {
+                        "type": "image",
+                        "path": "C:\\workspace\\MyTool\\images\\sign\\김혜진.png",
+                        "width": 3,
+                        "height": 3
+                    },
+                    "장기요양기관명": "서울시니어타운"
+                },
+                "branches": {
+                    "branch_select": "양천점",
+                    "branch_select_2": "분당점"
+                }
+            }
+        ]
+    }
+}

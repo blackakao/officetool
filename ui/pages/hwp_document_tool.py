@@ -93,7 +93,7 @@ class HwpAutomation:
         height = float(value.get("height", 30) or 30)
         try:
             self.hwp.InsertPicture(
-                str(image_path.resolve()), True, 3, False, False, 0, width, height
+                str(image_path.resolve()), True, 1, False, False, 0, width, height
             )
         except TypeError:
             # 오래된 한글 버전은 폭/높이 인수가 없는 형식을 사용한다.

@@ -235,6 +235,70 @@
                     "default_value": ""
                 }
             }
+        },
+        "사직서.hwp": {
+            "version": 1,
+            "branches": {
+                "branch_select": "분당점",
+                "branch_select_2": "분당점"
+            },
+            "fields": {
+                "Job": {
+                    "type": "table_list",
+                    "table_list_id": "6526677c3def46cd93acdfad54ed637a",
+                    "default_value": "시설장"
+                },
+                "BirthDate": {
+                    "type": "date",
+                    "date_format": "yyyy.MM.dd",
+                    "date_default_type": "today"
+                },
+                "Name": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "EnterDate": {
+                    "type": "date",
+                    "date_format": "yyyy.MM.dd",
+                    "date_default_type": "today"
+                },
+                "Content": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "EndDate": {
+                    "type": "date",
+                    "date_format": "yyyy.MM.dd",
+                    "date_default_type": "today"
+                },
+                "EndYear": {
+                    "type": "amount",
+                    "use_comma": false,
+                    "default_value": ""
+                },
+                "EndMonth": {
+                    "type": "amount",
+                    "use_comma": false,
+                    "default_value": ""
+                },
+                "EndDay": {
+                    "type": "amount",
+                    "use_comma": false,
+                    "default_value": ""
+                },
+                "Sign": {
+                    "type": "folder",
+                    "folder_path": "C:/workspace/MyTool/images/sign",
+                    "value_field": "Name",
+                    "width": 30,
+                    "height": 30
+                },
+                "장기요양기관명": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_name"
+                }
+            }
         }
     }
 }
