@@ -7,10 +7,10 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
     QDialogButtonBox,
-    QFormLayout,
     QHeaderView,
     QHBoxLayout,
     QLineEdit,
+    QListWidget,
     QMessageBox,
     QPushButton,
     QSizePolicy,
@@ -32,27 +32,97 @@ DEFAULT_TASKS = [
 ]
 
 
-class TaskDialog(QDialog):
-    def __init__(self, parent=None):
+class TaskManagerDialog(QDialog):
+    def __init__(self, parent=None, tasks=None):
         super().__init__(parent)
-        self.setWindowTitle("업무 추가")
+        self.original_tasks = list(tasks or [])
+        self.rename_map = {}
+        self.setWindowTitle("업무 관리")
+        self.resize(450, 430)
 
-        self.task_name_edit = QLineEdit()
+        self.task_list = QListWidget()
+        self.task_list.addItems(self.original_tasks)
+        self.name_edit = QLineEdit()
+        self.name_edit.setPlaceholderText("업무명")
+        self.task_list.currentTextChanged.connect(self.name_edit.setText)
 
-        form_layout = QFormLayout()
-        form_layout.addRow("업무명:", self.task_name_edit)
+        add_button = QPushButton("추가")
+        rename_button = QPushButton("수정")
+        delete_button = QPushButton("삭제")
+        add_button.clicked.connect(self._add)
+        rename_button.clicked.connect(self._rename)
+        delete_button.clicked.connect(self._delete)
 
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        tools = QHBoxLayout()
+        tools.addWidget(self.name_edit)
+        tools.addWidget(add_button)
+        tools.addWidget(rename_button)
+        tools.addWidget(delete_button)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
 
-        layout = QVBoxLayout()
-        layout.addLayout(form_layout)
+        layout = QVBoxLayout(self)
+        layout.addLayout(tools)
+        layout.addWidget(self.task_list)
         layout.addWidget(buttons)
-        self.setLayout(layout)
 
-    def get_task_name(self):
-        return self.task_name_edit.text().strip()
+    def _names(self):
+        return [self.task_list.item(i).text() for i in range(self.task_list.count())]
+
+    def _validated_name(self):
+        name = self.name_edit.text().strip()
+        if not name:
+            QMessageBox.warning(self, "입력 오류", "업무명을 입력해주세요.")
+        return name
+
+    def _add(self):
+        name = self._validated_name()
+        if not name:
+            return
+        if name in self._names():
+            QMessageBox.warning(self, "입력 오류", "이미 등록된 업무입니다.")
+            return
+        self.task_list.addItem(name)
+        self.name_edit.clear()
+
+    def _rename(self):
+        item = self.task_list.currentItem()
+        name = self._validated_name()
+        if not item or not name:
+            return
+        old_name = item.text()
+        if name != old_name and name in self._names():
+            QMessageBox.warning(self, "입력 오류", "이미 등록된 업무입니다.")
+            return
+        item.setText(name)
+        for original, current in list(self.rename_map.items()):
+            if current == old_name:
+                self.rename_map[original] = name
+                break
+        else:
+            if old_name in self.original_tasks:
+                self.rename_map[old_name] = name
+
+    def _delete(self):
+        row = self.task_list.currentRow()
+        if row < 0:
+            QMessageBox.warning(self, "선택 확인", "삭제할 업무를 선택해주세요.")
+            return
+        if self.task_list.count() == 1:
+            QMessageBox.warning(self, "삭제 불가", "업무는 최소 한 개 이상 있어야 합니다.")
+            return
+        self.task_list.takeItem(row)
+        self.name_edit.clear()
+
+    def get_changes(self):
+        tasks = self._names()
+        mapping = {}
+        for original in self.original_tasks:
+            mapped = self.rename_map.get(original, original)
+            mapping[original] = mapped if mapped in tasks else ""
+        return tasks, mapping
 
 
 class MonthlyWorkCheckPage(QWidget):
@@ -78,7 +148,7 @@ class MonthlyWorkCheckPage(QWidget):
 
         task_layout = QHBoxLayout()
         self.task_combo = QComboBox()
-        self.add_task_button = QPushButton("업무 추가")
+        self.add_task_button = QPushButton("업무 관리")
         self.summary_button = QPushButton("월간 업무 총괄 확인")
         self.summary_button.setCheckable(True)
         task_layout.addWidget(self.task_combo)
@@ -105,7 +175,7 @@ class MonthlyWorkCheckPage(QWidget):
         self.year_combo.currentIndexChanged.connect(self.load_data)
         self.month_combo.currentIndexChanged.connect(self.load_data)
         self.task_combo.currentTextChanged.connect(self.load_data)
-        self.add_task_button.clicked.connect(self.add_task)
+        self.add_task_button.clicked.connect(self.manage_tasks)
         self.summary_button.clicked.connect(self.toggle_summary_mode)
 
     def _setup_month_picker(self):
@@ -205,29 +275,61 @@ class MonthlyWorkCheckPage(QWidget):
         )
         return button
 
-    def add_task(self):
-        dialog = TaskDialog(self)
+    def toggle_summary_mode(self):
+        self.is_summary_mode = self.summary_button.isChecked()
+        self.load_data()
+
+    def complete_task_for_all_branches(self, task_name):
+        data = self._load_data()
+        branches = self._load_branches()
+        incomplete_count = sum(
+            1
+            for branch in branches
+            if not self._completed_at(data, self._branch_key(branch), task_name)
+        )
+
+        if incomplete_count == 0:
+            QMessageBox.information(self, "전체 완료", f"'{task_name}' 업무는 이미 모두 완료되어 있습니다.")
+            return
+
+        month_label = f"{self.year_combo.currentData()}년 {self.month_combo.currentData()}월"
+        if QMessageBox.question(
+            self,
+            "전체 완료 확인",
+            f"{month_label}의 '{task_name}' 미완료 {incomplete_count}건을 모두 완료 처리하시겠습니까?",
+            QMessageBox.Yes | QMessageBox.No,
+        ) != QMessageBox.Yes:
+            return
+
+        completed_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+        month_records = data.setdefault("records", {}).setdefault(self._month_key(), {})
+        task_records = month_records.setdefault(task_name, {})
+        for branch in branches:
+            task_records.setdefault(self._branch_key(branch), completed_at)
+
+        self._save_data(data)
+        self.load_data()
+
+    def manage_tasks(self):
+        data = self._load_data()
+        dialog = TaskManagerDialog(self, data["tasks"])
         if dialog.exec() != QDialog.Accepted:
             return
 
-        task_name = dialog.get_task_name()
-        if not task_name:
-            QMessageBox.warning(self, "입력 오류", "업무명을 입력해주세요.")
-            return
+        tasks, mapping = dialog.get_changes()
+        data["tasks"] = tasks
+        for month_records in data.get("records", {}).values():
+            if not isinstance(month_records, dict):
+                continue
+            for old_name, new_name in mapping.items():
+                if old_name not in month_records or old_name == new_name:
+                    continue
+                old_records = month_records.pop(old_name)
+                if new_name:
+                    month_records.setdefault(new_name, {}).update(old_records)
 
-        data = self._load_data()
-        if task_name in data["tasks"]:
-            QMessageBox.warning(self, "입력 오류", "이미 등록된 업무입니다.")
-            return
-
-        data["tasks"].append(task_name)
         self._save_data(data)
         self._load_tasks_to_combo()
-        self.task_combo.setCurrentText(task_name)
-        self.load_data()
-
-    def toggle_summary_mode(self):
-        self.is_summary_mode = self.summary_button.isChecked()
         self.load_data()
 
     def toggle_completion(self, branch_key, task_name=None):
@@ -296,18 +398,26 @@ class MonthlyWorkCheckPage(QWidget):
         self.table.clear()
         self.table.setColumnCount(len(tasks))
         self.table.setHorizontalHeaderLabels(tasks)
-        self.table.setRowCount(len(branches))
+        self.table.setRowCount(len(branches) + 1)
         self.table.verticalHeader().setVisible(True)
+        self.table.setVerticalHeaderItem(0, QTableWidgetItem("전체 완료"))
 
         for column in range(len(tasks)):
             self.table.horizontalHeader().setSectionResizeMode(column, QHeaderView.Stretch)
+            complete_button = QPushButton("전체 완료")
+            complete_button.clicked.connect(
+                lambda checked=False, task_name=tasks[column]:
+                self.complete_task_for_all_branches(task_name)
+            )
+            self.table.setCellWidget(0, column, complete_button)
 
         for row, branch in enumerate(branches):
             branch_key = self._branch_key(branch)
-            self.table.setVerticalHeaderItem(row, QTableWidgetItem(branch.get("branch_name", "")))
+            table_row = row + 1
+            self.table.setVerticalHeaderItem(table_row, QTableWidgetItem(branch.get("branch_name", "")))
 
             for column, task_name in enumerate(tasks):
                 completed_at = self._completed_at(data, branch_key, task_name)
                 status_text = "완료" if completed_at else "미완료"
                 status_button = self._make_status_button(status_text, completed_at, branch_key, task_name)
-                self.table.setCellWidget(row, column, status_button)
+                self.table.setCellWidget(table_row, column, status_button)
