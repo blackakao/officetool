@@ -40,3 +40,32 @@ def test_hwp_image_uses_explicit_millimeter_size(tmp_path):
     })
 
     assert calls == [(str(image_path.resolve()), True, 1, False, False, 0, 3.0, 5.0)]
+
+
+def test_hwp_form_check_buttons_are_discovered_and_updated():
+    class FakeButton:
+        def __init__(self, name, caption, value=0):
+            self.Name = name
+            self.Caption = caption
+            self.Value = value
+
+    class FakeCollection:
+        def __init__(self):
+            self.buttons = [FakeButton("employment_regular", "정규직"), FakeButton("employment_fixed", "기간제", 1)]
+            self.Count = len(self.buttons)
+
+        def Item(self, index):
+            return self.buttons[index]
+
+        def ItemFromName(self, name):
+            return next(button for button in self.buttons if button.Name == name)
+
+    automation = HwpAutomation()
+    automation.hwp = type("FakeHwp", (), {"FormCheckButtons": FakeCollection()})()
+
+    assert automation.check_buttons() == [
+        {"name": "employment_regular", "caption": "정규직", "checked": False},
+        {"name": "employment_fixed", "caption": "기간제", "checked": True},
+    ]
+    automation.set_check_button("employment_regular", True)
+    assert automation.hwp.FormCheckButtons.buttons[0].Value == 1

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QDate
 
-from ui.pages.document_tool import ContentControlDialog, DocumentTool
+from ui.pages.document_tool import ContentControlDialog, DocumentTool, resolve_calculated_amounts
 from ui.pages.logging_util import log
 
 
@@ -82,6 +82,71 @@ class HwpAutomation:
     def put_text(self, field_name, value):
         self.hwp.PutFieldText(field_name, str(value))
 
+    def _form_check_buttons(self):
+        """Return HWP form check buttons across Automation API versions."""
+        for attribute in ("FormCheckButtons", "CheckButtons"):
+            try:
+                collection = getattr(self.hwp, attribute)
+                if collection is not None:
+                    return collection
+            except Exception:
+                continue
+        return None
+
+    @staticmethod
+    def _collection_item(collection, index):
+        try:
+            return collection.Item(index)
+        except Exception:
+            return collection.Item[index]
+
+    def check_buttons(self):
+        collection = self._form_check_buttons()
+        if collection is None:
+            return []
+        buttons = []
+        try:
+            count = int(collection.Count)
+        except Exception:
+            return buttons
+        for index in range(count):
+            try:
+                button = self._collection_item(collection, index)
+                name = str(button.Name or "").strip()
+                if not name:
+                    continue
+                buttons.append({
+                    "name": name,
+                    "caption": str(button.Caption or name),
+                    "checked": bool(int(button.Value or 0)),
+                })
+            except Exception:
+                continue
+        return buttons
+
+    def set_check_button(self, name, checked):
+        collection = self._form_check_buttons()
+        if collection is None:
+            raise RuntimeError("HWP 양식 개체 체크박스 모음을 찾을 수 없습니다.")
+        button = None
+        for accessor in ("ItemFromName", "ItemFormName"):
+            try:
+                candidate = getattr(collection, accessor)
+                button = candidate(name) if callable(candidate) else candidate[name]
+                if button is not None:
+                    break
+            except Exception:
+                continue
+        if button is None:
+            for index in range(int(collection.Count)):
+                candidate = self._collection_item(collection, index)
+                if str(candidate.Name or "") == name:
+                    button = candidate
+                    break
+        if button is None:
+            raise RuntimeError(f"HWP 체크박스를 찾을 수 없습니다: {name}")
+        button.Value = 1 if checked else 0
+
     def put_image(self, field_name, value):
         image_path = Path(value.get("path", ""))
         if not image_path.is_file():
@@ -121,10 +186,21 @@ class HwpContentControlDialog(ContentControlDialog):
                     "indices": [],
                 })
                 control["indices"].append(index)
+            for index, checkbox in enumerate(automation.check_buttons()):
+                name = checkbox["name"]
+                controls[name] = {
+                    "tag": name,
+                    "alias": checkbox["caption"],
+                    "placeholder": "",
+                    "current_text": "1" if checkbox["checked"] else "0",
+                    "indices": [index],
+                    "checkbox_caption": checkbox["caption"],
+                    "form_checkbox": True,
+                }
         return controls
 
     def _resolved_hwp_values(self, values_dict):
-        values = dict(values_dict)
+        values = resolve_calculated_amounts(self.settings, values_dict)
 
         def resolve_date(field_key, visited=None):
             visited = set(visited or ())
@@ -182,7 +258,10 @@ class HwpContentControlDialog(ContentControlDialog):
             for field_name, value in values.items():
                 if field_name not in self.controls:
                     continue
-                if isinstance(value, dict) and value.get("type") == "image":
+                setting = self.settings.get("fields", {}).get(field_name, {})
+                if setting.get("type") == "multi_check" or self.controls[field_name].get("form_checkbox"):
+                    automation.set_check_button(field_name, str(value).strip().lower() in {"1", "true", "yes", "y", "on"})
+                elif isinstance(value, dict) and value.get("type") == "image":
                     automation.put_image(field_name, value)
                 else:
                     automation.put_text(field_name, value)

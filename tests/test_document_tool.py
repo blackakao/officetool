@@ -7,11 +7,56 @@ from docx.oxml.ns import qn
 
 from ui.pages.document_tool import (
     ContentControlDialog,
+    DocumentTool,
+    EXCEL_BRANCH_FIELD,
     branch_child_type_options,
     branch_control_parts,
+    calculate_number,
     control_structure_parts,
+    format_number,
     group_control_parts,
+    resolve_calculated_amounts,
 )
+
+
+def test_number_calculation_supports_all_four_operations():
+    assert format_number(calculate_number("1,200", "add", "50")) == "1250"
+    assert format_number(calculate_number("10", "subtract", "12.5")) == "-2.5"
+    assert format_number(calculate_number("2.5", "multiply", "4")) == "10"
+    assert format_number(calculate_number("9", "divide", "4")) == "2.25"
+    assert calculate_number("9", "divide", "0") is None
+
+
+def test_resolve_calculated_amounts_supports_chains_and_comma_formatting():
+    settings = {"fields": {
+        "base": {"type": "amount"},
+        "doubled": {
+            "type": "amount", "amount_default_type": "field_calculation",
+            "source_amount_field": "base", "amount_operator": "multiply",
+            "amount_operand": "2", "use_comma": False,
+        },
+        "result": {
+            "type": "amount", "amount_default_type": "field_calculation",
+            "source_amount_field": "doubled", "amount_operator": "add",
+            "amount_operand": "500", "use_comma": True,
+        },
+    }}
+    values = resolve_calculated_amounts(settings, {"base": "1,000"})
+    assert values["doubled"] == "2000"
+    assert values["result"] == "2,500"
+
+
+def test_document_specific_settings_keep_field_presets():
+    settings = {
+        "documents": {
+            "contract.hwp": {
+                "fields": {"job": {"type": "text"}},
+                "field_presets": [{"name": "사회복지사", "values": {"job": "사회복지사"}}],
+            }
+        }
+    }
+    selected = ContentControlDialog.settings_for_file(settings, Path("contract.hwp"))
+    assert selected["field_presets"][0]["values"]["job"] == "사회복지사"
 
 
 def test_branch_control_name_parsing():
@@ -211,6 +256,41 @@ def test_prepare_excel_row_rejects_missing_image(tmp_path):
         assert "이미지 파일을 찾을 수 없습니다" in str(error)
     else:
         raise AssertionError("존재하지 않는 이미지 경로는 오류여야 합니다.")
+
+
+def test_excel_fields_put_branch_first_and_exclude_automatic_values():
+    tool = DocumentTool.__new__(DocumentTool)
+    settings = {"fields": {
+        "name": {"type": "text"},
+        "owner": {"type": "branch_value", "branch_value_key": "owner_name"},
+        "stamp": {"type": "branch_value", "branch_value_key": "custom_stamp"},
+        "folder_image": {"type": "folder", "value_field": "name"},
+    }}
+    fields = tool._configured_field_names(Path("contract.hwp"), settings)
+    assert fields == [EXCEL_BRANCH_FIELD, "name"]
+
+
+def test_excel_row_resolves_branch_text_and_image_without_excel_paths(tmp_path):
+    stamp = tmp_path / "stamp.png"
+    stamp.write_bytes(b"image")
+    dialog = ContentControlDialog.__new__(ContentControlDialog)
+    dialog.settings = {"fields": {
+        "owner": {"type": "branch_value", "branch_value_key": "owner_name"},
+        "stamp": {"type": "branch_value", "branch_value_key": "custom_stamp"},
+    }}
+    dialog.branches = [{
+        "branch_name": "서울점", "owner_name": "홍길동",
+        "custom_fields": {"custom_stamp": {"path": str(stamp), "width": 20, "height": 15}},
+    }]
+    dialog.branch_fields = [{"key": "custom_stamp", "type": "image"}]
+    dialog.root = tmp_path
+    dialog.field_widgets = {}
+
+    values = dialog._prepare_excel_row_values({EXCEL_BRANCH_FIELD: "서울점"}, row_number=2)
+    assert values["owner"] == "홍길동"
+    assert values["stamp"] == {
+        "type": "image", "path": str(stamp), "width": 20, "height": 15,
+    }
 
 
 def test_recent_generation_history_keeps_only_three_entries(tmp_path):

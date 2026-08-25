@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import importlib
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from docx import Document
 from docx.oxml.ns import qn
@@ -17,7 +18,8 @@ from PySide6.QtGui import QDesktopServices, QRegularExpressionValidator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, 
     QPushButton, QDialog, QLabel, QFormLayout, QLineEdit, QMessageBox, QHeaderView, QScrollArea,
-    QApplication, QComboBox, QCheckBox, QDateEdit, QFileDialog, QProgressDialog, QStackedWidget
+    QApplication, QComboBox, QCheckBox, QDateEdit, QFileDialog, QProgressDialog, QStackedWidget,
+    QDialogButtonBox, QInputDialog, QMenu
 )
 from ui.pages.logging_util import log
 from ui.pages.branch_task_settings import filter_branches_for_task
@@ -29,6 +31,7 @@ FIELD_TYPES = {
     "group": "그룹",
     "date": "날짜",
     "amount": "숫자",
+    "multi_check": "다중 체크",
     "branch_value": "지점의 값",
     "table_list": "테이블 목록",
     "folder": "폴더의 이미지",
@@ -36,6 +39,71 @@ FIELD_TYPES = {
 
 
 STRUCTURE_MARKERS = {"분기": "branch", "그룹": "group"}
+
+NUMBER_OPERATORS = {"add": "+", "subtract": "-", "multiply": "×", "divide": "÷"}
+
+
+def parse_number(value):
+    text = str(value or "").strip().replace(",", "")
+    if not text:
+        return None
+    try:
+        number = Decimal(text)
+        return number if number.is_finite() else None
+    except InvalidOperation:
+        return None
+
+
+def format_number(value):
+    if value is None:
+        return ""
+    if value == value.to_integral_value():
+        return str(value.quantize(Decimal("1")))
+    return format(value.normalize(), "f")
+
+
+def calculate_number(source, operator, operand):
+    source_number = parse_number(source)
+    operand_number = parse_number(operand)
+    if source_number is None or operand_number is None:
+        return None
+    if operator == "add":
+        return source_number + operand_number
+    if operator == "subtract":
+        return source_number - operand_number
+    if operator == "multiply":
+        return source_number * operand_number
+    if operator == "divide":
+        return None if operand_number == 0 else source_number / operand_number
+    return None
+
+
+def resolve_calculated_amounts(settings, values):
+    resolved = dict(values)
+    fields = settings.get("fields", {})
+
+    def resolve(field_key, visited=None):
+        visited = set(visited or ())
+        if field_key in visited:
+            return None
+        visited.add(field_key)
+        setting = fields.get(field_key, {})
+        if setting.get("type") != "amount":
+            return None
+        if setting.get("amount_default_type", "direct") != "field_calculation":
+            return parse_number(resolved.get(field_key, setting.get("default_value", "")))
+        source = resolve(setting.get("source_amount_field", ""), visited)
+        return calculate_number(source, setting.get("amount_operator", "add"), setting.get("amount_operand", 0))
+
+    for field_key, setting in fields.items():
+        if setting.get("type") == "amount" and setting.get("amount_default_type") == "field_calculation":
+            calculated = resolve(field_key)
+            text = format_number(calculated)
+            if text and setting.get("use_comma", True):
+                integer, dot, fraction = text.partition(".")
+                text = f"{int(integer):,}" + (f".{fraction}" if dot else "")
+            resolved[field_key] = text
+    return resolved
 
 
 def control_structure_parts(field_key):
@@ -84,6 +152,8 @@ def branch_child_type_options():
 IMAGE_EXTENSIONS = {".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 
 TABLE_LIST_TYPE_PREFIX = "table_list:"
+EXCEL_BRANCH_FIELD = "__selected_branch__"
+EXCEL_BRANCH_HEADER = "지점(지점 목록)"
 
 
 def table_list_type(table_id):
@@ -254,20 +324,30 @@ class DocumentTool(QWidget):
         settings = read_json_file(self._settings_path(), {"version": 1, "fields": {}, "documents": {}})
         return ContentControlDialog.settings_for_file(settings, file_path)
 
-    def _configured_field_names(self, file_path):
-        settings = self._load_document_settings(file_path)
+    @staticmethod
+    def _is_excel_input_setting(field_setting):
+        field_type = field_setting.get("type", "text")
+        if field_type in {"folder", "branch_value", "image"}:
+            return False
+        if field_type == "date" and field_setting.get("date_default_type") == "field_calculation":
+            return False
+        if field_type == "amount" and field_setting.get("amount_default_type") == "field_calculation":
+            return False
+        return True
+
+    def _configured_field_names(self, file_path, settings=None):
+        settings = settings or self._load_document_settings(file_path)
         return [
+            EXCEL_BRANCH_FIELD,
+            *[
             field_name
             for field_name, field_setting in settings.get("fields", {}).items()
-            if field_setting.get("type") != "folder"
-            and not (
-                field_setting.get("type") == "date"
-                and field_setting.get("date_default_type") == "field_calculation"
-            )
+            if self._is_excel_input_setting(field_setting)
+            ]
         ]
 
-    def _excel_headers(self, file_path):
-        settings = self._load_document_settings(file_path)
+    def _excel_headers(self, file_path, settings=None):
+        settings = settings or self._load_document_settings(file_path)
         tables = read_json_file(self.document_folder.parent / "data" / "table_lists.json", {}).get("tables", [])
         table_names = {table.get("id", ""): table.get("name", "테이블 목록") for table in tables}
         def field_type_name(field_setting):
@@ -277,24 +357,21 @@ class DocumentTool(QWidget):
                 return table_names.get(target_id, "테이블 목록")
             return FIELD_TYPES.get(field_type, "텍스트")
         return [
+            EXCEL_BRANCH_HEADER,
+            *[
             f"{field_name}({field_type_name(field_setting)})"
             for field_name, field_setting in settings.get("fields", {}).items()
-            if field_setting.get("type") != "folder"
-            and not (
-                field_setting.get("type") == "date"
-                and field_setting.get("date_default_type") == "field_calculation"
-            )
+            if self._is_excel_input_setting(field_setting)
+            ]
         ]
 
-    def _document_control_names(self, file_path):
-        dialog = self._create_dialog(file_path, mode="batch")
-        return list(dialog.controls.keys())
-
-    def _excel_sample_values(self, file_path):
-        field_names = self._configured_field_names(file_path)
-        dialog = self._create_dialog(file_path, mode="batch")
+    def _excel_sample_values(self, field_names, dialog):
         sample_values = []
         for field_name in field_names:
+            if field_name == EXCEL_BRANCH_FIELD:
+                branch = dialog._selected_branch_from_source_type("branch_select")
+                sample_values.append(dialog._branch_name(branch))
+                continue
             if field_name not in dialog.generate_widgets:
                 sample_values.append("")
                 continue
@@ -304,17 +381,55 @@ class DocumentTool(QWidget):
             sample_values.append(value)
         return sample_values
 
+    def _excel_list_values(self, field_name, settings, dialog):
+        if field_name == EXCEL_BRANCH_FIELD:
+            return [dialog._branch_name(branch) for branch in dialog.branches if dialog._branch_name(branch)]
+        setting = settings.get("fields", {}).get(field_name, {})
+        field_type = setting.get("type", "text")
+        if field_type == "table_list" or table_list_id(field_type):
+            target_id = setting.get("table_list_id") or table_list_id(field_type)
+            table = next((item for item in dialog.table_lists if item.get("id") == target_id), None)
+            return table_list_options(table or {})
+        if field_type == "multi_check":
+            return ["1", "0"]
+        return []
+
+    def _add_excel_list_validations(self, openpyxl, wb, ws, field_names, settings, dialog):
+        from openpyxl.worksheet.datavalidation import DataValidation
+
+        list_sheet = wb.create_sheet("_목록")
+        used_columns = 0
+        for target_column, field_name in enumerate(field_names, 1):
+            values = self._excel_list_values(field_name, settings, dialog)
+            if not values:
+                continue
+            used_columns += 1
+            for row, value in enumerate(values, 1):
+                list_sheet.cell(row=row, column=used_columns, value=value)
+            letter = openpyxl.utils.get_column_letter(used_columns)
+            formula = f"'_목록'!${letter}$1:${letter}${len(values)}"
+            validation = DataValidation(type="list", formula1=formula, allow_blank=True)
+            validation.error = "목록에서 값을 선택해 주세요."
+            validation.errorTitle = "올바르지 않은 값"
+            ws.add_data_validation(validation)
+            target_letter = openpyxl.utils.get_column_letter(target_column)
+            validation.add(f"{target_letter}2:{target_letter}501")
+        list_sheet.sheet_state = "hidden"
+
     def download_excel_template(self, file_path):
         openpyxl = import_openpyxl()
         if openpyxl is None:
             QMessageBox.warning(self, "오류", "openpyxl 패키지가 설치되어 있지 않아 엑셀 파일을 만들 수 없습니다.")
             return
 
-        field_names = self._configured_field_names(file_path)
-        if not field_names:
+        settings = self._load_document_settings(file_path)
+        field_names = self._configured_field_names(file_path, settings)
+        input_fields = [name for name in field_names if name != EXCEL_BRANCH_FIELD]
+        if not input_fields:
             QMessageBox.warning(self, "설정 필요", "먼저 문서의 콘텐츠 컨트롤 필드를 설정해 주세요.")
             return
-        missing_fields = [field for field in field_names if field not in self._document_control_names(file_path)]
+        dialog = self._create_dialog(file_path, mode="batch")
+        missing_fields = [field for field in input_fields if field not in dialog.controls]
         if missing_fields:
             QMessageBox.warning(
                 self,
@@ -323,7 +438,7 @@ class DocumentTool(QWidget):
             )
             return
 
-        excel_headers = self._excel_headers(file_path)
+        excel_headers = self._excel_headers(file_path, settings)
         default_name = f"{file_path.stem}_업로드양식.xlsx"
         downloads_folder = QStandardPaths.writableLocation(QStandardPaths.DownloadLocation)
         default_path = str(Path(downloads_folder) / default_name) if downloads_folder else default_name
@@ -337,7 +452,8 @@ class DocumentTool(QWidget):
         ws = wb.active
         ws.title = "문서생성"
         ws.append(excel_headers)
-        ws.append(self._excel_sample_values(file_path))
+        ws.append(self._excel_sample_values(field_names, dialog))
+        self._add_excel_list_validations(openpyxl, wb, ws, field_names, settings, dialog)
         for column_index, header in enumerate(excel_headers, 1):
             ws.column_dimensions[openpyxl.utils.get_column_letter(column_index)].width = max(14, len(header) + 4)
         wb.save(save_path)
@@ -349,12 +465,16 @@ class DocumentTool(QWidget):
             QMessageBox.warning(self, "오류", "openpyxl 패키지가 설치되어 있지 않아 엑셀 파일을 읽을 수 없습니다.")
             return
 
-        expected_fields = self._configured_field_names(file_path)
-        expected_headers = self._excel_headers(file_path)
-        if not expected_fields:
+        settings = self._load_document_settings(file_path)
+        expected_fields = self._configured_field_names(file_path, settings)
+        expected_headers = self._excel_headers(file_path, settings)
+        input_fields = [name for name in expected_fields if name != EXCEL_BRANCH_FIELD]
+        if not input_fields:
             QMessageBox.warning(self, "설정 필요", "먼저 문서의 콘텐츠 컨트롤 필드를 설정해 주세요.")
             return
-        missing_fields = [field for field in expected_fields if field not in self._document_control_names(file_path)]
+        # The same batch dialog used for generation validates controls below,
+        # after the user selects a workbook. This avoids opening HWP twice.
+        missing_fields = []
         if missing_fields:
             QMessageBox.warning(
                 self,
@@ -390,6 +510,14 @@ class DocumentTool(QWidget):
                 return
 
             dialog = self._create_dialog(file_path, mode="batch")
+            missing_fields = [field for field in input_fields if field not in dialog.controls]
+            if missing_fields:
+                QMessageBox.warning(
+                    self,
+                    "설정 확인 필요",
+                    "설정된 필드가 현재 문서에 없습니다:\n" + "\n".join(missing_fields),
+                )
+                return
             outputs = dialog.create_documents_from_rows(rows)
             QMessageBox.information(self, "완료", f"{len(outputs)}개 문서를 생성했습니다.")
         except Exception as e:
@@ -403,6 +531,160 @@ class DocumentTool(QWidget):
 
 
 
+class FieldPresetDialog(QDialog):
+    def __init__(self, parent, field_names, presets, available_field_names=None):
+        super().__init__(parent)
+        self.field_names = list(field_names)
+        self.available_field_names = list(available_field_names or field_names)
+        self.setWindowTitle("필드 프리셋 관리")
+        self.resize(1000, 520)
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("프리셋별로 일괄 입력할 값을 설정합니다. 빈 값은 적용하지 않습니다."))
+        self.table = QTableWidget(0, len(self.field_names) + 1)
+        self.table.setHorizontalHeaderLabels(["프리셋 이름", *self.field_names])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.table.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+        self.table.horizontalHeader().customContextMenuRequested.connect(self._show_header_menu)
+        layout.addWidget(self.table)
+        for preset in presets or []:
+            self._append_preset(str(preset.get("name", "")), preset.get("values", {}))
+
+        action_layout = QHBoxLayout()
+        add_button = QPushButton("프리셋 추가")
+        add_button.clicked.connect(self._add_preset)
+        copy_button = QPushButton("선택 프리셋 복사")
+        copy_button.clicked.connect(self._copy_selected)
+        remove_button = QPushButton("선택 삭제")
+        remove_button.clicked.connect(self._remove_selected)
+        action_layout.addWidget(add_button)
+        action_layout.addWidget(copy_button)
+        action_layout.addWidget(remove_button)
+        action_layout.addSpacing(20)
+        self.field_combo = QComboBox()
+        self.field_combo.setMinimumWidth(180)
+        add_field_button = QPushButton("제외한 필드 다시 추가")
+        add_field_button.clicked.connect(self._add_selected_field)
+        remove_field_button = QPushButton("선택 열 제외")
+        remove_field_button.clicked.connect(self._remove_selected_field)
+        action_layout.addWidget(self.field_combo)
+        action_layout.addWidget(add_field_button)
+        action_layout.addWidget(remove_field_button)
+        action_layout.addStretch()
+        layout.addLayout(action_layout)
+        self._refresh_excluded_fields()
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def _append_preset(self, name, values=None):
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        self.table.setItem(row, 0, QTableWidgetItem(name))
+        values = values or {}
+        for column, field_name in enumerate(self.field_names, 1):
+            self.table.setItem(row, column, QTableWidgetItem(str(values.get(field_name, ""))))
+        self.table.setCurrentCell(row, 0)
+
+    def _add_preset(self):
+        name, accepted = QInputDialog.getText(self, "프리셋 추가", "프리셋 이름")
+        if accepted and name.strip():
+            self._append_preset(name.strip())
+
+    def _remove_selected(self):
+        rows = sorted({index.row() for index in self.table.selectedIndexes()}, reverse=True)
+        for row in rows:
+            self.table.removeRow(row)
+
+    def _copy_selected(self):
+        source_row = self.table.currentRow()
+        if source_row < 0:
+            return
+        target_row = source_row + 1
+        self.table.insertRow(target_row)
+        for column in range(self.table.columnCount()):
+            source_item = self.table.item(source_row, column)
+            value = source_item.text() if source_item else ""
+            if column == 0:
+                value = self._copy_name(value)
+            self.table.setItem(target_row, column, QTableWidgetItem(value))
+        self.table.setCurrentCell(target_row, 0)
+
+    def _copy_name(self, name):
+        base = f"{name} 복사본" if name else "새 프리셋 복사본"
+        existing = {
+            self.table.item(row, 0).text().strip()
+            for row in range(self.table.rowCount())
+            if self.table.item(row, 0)
+        }
+        candidate = base
+        number = 2
+        while candidate in existing:
+            candidate = f"{base} {number}"
+            number += 1
+        return candidate
+
+    def _show_header_menu(self, position):
+        column = self.table.horizontalHeader().logicalIndexAt(position)
+        if column <= 0:
+            return
+        menu = QMenu(self)
+        action = menu.addAction(f"'{self.field_names[column - 1]}' 필드 제외")
+        if menu.exec(self.table.horizontalHeader().mapToGlobal(position)) == action:
+            self._remove_field_column(column)
+
+    def _remove_selected_field(self):
+        column = self.table.currentColumn()
+        if column <= 0:
+            QMessageBox.information(self, "필드 프리셋", "제외할 필드 열을 선택해 주세요.")
+            return
+        self._remove_field_column(column)
+
+    def _remove_field_column(self, column):
+        if column <= 0 or column > len(self.field_names):
+            return
+        self.field_names.pop(column - 1)
+        self.table.removeColumn(column)
+        self._refresh_excluded_fields()
+
+    def _refresh_excluded_fields(self):
+        self.field_combo.clear()
+        for field_name in self.available_field_names:
+            if field_name not in self.field_names:
+                self.field_combo.addItem(field_name, field_name)
+
+    def _add_selected_field(self):
+        field_name = self.field_combo.currentData()
+        if not field_name or field_name in self.field_names:
+            return
+        self.field_names.append(field_name)
+        column = self.table.columnCount()
+        self.table.insertColumn(column)
+        self.table.setHorizontalHeaderItem(column, QTableWidgetItem(field_name))
+        for row in range(self.table.rowCount()):
+            self.table.setItem(row, column, QTableWidgetItem(""))
+        self._refresh_excluded_fields()
+
+    def presets(self):
+        result = []
+        seen = set()
+        for row in range(self.table.rowCount()):
+            name_item = self.table.item(row, 0)
+            name = name_item.text().strip() if name_item else ""
+            if not name or name in seen:
+                continue
+            seen.add(name)
+            values = {}
+            for column, field_name in enumerate(self.field_names, 1):
+                item = self.table.item(row, column)
+                value = item.text().strip() if item else ""
+                if value:
+                    values[field_name] = value
+            result.append({"name": name, "values": values})
+        return result
+
+
 class ContentControlDialog(QDialog):
     @staticmethod
     def settings_for_file(settings, file_path):
@@ -414,6 +696,8 @@ class ContentControlDialog(QDialog):
             "version": 1,
             "branches": settings.get("branches", {}),
             "fields": settings.get("fields", {}),
+            "field_presets": settings.get("field_presets", []),
+            "preset_fields": settings.get("preset_fields"),
         }
 
     def __init__(self, parent, doc, file_path, mode="settings"):
@@ -508,6 +792,7 @@ class ContentControlDialog(QDialog):
             self._refresh_branch_value_source_options()
         else:
             if self.mode == "generate":
+                self._add_preset_generation_row(form_layout)
                 self.title_edit = QLineEdit(self.file_path.stem)
                 self.title_edit.setPlaceholderText("저장할 문서 제목")
                 form_layout.addRow("저장 제목", self.title_edit)
@@ -515,6 +800,7 @@ class ContentControlDialog(QDialog):
                 form_layout.addRow("", QLabel(""))
             self._add_generate_rows(form_layout)
         self._update_calculated_date_fields()
+        self._update_calculated_amount_fields()
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -529,6 +815,9 @@ class ContentControlDialog(QDialog):
         cancel_button.clicked.connect(self.reject)
         button_layout.addStretch()
         if self.mode == "settings":
+            preset_button = QPushButton("필드 프리셋 관리")
+            preset_button.clicked.connect(self._manage_field_presets)
+            button_layout.addWidget(preset_button)
             save_settings_button = QPushButton("설정 저장")
             save_settings_button.clicked.connect(self.save_field_settings)
             button_layout.addWidget(save_settings_button)
@@ -545,6 +834,77 @@ class ContentControlDialog(QDialog):
 
     def _history_key(self):
         return f"{getattr(self, 'settings_filename', 'document_field_settings.json')}::{self.file_path.name}"
+
+    def _manage_field_presets(self):
+        available_fields = list(self.controls.keys())
+        configured_fields = self.settings.get("preset_fields")
+        active_fields = (
+            [field for field in configured_fields if field in self.controls]
+            if isinstance(configured_fields, list)
+            else available_fields
+        )
+        dialog = FieldPresetDialog(
+            self,
+            active_fields,
+            self.settings.get("field_presets", []),
+            available_fields,
+        )
+        if dialog.exec() == QDialog.Accepted:
+            self.settings["field_presets"] = dialog.presets()
+            self.settings["preset_fields"] = list(dialog.field_names)
+
+    def _add_preset_generation_row(self, form_layout):
+        presets = self.settings.get("field_presets", [])
+        self.preset_combo = QComboBox()
+        self.preset_combo.setMinimumWidth(220)
+        self.preset_combo.addItem("직접 입력", None)
+        for preset in presets:
+            name = str(preset.get("name", "")).strip()
+            if name:
+                self.preset_combo.addItem(name, preset)
+        self.preset_combo.currentIndexChanged.connect(lambda _: self._apply_selected_preset(True))
+        fill_button = QPushButton("빈칸 채우기")
+        fill_button.clicked.connect(lambda: self._apply_selected_preset(False))
+        overwrite_button = QPushButton("전체 적용")
+        overwrite_button.clicked.connect(lambda: self._apply_selected_preset(True))
+        row = QWidget()
+        row_layout = QHBoxLayout(row)
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.addWidget(self.preset_combo)
+        row_layout.addWidget(fill_button)
+        row_layout.addWidget(overwrite_button)
+        row_layout.addStretch()
+        form_layout.addRow("필드 프리셋", row)
+
+    def _preset_field_is_writable(self, field_key):
+        setting = self.settings.get("fields", {}).get(field_key, {})
+        field_type = setting.get("field_type") if setting.get("type") in {"branch", "group"} else setting.get("type", "text")
+        if field_type in {"folder", "branch_value"}:
+            return False
+        if field_type == "date" and setting.get("date_default_type") == "field_calculation":
+            return False
+        if field_type == "amount" and setting.get("amount_default_type") == "field_calculation":
+            return False
+        return True
+
+    def _apply_selected_preset(self, overwrite):
+        preset = self.preset_combo.currentData() if hasattr(self, "preset_combo") else None
+        if not preset:
+            return
+        changed = 0
+        for field_key, value in preset.get("values", {}).items():
+            if field_key not in self.field_widgets or not self._preset_field_is_writable(field_key):
+                continue
+            current = self._field_value(field_key)
+            if not overwrite and str(current or "").strip():
+                continue
+            self._set_generation_field_value(field_key, value)
+            changed += 1
+        self._update_branch_value_fields()
+        self._update_calculated_date_fields()
+        self._update_calculated_amount_fields()
+        if changed == 0:
+            QMessageBox.information(self, "필드 프리셋", "적용할 필드가 없습니다.")
 
     def _recent_generations(self):
         history = read_json_file(self._history_path(), {"version": 1, "documents": {}})
@@ -636,6 +996,9 @@ class ContentControlDialog(QDialog):
             return
         field_type = widgets["type_combo"].currentData() or "text"
         value_widget = widgets.get("value_widget")
+        if field_type == "multi_check" and value_widget:
+            value_widget.setChecked(str(value).strip().lower() in {"1", "true", "yes", "y", "on"})
+            return
         if field_type == "date" and value_widget:
             parsed = self._parse_date_or_none(value)
             if parsed:
@@ -722,7 +1085,8 @@ class ContentControlDialog(QDialog):
 
     def _add_field_row(self, form_layout, field_key, control, branch_member=False, structural_type=None):
         structural_type = structural_type or ("branch" if branch_member else None)
-        setting = self.settings.setdefault("fields", {}).setdefault(field_key, {"type": "text"})
+        default_type = "multi_check" if control.get("form_checkbox") else "text"
+        setting = self.settings.setdefault("fields", {}).setdefault(field_key, {"type": default_type})
         if structural_type:
             setting["type"] = setting.get("field_type", "text")
         legacy_table_id = table_list_id(setting.get("type", ""))
@@ -1013,7 +1377,9 @@ class ContentControlDialog(QDialog):
                 return ""
             return QDate.currentDate().toString(setting.get("date_format", "yyyy-MM-dd"))
         if field_type == "amount":
-            return setting.get("default_value") or ''.join(ch for ch in current_text if ch.isdigit())
+            if setting.get("amount_default_type", "direct") == "field_calculation":
+                return ""
+            return format_number(parse_number(setting.get("default_value") or current_text))
         if field_type in {"branch_select", "branch_select_2"}:
             return setting.get("branch_name") or current_text
         if field_type == "branch_value":
@@ -1025,6 +1391,8 @@ class ContentControlDialog(QDialog):
             return setting.get("default_value") or current_text
         if field_type == "folder":
             return setting.get("folder_path", "")
+        if field_type == "multi_check":
+            return "1" if bool(setting.get("default_checked", False)) else "0"
         return setting.get("default_value") or current_text
 
     def _field_type_options(self):
@@ -1257,15 +1625,70 @@ class ContentControlDialog(QDialog):
         if field_type == "amount":
             amount_edit = QLineEdit()
             amount_edit.setMaximumWidth(220)
-            amount_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d*")))
-            amount_edit.setText(''.join(ch for ch in str(setting.get("default_value") or control["current_text"]) if ch.isdigit()))
+            amount_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"-?\d*(?:\.\d*)?")))
+            amount_edit.setText(format_number(parse_number(setting.get("default_value") or control["current_text"])))
             comma_check = QCheckBox("1000단위 쉼표")
             comma_check.setChecked(bool(setting.get("use_comma", True)))
             layout.addWidget(amount_edit)
             if self.mode == "settings":
                 layout.addWidget(comma_check)
+                default_type_combo = QComboBox()
+                default_type_combo.addItem("직접 입력", "direct")
+                default_type_combo.addItem("특정 필드 계산", "field_calculation")
+                default_index = default_type_combo.findData(setting.get("amount_default_type", "direct"))
+                default_type_combo.setCurrentIndex(default_index if default_index >= 0 else 0)
+                source_combo = QComboBox()
+                source_combo.setMaximumWidth(200)
+                for source_key, source_setting in self.settings.get("fields", {}).items():
+                    if source_key != field_key and source_setting.get("type") == "amount":
+                        source_combo.addItem(source_key, source_key)
+                source_index = source_combo.findData(setting.get("source_amount_field", ""))
+                source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
+                operator_combo = QComboBox()
+                for operator, label in NUMBER_OPERATORS.items():
+                    operator_combo.addItem(label, operator)
+                operator_index = operator_combo.findData(setting.get("amount_operator", "add"))
+                operator_combo.setCurrentIndex(operator_index if operator_index >= 0 else 0)
+                operand_edit = QLineEdit(format_number(parse_number(setting.get("amount_operand", 0))))
+                operand_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"-?\d*(?:\.\d*)?")))
+                operand_edit.setMaximumWidth(100)
+                layout.addWidget(default_type_combo)
+                layout.addWidget(source_combo)
+                layout.addWidget(operator_combo)
+                layout.addWidget(operand_edit)
+
+                def update_amount_controls():
+                    calculated = default_type_combo.currentData() == "field_calculation"
+                    amount_edit.setReadOnly(calculated)
+                    source_combo.setVisible(calculated)
+                    operator_combo.setVisible(calculated)
+                    operand_edit.setVisible(calculated)
+                    self._update_calculated_amount_fields()
+
+                default_type_combo.currentIndexChanged.connect(lambda _: update_amount_controls())
+                source_combo.currentIndexChanged.connect(lambda _: self._update_calculated_amount_fields())
+                operator_combo.currentIndexChanged.connect(lambda _: self._update_calculated_amount_fields())
+                operand_edit.textChanged.connect(lambda _: self._update_calculated_amount_fields())
+                amount_edit.textChanged.connect(lambda _: self._update_calculated_amount_fields())
+                widgets["amount_default_type_combo"] = default_type_combo
+                widgets["source_amount_combo"] = source_combo
+                widgets["amount_operator_combo"] = operator_combo
+                widgets["amount_operand_edit"] = operand_edit
+                widgets["value_widget"] = amount_edit
+                widgets["comma_check"] = comma_check
+                update_amount_controls()
+            elif setting.get("amount_default_type") == "field_calculation":
+                amount_edit.setReadOnly(True)
             widgets["value_widget"] = amount_edit
             widgets["comma_check"] = comma_check
+            return
+
+        if field_type == "multi_check":
+            check = QCheckBox(control.get("checkbox_caption") or field_key)
+            checked_value = setting.get("default_checked", control.get("current_text") in {"1", "true", "True"})
+            check.setChecked(bool(checked_value))
+            layout.addWidget(check)
+            widgets["value_widget"] = check
             return
 
         if field_type in {"branch_select", "branch_select_2"}:
@@ -1489,6 +1912,40 @@ class ContentControlDialog(QDialog):
                 date_edit.setDate(calculated)
                 date_edit.blockSignals(False)
 
+    def _amount_field_value(self, field_key, visited=None):
+        visited = set(visited or ())
+        if field_key in visited:
+            return ""
+        visited.add(field_key)
+        widgets = self.field_widgets.get(field_key)
+        if not widgets:
+            return ""
+        setting = widgets.get("setting", {})
+        default_combo = widgets.get("amount_default_type_combo")
+        default_type = default_combo.currentData() if default_combo else setting.get("amount_default_type", "direct")
+        if default_type != "field_calculation":
+            return format_number(parse_number(widgets["value_widget"].text()))
+        source_combo = widgets.get("source_amount_combo")
+        source_key = source_combo.currentData() if source_combo else setting.get("source_amount_field", "")
+        operator_combo = widgets.get("amount_operator_combo")
+        operator = operator_combo.currentData() if operator_combo else setting.get("amount_operator", "add")
+        operand_edit = widgets.get("amount_operand_edit")
+        operand = operand_edit.text() if operand_edit else setting.get("amount_operand", 0)
+        return format_number(calculate_number(self._amount_field_value(source_key, visited), operator, operand))
+
+    def _update_calculated_amount_fields(self):
+        for field_key, widgets in self.field_widgets.items():
+            if widgets["type_combo"].currentData() != "amount":
+                continue
+            default_combo = widgets.get("amount_default_type_combo")
+            default_type = default_combo.currentData() if default_combo else widgets.get("setting", {}).get("amount_default_type", "direct")
+            if default_type != "field_calculation":
+                continue
+            edit = widgets["value_widget"]
+            edit.blockSignals(True)
+            edit.setText(self._amount_field_value(field_key))
+            edit.blockSignals(False)
+
     def _branch_key(self, branch):
         if not branch:
             return ""
@@ -1660,10 +2117,13 @@ class ContentControlDialog(QDialog):
         if field_type == "date":
             return self._date_field_value(field_key)
         if field_type == "amount":
-            text = value_widget.text()
+            text = self._amount_field_value(field_key)
             if widgets["comma_check"].isChecked() and text:
-                return f"{int(text):,}"
+                integer, dot, fraction = text.partition(".")
+                return f"{int(integer):,}" + (f".{fraction}" if dot else "")
             return text
+        if field_type == "multi_check":
+            return "1" if value_widget and value_widget.isChecked() else "0"
         if field_type in {"branch_select", "branch_select_2"}:
             branch = value_widget.currentData()
             return branch.get("branch_name", "") if branch else ""
@@ -1716,8 +2176,8 @@ class ContentControlDialog(QDialog):
             value_widget = widgets.get("value_widget")
             if field_type == "amount":
                 text = value_widget.text().strip() if value_widget else ""
-                if text and not text.isdigit():
-                    errors.append(f"{field_key}: 숫자만 입력할 수 있습니다.")
+                if text and parse_number(text) is None:
+                    errors.append(f"{field_key}: 올바른 숫자를 입력해 주세요.")
             elif field_type == "date":
                 if not value_widget or not value_widget.date().isValid():
                     errors.append(f"{field_key}: 올바른 날짜를 입력해 주세요.")
@@ -1752,6 +2212,17 @@ class ContentControlDialog(QDialog):
             elif field_type == "amount":
                 setting["use_comma"] = widgets["comma_check"].isChecked()
                 setting["default_value"] = widgets["value_widget"].text()
+                setting["amount_default_type"] = widgets["amount_default_type_combo"].currentData()
+                if setting["amount_default_type"] == "field_calculation":
+                    setting["source_amount_field"] = widgets["source_amount_combo"].currentData() or ""
+                    setting["amount_operator"] = widgets["amount_operator_combo"].currentData() or "add"
+                    setting["amount_operand"] = widgets["amount_operand_edit"].text() or "0"
+                else:
+                    setting.pop("source_amount_field", None)
+                    setting.pop("amount_operator", None)
+                    setting.pop("amount_operand", None)
+            elif field_type == "multi_check":
+                setting["default_checked"] = widgets["value_widget"].isChecked()
             elif field_type in {"branch_select", "branch_select_2"}:
                 branch = widgets["value_widget"].currentData()
                 setting["branch_name"] = branch.get("branch_name", "") if branch else ""
@@ -1802,6 +2273,12 @@ class ContentControlDialog(QDialog):
                 for source_type, combo in self.branch_combos.items()
             },
             "fields": fields,
+            "field_presets": list(self.settings.get("field_presets", [])),
+            "preset_fields": list(
+                self.settings.get("preset_fields")
+                if isinstance(self.settings.get("preset_fields"), list)
+                else self.controls.keys()
+            ),
         }
 
     def save_field_settings(self):
@@ -1816,6 +2293,14 @@ class ContentControlDialog(QDialog):
                 source_key = setting.get("source_date_field", "")
                 if not source_key or settings["fields"].get(source_key, {}).get("type") != "date":
                     errors.append(f"{field_key}: 계산 기준이 될 날짜 필드를 선택해 주세요.")
+            if setting.get("type") == "amount" and setting.get("amount_default_type") == "field_calculation":
+                source_key = setting.get("source_amount_field", "")
+                if not source_key or settings["fields"].get(source_key, {}).get("type") != "amount":
+                    errors.append(f"{field_key}: 계산 기준이 될 숫자 필드를 선택해 주세요.")
+                if parse_number(setting.get("amount_operand")) is None:
+                    errors.append(f"{field_key}: 계산값에 올바른 숫자를 입력해 주세요.")
+                if setting.get("amount_operator") == "divide" and parse_number(setting.get("amount_operand")) == 0:
+                    errors.append(f"{field_key}: 0으로 나눌 수 없습니다.")
             if setting.get("type") != "folder":
                 continue
             folder_path = setting.get("folder_path", "")
@@ -1842,6 +2327,20 @@ class ContentControlDialog(QDialog):
                 if source_setting.get("date_default_type") != "field_calculation":
                     break
                 source_key = source_setting.get("source_date_field", "")
+        for field_key, setting in settings.get("fields", {}).items():
+            if setting.get("type") != "amount" or setting.get("amount_default_type") != "field_calculation":
+                continue
+            visited = {field_key}
+            source_key = setting.get("source_amount_field", "")
+            while source_key:
+                if source_key in visited:
+                    errors.append(f"{field_key}: 숫자 계산 필드가 서로 순환 참조하고 있습니다.")
+                    break
+                visited.add(source_key)
+                source_setting = settings["fields"].get(source_key, {})
+                if source_setting.get("amount_default_type") != "field_calculation":
+                    break
+                source_key = source_setting.get("source_amount_field", "")
         if errors:
             QMessageBox.warning(self, "필드 설정 확인", "\n".join(errors))
             return
@@ -1942,11 +2441,38 @@ class ContentControlDialog(QDialog):
     def _prepare_excel_row_values(self, values_dict, row_number):
         """엑셀의 이미지 필드 경로를 문서 삽입용 이미지 값으로 변환한다."""
         prepared = dict(values_dict)
+        branch_name = str(prepared.pop(EXCEL_BRANCH_FIELD, "") or "").strip()
+        available_branches = getattr(self, "branches", [])
+        if not branch_name:
+            branch_name = str(self.settings.get("branches", {}).get("branch_select", "") or "").strip()
+        if not branch_name and available_branches:
+            branch_name = self._branch_name(available_branches[0])
+        selected_branch = next(
+            (branch for branch in available_branches if self._branch_name(branch) == branch_name),
+            None,
+        )
+        if branch_name and selected_branch is None:
+            raise ValueError(f"{row_number}행: 지점 목록에 없는 지점입니다: {branch_name}")
+
+        # Branch-derived text and image fields are intentionally absent from
+        # Excel. Resolve them from the branch selected in the first column.
+        if selected_branch:
+            for field_key, setting in self.settings.get("fields", {}).items():
+                if setting.get("type") != "branch_value":
+                    continue
+                prepared[field_key] = self._branch_value(
+                    selected_branch,
+                    setting.get("branch_value_key", "organization_code"),
+                )
         for field_key, setting in self.settings.get("fields", {}).items():
             if not self._is_image_field_setting(setting):
                 continue
 
-            path_text = str(prepared.get(field_key, "") or "").strip().strip('"')
+            image_value = prepared.get(field_key) or setting.get("default_value") or setting.get("path", "")
+            if isinstance(image_value, dict):
+                path_text = str(image_value.get("path", "") or "").strip().strip('"')
+            else:
+                path_text = str(image_value or "").strip().strip('"')
             if not path_text:
                 prepared[field_key] = ""
                 continue
@@ -1960,6 +2486,9 @@ class ContentControlDialog(QDialog):
                 raise ValueError(f"{row_number}행 {field_key}: 지원하지 않는 이미지 형식입니다.\n{image_path}")
 
             width, height = self._image_size_for_field(field_key)
+            if isinstance(image_value, dict):
+                width = int(image_value.get("width", width) or width)
+                height = int(image_value.get("height", height) or height)
             prepared[field_key] = {
                 "type": "image",
                 "path": str(image_path),
@@ -2038,8 +2567,8 @@ class ContentControlDialog(QDialog):
         for field_key, setting in self.settings.get("fields", {}).items():
             value = str(values_dict.get(field_key, "")).strip()
             field_type = setting.get("type", "text")
-            if field_type == "amount" and value and not value.replace(",", "").isdigit():
-                errors.append(f"{row_number}행 {field_key}: 숫자만 입력할 수 있습니다.")
+            if field_type == "amount" and value and parse_number(value) is None:
+                errors.append(f"{row_number}행 {field_key}: 올바른 숫자를 입력해 주세요.")
             elif field_type == "date" and value and not self._parse_date_or_none(value):
                 errors.append(f"{row_number}행 {field_key}: 올바른 날짜를 입력해 주세요.")
         if errors:
@@ -2096,6 +2625,7 @@ class ContentControlDialog(QDialog):
         return self._install_docx2pdf()
 
     def _apply_values_to_doc(self, doc, values_dict):
+        values_dict = resolve_calculated_amounts(self.settings, values_dict)
         values_dict = dict(values_dict)
 
         def resolve_date(field_key, visited=None):
