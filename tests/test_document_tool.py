@@ -46,6 +46,21 @@ def test_resolve_calculated_amounts_supports_chains_and_comma_formatting():
     assert values["result"] == "2,500"
 
 
+def test_resolve_calculated_amounts_accepts_numeric_branch_value_source():
+    settings = {"fields": {
+        "식대 단가": {"type": "branch_value"},
+        "식대 숫자금액 3끼": {
+            "type": "amount", "amount_default_type": "field_calculation",
+            "source_amount_field": "식대 단가", "amount_operator": "multiply",
+            "amount_operand": "3", "use_comma": True,
+        },
+    }}
+
+    values = resolve_calculated_amounts(settings, {"식대 단가": "6,200"})
+
+    assert values["식대 숫자금액 3끼"] == "18,600"
+
+
 def test_document_specific_settings_keep_field_presets():
     settings = {
         "documents": {

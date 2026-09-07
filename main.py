@@ -26,6 +26,7 @@ from ui.pages.monthly_work_check_page import MonthlyWorkCheckPage
 from ui.pages.memo_page import MemoPage
 from ui.pages.incomplete_task_page import IncompleteTaskPage
 from ui.pages.branch_task_settings import BranchTaskSettingsPage
+from ui.pages.attendance_analysis_page import AttendanceAnalysisPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -99,6 +100,7 @@ class MainWindow(QMainWindow):
         self.memo_page = MemoPage()
         self.incomplete_task_page = IncompleteTaskPage()
         self.branch_task_settings_page = BranchTaskSettingsPage()
+        self.attendance_analysis_page = AttendanceAnalysisPage()
 
         menu_groups = (
             ("필수도구", (("로그인툴", self.login_page),)),
@@ -110,6 +112,7 @@ class MainWindow(QMainWindow):
                     ("테이블 목록 관리", self.table_list_page),
                 ),
             ),
+            ("문서 분석", (("출근부 분석", self.attendance_analysis_page),)),
             (
                 "개인 업무",
                 (

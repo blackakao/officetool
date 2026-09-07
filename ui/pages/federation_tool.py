@@ -1,6 +1,7 @@
 import json
 import re
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from PySide6.QtCore import QMimeData, Qt, QThread, Signal
@@ -19,6 +20,7 @@ from PySide6.QtWidgets import (
     QMenu,
     QMessageBox,
     QPushButton,
+    QSpinBox,
     QTableWidget,
     QTableWidgetItem,
     QTextEdit,
@@ -26,8 +28,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -79,7 +82,7 @@ PROCESS_TYPES = {
 
 PROCESS_ACTIONS = {
     "url_navigation": {"navigate": "이동"},
-    "element": ACTION_TYPES,
+    "element": {**ACTION_TYPES, "select_text": "텍스트로 옵션 선택 (검증)", "pointer_click": "마우스로 클릭 후 화면 확인"},
     "table": {"verify_click_increment": "증가 검증 후 클릭"},
     "text_assert": {
         "equals_repeat_number": "반복번호와 일치",
@@ -102,6 +105,8 @@ PROCESS_ACTIONS = {
         "wait_loading_done": "로딩 사라짐 대기",
     },
     "condition_start": {
+        "field_empty": "필드값 비어 있음",
+        "field_not_empty": "필드값 있음",
         "text_exists": "텍스트 존재",
         "equals_value": "조건값과 일치",
         "contains_value": "조건값 포함",
@@ -414,6 +419,16 @@ class SelectorConfigDialog(QDialog):
         browser_layout.addStretch()
         layout.addLayout(browser_layout)
 
+        start_layout = QHBoxLayout()
+        start_layout.addWidget(QLabel("명단 시작번호"))
+        self.start_number_spin = QSpinBox()
+        self.start_number_spin.setRange(1, 1000000)
+        self.start_number_spin.setValue(int(self.config.get("start_number", 1)))
+        start_layout.addWidget(self.start_number_spin)
+        start_layout.addWidget(QLabel("증가 반복에 적용 · 전체 실행은 1 · 중간 재시작 후에도 설정 유지"))
+        start_layout.addStretch()
+        layout.addLayout(start_layout)
+
         action_layout = QHBoxLayout()
         add_button = QPushButton("추가")
         add_menu = QMenu(add_button)
@@ -489,6 +504,9 @@ class SelectorConfigDialog(QDialog):
         selector = dict(selector)
         label = selector.get("label", "") or key
         self.table.setItem(row, 0, QTableWidgetItem(label))
+        self.table.item(row, 0).setData(Qt.ItemDataRole.UserRole, {
+            name: selector[name] for name in ("dropdown_xpath", "expected_visible_xpath", "selection_method", "max_key_steps") if name in selector
+        })
 
         type_combo = QComboBox()
         for type_key, type_label in PROCESS_TYPES.items():
@@ -511,7 +529,7 @@ class SelectorConfigDialog(QDialog):
         extra_value = ""
         if selector.get("type") == "table":
             extra_value = selector.get("number_cell_selector", "div[id$='cell_0_0:text']")
-        elif selector.get("type") == "condition_start":
+        elif selector.get("type") in {"condition_start", "element"}:
             extra_value = selector.get("expected_value", "")
         elif selector.get("type") == "url_navigation":
             extra_value = selector.get("payload", "")
@@ -552,7 +570,7 @@ class SelectorConfigDialog(QDialog):
         if number_cell_item:
             number_cell_item.setFlags(
                 number_cell_item.flags() | Qt.ItemFlag.ItemIsEditable
-                if process_type in {"table", "condition_start", "url_navigation"}
+                if process_type in {"table", "condition_start", "url_navigation", "element"}
                 else number_cell_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
 
@@ -577,10 +595,12 @@ class SelectorConfigDialog(QDialog):
         }
         if process_type == "table" and number_cell_selector:
             selector["number_cell_selector"] = number_cell_selector
-        if process_type == "condition_start" and number_cell_selector:
+        if process_type in {"condition_start", "element"} and number_cell_selector:
             selector["expected_value"] = number_cell_selector
         if process_type == "url_navigation":
             selector["payload"] = number_cell_selector
+        if process_type == "element" and action in {"select_text", "pointer_click"} and label_item:
+            selector.update(label_item.data(Qt.ItemDataRole.UserRole) or {})
         return (
             "",
             selector,
@@ -988,6 +1008,7 @@ class SelectorConfigDialog(QDialog):
         deleted_selector_keys.difference_update(selectors.keys())
         self.config["deleted_selector_keys"] = sorted(deleted_selector_keys)
         self.config.setdefault("browser", {})["window_index"] = self.window_index_combo.currentData()
+        self.config["start_number"] = self.start_number_spin.value()
         save_selector_config(self.config_path, self.config)
         QMessageBox.information(self, "저장 완료", "매크로 설정을 저장했습니다.")
         self.accept()
@@ -1118,6 +1139,12 @@ class FederationTool(QWidget):
         self.selector_button = QPushButton("매크로 설정")
         self.selector_button.clicked.connect(self.open_selector_settings)
         toolbar.addWidget(self.selector_button)
+        toolbar.addWidget(QLabel("테스트 시작번호"))
+        self.run_start_number_spin = QSpinBox()
+        self.run_start_number_spin.setRange(1, 1000000)
+        self.run_start_number_spin.setValue(1)
+        self.run_start_number_spin.setToolTip("지점 버튼을 누르기 전에 지정하세요. 전체 실행은 1입니다.")
+        toolbar.addWidget(self.run_start_number_spin)
         toolbar.addStretch()
         l2_layout.addLayout(toolbar)
         l2_label = QLabel("지점선택")
@@ -1283,12 +1310,16 @@ class FederationTool(QWidget):
             task_label=task_config["label"],
             tool_name=self.tool_name,
         ).exec()
+        config = ensure_selector_config(config_path, task_config["template"])
+        self.run_start_number_spin.setValue(int(config.get("start_number", 1)))
 
     def select_task(self, task):
         self.current_task = task
         self.update_task_button_styles()
         task_config = self.task_configs[task]
         self.selector_config_file = self._ensure_task_selector_config(task)
+        config = ensure_selector_config(self.selector_config_file, task_config["template"])
+        self.run_start_number_spin.setValue(int(config.get("start_number", 1)))
         self.l2_container.setVisible(True)
         self.l3_label.setVisible(False)
         self.branch_container.setVisible(True)
@@ -1338,6 +1369,8 @@ class FederationTool(QWidget):
         selected_config_file = self.selector_config_file
 
         login_thread = self.login_thread_class(branch)
+        login_thread.macro_start_number = self.run_start_number_spin.value()
+        self._log(f"이번 실행 시작번호: {login_thread.macro_start_number}")
         login_thread.finished_signal.connect(
             lambda msg, ok, lt=login_thread, task=selected_task, config_file=selected_config_file:
             self._on_longterm_finished(msg, ok, lt, task, config_file)
@@ -1363,6 +1396,7 @@ class FederationTool(QWidget):
             config_file,
             task_template(task_config),
             use_invoice_fallback=(task == "invoice"),
+            start_number=getattr(login_thread, "macro_start_number", None),
         )
         self._log(f"윈도우 전환 준비: handles={driver.window_handles}, current_url={driver.current_url}")
 
@@ -1419,6 +1453,17 @@ class FederationTool(QWidget):
             scroll_bar.setValue(scroll_bar.maximum())
 
 
+class TimedWebDriverWait(WebDriverWait):
+    def __init__(self, owner, timeout):
+        interval = float(owner.config.get("performance", {}).get("poll_interval", 0.5))
+        super().__init__(owner.driver, timeout, poll_frequency=max(0.05, interval))
+        self.owner = owner
+
+    def until(self, method, message=""):
+        with self.owner.measure_time("element_wait", f"timeout={self._timeout}s"):
+            return super().until(method, message)
+
+
 class InvoiceProcessor:
     def __init__(self, driver, config_path: Path, template: dict | None = None, status_callback=None):
         self.driver = driver
@@ -1426,7 +1471,7 @@ class InvoiceProcessor:
         self.status_callback = status_callback or (lambda msg: None)
         self.timeouts = self.config.get("timeouts", {})
         self.timeout = int(self.timeouts.get("default", 20))
-        self.wait = WebDriverWait(self.driver, self.timeout)
+        self.wait = TimedWebDriverWait(self, self.timeout)
         self.last_element_key = None
         self.last_table_row = None
         self.last_table_selector = None
@@ -1434,6 +1479,24 @@ class InvoiceProcessor:
 
     def _log(self, message):
         self.status_callback(message)
+
+    @contextmanager
+    def measure_time(self, kind, detail=""):
+        started = time.perf_counter()
+        outcome = "ok"
+        try:
+            yield
+        except Exception as exc:
+            outcome = type(exc).__name__
+            raise
+        finally:
+            elapsed = (time.perf_counter() - started) * 1000
+            self._log(f"[timing] step={getattr(self, '_timing_step', '-')} kind={kind} "
+                      f"elapsed_ms={elapsed:.1f} outcome={outcome} {detail}")
+
+    def sleep(self, seconds):
+        with self.measure_time("fixed_wait", f"requested_ms={seconds * 1000:.1f}"):
+            time.sleep(seconds)
 
     def selector_text(self, key):
         selector = self.config.get("selectors", {}).get(key, {})
@@ -1487,7 +1550,7 @@ class InvoiceProcessor:
         except ValueError:
             raise ValueError(f"delay 값은 정수여야 합니다: {key}={value}")
         self._log(f"[delay] {key}: sleep {seconds}s")
-        time.sleep(seconds)
+        self.sleep(seconds)
         return True
 
     def legacy_wait_seconds(self, selector, default=0.2):
@@ -1507,19 +1570,19 @@ class InvoiceProcessor:
         locator = build_locator(loading_selector)
         if not locator:
             self._log(f"[loading_wait] {key}: 로딩 셀렉터가 비어 있어 0.5초 대기")
-            time.sleep(0.5)
+            self.sleep(0.5)
             return True
 
         short_timeout = int(self.timeouts.get("short", 3))
         loading_timeout = int(self.timeouts.get("loading", 120))
         try:
-            WebDriverWait(self.driver, short_timeout).until(EC.presence_of_element_located(locator))
+            TimedWebDriverWait(self, short_timeout).until(EC.presence_of_element_located(locator))
             self._log(f"[loading_wait] {key}: 로딩 요소 감지, 사라짐 대기 timeout={loading_timeout}")
         except TimeoutException:
             self._log(f"[loading_wait] {key}: 로딩 요소 없음, 진행")
             return True
 
-        WebDriverWait(self.driver, loading_timeout).until(EC.invisibility_of_element_located(locator))
+        TimedWebDriverWait(self, loading_timeout).until(EC.invisibility_of_element_located(locator))
         self._log(f"[loading_wait] {key}: 로딩 완료")
         return True
 
@@ -1531,7 +1594,7 @@ class InvoiceProcessor:
         seconds = self.legacy_wait_seconds(selector)
         if seconds:
             self._log(f"[legacy] {key}: wait {seconds}s")
-            time.sleep(seconds)
+            self.sleep(seconds)
 
         if action == "short_wait":
             return True
@@ -1549,7 +1612,6 @@ class InvoiceProcessor:
                     f"레거시 동작 실패: {key} {row_label} 행({expected_number}번)은 유효하지 않습니다."
                 )
 
-            self.scroll_last_table_row_slightly(key, delta)
             element, row_path, text = self.find_virtual_table_row_for_number(
                 self.last_table_selector,
                 expected_number,
@@ -1583,7 +1645,7 @@ class InvoiceProcessor:
         )
         for index in range(repeat):
             if index:
-                time.sleep(0.15)
+                self.sleep(0.15)
             if action in {"last_table_force_click", "last_table_force_double_click"}:
                 self.force_click_table_row(
                     key,
@@ -1605,7 +1667,7 @@ class InvoiceProcessor:
         timeout = int(self.timeouts.get("short", 3))
         required = True
         try:
-            alert = WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
+            alert = TimedWebDriverWait(self, timeout).until(EC.alert_is_present())
             text = (alert.text or "").strip()
             action = selector.get("action", "accept")
             if selector.get("type") == "prompt" and action == "accept":
@@ -1692,7 +1754,7 @@ class InvoiceProcessor:
         locator = self.locator(key, required=required, context=context)
         if not locator:
             return None
-        wait = WebDriverWait(self.driver, timeout or self.timeout)
+        wait = TimedWebDriverWait(self, timeout or self.timeout)
         element = wait.until(EC.presence_of_element_located(locator))
         self.last_element_key = key
         return element
@@ -1701,7 +1763,7 @@ class InvoiceProcessor:
         if run_controls:
             self.run_control_steps_before(key)
         locator = self.locator(key, context=context)
-        wait = WebDriverWait(self.driver, timeout or self.timeout)
+        wait = TimedWebDriverWait(self, timeout or self.timeout)
         elements = wait.until(lambda driver: driver.find_elements(*locator) or False)
         self.last_element_key = key
         return elements
@@ -1713,7 +1775,7 @@ class InvoiceProcessor:
         if not locator:
             return None
         self._log(f"[click_wait] {self.selector_text(key)} timeout={timeout or self.timeout}")
-        element = WebDriverWait(self.driver, timeout or self.timeout).until(EC.element_to_be_clickable(locator))
+        element = TimedWebDriverWait(self, timeout or self.timeout).until(EC.element_to_be_clickable(locator))
         self.perform_action(key, element)
         self._log(f"[click_ok] {key}")
         self.last_element_key = key
@@ -1726,15 +1788,38 @@ class InvoiceProcessor:
         except Exception:
             self.driver.execute_script("arguments[0].click();", element)
 
+    def pointer_click(self, element, key):
+        last_state = None
+        def ready(driver):
+            nonlocal last_state
+            state = driver.execute_script("""
+                const el = arguments[0], r = el.getBoundingClientRect();
+                const hit = document.elementFromPoint(r.left + r.width/2, r.top + r.height/2);
+                let disabled = false;
+                for (let p = el; p; p = p.parentElement) {
+                    if (p.getAttribute('aria-disabled') === 'true' || p.getAttribute('status') === 'disabled') disabled = true;
+                }
+                return {ready: !!hit && !disabled && (hit === el || el.contains(hit)),
+                        target: el.id, hit: hit ? hit.id : '', disabled};
+            """, element)
+            if state != last_state:
+                self._log(f"[pointer_ready] {key}: {state}")
+                last_state = state
+            return state.get("ready") and element.is_enabled()
+        TimedWebDriverWait(self, self.timeout).until(ready)
+        ActionChains(self.driver).move_to_element(element).click_and_hold().pause(0.08).release().perform()
+        self._log(f"[pointer_click] {key}: mouse down/up completed")
+
     def perform_action(self, key, element):
         action = self.config.get("selectors", {}).get(key, {}).get("action", "click")
         action = action if action in ACTION_TYPES else "click"
-        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
         if action == "hover":
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
             ActionChains(self.driver).move_to_element(element).perform()
         elif action == "hover_click":
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
             ActionChains(self.driver).move_to_element(element).perform()
-            time.sleep(0.2)
+            self.sleep(0.2)
             self.click_element(element)
         else:
             self.click_element(element)
@@ -1762,7 +1847,7 @@ class InvoiceProcessor:
                 except Exception as e:
                     self._log(f"[요소처리오류] {key}[{index}] {type(e).__name__}: {e}")
 
-            element = WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
+            element = TimedWebDriverWait(self, timeout).until(EC.element_to_be_clickable(locator))
             self.perform_action(key, element)
             self._log(f"[optional_click_ok] {key}")
             self.last_element_key = key
@@ -1783,7 +1868,7 @@ class InvoiceProcessor:
         if not locator:
             raise ValueError(f"텍스트 검증 대상 셀렉터가 비어 있습니다: {key}")
 
-        element = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(locator))
+        element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
         actual = (element.text or element.get_attribute("value") or "").strip()
         action = selector.get("action", "equals_repeat_number")
         expected = str((context or {}).get("repeat_number", "")).strip()
@@ -1849,11 +1934,42 @@ class InvoiceProcessor:
         locator = self.table_row_collection_locator(base_selector)
         if not locator:
             return []
-        return [
-            row
-            for row in self.driver.find_elements(*locator)
-            if row.is_displayed()
-        ]
+        rows = self.driver.find_elements(*locator)
+        if not self.config.get("performance", {}).get("batch_visibility", False):
+            return [row for row in rows if self.table_row_in_view(self.table_click_target(row, base_selector))]
+        return self.driver.execute_script("""
+            const rows = arguments[0], selector = arguments[1];
+            return rows.filter(row => {
+                const cell = row.querySelector(selector) || row;
+                const r = cell.getBoundingClientRect();
+                const x = r.left + r.width / 2, y = r.top + r.height / 2;
+                if (!r.width || !r.height || x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return false;
+                for (let p = cell; p; p = p.parentElement) {
+                    const s = getComputedStyle(p), b = p.getBoundingClientRect();
+                    if (s.display === 'none' || s.visibility === 'hidden' || s.visibility === 'collapse' || Number(s.opacity) === 0) return false;
+                    if (/(auto|scroll|hidden|clip)/.test(s.overflowY) && (y < b.top || y >= b.bottom)) return false;
+                }
+                const hit = document.elementFromPoint(x, y);
+                return !!hit && (hit === cell || cell.contains(hit));
+            });
+        """, rows, self.table_number_cell_selector(base_selector))
+
+    def table_row_in_view(self, row):
+        if not row.is_displayed():
+            return False
+        return bool(self.driver.execute_script("""
+            const row = arguments[0], r = row.getBoundingClientRect();
+            const x = r.left + r.width / 2, y = r.top + r.height / 2;
+            if (!r.width || !r.height || x < 0 || y < 0 ||
+                x >= innerWidth || y >= innerHeight) return false;
+            for (let p = row.parentElement; p; p = p.parentElement) {
+                const s = getComputedStyle(p), b = p.getBoundingClientRect();
+                if (/(auto|scroll|hidden|clip)/.test(s.overflowY) &&
+                    (y < b.top || y >= b.bottom)) return false;
+            }
+            const hit = document.elementFromPoint(x, y);
+            return !!hit && (hit === row || row.contains(hit));
+        """, row))
 
     def table_number_cell_selector(self, base_selector):
         return str(base_selector.get("number_cell_selector") or "div[id$='cell_0_0:text']").strip()
@@ -1879,6 +1995,8 @@ class InvoiceProcessor:
             return row
 
     def log_table_click_state(self, key, row, base_selector, phase):
+        if not should_log_message("[table_click]"):
+            return
         try:
             row_text, row_number = self.table_row_number_text(row, base_selector)
             row_class = row.get_attribute("class") or ""
@@ -1896,11 +2014,16 @@ class InvoiceProcessor:
     def click_table_row(self, key, row, base_selector, expected_number):
         self.log_table_click_state(key, row, base_selector, "before")
         target = self.table_click_target(row, base_selector)
+        if not self.table_row_in_view(target):
+            row, _, _ = self.find_virtual_table_row_for_number(base_selector, expected_number, key=key)
+            if row is None:
+                raise ValueError(f"클릭 가능한 {expected_number}번 행을 찾지 못했습니다: {key}")
+            target = self.table_click_target(row, base_selector)
         action = self.config.get("selectors", {}).get(key, {}).get("action", "click")
         action = action if action in ACTION_TYPES else "click"
 
         try:
-            ActionChains(self.driver).move_to_element(target).click(target).perform()
+            ActionChains(self.driver).move_to_element(target).click().perform()
         except Exception as e:
             self._log(f"[table_click] {key}: actionchains_error={type(e).__name__}: {e}")
             try:
@@ -1909,7 +2032,7 @@ class InvoiceProcessor:
                 self._log(f"[table_click] {key}: native_click_error={type(inner).__name__}: {inner}")
                 self.driver.execute_script("arguments[0].click();", target)
 
-        time.sleep(0.15)
+        self.sleep(0.15)
         self.log_table_click_state(key, row, base_selector, "after")
         text, actual_number = self.table_row_number_text(row, base_selector)
         if actual_number != expected_number:
@@ -1964,7 +2087,7 @@ class InvoiceProcessor:
             self._log(f"[table_click] {key}: force_error={type(e).__name__}: {e}")
             ActionChains(self.driver).move_to_element(target).click(target).perform()
 
-        time.sleep(0.2)
+        self.sleep(0.2)
         self.log_table_click_state(key, row, base_selector, "force_after")
         text, actual_number = self.table_row_number_text(row, base_selector)
         if actual_number != expected_number:
@@ -2010,7 +2133,7 @@ class InvoiceProcessor:
             )
             self._log(f"[legacy] {key}: slight_scroll={scrolled}")
             if scrolled and scrolled.get("method") != "none" and scrolled.get("before") != scrolled.get("after"):
-                time.sleep(0.1)
+                self.sleep(0.1)
         except Exception as e:
             self._log(f"[legacy] {key}: slight_scroll_error={type(e).__name__}: {e}")
 
@@ -2023,60 +2146,77 @@ class InvoiceProcessor:
         return "|".join(signature)
 
     def scroll_virtual_table(self, key, base_selector, rows, direction=1):
-        target = rows[-1] if direction >= 0 and rows else rows[0] if rows else None
-        try:
-            if target:
-                scrolled = self.driver.execute_script(
-                    """
-                    let el = arguments[0];
-                    const direction = arguments[1] < 0 ? -1 : 1;
-                    while (el) {
-                        const style = window.getComputedStyle(el);
-                        const overflow = `${style.overflowY} ${style.overflow}`;
-                        if (el.scrollHeight > el.clientHeight && /(auto|scroll)/.test(overflow)) {
-                            const before = el.scrollTop;
-                            const amount = Math.max(el.clientHeight - 20, 80);
-                            el.scrollTop = Math.max(
-                                0,
-                                Math.min(before + (direction * amount), el.scrollHeight - el.clientHeight)
-                            );
-                            return {method: 'scrollTop', before, after: el.scrollTop, direction, id: el.id || ''};
-                        }
-                        el = el.parentElement;
-                    }
-                    return {method: 'none'};
-                    """,
-                    target,
-                    direction,
-                )
-                self._log(f"[table_scroll] {key}: js={scrolled}")
-                if scrolled and scrolled.get("method") != "none" and scrolled.get("before") != scrolled.get("after"):
-                    time.sleep(0.15)
-                    return True
-        except Exception as e:
-            self._log(f"[table_scroll] {key}: js_error={type(e).__name__}: {e}")
-
-        for candidate in [target, self.driver.switch_to.active_element]:
-            if not candidate:
-                continue
+        settings = self.config.get("table_scroll", {})
+        expected = base_selector.get("_expected_number")
+        numbers = base_selector.get("_visible_numbers")
+        if numbers is None:
+            numbers = [self.table_row_number_text(row, base_selector)[1] for row in rows] if expected else []
+            numbers = [number for number in numbers if number is not None]
+        gap = max(min(numbers) - expected, expected - max(numbers), 0) if numbers and expected else 0
+        limit = max(1, min(12, int(base_selector.get("_wheel_burst_limit", settings.get("wheel_events", 8)))))
+        events = min(limit, max(1, gap // 2)) if gap >= 5 else 1
+        if rows:
+            target = self.table_click_target(rows[len(rows) // 2], base_selector)
+        else:
+            locator = build_locator(settings)
+            if not locator:
+                return False
+            target = self.driver.find_element(*locator)
+        # Fix the pointer position in the viewport; virtual rows may be replaced mid-burst.
+        point_script = """
+            const r = arguments[0].getBoundingClientRect();
+            const x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2);
+            if (!r.width || !r.height || x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return null;
+            const hit = document.elementFromPoint(x, y);
+            if (!hit || !(hit === arguments[0] || arguments[0].contains(hit))) return null;
+            return {x, y};
+        """
+        point = self.driver.execute_script(point_script, target)
+        if not point:
+            self._log(f"[scroll_move] {key}: wheel target obstructed, waiting for table readiness")
+            def ready_point(driver):
+                try:
+                    fresh_rows = self.visible_table_rows(base_selector)
+                    if fresh_rows:
+                        fresh_target = self.table_click_target(fresh_rows[len(fresh_rows) // 2], base_selector)
+                    else:
+                        locator = build_locator(settings)
+                        if not locator:
+                            return False
+                        fresh_target = driver.find_element(*locator)
+                    return driver.execute_script(point_script, fresh_target) or False
+                except StaleElementReferenceException:
+                    return False
             try:
-                key_to_send = Keys.PAGE_DOWN if direction >= 0 else Keys.PAGE_UP
-                candidate.send_keys(key_to_send)
-                self._log(f"[table_scroll] {key}: {'PAGE_DOWN' if direction >= 0 else 'PAGE_UP'} sent")
-                time.sleep(0.2)
-                return True
-            except Exception as e:
-                self._log(
-                    f"[table_scroll] {key}: {'PAGE_DOWN' if direction >= 0 else 'PAGE_UP'}_error={type(e).__name__}: {e}"
-                )
-        return False
+                point = TimedWebDriverWait(self, self.timeout).until(ready_point)
+            except TimeoutException as exc:
+                raise TimeoutException(f"테이블 휠 위치가 계속 가려져 있습니다: {key}, 목표={expected}번. 모달 또는 로딩 상태를 확인하세요.") from exc
+        origin = ScrollOrigin.from_viewport(point["x"], point["y"])
+        delta = (-1 if direction < 0 else 1) * int(settings.get("wheel_delta", 120))
+        actions = ActionChains(self.driver)
+        for index in range(events):
+            actions.scroll_from_origin(origin, 0, delta)
+            if index + 1 < events:
+                actions.pause(0.03)
+        actions.perform()
+        self._log(f"[scroll_move] {key}: method=wheel events={events} delta={delta} target={expected} visible={numbers} gap={gap}")
+        self.sleep(0.15)
+        return True
 
     def find_virtual_table_row_for_number(self, base_selector, expected_number, key=None, debug=False, direction=1):
-        max_scrolls = int(base_selector.get("max_scrolls", 50))
-        seen_signatures = set()
+        max_scrolls = int(base_selector.get("max_scrolls", self.config.get("table_scroll", {}).get("max_scrolls", 500)))
+        previous_signature = None
+        unchanged = 0
+        last_direction = None
+        burst_limit = int(self.config.get("table_scroll", {}).get("wheel_events", 8))
         for attempt in range(max_scrolls + 1):
             rows = self.visible_table_rows(base_selector)
-            signature = self.table_visible_signature(rows, base_selector)
+            if not rows and self.config.get("performance", {}).get("wait_for_rows", False):
+                self._log(f"[table_ready_wait] {key}: 가려진 명단이 다시 보이면 목표 행부터 확인합니다")
+                rows = TimedWebDriverWait(self, self.timeout).until(
+                    lambda driver: self.visible_table_rows(base_selector) or False)
+            row_info = [(row, *self.table_row_number_text(row, base_selector)) for row in rows]
+            signature = "|".join(f"{number}:{text}" for _, text, number in row_info)
             if debug or attempt > 0:
                 self._log(
                     f"[table_virtual] {key}: expected={expected_number} attempt={attempt} "
@@ -2084,8 +2224,7 @@ class InvoiceProcessor:
                     f"signature={signature[:500]}"
                 )
 
-            for row_index, row in enumerate(rows, start=1):
-                text, actual_number = self.table_row_number_text(row, base_selector)
+            for row_index, (row, text, actual_number) in enumerate(row_info, start=1):
                 if debug or attempt > 0:
                     self._log(
                         f"[table_virtual] {key}: row[{row_index}] "
@@ -2094,11 +2233,21 @@ class InvoiceProcessor:
                 if actual_number == expected_number:
                     return row, f"visible_row[{row_index}]", (row.text or text).strip()
 
-            if signature in seen_signatures:
-                self._log(f"[table_virtual] {key}: visible rows unchanged after scroll, stop")
+            unchanged = unchanged + 1 if signature == previous_signature else 0
+            if unchanged >= int(self.config.get("table_scroll", {}).get("max_unchanged", 8)):
+                raise TimeoutException(f"테이블 휠 이동 후 명단 변화가 없습니다: {key}, 목표={expected_number}번, 연속={unchanged}회")
+            previous_signature = signature
+            numbers = [number for _, _, number in row_info if number is not None]
+            if numbers:
+                direction = -1 if expected_number < min(numbers) else 1
+            if attempt == max_scrolls:
                 break
-            seen_signatures.add(signature)
-            if not self.scroll_virtual_table(key, base_selector, rows, direction=direction):
+            if last_direction is not None and direction != last_direction:
+                burst_limit = max(1, burst_limit // 2)
+            last_direction = direction
+            scroll_selector = dict(base_selector, _expected_number=expected_number,
+                                   _visible_numbers=numbers, _wheel_burst_limit=burst_limit)
+            if not self.scroll_virtual_table(key, scroll_selector, rows, direction=direction):
                 self._log(f"[table_virtual] {key}: scroll failed, stop")
                 break
 
@@ -2145,14 +2294,14 @@ class InvoiceProcessor:
             locator = build_locator(base_selector)
             if not locator:
                 return None, None, None
-            element = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(locator))
+            element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
             text, actual_number = self.element_number_text(element)
             if debug:
                 self._log(
                     f"[table_debug] {key}: non-xpath found displayed={element.is_displayed()} "
                     f"enabled={element.is_enabled()} actual_number={actual_number} text={text}"
                 )
-            if actual_number == expected_number:
+            if actual_number == expected_number and self.table_row_in_view(element):
                 return element, value, text
             return self.find_virtual_table_row_for_number(
                 base_selector,
@@ -2175,10 +2324,10 @@ class InvoiceProcessor:
                     self._log(f"[table_debug] {key}: candidate[{index}] locator_empty path={candidate_xpath}")
                 continue
             try:
-                table_timeout = min(float(self.timeouts.get("short", 2)), 2.0)
-                element = WebDriverWait(self.driver, table_timeout).until(
-                    EC.presence_of_element_located(locator)
-                )
+                elements = self.driver.find_elements(*locator)
+                if not elements:
+                    continue
+                element = elements[0]
                 text, actual_number = self.element_number_text(element)
                 if debug:
                     self._log(
@@ -2187,12 +2336,9 @@ class InvoiceProcessor:
                         f"location={element.location} size={element.size} "
                         f"actual_number={actual_number} text={text} path={candidate_xpath}"
                     )
-                if actual_number == expected_number:
+                if actual_number == expected_number and self.table_row_in_view(element):
                     return element, candidate_xpath, text
-            except TimeoutException:
-                if debug:
-                    self._log(f"[table_debug] {key}: candidate[{index}] timeout path={candidate_xpath}")
-            except Exception as e:
+            except StaleElementReferenceException as e:
                 if debug:
                     self._log(
                         f"[table_debug] {key}: candidate[{index}] error={type(e).__name__}: {e} "
@@ -2208,6 +2354,8 @@ class InvoiceProcessor:
 
     def run_table_step(self, key, selector, context=None):
         base_selector = apply_runtime_context(selector, context)
+        if context and context.get("repeat_total") is not None:
+            base_selector["_total_rows"] = context["repeat_total"]
         if not build_locator(base_selector):
             raise ValueError(f"테이블 기준 셀렉터가 비어 있습니다: {key}")
 
@@ -2262,6 +2410,15 @@ class InvoiceProcessor:
         return success_count
 
     def run_selector_step(self, key, selector, context=None):
+        previous = getattr(self, "_timing_step", "-")
+        self._timing_step = key
+        try:
+            with self.measure_time("step", f"action={selector.get('action')} repeat={(context or {}).get('repeat_number', '-')} label={selector.get('label', key)}"):
+                return self._run_selector_step(key, selector, context)
+        finally:
+            self._timing_step = previous
+
+    def _run_selector_step(self, key, selector, context=None):
         process_type = selector.get("type", "element")
         if process_type == "url_navigation":
             base_url = str(selector.get("value", "")).strip()
@@ -2273,6 +2430,19 @@ class InvoiceProcessor:
             self.driver.get(target_url)
             return True
         if process_type == "element":
+            if selector.get("action") == "pointer_click":
+                locator = build_locator(apply_runtime_context(selector, context))
+                element = TimedWebDriverWait(self, self.timeout).until(EC.element_to_be_clickable(locator))
+                self.pointer_click(element, key)
+                expected_xpath = selector.get("expected_visible_xpath")
+                if expected_xpath:
+                    self._log(f"[screen_wait] {key}: click sent, waiting for next screen")
+                    TimedWebDriverWait(self, self.timeouts.get("long", 60)).until(
+                        EC.visibility_of_element_located((By.XPATH, expected_xpath)))
+                    self._log(f"[screen_ready] {key}: next screen visible")
+                return True
+            if selector.get("action") == "select_text":
+                return self.select_field_text(key, selector, context)
             return self.click(key, context=context, run_controls=False)
         if process_type == "table":
             return self.run_table_step(key, selector, context=context)
@@ -2292,7 +2462,7 @@ class InvoiceProcessor:
             locator = build_locator(apply_runtime_context(selector, context))
             if not locator:
                 raise ValueError(f"반복 횟수 특정값 셀렉터가 비어 있습니다: {key}")
-            element = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(locator))
+            element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
             value = (element.text or element.get_attribute("value") or "").strip()
 
         match = re.search(r"-?[\d,]+", value)
@@ -2338,19 +2508,167 @@ class InvoiceProcessor:
     def runtime_text_value(self, value, context=None):
         return apply_runtime_context({"value": str(value or "")}, context).get("value", "")
 
+    def field_text(self, element):
+        """Read the current field, not all options or a hidden editor's value."""
+        if element.tag_name.lower() == "select":
+            selected = Select(element).first_selected_option
+            if not (selected.get_attribute("value") or "").strip():
+                return ""
+            return (selected.text or "").strip()
+        if element.tag_name.lower() in {"input", "textarea"}:
+            return (element.get_attribute("value") or "").strip()
+        editors = element.find_elements(By.CSS_SELECTOR, "input, textarea, select")
+        for editor in editors:
+            if editor.is_displayed():
+                return self.field_text(editor)
+        displays = element.find_elements(By.CSS_SELECTOR, "[id$=':text'], [id$='comboedit'], [role='textbox']")
+        for display in displays:
+            if display.is_displayed():
+                return (display.text or display.get_attribute("value") or "").replace("\u200b", "").strip()
+        return (element.text or "").replace("\u200b", "").strip()
+
+    def select_field_text(self, key, selector, context=None):
+        if selector.get("selection_method") == "keyboard":
+            return self.select_field_with_keys(key, selector, context)
+        expected = self.runtime_text_value(selector.get("expected_value", ""), context).strip()
+        if not expected:
+            raise ValueError(f"선택할 옵션 텍스트가 비어 있습니다: {key}")
+        locator = build_locator(apply_runtime_context(selector, context))
+        if not locator:
+            raise ValueError(f"선택 대상 셀렉터가 비어 있습니다: {key}")
+        wait = TimedWebDriverWait(self, self.timeout)
+        element = wait.until(EC.element_to_be_clickable(locator))
+        if element.tag_name.lower() == "select":
+            Select(element).select_by_visible_text(expected)
+        else:
+            native = [item for item in element.find_elements(By.TAG_NAME, "select") if item.is_displayed()]
+            if native:
+                Select(native[0]).select_by_visible_text(expected)
+            else:
+                dropdown_xpath = selector.get("dropdown_xpath", "").strip()
+                buttons = ([wait.until(EC.element_to_be_clickable((By.XPATH, dropdown_xpath)))]
+                           if dropdown_xpath else [item for item in element.find_elements(
+                    By.CSS_SELECTOR, "[id*='dropbutton'], [id*='dropdownbutton'], [aria-haspopup='listbox']"
+                ) if item.is_displayed() and item.is_enabled()])
+                target = buttons[0] if buttons else element
+                self._log(f"[field_select] {key}: open tag={target.tag_name} id={target.get_attribute('id')}")
+                # Do not scroll a Nexacro grid cell with scrollIntoView or synthesize a JS click.
+                self.pointer_click(target, key)
+                if not buttons:
+                    # Grid combo editors can be created only after activating the cell.
+                    def opened_control(driver):
+                        current = driver.find_element(*locator)
+                        for button in current.find_elements(By.CSS_SELECTOR,
+                                "[id*='dropbutton'], [id*='dropdownbutton'], [aria-haspopup='listbox']"):
+                            if button.is_displayed() and button.is_enabled():
+                                return button
+                        popups = driver.find_elements(By.CSS_SELECTOR,
+                            "[role='listbox'], [id*='combolist'], [id*='popup'][id*='list']")
+                        return True if any(popup.is_displayed() for popup in popups) else False
+
+                    opened = wait.until(opened_control)
+                    if opened is not True:
+                        self._log(f"[field_select] {key}: activated dropdown id={opened.get_attribute('id')}")
+                        self.pointer_click(opened, key)
+
+            def visible_option(driver):
+                popups = driver.find_elements(By.CSS_SELECTOR,
+                    "[role='listbox'], [id*='combolist'], [id*='listbox'], [id*='popup'][id*='list']")
+                candidates = {}
+                for popup in popups:
+                    if popup.is_displayed():
+                        for item in popup.find_elements(By.XPATH, ".//*[not(*)]"):
+                            candidates[item.id] = item
+                matches = [item for item in candidates.values()
+                           if item.is_displayed() and item.is_enabled()
+                           and (item.text or "").strip() == expected]
+                if len(matches) > 1:
+                    raise ValueError(f"동일한 옵션이 여러 개 보여 선택할 수 없습니다: {key} ({expected})")
+                return matches[0] if matches else False
+
+            if not native:
+                try:
+                    try:
+                        option = TimedWebDriverWait(self, min(self.timeout, 3)).until(visible_option)
+                    except TimeoutException:
+                        popups = self.driver.find_elements(By.CSS_SELECTOR,
+                            "[role='listbox'], [id*='combolist'], [id*='listbox'], [id*='popup'][id*='list']")
+                        if not any(popup.is_displayed() for popup in popups):
+                            self._log(f"[field_select] {key}: popup not opened, retry pointer click once")
+                            if dropdown_xpath:
+                                target = wait.until(EC.element_to_be_clickable((By.XPATH, dropdown_xpath)))
+                            self.pointer_click(target, key)
+                        else:
+                            self._log(f"[field_select] {key}: popup visible, waiting for option text")
+                        option = wait.until(visible_option)
+                except TimeoutException as exc:
+                    self._log(f"[field_select] {key}: 옵션 탐색 실패 dropdown_xpath={selector.get('dropdown_xpath', '')} expected={expected}")
+                    raise TimeoutException(f"드롭다운 클릭 후 '{expected}' 옵션을 찾지 못했습니다: {key}") from exc
+                self._log(f"[field_select] {key}: option id={option.get_attribute('id')} text={expected}")
+                option.click()
+        try:
+            wait.until(lambda driver: self.field_text(driver.find_element(*locator)) == expected)
+        except TimeoutException as exc:
+            raise TimeoutException(f"필드 선택값 검증 실패: {key} (기대값={expected}). 저장을 중단합니다.") from exc
+        self._log(f"[select_text] {key}: 선택값 검증 OK expected={expected}")
+        return True
+
+    def select_field_with_keys(self, key, selector, context=None):
+        expected = self.runtime_text_value(selector.get("expected_value", ""), context).strip()
+        locator = build_locator(apply_runtime_context(selector, context))
+        if not expected or not locator:
+            raise ValueError(f"키보드 선택 대상 또는 기대값이 비어 있습니다: {key}")
+        wait = TimedWebDriverWait(self, self.timeout)
+        element = wait.until(EC.element_to_be_clickable(locator))
+        if self.field_text(element) == expected:
+            return True
+        # Focus the field itself, not the decorative dropdown icon.
+        self.pointer_click(element, key)
+        limit = max(1, min(50, int(selector.get("max_key_steps", 10))))
+        for index in range(1, limit + 1):
+            ActionChains(self.driver).send_keys(Keys.ARROW_DOWN).perform()
+            self.sleep(0.15)
+            element = self.driver.find_element(*locator)
+            actual = self.field_text(element)
+            self._log(f"[field_key] {key}: key=ARROW_DOWN attempt={index}/{limit} actual={actual!r} expected={expected!r}")
+            if actual != expected:
+                continue
+            ActionChains(self.driver).send_keys(Keys.ENTER).perform()
+            self.sleep(0.15)
+            wait.until(lambda driver: self.field_text(driver.find_element(*locator)) == expected)
+            self._log(f"[field_key] {key}: ENTER 선택값 검증 OK expected={expected}")
+            return True
+        raise TimeoutException(f"아래 방향키 {limit}회 입력 후 '{expected}'에 도달하지 못했습니다: {key}. 저장을 중단합니다.")
+
     def condition_result(self, key, selector, context=None):
+        previous = getattr(self, "_timing_step", "-")
+        self._timing_step = key
+        try:
+            with self.measure_time("condition", f"repeat={(context or {}).get('repeat_number', '-')}"):
+                return self._condition_result(key, selector, context)
+        finally:
+            self._timing_step = previous
+
+    def _condition_result(self, key, selector, context=None):
         runtime_selector = apply_runtime_context(selector, context)
         locator = build_locator(runtime_selector)
         if not locator:
             raise ValueError(f"조건처리 대상 셀렉터가 비어 있습니다: {key}")
 
-        element = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(locator))
-        actual = (element.text or element.get_attribute("value") or "").strip()
+        element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
         action = selector.get("action", "text_exists")
+        actual = (self.field_text(element) if action in {"field_empty", "field_not_empty"}
+                  else (element.text or element.get_attribute("value") or "").strip())
+        if action in {"field_empty", "field_not_empty"}:
+            self._log(f"[field_read] {key}: tag={element.tag_name} id={element.get_attribute('id')} value={actual!r}")
         expected = self.runtime_text_value(selector.get("expected_value", ""), context).strip()
         repeat_number = str((context or {}).get("repeat_number", "")).strip()
 
-        if action == "text_exists":
+        if action == "field_empty":
+            result = not actual
+        elif action == "field_not_empty":
+            result = bool(actual)
+        elif action == "text_exists":
             result = bool(actual)
         elif action == "equals_value":
             result = actual == expected
@@ -2379,9 +2697,14 @@ class InvoiceProcessor:
                 count = self.repeat_count(key, selector, context=context)
                 repeat_mode = selector.get("repeat_mode", "fixed")
                 self._log(f"[repeat_start] {key}: mode={REPEAT_MODES.get(repeat_mode, repeat_mode)} count={count}")
-                for repeat_index in range(count):
+                start = int(self.config.get("start_number", 1)) if repeat_mode == "increment" and not context else 1
+                if start < 1 or (count and start > count):
+                    raise ValueError(f"시작번호가 명단 범위를 벗어났습니다: {start} (총 {count}명)")
+                self._log(f"[repeat_start_number] {key}: start={start} total={count}")
+                for repeat_index in range(start - 1, count):
                     repeat_context = dict(context or {})
                     repeat_context["repeat_index"] = repeat_index
+                    repeat_context["repeat_total"] = count
                     repeat_context["repeat_number"] = repeat_index + 1 if repeat_mode == "increment" else count
                     self._log(f"[repeat] {key}: {repeat_index + 1}/{count}")
                     self.run_workflow_items_once(repeat_items, context=repeat_context)
@@ -2416,16 +2739,16 @@ class InvoiceProcessor:
     def wait_loading_done(self):
         locator = self.locator("loading_canvas", required=False)
         if not locator:
-            time.sleep(0.5)
+            self.sleep(0.5)
             return
 
         long_timeout = int(self.timeouts.get("loading", 120))
         try:
-            WebDriverWait(self.driver, int(self.timeouts.get("short", 3))).until(EC.presence_of_element_located(locator))
+            TimedWebDriverWait(self, int(self.timeouts.get("short", 3))).until(EC.presence_of_element_located(locator))
         except TimeoutException:
             return
         try:
-            WebDriverWait(self.driver, long_timeout).until(EC.invisibility_of_element_located(locator))
+            TimedWebDriverWait(self, long_timeout).until(EC.invisibility_of_element_located(locator))
         except TimeoutException:
             self._log("로딩 요소가 사라지지 않았지만 다음 확인 단계로 진행합니다.")
 
@@ -2444,7 +2767,7 @@ class InvoiceProcessor:
                     if element.is_displayed() and element.is_enabled():
                         self.click_element(element)
                         self._log(f"[요소처리] {item.get('label', '')}")
-                        time.sleep(0.2)
+                        self.sleep(0.2)
             except Exception as e:
                 self._log(f"[요소처리오류] {item.get('label', '')}: {type(e).__name__}: {e}")
 
@@ -2528,7 +2851,7 @@ class InvoiceProcessor:
         self._log("상단 메뉴 급여비용청구 열기")
         main_menu = self.wait_element("main_menu")
         self.perform_action("main_menu", main_menu)
-        time.sleep(0.5)
+        self.sleep(0.5)
         self._log("[navbar] click payroll_claim_dropdown")
         self.click("payroll_claim_dropdown", timeout=5)
 
@@ -2616,6 +2939,7 @@ class ClaimProcessThread(QThread):
         config_path: Path,
         template: dict | None = None,
         use_invoice_fallback: bool = False,
+        start_number: int | None = None,
     ):
         super().__init__()
         self.driver = driver
@@ -2623,6 +2947,7 @@ class ClaimProcessThread(QThread):
         self.config_path = config_path
         self.template = template or SELECTOR_TEMPLATE
         self.use_invoice_fallback = use_invoice_fallback
+        self.start_number = start_number
 
     def switch_window(self):
         try:
@@ -2652,6 +2977,8 @@ class ClaimProcessThread(QThread):
             self.switch_window()
 
             processor = InvoiceProcessor(self.driver, self.config_path, self.template, status_callback=self.status_signal.emit)
+            if self.start_number is not None:
+                processor.config["start_number"] = self.start_number
             processor.snapshot("초기 상태")
             if processor.config.get("selectors"):
                 self.status_signal.emit("[단계] 설정 요소 한 번 실행")

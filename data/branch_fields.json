@@ -23,5 +23,15 @@
         "key": "custom_기관직인",
         "label": "기관직인",
         "type": "image"
+    },
+    {
+        "key": "custom_식비",
+        "label": "식비",
+        "type": "text"
+    },
+    {
+        "key": "custom_간식비",
+        "label": "간식비",
+        "type": "text"
     }
 ]

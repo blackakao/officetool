@@ -24,12 +24,26 @@
                     "type": "text",
                     "default_value": "010-1234-5678"
                 },
+                "시설종류": {
+                    "type": "table_list",
+                    "table_list_id": "f86e39d12e284f0ca13c3b8760e76b52",
+                    "default_value": "노인의료복지시설"
+                },
                 "작성일": {
                     "type": "date",
                     "date_format": "yyyy년 MM월 dd일",
                     "date_default_type": "today"
                 }
-            }
+            },
+            "field_presets": [],
+            "preset_fields": [
+                "성명",
+                "주민번호",
+                "주소",
+                "연락처",
+                "시설종류",
+                "작성일"
+            ]
         },
         "변경신고.hwp": {
             "version": 1,
@@ -318,9 +332,10 @@
                     "amount_default_type": "direct"
                 },
                 "종사자 식비": {
-                    "type": "branch_value",
-                    "source_field": "branch_select",
-                    "branch_value_key": "custom_전화번호"
+                    "type": "amount",
+                    "use_comma": true,
+                    "default_value": "",
+                    "amount_default_type": "direct"
                 },
                 "급여합계": {
                     "type": "amount",
@@ -336,6 +351,10 @@
                 "종사자 계좌번호": {
                     "type": "text",
                     "default_value": ""
+                },
+                "퇴직금종류": {
+                    "type": "text",
+                    "default_value": "퇴직연금"
                 },
                 "근로계약일": {
                     "type": "date",
@@ -500,6 +519,85 @@
                     "branch_value_key": "organization_name"
                 }
             }
+        },
+        "재직증명서.hwp": {
+            "version": 1,
+            "branches": {
+                "branch_select": "한마음",
+                "branch_select_2": "분당점"
+            },
+            "fields": {
+                "발급번호": {
+                    "type": "text",
+                    "default_value": "2026년 - 010호"
+                },
+                "성명": {
+                    "type": "text",
+                    "default_value": "박재범"
+                },
+                "주민등록번호": {
+                    "type": "text",
+                    "default_value": "881017-1******"
+                },
+                "소속업체": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "corporation_name"
+                },
+                "직위": {
+                    "type": "table_list",
+                    "table_list_id": "a51465e23e9f44888746c93ec0c569b0",
+                    "default_value": "팀장"
+                },
+                "근무시작일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "today"
+                },
+                "근무종료일": {
+                    "type": "text",
+                    "default_value": "근무종료일"
+                },
+                "용도": {
+                    "type": "table_list",
+                    "table_list_id": "51ba1120632b42ce957556235a52e3f9",
+                    "default_value": "관공서 제출용"
+                },
+                "발행일": {
+                    "type": "date",
+                    "date_format": "yyyy년 MM월 dd일",
+                    "date_default_type": "today"
+                },
+                "회사 주소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "address"
+                },
+                "대표자명": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "owner_name"
+                },
+                "인감": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_법인인감"
+                }
+            },
+            "field_presets": [],
+            "preset_fields": [
+                "발급번호",
+                "성명",
+                "주민등록번호",
+                "소속업체",
+                "직위",
+                "근무시작일",
+                "근무종료일",
+                "용도",
+                "발행일",
+                "회사 주소",
+                "대표자명"
+            ]
         }
     }
 }

@@ -266,36 +266,43 @@
                 "식대 숫자금액 3끼": {
                     "type": "amount",
                     "use_comma": true,
-                    "default_value": "9999"
+                    "default_value": "",
+                    "amount_default_type": "field_calculation",
+                    "source_amount_field": "식대 단가",
+                    "amount_operator": "multiply",
+                    "amount_operand": "3"
                 },
                 "식대 단가": {
-                    "type": "amount",
-                    "use_comma": true,
-                    "default_value": "3333"
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_식비"
                 },
                 "간식비 한글금액": {
                     "type": "text",
                     "default_value": "한글금액"
                 },
                 "간식비 단가": {
-                    "type": "amount",
-                    "use_comma": true,
-                    "default_value": "4000"
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "custom_간식비"
                 },
                 "요양기관 정원": {
                     "type": "amount",
                     "use_comma": false,
-                    "default_value": "164"
+                    "default_value": "164",
+                    "amount_default_type": "direct"
                 },
                 "정원에 따른 기준인력": {
                     "type": "amount",
                     "use_comma": true,
-                    "default_value": "101"
+                    "default_value": "101",
+                    "amount_default_type": "direct"
                 },
                 "최소 식수 인원": {
                     "type": "amount",
                     "use_comma": true,
-                    "default_value": "265"
+                    "default_value": "265",
+                    "amount_default_type": "direct"
                 },
                 "계약일": {
                     "type": "date",
@@ -322,7 +329,29 @@
                     "source_field": "branch_select_2",
                     "branch_value_key": "custom_법인인감"
                 }
-            }
+            },
+            "field_presets": [],
+            "preset_fields": [
+                "장기요양기관명",
+                "장기요양기관 대표자",
+                "위탁급식업체명",
+                "장기요양기관 주소",
+                "계약 시작 연월일",
+                "계약종료연월일",
+                "식대 한글 금액",
+                "식대 숫자금액 3끼",
+                "식대 단가",
+                "간식비 한글금액",
+                "간식비 단가",
+                "요양기관 정원",
+                "정원에 따른 기준인력",
+                "최소 식수 인원",
+                "계약일",
+                "위탁급식업체 주소",
+                "장기요양기관 인감",
+                "위탁급식업체 대표자",
+                "위탁급식업체 인감"
+            ]
         },
         "위탁급식계약서_.docx": {
             "version": 1,

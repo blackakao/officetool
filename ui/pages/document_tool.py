@@ -89,7 +89,10 @@ def resolve_calculated_amounts(settings, values):
         visited.add(field_key)
         setting = fields.get(field_key, {})
         if setting.get("type") != "amount":
-            return None
+            # A branch value can contain a numeric value (for example, a
+            # branch's configured meal price) and is a valid calculation
+            # source even though its field type itself is not amount.
+            return parse_number(resolved.get(field_key, setting.get("default_value", "")))
         if setting.get("amount_default_type", "direct") != "field_calculation":
             return parse_number(resolved.get(field_key, setting.get("default_value", "")))
         source = resolve(setting.get("source_amount_field", ""), visited)
@@ -1624,7 +1627,11 @@ class ContentControlDialog(QDialog):
 
         if field_type == "amount":
             amount_edit = QLineEdit()
-            amount_edit.setMaximumWidth(220)
+            # Keep the compact editor in settings, where calculation controls
+            # share the row. In generation mode it should fill the form field
+            # column just like ordinary text inputs.
+            if self.mode == "settings":
+                amount_edit.setMaximumWidth(220)
             amount_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"-?\d*(?:\.\d*)?")))
             amount_edit.setText(format_number(parse_number(setting.get("default_value") or control["current_text"])))
             comma_check = QCheckBox("1000단위 쉼표")
@@ -1640,7 +1647,7 @@ class ContentControlDialog(QDialog):
                 source_combo = QComboBox()
                 source_combo.setMaximumWidth(200)
                 for source_key, source_setting in self.settings.get("fields", {}).items():
-                    if source_key != field_key and source_setting.get("type") == "amount":
+                    if source_key != field_key and source_setting.get("type") in {"amount", "branch_value"}:
                         source_combo.addItem(source_key, source_key)
                 source_index = source_combo.findData(setting.get("source_amount_field", ""))
                 source_combo.setCurrentIndex(source_index if source_index >= 0 else 0)
@@ -1931,7 +1938,15 @@ class ContentControlDialog(QDialog):
         operator = operator_combo.currentData() if operator_combo else setting.get("amount_operator", "add")
         operand_edit = widgets.get("amount_operand_edit")
         operand = operand_edit.text() if operand_edit else setting.get("amount_operand", 0)
-        return format_number(calculate_number(self._amount_field_value(source_key, visited), operator, operand))
+        source_widgets = self.field_widgets.get(source_key, {})
+        source_type = source_widgets.get("type_combo").currentData() if source_widgets.get("type_combo") else ""
+        if source_type == "amount":
+            source_value = self._amount_field_value(source_key, visited)
+        elif source_type == "branch_value":
+            source_value = source_widgets.get("value_widget").text() if source_widgets.get("value_widget") else ""
+        else:
+            source_value = ""
+        return format_number(calculate_number(source_value, operator, operand))
 
     def _update_calculated_amount_fields(self):
         for field_key, widgets in self.field_widgets.items():
@@ -2108,6 +2123,7 @@ class ContentControlDialog(QDialog):
             if isinstance(value, dict):
                 value = value.get("path", "")
         preview.setText(value)
+        self._update_calculated_amount_fields()
 
     def _field_value(self, field_key):
         widgets = self.field_widgets[field_key]
@@ -2295,8 +2311,8 @@ class ContentControlDialog(QDialog):
                     errors.append(f"{field_key}: 계산 기준이 될 날짜 필드를 선택해 주세요.")
             if setting.get("type") == "amount" and setting.get("amount_default_type") == "field_calculation":
                 source_key = setting.get("source_amount_field", "")
-                if not source_key or settings["fields"].get(source_key, {}).get("type") != "amount":
-                    errors.append(f"{field_key}: 계산 기준이 될 숫자 필드를 선택해 주세요.")
+                if not source_key or settings["fields"].get(source_key, {}).get("type") not in {"amount", "branch_value"}:
+                    errors.append(f"{field_key}: 계산 기준이 될 숫자 또는 지점의 값 필드를 선택해 주세요.")
                 if parse_number(setting.get("amount_operand")) is None:
                     errors.append(f"{field_key}: 계산값에 올바른 숫자를 입력해 주세요.")
                 if setting.get("amount_operator") == "divide" and parse_number(setting.get("amount_operand")) == 0:

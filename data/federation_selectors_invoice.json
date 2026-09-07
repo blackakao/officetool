@@ -34,7 +34,7 @@
             "required": true,
             "action": "click"
         },
-        "delay_004": {
+        "legacy_action_004": {
             "label": "청구화면창 기다리기",
             "type": "legacy_action",
             "repeat_mode": "fixed",
@@ -79,7 +79,7 @@
             "required": true,
             "action": "click"
         },
-        "delay_009": {
+        "legacy_action_009": {
             "label": "급여내용 자료관리 열릴시간",
             "type": "legacy_action",
             "repeat_mode": "fixed",
@@ -121,7 +121,7 @@
             "type": "legacy_action",
             "repeat_mode": "fixed",
             "by": "xpath",
-            "value": "0.3",
+            "value": "0.05",
             "required": true,
             "action": "last_table_click"
         },
@@ -159,7 +159,8 @@
             "by": "xpath",
             "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[5]",
             "required": true,
-            "action": "click"
+            "action": "pointer_click",
+            "expected_visible_xpath": "/html/body/div[2]/div[3]/div[1]/div[1]/div/div/div/div/div/div[3]/div/div[46]"
         },
         "element_018": {
             "label": "명세서등록완료",
@@ -170,7 +171,56 @@
             "required": true,
             "action": "click"
         },
-        "element_019": {
+        "condition_start_019": {
+            "label": "급여제공결과가 비어 있는지 확인",
+            "type": "condition_start",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[4]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div[1]/div[2]/div/div/div[1]/div/div/div[3]",
+            "required": true,
+            "action": "field_empty"
+        },
+        "condition_true_020": {
+            "label": "비어 있으면 계속 선택",
+            "type": "condition_true",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "branch"
+        },
+        "element_021": {
+            "label": "급여제공결과 계속 선택 및 검증",
+            "type": "element",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "/html/body/div[2]/div[4]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div[1]/div[2]/div/div/div[1]/div/div/div[3]",
+            "required": true,
+            "action": "select_text",
+            "expected_value": "계속",
+            "dropdown_xpath": "/html/body/div[2]/div[4]/div[1]/div[1]/div/div/div/div/div/div/div/div[4]/div[1]/div[2]/div/div/div[1]/div/div/div[3]/div/div[2]/div[2]/div",
+            "selection_method": "keyboard",
+            "max_key_steps": 10
+        },
+        "condition_false_022": {
+            "label": "기존 급여제공결과 유지",
+            "type": "condition_false",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "branch"
+        },
+        "condition_end_023": {
+            "label": "급여제공결과 확인 종료",
+            "type": "condition_end",
+            "repeat_mode": "fixed",
+            "by": "xpath",
+            "value": "",
+            "required": true,
+            "action": "end"
+        },
+        "element_024": {
             "label": "저장",
             "type": "element",
             "repeat_mode": "fixed",
@@ -179,7 +229,7 @@
             "required": true,
             "action": "click"
         },
-        "confirm_020": {
+        "confirm_025": {
             "label": "수급자 상태인데 저장할래?",
             "type": "confirm",
             "repeat_mode": "fixed",
@@ -188,7 +238,7 @@
             "required": true,
             "action": "accept"
         },
-        "alert_021": {
+        "alert_026": {
             "label": "저장되었습니다.(2)",
             "type": "alert",
             "repeat_mode": "fixed",
@@ -197,7 +247,7 @@
             "required": true,
             "action": "accept"
         },
-        "element_022": {
+        "element_027": {
             "label": "닫기(자식모달)",
             "type": "element",
             "repeat_mode": "fixed",
@@ -206,16 +256,7 @@
             "required": true,
             "action": "click"
         },
-        "legacy_action_023": {
-            "label": "컬럼 강제 클릭",
-            "type": "legacy_action",
-            "repeat_mode": "fixed",
-            "by": "xpath",
-            "value": "0.3",
-            "required": true,
-            "action": "last_table_next_row_click"
-        },
-        "repeat_end_024": {
+        "repeat_end_029": {
             "label": "반복지점 종료",
             "type": "repeat_end",
             "repeat_mode": "fixed",
@@ -300,5 +341,19 @@
         "statement_auto_modal_close",
         "statement_completed_confirm",
         "statement_register_complete_button"
-    ]
+    ],
+    "start_number": 1,
+    "table_scroll": {
+        "by": "xpath",
+        "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div/div/div[25]",
+        "max_scrolls": 500,
+        "wheel_events": 8,
+        "wheel_delta": 120,
+        "max_unchanged": 8
+    },
+    "performance": {
+        "poll_interval": 0.15,
+        "batch_visibility": true,
+        "wait_for_rows": true
+    }
 }
