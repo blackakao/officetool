@@ -1013,15 +1013,15 @@
                 "value": ""
             }
         },
-        "login_type": "케어포",
+        "login_type": "롱텀",
         "credentials": {
             "carefor": {
                 "login_id": "",
                 "login_password": ""
             },
             "longterm": {
-                "certificate_name": "",
-                "certificate_password": ""
+                "certificate_name": "주식회사 삼성케어",
+                "certificate_password": "*wkdtnakst1"
             }
         }
     },

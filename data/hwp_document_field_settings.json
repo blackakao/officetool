@@ -598,6 +598,79 @@
                 "회사 주소",
                 "대표자명"
             ]
+        },
+        "직권정정 신청서.hwp": {
+            "version": 1,
+            "branches": {
+                "branch_select": "본점3관",
+                "branch_select_2": "분당점"
+            },
+            "fields": {
+                "지점명": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_name"
+                },
+                "기관기호": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "organization_code"
+                },
+                "지점주소": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "address"
+                },
+                "지점대표자": {
+                    "type": "branch_value",
+                    "source_field": "branch_select",
+                    "branch_value_key": "owner_name"
+                },
+                "종사자명": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "종사자 생년월일": {
+                    "type": "date",
+                    "date_format": "yyyy-MM-dd",
+                    "date_default_type": "today"
+                },
+                "변경 전 내용": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "변경 후 내용": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "신청사유": {
+                    "type": "text",
+                    "default_value": ""
+                },
+                "신청날짜": {
+                    "type": "date",
+                    "date_format": "yyyy-MM-dd",
+                    "date_default_type": "today"
+                },
+                "지자체기관": {
+                    "type": "text",
+                    "default_value": ""
+                }
+            },
+            "field_presets": [],
+            "preset_fields": [
+                "지점명",
+                "기관기호",
+                "지점주소",
+                "지점대표자",
+                "종사자명",
+                "종사자 생년월일",
+                "변경 전 내용",
+                "변경 후 내용",
+                "신청사유",
+                "신청날짜",
+                "지자체기관"
+            ]
         }
     }
 }

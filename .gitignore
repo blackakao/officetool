@@ -5,6 +5,10 @@
 /images/
 /document/maked/
 
+# Generated PDFs in any maked directory and runtime logs
+**/maked/**/*.pdf
+*.log
+
 # Python bytecode cache
 __pycache__/
 *.py[cod]
