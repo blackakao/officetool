@@ -38,17 +38,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\a893df49887d477b84e170de4ab7ad7c.png",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "6200"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "4500"
             }
         },
         "active": true
@@ -146,17 +146,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\d5a3aa41428c4817a8a87767a00570ff.png",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "4300"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "3000"
             }
         },
         "active": true
@@ -200,7 +200,7 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\ee5d63a874d942c2a3700bfcff466a9b.png",
                 "width": 30,
                 "height": 30
             },
@@ -254,7 +254,7 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\e924a0b159a94a0d9bb87c5ff58f3ae9.png",
                 "width": 30,
                 "height": 30
             },
@@ -308,17 +308,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\38c350fe5b594345a0cbfbd89b30e219.jpg",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "5600"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "5000"
             }
         },
         "active": true
@@ -362,17 +362,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\afbb05ffa0d943f096486de2355a9bfe.png",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "2500"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "1400"
             }
         },
         "active": true
@@ -416,17 +416,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\20a5cd020f7345abaade6a862c05b709.png",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "5300"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "4000"
             }
         },
         "active": true
@@ -476,11 +476,11 @@
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "3800"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "2000"
             }
         },
         "active": true
@@ -530,11 +530,11 @@
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "4500"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "3800"
             }
         },
         "active": true
@@ -584,11 +584,11 @@
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "6200"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "4500"
             }
         },
         "active": true
@@ -632,17 +632,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\742190875ee84f4283b41a2bb37aac8e.png",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "4800"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "1000"
             }
         },
         "active": true
@@ -686,17 +686,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\4df86d5eac684965adaad372fcb203f3.png",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "4500"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "1400"
             }
         },
         "active": true
@@ -740,17 +740,17 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\2d79ab2637f44fd18bf7e381b11fd1b7.jpg",
                 "width": 30,
                 "height": 30
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "5300"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "4000"
             }
         },
         "active": true

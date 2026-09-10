@@ -189,6 +189,12 @@ class MainWindow(QMainWindow):
             self.stacked_widget.setCurrentWidget(page)
 
     def closeEvent(self, event):
+        for page in self.findChildren(FederationTool):
+            if page.batch_thread is not None:
+                page.stop_batch()
+                self.stacked_widget.setCurrentWidget(page)
+                event.ignore()
+                return
         if self.excel_data_sort_page.worker is not None:
             self.stacked_widget.setCurrentWidget(self.excel_data_sort_page)
             self.excel_data_sort_page.status.setText("엑셀 작업이 진행 중입니다. 완료 후 창을 닫아 주세요.")

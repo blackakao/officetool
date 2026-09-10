@@ -12,6 +12,12 @@
             "config_file": "federation_selectors_long_service.json",
             "template_name": "empty",
             "implemented": true
+        },
+        "payroll_download": {
+            "label": "급여 다운로드",
+            "config_file": "federation_selectors_payroll_download.json",
+            "template_name": "selector",
+            "implemented": true
         }
     },
     "deleted_task_keys": []

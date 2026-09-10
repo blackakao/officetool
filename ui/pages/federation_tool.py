@@ -1,6 +1,8 @@
 import json
 import re
 import time
+import hashlib
+from copy import deepcopy
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -9,6 +11,7 @@ from PySide6.QtGui import QAction, QColor, QDrag
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QComboBox,
+    QCheckBox,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
@@ -28,7 +31,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, UnexpectedAlertPresentException, ElementClickInterceptedException, NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
@@ -39,6 +42,9 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from ui.pages.login_tool import BrowserCloseMonitor, LongtermLoginThread
 from ui.pages.logging_util import log, should_log_message
 from ui.pages.branch_task_settings import filter_branches_for_task
+from ui.pages.federation_batch import BranchBatchDialog, BranchBatchThread
+from ui.pages.macro_ranges import RANGE_TYPES, range_values
+from ui.pages.macro_popup_recovery import check_terminal_alert, dismiss_blocking_popups, dismiss_native_alert, find_clickable_context
 
 
 BY_TYPES = {
@@ -60,6 +66,7 @@ ACTION_TYPES = {
 REPEAT_MODES = {
     "fixed": "고정 반복",
     "increment": "증가 반복",
+    "range": "값 범위 반복 (시작·종료값)",
 }
 
 PROCESS_TYPES = {
@@ -82,7 +89,7 @@ PROCESS_TYPES = {
 
 PROCESS_ACTIONS = {
     "url_navigation": {"navigate": "이동"},
-    "element": {**ACTION_TYPES, "select_text": "텍스트로 옵션 선택 (검증)", "pointer_click": "마우스로 클릭 후 화면 확인"},
+    "element": {**ACTION_TYPES, "input_text": "값 입력 (검증)", "select_text": "텍스트로 옵션 선택 (검증)", "pointer_click": "마우스로 클릭 후 화면 확인"},
     "table": {"verify_click_increment": "증가 검증 후 클릭"},
     "text_assert": {
         "equals_repeat_number": "반복번호와 일치",
@@ -312,6 +319,8 @@ def apply_runtime_context(selector: dict, context: dict | None = None) -> dict:
             name = match.group(1)
             operator = match.group(2)
             amount = int(match.group(3) or 0)
+            if not operator:
+                return str(context.get(name, 0))
             base = int(context.get(name, 0))
             if operator == "-":
                 return str(base - amount)
@@ -323,6 +332,7 @@ def apply_runtime_context(selector: dict, context: dict | None = None) -> dict:
             value,
         )
         replacements = {
+            "{repeat_value}": str(context.get("repeat_value", context.get("repeat_number", ""))),
             "{repeat_index}": str(context.get("repeat_index", 0)),
             "{repeat_number}": str(context.get("repeat_number", 1)),
         }
@@ -418,16 +428,6 @@ class SelectorConfigDialog(QDialog):
         browser_layout.addWidget(QLabel("1부터 지정"))
         browser_layout.addStretch()
         layout.addLayout(browser_layout)
-
-        start_layout = QHBoxLayout()
-        start_layout.addWidget(QLabel("명단 시작번호"))
-        self.start_number_spin = QSpinBox()
-        self.start_number_spin.setRange(1, 1000000)
-        self.start_number_spin.setValue(int(self.config.get("start_number", 1)))
-        start_layout.addWidget(self.start_number_spin)
-        start_layout.addWidget(QLabel("증가 반복에 적용 · 전체 실행은 1 · 중간 재시작 후에도 설정 유지"))
-        start_layout.addStretch()
-        layout.addLayout(start_layout)
 
         action_layout = QHBoxLayout()
         add_button = QPushButton("추가")
@@ -563,10 +563,14 @@ class SelectorConfigDialog(QDialog):
         number_cell_item = self.table.item(row, 4)
         process_type = type_combo.currentData() if type_combo else "element"
         if by_combo:
+            action_combo = self.table.cellWidget(row, 5)
+            is_range = process_type == "repeat_start" and action_combo and action_combo.currentData() == "range"
             by_combo.setEnabled(
-                process_type in {"element", "table", "text_assert", "condition_start"}
-                or process_type == "repeat_start"
+                not is_range and (process_type in {"element", "table", "text_assert", "condition_start"}
+                or process_type == "repeat_start")
             )
+            if is_range:
+                self.table.item(row, 3).setToolTip("횟수 셀렉터를 사용하지 않습니다. 메인 화면의 범위 반복값 설정을 사용합니다.")
         if number_cell_item:
             number_cell_item.setFlags(
                 number_cell_item.flags() | Qt.ItemFlag.ItemIsEditable
@@ -1008,10 +1012,33 @@ class SelectorConfigDialog(QDialog):
         deleted_selector_keys.difference_update(selectors.keys())
         self.config["deleted_selector_keys"] = sorted(deleted_selector_keys)
         self.config.setdefault("browser", {})["window_index"] = self.window_index_combo.currentData()
-        self.config["start_number"] = self.start_number_spin.value()
         save_selector_config(self.config_path, self.config)
         QMessageBox.information(self, "저장 완료", "매크로 설정을 저장했습니다.")
         self.accept()
+
+
+def english_task_stem(label):
+    words = {
+        "장기근속수당": "long_service_allowance", "본인부담금": "copayment",
+        "급여제공": "care_provision", "명세서": "statement", "입소자": "resident",
+        "수급자": "recipient", "출근부": "attendance", "프로그램": "program",
+        "기관기호": "organization_code", "청구": "claim", "공단": "federation",
+        "명단": "roster", "급여": "payroll", "의료비": "medical_expense",
+        "만들기": "create", "생성": "create", "입력하기": "entry", "입력": "entry",
+        "조회": "search", "등록": "register", "수정": "update", "저장": "save",
+        "다운로드": "download", "업로드": "upload", "검토": "review", "확인": "check",
+        "발송": "send", "월간": "monthly", "일간": "daily", "연간": "annual",
+        "업무": "task", "작업": "task", "복사": "copy", "테스트": "test",
+        "삭제": "delete", "관리": "management", "결정요청": "decision_request",
+    }
+    translated = label.lower()
+    for korean in sorted(words, key=len, reverse=True):
+        translated = translated.replace(korean, f" {words[korean]} ")
+    tokens = re.findall(r"[a-z0-9_]+", translated)
+    stem = "_".join(tokens).strip("_")[:90] or "task"
+    if re.search(r"[가-힣]", translated):
+        stem += "_" + hashlib.sha256(label.encode("utf-8")).hexdigest()[:8]
+    return stem
 
 
 class TaskConfigDialog(QDialog):
@@ -1026,10 +1053,7 @@ class TaskConfigDialog(QDialog):
 
         form = QFormLayout()
         self.name_edit = QLineEdit()
-        self.json_name_edit = QLineEdit()
-        self.json_name_edit.setPlaceholderText("예: federation_selectors_custom.json")
         form.addRow("작업의 이름", self.name_edit)
-        form.addRow("작업의 json 이름", self.json_name_edit)
         layout.addLayout(form)
 
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
@@ -1039,11 +1063,13 @@ class TaskConfigDialog(QDialog):
 
     def task_data(self):
         label = self.name_edit.text().strip()
-        config_file = self.json_name_edit.text().strip()
-        if config_file and not config_file.endswith(".json"):
-            config_file = f"{config_file}.json"
-        task_key = Path(config_file).stem.replace("federation_selectors_", "") if config_file else ""
-        task_key = task_key.replace("-", "_").replace(" ", "_")
+        base = english_task_stem(label)
+        task_key = base
+        suffix = 2
+        while task_key in self.existing_keys:
+            task_key = f"{base}_{suffix}"
+            suffix += 1
+        config_file = f"federation_selectors_{task_key}.json"
         return task_key, {
             "label": label,
             "config_file": config_file,
@@ -1055,15 +1081,6 @@ class TaskConfigDialog(QDialog):
         task_key, task_config = self.task_data()
         if not task_config["label"]:
             QMessageBox.warning(self, "작업 추가", "작업의 이름을 입력하세요.")
-            return
-        if not task_config["config_file"]:
-            QMessageBox.warning(self, "작업 추가", "작업의 json 이름을 입력하세요.")
-            return
-        if Path(task_config["config_file"]).name != task_config["config_file"]:
-            QMessageBox.warning(self, "작업 추가", "json 이름은 파일명만 입력하세요.")
-            return
-        if task_key in self.existing_keys:
-            QMessageBox.warning(self, "작업 추가", "이미 같은 json 이름의 작업이 있습니다.")
             return
         super().accept()
 
@@ -1096,6 +1113,7 @@ class FederationTool(QWidget):
             self._ensure_task_selector_config(task)
         self.login_threads = []
         self.current_task = None
+        self.batch_thread = None
 
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(10, 10, 10, 10)
@@ -1119,17 +1137,13 @@ class FederationTool(QWidget):
         self.add_task_button.clicked.connect(self.open_add_task_dialog)
         task_manage_layout.addWidget(self.add_task_button)
         self.delete_task_button = QPushButton("작업 삭제")
-        self.delete_task_button.clicked.connect(self.toggle_delete_task_list)
+        self.delete_task_button.clicked.connect(self.open_delete_task_dialog)
         task_manage_layout.addWidget(self.delete_task_button)
+        self.copy_task_button = QPushButton("매크로 복사")
+        self.copy_task_button.clicked.connect(self.copy_task)
+        task_manage_layout.addWidget(self.copy_task_button)
         task_manage_layout.addStretch()
         self.main_layout.addLayout(task_manage_layout)
-
-        self.delete_task_container = QWidget()
-        self.delete_task_layout = QHBoxLayout()
-        self.delete_task_layout.setContentsMargins(0, 0, 0, 0)
-        self.delete_task_container.setLayout(self.delete_task_layout)
-        self.delete_task_container.setVisible(False)
-        self.main_layout.addWidget(self.delete_task_container)
 
         self.l2_container = QWidget()
         l2_layout = QVBoxLayout()
@@ -1139,14 +1153,50 @@ class FederationTool(QWidget):
         self.selector_button = QPushButton("매크로 설정")
         self.selector_button.clicked.connect(self.open_selector_settings)
         toolbar.addWidget(self.selector_button)
-        toolbar.addWidget(QLabel("테스트 시작번호"))
+        toolbar.addWidget(QLabel("시작번호"))
         self.run_start_number_spin = QSpinBox()
         self.run_start_number_spin.setRange(1, 1000000)
         self.run_start_number_spin.setValue(1)
         self.run_start_number_spin.setToolTip("지점 버튼을 누르기 전에 지정하세요. 전체 실행은 1입니다.")
         toolbar.addWidget(self.run_start_number_spin)
+        self.run_start_number_spin.valueChanged.connect(self.save_start_number)
+        self.batch_button = QPushButton("다중 지점 선택")
+        self.batch_button.clicked.connect(self.open_batch_dialog)
+        toolbar.addWidget(self.batch_button)
         toolbar.addStretch()
         l2_layout.addLayout(toolbar)
+        self.popup_recovery_check = QCheckBox("예상치 못한 팝업/얼렛/프롬프트를 닫고 계속 진행")
+        self.popup_recovery_check.setToolTip("명시적인 창 처리 단계와 매크로 대상이 있는 창은 유지합니다. 확인·프롬프트는 취소로 닫습니다.")
+        self.popup_recovery_check.toggled.connect(self.save_popup_recovery)
+        l2_layout.addWidget(self.popup_recovery_check)
+        range_form = QHBoxLayout()
+        range_form.addWidget(QLabel("범위 반복값"))
+        self.range_kind = QComboBox()
+        self.range_kind.addItem("기존 명단 번호", "legacy")
+        for key, label in RANGE_TYPES.items():
+            self.range_kind.addItem(label, key)
+        self.range_start = QLineEdit()
+        self.range_start.setPlaceholderText("시작: 2026-08")
+        self.range_end = QLineEdit()
+        self.range_end.setPlaceholderText("종료: 2025-01 (포함)")
+        self.range_direction = QComboBox()
+        self.range_direction.addItem("역순", "descending")
+        self.range_direction.addItem("정순", "ascending")
+        self.range_step = QSpinBox()
+        self.range_step.setRange(1, 1000000)
+        for widget in (self.range_kind, self.range_start, self.range_end, self.range_direction):
+            range_form.addWidget(widget)
+        range_form.addWidget(QLabel("간격"))
+        range_form.addWidget(self.range_step)
+        l2_layout.addLayout(range_form)
+        self.range_hint = QLabel("값 범위 반복은 매크로의 반복지점 동작에서 선택합니다. 입력값은 {repeat_value}로 사용합니다.")
+        self.range_hint.setWordWrap(True)
+        l2_layout.addWidget(self.range_hint)
+        self.range_kind.currentIndexChanged.connect(self.save_range_settings)
+        self.range_direction.currentIndexChanged.connect(self.save_range_settings)
+        self.range_step.valueChanged.connect(self.save_range_settings)
+        self.range_start.editingFinished.connect(self.save_range_settings)
+        self.range_end.editingFinished.connect(self.save_range_settings)
         l2_label = QLabel("지점선택")
         l2_layout.addWidget(l2_label)
         self.l2_container.setVisible(False)
@@ -1162,6 +1212,10 @@ class FederationTool(QWidget):
         self.branch_container.setLayout(self.branch_grid_layout)
         self.branch_container.setVisible(False)
         self.main_layout.addWidget(self.branch_container)
+        self.stop_batch_button = QPushButton("현재 지점 완료 후 중단")
+        self.stop_batch_button.clicked.connect(self.stop_batch)
+        self.stop_batch_button.setVisible(False)
+        self.main_layout.addWidget(self.stop_batch_button)
 
         self.status_label = QLabel("", self)
         self.status_label.setWordWrap(True)
@@ -1229,7 +1283,6 @@ class FederationTool(QWidget):
             self.task_buttons[task_key] = button
         self.task_button_layout.addStretch()
         self.update_task_button_styles()
-        self.refresh_delete_task_buttons()
 
     def update_task_button_styles(self):
         for task_key, button in getattr(self, "task_buttons", {}).items():
@@ -1242,7 +1295,7 @@ class FederationTool(QWidget):
                 button.setStyleSheet("")
 
     def open_add_task_dialog(self):
-        dialog = TaskConfigDialog(self, set(self.task_configs.keys()))
+        dialog = TaskConfigDialog(self, self._occupied_task_keys())
         if dialog.exec() != QDialog.Accepted:
             return
 
@@ -1255,19 +1308,173 @@ class FederationTool(QWidget):
         self.refresh_task_buttons()
         self.status_label.setText(f"작업을 추가했습니다: {task_config['label']}")
 
-    def toggle_delete_task_list(self):
-        visible = not self.delete_task_container.isVisible()
-        self.delete_task_container.setVisible(visible)
-        if visible:
-            self.refresh_delete_task_buttons()
+    def _occupied_task_keys(self):
+        return set(self.task_configs) | {path.stem.removeprefix("federation_selectors_")
+                                       for path in (self.root / "data").glob("federation_selectors_*.json")}
 
-    def refresh_delete_task_buttons(self):
-        self._clear_layout(self.delete_task_layout)
+    def copy_task(self):
+        if not self.current_task:
+            QMessageBox.warning(self, "매크로 복사", "복사할 작업을 먼저 선택하세요.")
+            return
+        source = self.task_configs[self.current_task]
+        dialog = TaskConfigDialog(self, self._occupied_task_keys())
+        dialog.setWindowTitle("매크로를 새 작업으로 복사")
+        dialog.name_edit.setText(source["label"] + " 복사")
+        if dialog.exec() != QDialog.Accepted:
+            return
+        key, target = dialog.task_data()
+        target["template_name"] = source.get("template_name", "empty")
+        target["template"] = task_template(target)
+        config = deepcopy(ensure_selector_config(self._selector_config_path(self.current_task), source["template"]))
+        save_selector_config(self.root / "data" / target["config_file"], config)
+        self.task_configs[key] = target
+        self.deleted_task_keys.discard(key)
+        self._save_task_configs()
+        self.refresh_task_buttons()
+        self.select_task(key)
+        self._log(f"매크로 복사 완료: {source['label']} → {target['label']}")
+
+    def save_start_number(self, value):
+        if not self.current_task:
+            return
+        config = ensure_selector_config(self._selector_config_path(self.current_task), self.task_configs[self.current_task]["template"])
+        config["start_number"] = value
+        save_selector_config(self._selector_config_path(self.current_task), config)
+
+    def save_popup_recovery(self, checked):
+        if self.current_task:
+            config = ensure_selector_config(self._selector_config_path(self.current_task), self.task_configs[self.current_task]["template"])
+            config["dismiss_unexpected_popups"] = checked
+            save_selector_config(self._selector_config_path(self.current_task), config)
+
+    def load_range_settings(self, config):
+        self.popup_recovery_check.blockSignals(True)
+        self.popup_recovery_check.setChecked(bool(config.get("dismiss_unexpected_popups", False)))
+        self.popup_recovery_check.blockSignals(False)
+        settings = config.get("iteration", {})
+        widgets = (self.range_kind, self.range_start, self.range_end, self.range_direction, self.range_step)
+        for widget in widgets:
+            widget.blockSignals(True)
+        self.range_kind.setCurrentIndex(self.range_kind.findData(settings.get("kind", "legacy")))
+        self.range_start.setText(str(settings.get("start", "")))
+        self.range_end.setText(str(settings.get("end", "")))
+        self.range_direction.setCurrentIndex(self.range_direction.findData(settings.get("direction", "descending")))
+        self.range_step.setValue(settings.get("step", 1))
+        for widget in widgets:
+            widget.blockSignals(False)
+        self._range_enabled()
+        self._show_range_hint(settings)
+
+    def _range_enabled(self):
+        active = self.range_kind.currentData() != "legacy"
+        self.run_start_number_spin.setEnabled(not active)
+        for widget in (self.range_start, self.range_end, self.range_direction, self.range_step):
+            widget.setEnabled(active)
+
+    def save_range_settings(self, *_args):
+        self._range_enabled()
+        if not self.current_task:
+            return
+        settings = {"kind": self.range_kind.currentData(), "start": self.range_start.text().strip(),
+                    "end": self.range_end.text().strip(), "direction": self.range_direction.currentData(),
+                    "step": self.range_step.value()}
+        config = ensure_selector_config(self._selector_config_path(self.current_task), self.task_configs[self.current_task]["template"])
+        config["iteration"] = settings
+        save_selector_config(self._selector_config_path(self.current_task), config)
+        self._show_range_hint(settings)
+
+    def _show_range_hint(self, settings):
+        try:
+            values = range_values(settings) if settings.get("kind", "legacy") != "legacy" else []
+            self.range_hint.setText(f"{len(values)}회: {values[0]} → {values[-1]} / 매크로 동작 ‘값 범위 반복’, 입력값 {{repeat_value}}" if values else "기존 명단 번호 반복을 사용합니다.")
+        except ValueError as exc:
+            self.range_hint.setText(str(exc))
+
+    def validate_run_range(self):
+        self.save_range_settings()
+        config = ensure_selector_config(self._selector_config_path(self.current_task), self.task_configs[self.current_task]["template"])
+        if any(step.get("repeat_mode") == "range" for step in config["selectors"].values()):
+            try:
+                range_values(config.get("iteration", {}))
+            except ValueError as exc:
+                QMessageBox.warning(self, "반복 범위", str(exc))
+                return False
+        return True
+
+    def open_batch_dialog(self):
+        if not self.current_task or self.batch_thread is not None:
+            return
+        if not self.validate_run_range():
+            return
+        if any(thread.isRunning() for thread in self.login_threads):
+            QMessageBox.warning(self, "다중 지점", "개별 실행과 브라우저 종료가 완료된 뒤 다중 지점을 실행하세요.")
+            return
+        dialog = BranchBatchDialog(self, self._load_branches())
+        if dialog.exec() != QDialog.Accepted:
+            return
+        task = self.task_configs[self.current_task]
+        self.batch_thread = BranchBatchThread(
+            dialog.selected_branches(), self.login_thread_class, ClaimProcessThread,
+            self._selector_config_path(self.current_task), task["template"], self.run_start_number_spin.value(),
+            invoice=self.current_task == "invoice",
+        )
+        self.batch_thread.status_signal.connect(self._log)
+        self.batch_thread.summary_signal.connect(self._batch_summary)
+        self.batch_thread.finished.connect(self._batch_finished)
+        self._set_batch_busy(True)
+        self.batch_thread.start()
+
+    def _set_batch_busy(self, busy):
+        for widget in [self.l2_container, self.branch_container,
+                       self.add_task_button, self.delete_task_button, self.copy_task_button, *self.task_buttons.values()]:
+            widget.setEnabled(not busy)
+        self.stop_batch_button.setVisible(busy)
+        self.stop_batch_button.setEnabled(busy)
+
+    def stop_batch(self):
+        if self.batch_thread is not None:
+            self.batch_thread.requestInterruption()
+            self.stop_batch_button.setEnabled(False)
+            self._log("중단 요청: 현재 지점 실행과 브라우저 종료 후 멈춥니다.")
+
+    def _batch_summary(self, results):
+        success = sum(result["success"] for result in results)
+        self._log(f"다중 지점 종료: 성공 {success}, 실패 {len(results) - success}, 미실행 {len(self.batch_thread.branches) - len(results)}")
+
+    def _batch_finished(self):
+        self.batch_thread.deleteLater()
+        self.batch_thread = None
+        self._set_batch_busy(False)
+
+    def closeEvent(self, event):
+        if self.batch_thread is not None and self.batch_thread.isRunning():
+            self.stop_batch()
+            event.ignore()
+            return
+        super().closeEvent(event)
+
+    def open_delete_task_dialog(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("작업 삭제")
+        dialog.resize(420, 160)
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(QLabel("삭제할 작업을 선택하세요."))
+        tasks = QComboBox()
+        tasks.setObjectName("delete_task_selection")
         for task_key, task_config in self.task_configs.items():
-            button = QPushButton(task_config["label"])
-            button.clicked.connect(lambda _, t=task_key: self.delete_task(t))
-            self.delete_task_layout.addWidget(button)
-        self.delete_task_layout.addStretch()
+            tasks.addItem(task_config["label"], task_key)
+        index = tasks.findData(self.current_task)
+        if index >= 0:
+            tasks.setCurrentIndex(index)
+        layout.addWidget(tasks)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.button(QDialogButtonBox.Ok).setText("선택 작업 삭제")
+        buttons.button(QDialogButtonBox.Ok).setEnabled(tasks.count() > 0)
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        if dialog.exec() == QDialog.Accepted:
+            self.delete_task(tasks.currentData())
 
     def delete_task(self, task_key):
         task_config = self.task_configs.get(task_key)
@@ -1294,7 +1501,6 @@ class FederationTool(QWidget):
             self.branch_container.setVisible(False)
             self.status_label.setText("")
         self.refresh_task_buttons()
-        self.delete_task_container.setVisible(False)
 
     def open_selector_settings(self):
         if not self.current_task:
@@ -1312,6 +1518,7 @@ class FederationTool(QWidget):
         ).exec()
         config = ensure_selector_config(config_path, task_config["template"])
         self.run_start_number_spin.setValue(int(config.get("start_number", 1)))
+        self.load_range_settings(config)
 
     def select_task(self, task):
         self.current_task = task
@@ -1320,6 +1527,7 @@ class FederationTool(QWidget):
         self.selector_config_file = self._ensure_task_selector_config(task)
         config = ensure_selector_config(self.selector_config_file, task_config["template"])
         self.run_start_number_spin.setValue(int(config.get("start_number", 1)))
+        self.load_range_settings(config)
         self.l2_container.setVisible(True)
         self.l3_label.setVisible(False)
         self.branch_container.setVisible(True)
@@ -1363,6 +1571,8 @@ class FederationTool(QWidget):
             QMessageBox.warning(self, "작업 선택", "먼저 작업을 선택하세요.")
             return
 
+        if not self.validate_run_range():
+            return
         branch_name = branch.get("branch_name", "Unknown")
         self._log(f"[{branch_name}] {self.tool_name} 지점 버튼 클릭, {self.login_label} 로그인 시작")
         selected_task = self.current_task
@@ -1461,7 +1671,27 @@ class TimedWebDriverWait(WebDriverWait):
 
     def until(self, method, message=""):
         with self.owner.measure_time("element_wait", f"timeout={self._timeout}s"):
-            return super().until(method, message)
+            def guarded(driver):
+                try:
+                    if getattr(self.owner, "_popup_recovery_active", False) and getattr(self.owner, "_popup_recovery_count", 0) < 3:
+                        if dismiss_native_alert(driver, self.owner._log):
+                            self.owner._popup_recovery_count += 1
+                            return False
+                    return method(driver)
+                except UnexpectedAlertPresentException as exc:
+                    check_terminal_alert(getattr(exc, "alert_text", None))
+                    if getattr(self.owner, "_popup_recovery_active", False) and getattr(self.owner, "_popup_recovery_count", 0) < 3:
+                        self.owner._log("[popup_recovery] WebDriver가 예상하지 못한 대화상자를 보고했습니다. 닫힘 상태 확인 후 요소 탐색을 계속합니다.")
+                        self.owner.recover_unexpected_popups()
+                        # WebDriver may already have dismissed the alert when reporting it.
+                        return False
+                    raise
+            try:
+                return super().until(guarded, message)
+            except TimeoutException:
+                if self.owner.recover_unexpected_popups():
+                    return super().until(guarded, message)
+                raise
 
 
 class InvoiceProcessor:
@@ -1479,6 +1709,15 @@ class InvoiceProcessor:
 
     def _log(self, message):
         self.status_callback(message)
+
+    def recover_unexpected_popups(self):
+        if not self.config.get("dismiss_unexpected_popups", False) or not getattr(self, "_popup_recovery_active", False):
+            return False
+        if getattr(self, "_popup_recovery_count", 0) >= 3:
+            return False
+        self._popup_recovery_count += 1
+        return dismiss_blocking_popups(self.driver, self._popup_protected_handles,
+                                       self._popup_target_locator, self._log)
 
     @contextmanager
     def measure_time(self, kind, detail=""):
@@ -1768,6 +2007,41 @@ class InvoiceProcessor:
         self.last_element_key = key
         return elements
 
+    def wait_clickable_context(self, key, locator, timeout=None):
+        last_scan = [time.monotonic()]
+        last_diagnostic = [None]
+        scan_interval = 1.0
+        cached = self.driver.__dict__.get("_macro_found_context")
+        if cached:
+            try:
+                if self.driver.current_window_handle == cached[0] and self.driver.find_element(By.TAG_NAME, "html") == cached[2]:
+                    scan_interval = 3.0  # Allow the known report frame to finish rendering.
+            except (NoSuchElementException, StaleElementReferenceException):
+                pass
+
+        def log_context(message):
+            if message != last_diagnostic[0]:
+                self._log(message)
+                last_diagnostic[0] = message
+
+        def find(driver):
+            try:
+                element = EC.element_to_be_clickable(locator)(driver)
+                if element:
+                    return element
+            except (NoSuchElementException, StaleElementReferenceException):
+                pass
+            now = time.monotonic()
+            if now - last_scan[0] < scan_interval:
+                return False
+            last_scan[0] = now
+            return find_clickable_context(driver, locator, log_context)
+
+        try:
+            return TimedWebDriverWait(self, timeout or self.timeout).until(find)
+        except TimeoutException as exc:
+            raise TimeoutException(f"{key}: 열린 창·프레임에서도 클릭 가능한 대상을 찾지 못했습니다. locator={locator}") from exc
+
     def click(self, key, timeout=None, required=True, context=None, run_controls=True):
         if run_controls:
             self.run_control_steps_before(key)
@@ -1775,7 +2049,7 @@ class InvoiceProcessor:
         if not locator:
             return None
         self._log(f"[click_wait] {self.selector_text(key)} timeout={timeout or self.timeout}")
-        element = TimedWebDriverWait(self, timeout or self.timeout).until(EC.element_to_be_clickable(locator))
+        element = self.wait_clickable_context(key, locator, timeout)
         self.perform_action(key, element)
         self._log(f"[click_ok] {key}")
         self.last_element_key = key
@@ -2412,11 +2686,24 @@ class InvoiceProcessor:
     def run_selector_step(self, key, selector, context=None):
         previous = getattr(self, "_timing_step", "-")
         self._timing_step = key
+        self._popup_recovery_active = self.config.get("dismiss_unexpected_popups", False) and selector.get("type", "element") not in {"alert", "confirm", "prompt", "window"}
+        self._popup_recovery_count = 0
+        if self._popup_recovery_active:
+            self._popup_target_locator = build_locator(apply_runtime_context(selector, context)) if selector.get("type", "element") in {"element", "table", "text_assert"} else None
+            if not hasattr(self, "_popup_known_handles"):
+                self._popup_known_handles = set(self.driver.window_handles)
+            self._popup_protected_handles = self._popup_known_handles
         try:
             with self.measure_time("step", f"action={selector.get('action')} repeat={(context or {}).get('repeat_number', '-')} label={selector.get('label', key)}"):
-                return self._run_selector_step(key, selector, context)
+                try:
+                    return self._run_selector_step(key, selector, context)
+                except ElementClickInterceptedException:
+                    if not self.recover_unexpected_popups():
+                        raise
+                    return self._run_selector_step(key, selector, context)
         finally:
             self._timing_step = previous
+            self._popup_recovery_active = False
 
     def _run_selector_step(self, key, selector, context=None):
         process_type = selector.get("type", "element")
@@ -2430,6 +2717,8 @@ class InvoiceProcessor:
             self.driver.get(target_url)
             return True
         if process_type == "element":
+            if selector.get("action") == "input_text":
+                return self.input_field_text(key, selector, context)
             if selector.get("action") == "pointer_click":
                 locator = build_locator(apply_runtime_context(selector, context))
                 element = TimedWebDriverWait(self, self.timeout).until(EC.element_to_be_clickable(locator))
@@ -2472,6 +2761,39 @@ class InvoiceProcessor:
         if count < 0:
             raise ValueError(f"반복 횟수는 0 이상이어야 합니다: {key}={count}")
         return count
+
+    def input_field_text(self, key, selector, context=None):
+        expected = self.runtime_text_value(selector.get("expected_value", ""), context)
+        locator = build_locator(apply_runtime_context(selector, context))
+        if not locator:
+            raise ValueError(f"입력 대상 셀렉터가 없습니다: {key}")
+        container = self.wait_clickable_context(key, locator)
+        if container.tag_name.lower() in {"input", "textarea"}:
+            field = container
+        else:
+            fields = [element for element in container.find_elements(By.CSS_SELECTOR, "input, textarea")
+                      if element.is_displayed() and element.is_enabled()]
+            if len(fields) != 1:
+                raise ValueError(f"{key}: 지정한 영역에서 입력칸을 하나로 찾을 수 없습니다 ({len(fields)}개). 입력칸 XPath를 확인하세요.")
+            field = fields[0]
+        field.click()
+        field.send_keys(Keys.CONTROL, "a")
+        field.send_keys(expected)
+        field.send_keys(Keys.TAB)
+
+        def matches(_driver):
+            actual = str(field.get_attribute("value") or "").strip()
+            if re.fullmatch(r"\d{4}-\d{2}(?:-\d{2})?", expected):
+                return actual.replace("-", "").replace("/", "") == expected.replace("-", "")
+            return actual == expected
+
+        try:
+            TimedWebDriverWait(self, self.timeout).until(matches)
+        except TimeoutException as exc:
+            raise ValueError(f"{key}: 입력값 검증 실패 (기대값 {expected}, 실제값 {field.get_attribute('value')})") from exc
+        self._log(f"[input_ok] {key}: {expected}")
+        self.last_element_key = key
+        return True
 
     def find_repeat_end_index(self, items, start_index):
         depth = 0
@@ -2694,6 +3016,25 @@ class InvoiceProcessor:
             if selector.get("type", "element") == "repeat_start":
                 end_index = self.find_repeat_end_index(items, index)
                 repeat_items = items[index + 1:end_index]
+                if selector.get("repeat_mode") == "range":
+                    values = range_values(self.config.get("iteration", {}))
+                    base_window = self.driver.current_window_handle if self.config.get("restore_range_context", False) else None
+                    self._log(f"[range_start] {key}: {values[0]} → {values[-1]}, {len(values)}회")
+                    for ordinal, value in enumerate(values):
+                        if ordinal and base_window is not None:
+                            if base_window not in self.driver.window_handles:
+                                raise ValueError("반복 시작 화면의 창이 닫혀 다음 연월을 진행할 수 없습니다.")
+                            self.driver.switch_to.window(base_window)
+                            self.driver.switch_to.default_content()
+                            self._log(f"[range_context] {value}: 반복 시작 창의 기본 화면으로 복귀")
+                        repeat_context = dict(context or {})
+                        repeat_context.update(repeat_index=ordinal, repeat_number=value,
+                                              repeat_value=value, repeat_total=len(values))
+                        self._log(f"[range] {key}: {ordinal + 1}/{len(values)}, value={value}")
+                        self.run_workflow_items_once(repeat_items, context=repeat_context)
+                    self._log(f"[range_end] {key}")
+                    index = end_index + 1
+                    continue
                 count = self.repeat_count(key, selector, context=context)
                 repeat_mode = selector.get("repeat_mode", "fixed")
                 self._log(f"[repeat_start] {key}: mode={REPEAT_MODES.get(repeat_mode, repeat_mode)} count={count}")
@@ -2706,6 +3047,7 @@ class InvoiceProcessor:
                     repeat_context["repeat_index"] = repeat_index
                     repeat_context["repeat_total"] = count
                     repeat_context["repeat_number"] = repeat_index + 1 if repeat_mode == "increment" else count
+                    repeat_context["repeat_value"] = repeat_context["repeat_number"]
                     self._log(f"[repeat] {key}: {repeat_index + 1}/{count}")
                     self.run_workflow_items_once(repeat_items, context=repeat_context)
                 self._log(f"[repeat_end] {key}")

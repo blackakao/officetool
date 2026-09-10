@@ -274,11 +274,11 @@ def test_start_number_setting_round_trip(tmp_path, monkeypatch):
     app = QApplication.instance() or QApplication([])
     source = Path(__file__).resolve().parents[1] / 'data/federation_selectors_invoice.json'
     config = json.loads(source.read_text(encoding='utf-8'))
+    config['start_number'] = 25
     path = tmp_path / 'macro.json'
     path.write_text(json.dumps(config, ensure_ascii=False), encoding='utf-8')
     dialog = SelectorConfigDialog(None, path)
-    assert dialog.start_number_spin.value() == 1
-    dialog.start_number_spin.setValue(25)
+    assert not hasattr(dialog, 'start_number_spin')
     with patch('ui.pages.federation_tool.QMessageBox.information'):
         dialog.save()
     saved = json.loads(path.read_text(encoding='utf-8'))
