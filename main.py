@@ -27,6 +27,7 @@ from ui.pages.memo_page import MemoPage
 from ui.pages.incomplete_task_page import IncompleteTaskPage
 from ui.pages.branch_task_settings import BranchTaskSettingsPage
 from ui.pages.attendance_analysis_page import AttendanceAnalysisPage
+from ui.pages.excel_data_sort_page import ExcelDataSortPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -101,6 +102,7 @@ class MainWindow(QMainWindow):
         self.incomplete_task_page = IncompleteTaskPage()
         self.branch_task_settings_page = BranchTaskSettingsPage()
         self.attendance_analysis_page = AttendanceAnalysisPage()
+        self.excel_data_sort_page = ExcelDataSortPage()
 
         menu_groups = (
             ("필수도구", (("로그인툴", self.login_page),)),
@@ -112,7 +114,10 @@ class MainWindow(QMainWindow):
                     ("테이블 목록 관리", self.table_list_page),
                 ),
             ),
-            ("문서 분석", (("출근부 분석", self.attendance_analysis_page),)),
+            ("문서 분석", (
+                ("출근부 분석", self.attendance_analysis_page),
+                ("엑셀 데이터 정렬", self.excel_data_sort_page),
+            )),
             (
                 "개인 업무",
                 (
@@ -182,6 +187,14 @@ class MainWindow(QMainWindow):
         page = item.data(Qt.UserRole)
         if page is not None:
             self.stacked_widget.setCurrentWidget(page)
+
+    def closeEvent(self, event):
+        if self.excel_data_sort_page.worker is not None:
+            self.stacked_widget.setCurrentWidget(self.excel_data_sort_page)
+            self.excel_data_sort_page.status.setText("엑셀 작업이 진행 중입니다. 완료 후 창을 닫아 주세요.")
+            event.ignore()
+            return
+        super().closeEvent(event)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest>=8.0
+# Construct real legacy XLS fixtures for reader integration tests.
+xlwt==1.3.0

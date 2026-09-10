@@ -12,12 +12,6 @@
             "config_file": "federation_selectors_long_service.json",
             "template_name": "empty",
             "implemented": true
-        },
-        "test": {
-            "label": "test",
-            "config_file": "test.json",
-            "template_name": "empty",
-            "implemented": true
         }
     },
     "deleted_task_keys": []

@@ -2,7 +2,7 @@
 
 요양기관의 지점 정보, 로그인, 문서 작성 및 반복 업무를 한곳에서 처리하기 위한 Windows 데스크톱 도구입니다.
 
-현재 구현 기준: 2026-09-09. PySide6 기반 업무 화면과 PyTorch 기반 출근부 분석 프로젝트를 포함합니다.
+현재 구현 기준: 2026-09-09. PySide6 기반 업무 화면, 출근부 분석 모델, 엑셀 데이터 정렬 프로젝트를 포함합니다.
 
 ## 프로젝트 구성
 
@@ -10,6 +10,7 @@
 | --- | --- | --- |
 | 요양원 업무툴 | `main.py`, `ui/pages/` / `python main.py` | 지점·로그인 관리, 문서 생성, 개인 업무, 정보 조회, 웹 자동화 |
 | 출근부 분석 모델 | `attendance_analysis/` / 앱의 `문서 분석 > 출근부 분석` 또는 CLI | 이미지·정답 데이터 학습, 출근부 이미지 분석, XLSX 결과 저장. [상세 안내](attendance_analysis/README.md) |
+| 엑셀 데이터 정렬 | `excel_data_sort/` / 앱의 `문서 분석 > 엑셀 데이터 정렬` 또는 `python -m excel_data_sort` | XLSX·XLS를 JSON 양식에 따라 정규화하고 정형 Dataset으로 변환. [상세 안내](excel_data_sort/README.md) |
 
 ## 실행 환경
 
@@ -18,6 +19,7 @@
 - 한글 문서 자동화 기능 사용 시 한컴오피스 한글 설치 필요
 - Word 문서의 PDF 변환 기능 사용 시 Microsoft Word 설치 필요
 - 출근부 모델 학습·분석은 PyTorch를 사용하며, CUDA 사용 가능 시 GPU를, 그 외에는 CPU를 사용합니다.
+- 엑셀 데이터 정렬은 XLSX에 `openpyxl`, XLS에 `xlrd`를 사용합니다. 이 기능에는 Microsoft Excel 설치가 필요하지 않습니다.
 
 ```powershell
 python -m venv .venv
@@ -71,6 +73,22 @@ python -m attendance_analysis.predict dataset/files/attendance_001.jpg --checkpo
 ```
 
 데이터 열 구성과 모델 교체 방법은 [출근부 분석 README](attendance_analysis/README.md)를 참고합니다.
+
+엑셀 데이터 정렬:
+
+- 여러 XLSX·XLS 파일을 불러오고 파일마다 저장된 양식을 자동 인식하거나 직접 선택합니다.
+- 업로드 파일 목록에 XLSX·XLS 파일을 드래그 앤 드롭할 수 있습니다. ‘컬럼 추가’ 탭에서는 출력 열 사이에 고정값 또는 원본 셀 값을 담는 컬럼을 삽입하고 양식에 저장합니다.
+- 추가 컬럼의 ‘매핑 설정’에서 지점 관리의 조회 필드와 가져올 필드를 선택합니다. 예를 들어 기관기호로 지점을 찾아 해당 지점의 법인명을 출력합니다. 조회 설정은 양식에 저장되며 미리보기와 Excel 출력에 적용됩니다.
+- 헤더행·데이터 시작/끝행, 기준 테이블의 열 범위, 사용할 컬럼·출력 컬럼명, 병합값 처리, 숨김 행·열·시트, 테이블·시트 합치기 기준을 화면에서 설정합니다.
+- 양식은 `data/excel_templates/<양식명>.json`에 저장합니다. 예: `노인급여.json`, `생계급여.json`, `출근부.json`.
+- 원본을 수정하지 않고 병합 해제 → 빈 행 제거 → 빈 열 제거 → 숨김 옵션 적용 후 반복 헤더를 찾아 실제 데이터와 지정 컬럼을 추출합니다.
+- 기본적으로 중간 빈 행을 건너뛰고 값이 있는 마지막 행까지 추출합니다. 컬럼 설정과 미리보기의 값은 가운데 정렬합니다.
+- 가로·세로 반복 테이블과 같은 헤더를 가진 시트를 합치거나 따로 출력할 수 있습니다. 원본 미리보기와 설정 변경 시 자동 갱신되는 Dataset 결과를 제공합니다. 양식 저장 버튼은 상단에 있습니다.
+- 날짜 헤더는 월별 요일 변경을 허용하며, 처리 내역에서 자동 인식 후보별 점수와 누락 헤더·실패 사유를 확인할 수 있습니다.
+- `전체 파일 → Excel 저장`으로 XLSX를 저장합니다. 같은 양식과 출력 컬럼의 결과는 합치고, 다른 양식이나 분리 설정의 결과는 별도 시트로 저장합니다.
+- 현재는 Rule 기반입니다. 헤더·컬럼 수·병합 위치·시트 구조로 인식하며, 낮은 점수나 유사 후보가 겹치면 수동 선택이 필요합니다. AI 분석은 향후 확장을 위한 인터페이스만 마련되어 있습니다.
+
+상세 사용 순서, 종료 조건과 인식 범위는 [엑셀 데이터 정렬 README](excel_data_sort/README.md)를 참고합니다.
 
 ### 개인 업무
 
@@ -170,6 +188,9 @@ python -m attendance_analysis.predict dataset/files/attendance_001.jpg --checkpo
 | --- | --- |
 | `main.py`, `ui/pages/` | 앱 실행 진입점과 업무별 화면 |
 | `attendance_analysis/` | 출근부 모델 설정·데이터 처리·학습·예측 코드 |
+| `excel_data_sort/` | Excel 읽기·정규화·양식 인식·Dataset 추출·XLSX 출력 및 CLI |
+| `ui/pages/excel_data_sort_page.py` | 엑셀 데이터 정렬 화면 |
+| `data/excel_templates/*.json` | 사용자가 저장한 엑셀 양식과 인식 특징 (Git 관리 대상) |
 | `dataset/files/`, `dataset/labels/` | 출근부 학습 이미지와 정답 |
 | `attendance_analysis/outputs/best.pt` | 학습으로 생성되는 모델 체크포인트 |
 | `tests/` | 문서 처리, 업무 관리, 출근부 정답 처리, 자동화 관련 테스트 |
@@ -212,6 +233,6 @@ Git 업로드 제외 정책:
 
 ```powershell
 chcp 65001
-python -m pip install pytest
+python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
