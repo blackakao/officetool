@@ -2,23 +2,12 @@ from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertP
 from selenium.webdriver.common.by import By
 
 
-class NoQueryResultsError(ValueError):
-    """The site explicitly says the requested report has no records."""
-
-
-def check_terminal_alert(text):
-    normalized = "".join(str(text or "").split()).rstrip(".!。")
-    if normalized == "조회된대상자내역이없습니다":
-        raise NoQueryResultsError("조회된 대상자 내역이 없습니다. 현재 실행을 중단합니다. 다음 화면 탐색과 이후 연월 반복은 실행하지 않습니다.")
-
-
 def dismiss_native_alert(driver, log):
     try:
         alert = driver.switch_to.alert
         text = alert.text
         alert.dismiss()
         log(f"[popup_recovery] alert/confirm/prompt 처리=dismiss(취소/닫기), 내용={str(text)[:200]}")
-        check_terminal_alert(text)
         return True
     except NoAlertPresentException:
         return False

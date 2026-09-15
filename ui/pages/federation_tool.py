@@ -44,7 +44,7 @@ from ui.pages.logging_util import log, should_log_message
 from ui.pages.branch_task_settings import filter_branches_for_task
 from ui.pages.federation_batch import BranchBatchDialog, BranchBatchThread
 from ui.pages.macro_ranges import RANGE_TYPES, range_values
-from ui.pages.macro_popup_recovery import check_terminal_alert, dismiss_blocking_popups, dismiss_native_alert, find_clickable_context
+from ui.pages.macro_popup_recovery import dismiss_blocking_popups, dismiss_native_alert, find_clickable_context
 
 
 BY_TYPES = {
@@ -97,9 +97,9 @@ PROCESS_ACTIONS = {
         "equals_repeat_text": "반복번호 텍스트 일치",
         "text_exists": "텍스트 존재",
     },
-    "alert": {"accept": "확인/수락", "dismiss": "취소/닫기"},
-    "confirm": {"accept": "확인/수락", "dismiss": "취소/닫기"},
-    "prompt": {"accept": "텍스트 입력 후 확인", "dismiss": "취소/닫기"},
+    "alert": {"accept": "확인/수락", "dismiss": "취소/닫기", "accept_if_present": "확인/수락 (없으면 계속)", "dismiss_if_present": "취소/닫기 (없으면 계속)"},
+    "confirm": {"accept": "확인/수락", "dismiss": "취소/닫기", "accept_if_present": "확인/수락 (없으면 계속)", "dismiss_if_present": "취소/닫기 (없으면 계속)"},
+    "prompt": {"accept": "텍스트 입력 후 확인", "dismiss": "취소/닫기", "accept_if_present": "텍스트 입력 후 확인 (없으면 계속)", "dismiss_if_present": "취소/닫기 (없으면 계속)"},
     "window": {"keep": "유지", "switch_last": "마지막 창으로 전환", "close_extra": "추가 창 닫기"},
     "legacy_action": {
         "last_table_click": "마지막 테이블 행 다시 클릭",
@@ -505,7 +505,10 @@ class SelectorConfigDialog(QDialog):
         label = selector.get("label", "") or key
         self.table.setItem(row, 0, QTableWidgetItem(label))
         self.table.item(row, 0).setData(Qt.ItemDataRole.UserRole, {
-            name: selector[name] for name in ("dropdown_xpath", "expected_visible_xpath", "selection_method", "max_key_steps") if name in selector
+            name: selector[name] for name in (
+                "dropdown_xpath", "expected_visible_xpath", "selection_method",
+                "max_key_steps", "timeout",
+            ) if name in selector
         })
 
         type_combo = QComboBox()
@@ -594,7 +597,10 @@ class SelectorConfigDialog(QDialog):
             "repeat_mode": action if process_type == "repeat_start" else "fixed",
             "by": "" if process_type == "url_navigation" else (by_combo.currentText() if by_combo else "xpath"),
             "value": value_item.text().strip() if value_item else "",
-            "required": True,
+            "required": not (
+                process_type in {"alert", "confirm", "prompt"}
+                and str(action).endswith("_if_present")
+            ),
             "action": "element_text" if process_type == "repeat_start" else action,
         }
         if process_type == "table" and number_cell_selector:
@@ -603,8 +609,14 @@ class SelectorConfigDialog(QDialog):
             selector["expected_value"] = number_cell_selector
         if process_type == "url_navigation":
             selector["payload"] = number_cell_selector
+        metadata = label_item.data(Qt.ItemDataRole.UserRole) if label_item else {}
+        if metadata and "timeout" in metadata:
+            selector["timeout"] = metadata["timeout"]
         if process_type == "element" and action in {"select_text", "pointer_click"} and label_item:
-            selector.update(label_item.data(Qt.ItemDataRole.UserRole) or {})
+            selector.update({
+                key: value for key, value in (metadata or {}).items()
+                if key != "timeout"
+            })
         return (
             "",
             selector,
@@ -1679,7 +1691,6 @@ class TimedWebDriverWait(WebDriverWait):
                             return False
                     return method(driver)
                 except UnexpectedAlertPresentException as exc:
-                    check_terminal_alert(getattr(exc, "alert_text", None))
                     if getattr(self.owner, "_popup_recovery_active", False) and getattr(self.owner, "_popup_recovery_count", 0) < 3:
                         self.owner._log("[popup_recovery] WebDriver가 예상하지 못한 대화상자를 보고했습니다. 닫힘 상태 확인 후 요소 탐색을 계속합니다.")
                         self.owner.recover_unexpected_popups()
@@ -1743,6 +1754,18 @@ class InvoiceProcessor:
             f"{key} ({selector.get('label', key)}) "
             f"by={selector.get('by', '')} value={selector.get('value', '')}"
         )
+
+    def selector_timeout(self, selector, default=None):
+        """Resolve a selector-specific timeout from seconds or a named timeout."""
+        value = selector.get("timeout")
+        if value in (None, ""):
+            return default or self.timeout
+        if isinstance(value, str) and value in self.timeouts:
+            return float(self.timeouts[value])
+        try:
+            return max(0.1, float(value))
+        except (TypeError, ValueError):
+            raise ValueError(f"올바르지 않은 요소 대기시간입니다: {value}")
 
     def ordered_selector_keys(self):
         return list(self.config.get("selectors", {}).keys())
@@ -1903,12 +1926,13 @@ class InvoiceProcessor:
         return True
 
     def handle_dialog_control(self, key, selector):
-        timeout = int(self.timeouts.get("short", 3))
-        required = True
+        timeout = self.selector_timeout(selector, self.timeouts.get("short", 3))
+        configured_action = selector.get("action", "accept")
+        required = not configured_action.endswith("_if_present")
+        action = configured_action.removesuffix("_if_present")
         try:
             alert = TimedWebDriverWait(self, timeout).until(EC.alert_is_present())
             text = (alert.text or "").strip()
-            action = selector.get("action", "accept")
             if selector.get("type") == "prompt" and action == "accept":
                 value = selector.get("value", "")
                 alert.send_keys(value)
@@ -1923,7 +1947,7 @@ class InvoiceProcessor:
             message = f"{PROCESS_TYPES.get(selector.get('type'), '제어')} 대상을 찾지 못했습니다: {key}"
             if required:
                 raise TimeoutException(message)
-            self._log(f"[제어스킵] {message}")
+            self._log(f"[제어스킵] {message} - 조건부 대화상자가 없어 계속 진행합니다.")
             return False
 
     def handle_window_control(self, key, selector):
@@ -2010,14 +2034,14 @@ class InvoiceProcessor:
     def wait_clickable_context(self, key, locator, timeout=None):
         last_scan = [time.monotonic()]
         last_diagnostic = [None]
-        scan_interval = 1.0
-        cached = self.driver.__dict__.get("_macro_found_context")
-        if cached:
-            try:
-                if self.driver.current_window_handle == cached[0] and self.driver.find_element(By.TAG_NAME, "html") == cached[2]:
-                    scan_interval = 3.0  # Allow the known report frame to finish rendering.
-            except (NoSuchElementException, StaleElementReferenceException):
-                pass
+        # Report frames are replaced after export-option actions. Waiting three
+        # seconds before rescanning made every download/save iteration slow.
+        # A short interval still lets the current context win without delaying
+        # discovery of the replacement frame.
+        scan_interval = max(
+            0.1,
+            float(getattr(self, "config", {}).get("performance", {}).get("context_scan_interval", 0.35)),
+        )
 
         def log_context(message):
             if message != last_diagnostic[0]:
@@ -2721,7 +2745,11 @@ class InvoiceProcessor:
                 return self.input_field_text(key, selector, context)
             if selector.get("action") == "pointer_click":
                 locator = build_locator(apply_runtime_context(selector, context))
-                element = TimedWebDriverWait(self, self.timeout).until(EC.element_to_be_clickable(locator))
+                element = self.wait_clickable_context(
+                    key,
+                    locator,
+                    self.selector_timeout(selector),
+                )
                 self.pointer_click(element, key)
                 expected_xpath = selector.get("expected_visible_xpath")
                 if expected_xpath:
@@ -2732,7 +2760,12 @@ class InvoiceProcessor:
                 return True
             if selector.get("action") == "select_text":
                 return self.select_field_text(key, selector, context)
-            return self.click(key, context=context, run_controls=False)
+            return self.click(
+                key,
+                timeout=self.selector_timeout(selector),
+                context=context,
+                run_controls=False,
+            )
         if process_type == "table":
             return self.run_table_step(key, selector, context=context)
         if process_type == "text_assert":
@@ -2776,7 +2809,9 @@ class InvoiceProcessor:
             if len(fields) != 1:
                 raise ValueError(f"{key}: 지정한 영역에서 입력칸을 하나로 찾을 수 없습니다 ({len(fields)}개). 입력칸 XPath를 확인하세요.")
             field = fields[0]
-        field.click()
+        # element_to_be_clickable does not detect a Nexacro/modal overlay that
+        # covers the field. Wait until the field is the actual pointer target.
+        self.pointer_click(field, key)
         field.send_keys(Keys.CONTROL, "a")
         field.send_keys(expected)
         field.send_keys(Keys.TAB)
@@ -2860,6 +2895,9 @@ class InvoiceProcessor:
             raise ValueError(f"선택 대상 셀렉터가 비어 있습니다: {key}")
         wait = TimedWebDriverWait(self, self.timeout)
         element = wait.until(EC.element_to_be_clickable(locator))
+        if self.field_text(element) == expected:
+            self._log(f"[select_text] {key}: 이미 선택됨 expected={expected}")
+            return True
         if element.tag_name.lower() == "select":
             Select(element).select_by_visible_text(expected)
         else:

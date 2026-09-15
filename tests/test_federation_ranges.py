@@ -60,6 +60,7 @@ def test_input_field_container_and_verification(monkeypatch):
     runner.driver = Mock()
     runner.timeout = 1
     runner._log = Mock()
+    runner.pointer_click = Mock()
     field = Mock()
     field.tag_name = "input"
     field.get_attribute.return_value = "202608"
@@ -72,6 +73,7 @@ def test_input_field_container_and_verification(monkeypatch):
     wait.until.side_effect = [container, True]
     monkeypatch.setattr(module, "TimedWebDriverWait", lambda *args: wait)
     assert runner.input_field_text("input", {"by": "xpath", "value": "//container", "expected_value": "{repeat_value}"}, {"repeat_value": "2026-08"})
+    runner.pointer_click.assert_called_once_with(field, "input")
     field.send_keys.assert_any_call("2026-08")
     verification = wait.until.call_args_list[1].args[0]
     assert verification(runner.driver)
@@ -81,6 +83,66 @@ def test_input_field_container_and_verification(monkeypatch):
     wait.until.side_effect = [container]
     with pytest.raises(ValueError, match="입력칸"):
         runner.input_field_text("input", {"by": "xpath", "value": "//container"})
+
+
+def test_selector_timeout_accepts_named_and_numeric_values():
+    runner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
+    runner.timeout = 20
+    runner.timeouts = {"long": 60}
+    assert runner.selector_timeout({}) == 20
+    assert runner.selector_timeout({"timeout": "long"}) == 60
+    assert runner.selector_timeout({"timeout": "2.5"}) == 2.5
+    with pytest.raises(ValueError, match="대기시간"):
+        runner.selector_timeout({"timeout": "missing"})
+
+
+def test_payroll_download_has_final_save_and_resilient_viewer_selectors():
+    path = Path(__file__).resolve().parents[1] / "data" / "federation_selectors_payroll_download.json"
+    with open(path, "r", encoding="utf-8") as stream:
+        selectors = json.load(stream)["selectors"]
+    assert selectors["alert_optional_009"]["action"] == "dismiss_if_present"
+    assert selectors["alert_optional_009"]["required"] is False
+    assert selectors["alert_optional_009"]["timeout"] == 0.5
+    assert selectors["element_009"]["action"] == "pointer_click"
+    assert selectors["element_009"]["timeout"] == "long"
+    assert selectors["element_009"]["expected_visible_xpath"] == selectors["element_010"]["value"]
+    assert "다운로드" in selectors["element_013"]["value"]
+    assert selectors["element_013"]["timeout"] == "long"
+    assert selectors["element_013"]["action"] == "pointer_click"
+    assert "옵션수정" in selectors["element_014"]["value"]
+    assert selectors["element_017"]["label"] == "저장"
+    assert "저장" in selectors["element_017"]["value"]
+    assert selectors["element_011"]["selection_method"] == "keyboard"
+    assert selectors["element_011"]["max_key_steps"] == 3
+    assert selectors["element_011"]["expected_value"] == "내부 업무처리"
+    assert selectors["element_011"]["action"] == "select_text"
+    delay_step = selectors["delay_before_download_013"]
+    assert (
+        delay_step["type"] == "delay"
+        or (delay_step["type"] == "legacy_action" and delay_step["action"] == "short_wait")
+    )
+    assert selectors["delay_before_download_013"]["value"] == "3"
+    assert json.loads(path.read_text(encoding="utf-8"))["performance"]["context_scan_interval"] == 0.35
+
+
+def test_select_text_skips_opening_dropdown_when_already_selected(monkeypatch):
+    runner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
+    runner.driver = Mock()
+    runner.timeout = 20
+    runner._log = Mock()
+    element = Mock()
+    wait = Mock()
+    wait.until.return_value = element
+    runner.field_text = Mock(return_value="내부 업무처리")
+    runner.pointer_click = Mock()
+    monkeypatch.setattr(module, "TimedWebDriverWait", lambda *args: wait)
+
+    assert runner.select_field_text(
+        "reason",
+        {"by": "xpath", "value": "//reason", "expected_value": "내부 업무처리"},
+    )
+    runner.pointer_click.assert_not_called()
+    runner._log.assert_called_once_with("[select_text] reason: 이미 선택됨 expected=내부 업무처리")
 
 
 def test_payroll_template_and_editor_roundtrip(tmp_path, monkeypatch):
@@ -105,6 +167,11 @@ def test_payroll_template_and_editor_roundtrip(tmp_path, monkeypatch):
     assert saved["iteration"] == config["iteration"]
     assert any(step.get("repeat_mode") == "range" for step in saved["selectors"].values())
     assert any(step.get("action") == "input_text" and step["expected_value"] == "{repeat_value}" for step in saved["selectors"].values())
+    assert any(step.get("label") == "다운로드 버튼" and step.get("timeout") == "long"
+               for step in saved["selectors"].values())
+    assert any(step.get("label") == "저장" for step in saved["selectors"].values())
+    assert any(step.get("action") == "dismiss_if_present" and not step.get("required")
+               for step in saved["selectors"].values())
     dialog.close()
 
 
