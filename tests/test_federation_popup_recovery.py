@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from PySide6.QtWidgets import QApplication
 
 from ui.pages import federation_tool as module
-from ui.pages.macro_popup_recovery import NoQueryResultsError, dismiss_blocking_popups, find_clickable_context
+from ui.pages.macro_popup_recovery import dismiss_blocking_popups, find_clickable_context
 
 
 def driver_with_windows():
@@ -71,6 +71,27 @@ def test_explicit_dialog_step_is_not_auto_dismissed():
     runner.status_callback = Mock()
     runner._run_selector_step = Mock(side_effect=lambda *args: not runner._popup_recovery_active)
     assert runner.run_selector_step("alert", {"type": "alert", "action": "accept"})
+
+
+def test_optional_alert_dismisses_when_present_and_continues_when_absent(monkeypatch):
+    runner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
+    runner.driver = driver_with_windows()
+    runner.timeout = 20
+    runner.timeouts = {"short": 3}
+    runner._log = Mock()
+    alert = Mock()
+    alert.text = "조회된 대상자 내역이 없습니다."
+    wait = Mock()
+    wait.until.return_value = alert
+    monkeypatch.setattr(module, "TimedWebDriverWait", lambda *args: wait)
+
+    selector = {"type": "alert", "action": "dismiss_if_present", "timeout": 2}
+    assert runner.handle_dialog_control("optional", selector)
+    alert.dismiss.assert_called_once()
+
+    wait.until.side_effect = module.TimeoutException()
+    assert not runner.handle_dialog_control("optional", selector)
+    assert "계속 진행" in runner._log.call_args.args[0]
 
 
 def test_setting_persists_per_task(tmp_path, monkeypatch):
@@ -152,39 +173,27 @@ def test_native_alert_is_closed_before_poll_and_execution_continues():
 
 
 @pytest.mark.parametrize("webdriver_closed", [False, True])
-def test_no_results_alert_stops_without_retrying_target(webdriver_closed):
+def test_no_results_alert_is_closed_and_target_search_continues(webdriver_closed):
     owner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
     owner.driver = driver_with_windows()
     owner.config = {"dismiss_unexpected_popups": True}
     owner.status_callback = Mock()
     owner._popup_recovery_active = True
     owner._popup_recovery_count = 0
+    owner._popup_protected_handles = {"main", "login"}
+    owner._popup_target_locator = None
     alert = Mock()
     alert.text = "조회된 대상자 내역이 없습니다."
     type(owner.driver.switch_to).alert = PropertyMock(
-        side_effect=NoAlertPresentException() if webdriver_closed else None,
-        return_value=alert,
+        side_effect=NoAlertPresentException() if webdriver_closed else [alert, NoAlertPresentException()],
     )
-    predicate = Mock(side_effect=UnexpectedAlertPresentException(alert_text=alert.text))
-    with pytest.raises(NoQueryResultsError, match="현재 실행을 중단"):
-        module.TimedWebDriverWait(owner, 20).until(predicate)
-    assert predicate.call_count == (1 if webdriver_closed else 0)
+    predicate = Mock(
+        side_effect=[UnexpectedAlertPresentException(alert_text=alert.text), "print-ready"]
+        if webdriver_closed else ["print-ready"]
+    )
+    assert module.TimedWebDriverWait(owner, 20).until(predicate) == "print-ready"
     if not webdriver_closed:
         alert.dismiss.assert_called_once()
-
-
-def test_no_results_stops_remaining_months():
-    owner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
-    owner.config = {"iteration": dict(kind="month", start="2026-08", end="2026-05", direction="descending")}
-    owner.status_callback = Mock()
-    owner.run_selector_step = Mock(side_effect=NoQueryResultsError("조회된 대상자 내역이 없습니다."))
-    items = [("start", {"type": "repeat_start", "repeat_mode": "range"}),
-             ("print", {"type": "element"}), ("download", {"type": "element"}),
-             ("end", {"type": "repeat_end"})]
-    with pytest.raises(NoQueryResultsError):
-        owner.run_workflow_items_once(items)
-    owner.run_selector_step.assert_called_once()
-    assert owner.run_selector_step.call_args.kwargs["context"]["repeat_value"] == "2026-08"
 
 
 def test_context_search_starts_without_waiting_full_timeout(monkeypatch):
@@ -197,7 +206,7 @@ def test_context_search_starts_without_waiting_full_timeout(monkeypatch):
     element = Mock()
     scan = Mock(return_value=element)
     monkeypatch.setattr(module, "find_clickable_context", scan)
-    monkeypatch.setattr(module.time, "monotonic", Mock(side_effect=[0.0, 0.2, 1.1]))
+    monkeypatch.setattr(module.time, "monotonic", Mock(side_effect=[0.0, 0.2, 0.4]))
     wait = Mock()
 
     def until(predicate):
