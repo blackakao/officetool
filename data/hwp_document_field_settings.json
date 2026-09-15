@@ -265,7 +265,7 @@
                     "date_default_type": "field_calculation",
                     "source_date_field": "근무시작일",
                     "date_offset_sign": 1,
-                    "date_offset_days": 30
+                    "date_offset_days": 90
                 },
                 "장기요양기관 주소": {
                     "type": "branch_value",

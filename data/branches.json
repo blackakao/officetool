@@ -973,7 +973,7 @@
     },
     {
         "organization_code": "14128001840",
-        "organization_name": "일산시니어타운 요양원",
+        "organization_name": "일산시니어타운요양원",
         "branch_name": "본점3관",
         "corporation_name": "주식회사 삼성케어",
         "owner_name": "박은경",
@@ -1013,11 +1013,11 @@
                 "value": ""
             }
         },
-        "login_type": "롱텀",
+        "login_type": "케어포",
         "credentials": {
             "carefor": {
-                "login_id": "",
-                "login_password": ""
+                "login_id": "박은경",
+                "login_password": "*wkdtnakst1"
             },
             "longterm": {
                 "certificate_name": "주식회사 삼성케어",
