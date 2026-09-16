@@ -157,6 +157,15 @@ class BaseLoginThread(QThread):
     def _create_driver(self):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
+        download_dir = Path.home() / "Downloads"
+        download_dir.mkdir(parents=True, exist_ok=True)
+        options.add_experimental_option("prefs", {
+            "download.default_directory": str(download_dir.resolve()),
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "profile.default_content_setting_values.automatic_downloads": 1,
+            "safebrowsing.enabled": True,
+        })
 
         if self.profile_path:
             self.profile_path.mkdir(parents=True, exist_ok=True)

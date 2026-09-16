@@ -507,7 +507,7 @@ class SelectorConfigDialog(QDialog):
         self.table.item(row, 0).setData(Qt.ItemDataRole.UserRole, {
             name: selector[name] for name in (
                 "dropdown_xpath", "expected_visible_xpath", "selection_method",
-                "max_key_steps", "timeout",
+                "max_key_steps", "timeout", "wait_for_download", "download_timeout",
             ) if name in selector
         })
 
@@ -610,8 +610,12 @@ class SelectorConfigDialog(QDialog):
         if process_type == "url_navigation":
             selector["payload"] = number_cell_selector
         metadata = label_item.data(Qt.ItemDataRole.UserRole) if label_item else {}
-        if metadata and "timeout" in metadata:
-            selector["timeout"] = metadata["timeout"]
+        if metadata:
+            selector.update({
+                name: metadata[name]
+                for name in ("timeout", "wait_for_download", "download_timeout")
+                if name in metadata
+            })
         if process_type == "element" and action in {"select_text", "pointer_click"} and label_item:
             selector.update({
                 key: value for key, value in (metadata or {}).items()
@@ -1717,6 +1721,7 @@ class InvoiceProcessor:
         self.last_table_row = None
         self.last_table_selector = None
         self.last_table_expected_number = None
+        self.download_dir = Path.home() / "Downloads"
 
     def _log(self, message):
         self.status_callback(message)
@@ -2085,6 +2090,43 @@ class InvoiceProcessor:
             element.click()
         except Exception:
             self.driver.execute_script("arguments[0].click();", element)
+
+    def download_state(self):
+        """Return the files Chrome can use to prove a new download completed."""
+        try:
+            return {
+                path.name: (path.stat().st_mtime_ns, path.stat().st_size)
+                for path in self.download_dir.iterdir()
+                if path.is_file()
+            }
+        except FileNotFoundError:
+            return {}
+
+    def wait_download_completed(self, previous, timeout):
+        partial_suffixes = (".crdownload", ".tmp")
+
+        def completed(_driver):
+            current = self.download_state()
+            changed = {
+                name: state for name, state in current.items()
+                if previous.get(name) != state
+            }
+            partials = [name for name in changed if name.lower().endswith(partial_suffixes)]
+            finished = [name for name in changed if not name.lower().endswith(partial_suffixes)]
+            if finished and not partials:
+                return finished
+            return False
+
+        self._log(f"[download_wait] 새 파일 완료 대기: {self.download_dir}")
+        try:
+            files = TimedWebDriverWait(self, timeout).until(completed)
+        except TimeoutException as exc:
+            raise TimeoutException(
+                f"저장 클릭 후 {timeout:g}초 안에 다운로드 완료 파일을 확인하지 못했습니다: "
+                f"{self.download_dir}"
+            ) from exc
+        self._log(f"[download_complete] {', '.join(files)}")
+        return files
 
     def pointer_click(self, element, key):
         last_state = None
@@ -2760,12 +2802,20 @@ class InvoiceProcessor:
                 return True
             if selector.get("action") == "select_text":
                 return self.select_field_text(key, selector, context)
-            return self.click(
+            download_state = self.download_state() if selector.get("wait_for_download") else None
+            result = self.click(
                 key,
                 timeout=self.selector_timeout(selector),
                 context=context,
                 run_controls=False,
             )
+            if download_state is not None:
+                timeout = self.selector_timeout(
+                    {"timeout": selector.get("download_timeout", "loading")},
+                    self.timeouts.get("loading", 120),
+                )
+                self.wait_download_completed(download_state, timeout)
+            return result
         if process_type == "table":
             return self.run_table_step(key, selector, context=context)
         if process_type == "text_assert":

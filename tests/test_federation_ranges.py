@@ -96,6 +96,30 @@ def test_selector_timeout_accepts_named_and_numeric_values():
         runner.selector_timeout({"timeout": "missing"})
 
 
+def test_download_wait_requires_new_completed_file(tmp_path, monkeypatch):
+    runner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
+    runner.driver = Mock()
+    runner.download_dir = tmp_path
+    runner._log = Mock()
+    (tmp_path / "existing.xlsx").write_bytes(b"old")
+    previous = runner.download_state()
+
+    class ImmediateWait:
+        def __init__(self, owner, timeout):
+            pass
+
+        def until(self, condition):
+            (tmp_path / "new.xlsx.crdownload").write_bytes(b"partial")
+            assert condition(runner.driver) is False
+            (tmp_path / "new.xlsx.crdownload").unlink()
+            (tmp_path / "new.xlsx").write_bytes(b"complete")
+            return condition(runner.driver)
+
+    monkeypatch.setattr(module, "TimedWebDriverWait", ImmediateWait)
+    assert runner.wait_download_completed(previous, 10) == ["new.xlsx"]
+    runner._log.assert_any_call("[download_complete] new.xlsx")
+
+
 def test_payroll_download_has_final_save_and_resilient_viewer_selectors():
     path = Path(__file__).resolve().parents[1] / "data" / "federation_selectors_payroll_download.json"
     with open(path, "r", encoding="utf-8") as stream:
@@ -112,6 +136,8 @@ def test_payroll_download_has_final_save_and_resilient_viewer_selectors():
     assert "옵션수정" in selectors["element_014"]["value"]
     assert selectors["element_017"]["label"] == "저장"
     assert "저장" in selectors["element_017"]["value"]
+    assert selectors["element_017"]["wait_for_download"] is True
+    assert selectors["element_017"]["download_timeout"] == "loading"
     assert selectors["element_011"]["selection_method"] == "keyboard"
     assert selectors["element_011"]["max_key_steps"] == 3
     assert selectors["element_011"]["expected_value"] == "내부 업무처리"
@@ -170,6 +196,9 @@ def test_payroll_template_and_editor_roundtrip(tmp_path, monkeypatch):
     assert any(step.get("label") == "다운로드 버튼" and step.get("timeout") == "long"
                for step in saved["selectors"].values())
     assert any(step.get("label") == "저장" for step in saved["selectors"].values())
+    save_step = next(step for step in saved["selectors"].values() if step.get("label") == "저장")
+    assert save_step["wait_for_download"] is True
+    assert save_step["download_timeout"] == "loading"
     assert any(step.get("action") == "dismiss_if_present" and not step.get("required")
                for step in saved["selectors"].values())
     dialog.close()

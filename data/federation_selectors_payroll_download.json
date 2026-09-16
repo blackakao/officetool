@@ -187,7 +187,9 @@
             "value": "/html/body/div/div[2]/div[1]/button[1]",
             "required": true,
             "action": "click",
-            "timeout": "long"
+            "timeout": "long",
+            "wait_for_download": true,
+            "download_timeout": "loading"
         },
         "element_020": {
             "label": "입퇴소내역 제출 닫기",
