@@ -124,30 +124,36 @@ def test_payroll_download_has_final_save_and_resilient_viewer_selectors():
     path = Path(__file__).resolve().parents[1] / "data" / "federation_selectors_payroll_download.json"
     with open(path, "r", encoding="utf-8") as stream:
         selectors = json.load(stream)["selectors"]
-    assert selectors["alert_optional_009"]["action"] == "dismiss_if_present"
-    assert selectors["alert_optional_009"]["required"] is False
-    assert selectors["alert_optional_009"]["timeout"] == 0.5
-    assert selectors["element_009"]["action"] == "pointer_click"
-    assert selectors["element_009"]["timeout"] == "long"
-    assert selectors["element_009"]["expected_visible_xpath"] == selectors["element_010"]["value"]
-    assert "다운로드" in selectors["element_013"]["value"]
-    assert selectors["element_013"]["timeout"] == "long"
-    assert selectors["element_013"]["action"] == "pointer_click"
-    assert "옵션수정" in selectors["element_014"]["value"]
-    assert selectors["element_017"]["label"] == "저장"
-    assert "저장" in selectors["element_017"]["value"]
-    assert selectors["element_017"]["wait_for_download"] is True
-    assert selectors["element_017"]["download_timeout"] == "loading"
-    assert selectors["element_011"]["selection_method"] == "keyboard"
-    assert selectors["element_011"]["max_key_steps"] == 3
-    assert selectors["element_011"]["expected_value"] == "내부 업무처리"
-    assert selectors["element_011"]["action"] == "select_text"
-    delay_step = selectors["delay_before_download_013"]
+    by_label = {step["label"]: step for step in selectors.values()}
+    alert_step = by_label["조회 결과 알림이 있으면 닫기"]
+    print_step = by_label["인쇄"]
+    reason_step = by_label["열람(출력) 사유"]
+    download_step = by_label["다운로드 버튼"]
+    option_step = by_label["옵션수정"]
+    save_step = by_label["저장"]
+    select_step = by_label["내부 업무처리"]
+    assert alert_step["action"] == "dismiss_if_present"
+    assert alert_step["required"] is False
+    assert alert_step["timeout"] == 0.5
+    assert print_step["action"] == "pointer_click"
+    assert print_step["timeout"] == "long"
+    assert print_step["expected_visible_xpath"] == reason_step["value"]
+    assert "다운로드" in download_step["value"]
+    assert download_step["timeout"] == "long"
+    assert download_step["action"] == "pointer_click"
+    assert "옵션수정" in option_step["value"]
+    assert save_step["wait_for_download"] is True
+    assert save_step["download_timeout"] == "loading"
+    assert select_step["selection_method"] == "keyboard"
+    assert select_step["max_key_steps"] == 3
+    assert select_step["expected_value"] == "내부 업무처리"
+    assert select_step["action"] == "select_text"
+    delay_step = by_label["다운로드 화면 안정화 대기"]
     assert (
         delay_step["type"] == "delay"
         or (delay_step["type"] == "legacy_action" and delay_step["action"] == "short_wait")
     )
-    assert selectors["delay_before_download_013"]["value"] == "3"
+    assert delay_step["value"] == "3"
     assert json.loads(path.read_text(encoding="utf-8"))["performance"]["context_scan_interval"] == 0.35
 
 
