@@ -80,7 +80,7 @@
             "required": true,
             "action": "click"
         },
-        "alert_optional_009": {
+        "alert_009": {
             "label": "조회 결과 알림이 있으면 닫기",
             "type": "alert",
             "repeat_mode": "fixed",
@@ -90,7 +90,7 @@
             "action": "dismiss_if_present",
             "timeout": 0.5
         },
-        "element_009": {
+        "element_010": {
             "label": "인쇄",
             "type": "element",
             "repeat_mode": "fixed",
@@ -101,7 +101,7 @@
             "timeout": "long",
             "expected_visible_xpath": "/html/body/div[2]/div[4]/div/div[1]/div/div/div/div/div/div[3]/div/div[10]"
         },
-        "element_010": {
+        "element_011": {
             "label": "열람(출력) 사유",
             "type": "element",
             "repeat_mode": "fixed",
@@ -110,7 +110,7 @@
             "required": true,
             "action": "click"
         },
-        "element_011": {
+        "element_012": {
             "label": "내부 업무처리",
             "type": "element",
             "repeat_mode": "fixed",
@@ -119,10 +119,10 @@
             "required": true,
             "action": "select_text",
             "expected_value": "내부 업무처리",
-            "selection_method": "keyboard",
-            "max_key_steps": 3
+            "max_key_steps": 3,
+            "selection_method": "keyboard"
         },
-        "element_012": {
+        "element_013": {
             "label": "확인",
             "type": "element",
             "repeat_mode": "fixed",
@@ -131,7 +131,7 @@
             "required": true,
             "action": "click"
         },
-        "delay_before_download_013": {
+        "legacy_action_014": {
             "label": "다운로드 화면 안정화 대기",
             "type": "legacy_action",
             "repeat_mode": "fixed",
@@ -140,7 +140,7 @@
             "required": true,
             "action": "short_wait"
         },
-        "element_013": {
+        "element_015": {
             "label": "다운로드 버튼",
             "type": "element",
             "repeat_mode": "fixed",
@@ -150,7 +150,7 @@
             "action": "pointer_click",
             "timeout": "long"
         },
-        "element_014": {
+        "element_016": {
             "label": "옵션수정",
             "type": "element",
             "repeat_mode": "fixed",
@@ -160,7 +160,7 @@
             "action": "click",
             "timeout": "long"
         },
-        "element_015": {
+        "element_017": {
             "label": "시트구분",
             "type": "element",
             "repeat_mode": "fixed",
@@ -170,7 +170,7 @@
             "action": "select_text",
             "expected_value": "하나의 시트"
         },
-        "element_016": {
+        "element_018": {
             "label": "확인",
             "type": "element",
             "repeat_mode": "fixed",
@@ -179,17 +179,17 @@
             "required": true,
             "action": "click"
         },
-        "element_017": {
+        "element_019": {
             "label": "저장",
             "type": "element",
             "repeat_mode": "fixed",
             "by": "xpath",
-            "value": "//button[normalize-space(.)='저장' or contains(@title, '저장')] | //input[@type='button' and normalize-space(@value)='저장']",
+            "value": "/html/body/div/div[2]/div[1]/button[1]",
             "required": true,
             "action": "click",
             "timeout": "long"
         },
-        "element_018": {
+        "element_020": {
             "label": "입퇴소내역 제출 닫기",
             "type": "element",
             "repeat_mode": "fixed",
@@ -198,7 +198,7 @@
             "required": true,
             "action": "click"
         },
-        "element_019": {
+        "element_021": {
             "label": "입퇴소내역제출이력상세조회 닫기",
             "type": "element",
             "repeat_mode": "fixed",
@@ -207,7 +207,7 @@
             "required": true,
             "action": "click"
         },
-        "element_020": {
+        "element_022": {
             "label": "급여비용가산및감액산정 닫기",
             "type": "element",
             "repeat_mode": "fixed",
@@ -216,7 +216,7 @@
             "required": true,
             "action": "click"
         },
-        "repeat_end_021": {
+        "repeat_end_023": {
             "label": "급여기준연월 역순 반복 종료",
             "type": "repeat_end",
             "repeat_mode": "fixed",
