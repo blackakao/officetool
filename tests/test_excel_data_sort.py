@@ -24,6 +24,54 @@ def book(tmp_path, rows, **kwargs):
     return WorkbookData(tmp_path / "input.xlsx", [SheetData("1월", rows, **kwargs)])
 
 
+def test_two_row_records_blank_values_repeated_headers_and_export(tmp_path):
+    source = book(tmp_path, [
+        ["이름", "식별번호", "일수"], [None, "지급액", "사유"],
+        ["가", "001", 30], [None, 100, None],
+        ["나", "002", 0], [None, None, None],
+        ["이름", "식별번호", "일수"], [None, "지급액", "사유"],
+        ["다", "003", 31], [None, 200, "정산"], ["합계", 300],
+    ], merges=[(1, 2, 1, 1), (3, 4, 1, 1), (5, 6, 1, 1), (7, 8, 1, 1), (9, 10, 1, 1)])
+    rule = template(record_rows=2, data_start_row=3, stop_values=["합계"], columns=[
+        ColumnRule(1, "이름", "이름"), ColumnRule(2, "식별번호", "식별번호"),
+        ColumnRule(3, "일수", "일수"), ColumnRule(2, "지급액", "지급액", row_offset=1),
+        ColumnRule(3, "사유", "사유", row_offset=1),
+    ])
+    rule.signature = build_signature(source, rule)
+    assert RuleRecognizer().recognize(source, [rule]).selected == rule
+    result = convert(source, Template.from_dict(rule.to_dict()))
+    assert result.datasets[0].rows == [["가", "001", 30, 100, None],
+                                       ["나", "002", 0, None, None], ["다", "003", 31, 200, "정산"]]
+    destination = tmp_path / "two_rows.xlsx"
+    export_excel(result.datasets, destination)
+    wb = load_workbook(destination)
+    try:
+        assert wb.active.max_row == 4
+        assert wb.active.cell(4, 4).value == 200
+    finally:
+        wb.close()
+    source.sheets[0].hidden_rows = {4}
+    assert len(convert(source, rule).datasets[0].rows) == 2
+    source.sheets[0].hidden_rows.clear()
+    source.sheets[0].rows = source.sheets[0].rows[:3]
+    source.sheets[0].merges = [(1, 2, 1, 1)]
+    with pytest.raises(ValueError, match="짧습니다"):
+        convert(source, rule)
+
+
+def test_two_row_horizontal_tables_and_shifted_headers(tmp_path):
+    source = book(tmp_path, [
+        ["제목"], ["이름", "번호", None, "이름", "번호"],
+        [None, "금액", None, None, "금액"],
+        ["가", "001", None, "나", "002"], [None, 10, None, None, 20],
+    ])
+    rule = template(record_rows=2, data_start_row=3, columns=[
+        ColumnRule(1, "이름", "이름"), ColumnRule(2, "번호", "번호"),
+        ColumnRule(2, "금액", "금액", row_offset=1),
+    ])
+    assert convert(source, rule).datasets[0].rows == [["가", "001", 10], ["나", "002", 20]]
+
+
 def test_normalize_preserves_coordinates_and_does_not_mutate_original(tmp_path):
     original = SheetData("1월", [[None, "직원명", None, "급여"], [None, "가", None, 10],
                                    [None, None, None, 20], [None] * 4, [None, "나", None, 30]],
@@ -206,6 +254,41 @@ def test_added_columns_positions_references_batch_and_export(tmp_path):
 def test_invalid_added_columns(additions):
     with pytest.raises(ValueError):
         template(added_columns=additions).validate()
+
+
+@pytest.mark.parametrize("addresses", ["A1,", ",A1", "A1,,B1", "A1,XFE1", "A1,A0"])
+def test_invalid_combined_cells(addresses):
+    with pytest.raises(ValueError, match="참조 셀"):
+        template(added_columns=[AddedColumn("연월", mode="cell", cell=addresses)]).validate()
+
+
+def test_combined_cells_conversion_mapping_and_export(tmp_path):
+    source = book(tmp_path, [["직원명", "급여"], ["가", 10]])
+    source.sheets.append(SheetData("정보", [[2026, None, "09", 0, False]], merges=[(1, 1, 1, 2)]))
+    column = AddedColumn("연월", mode="cell", sheet_name="정보", cell="b1, C1, Z99", separator="-")
+    rule = template(added_columns=[column])
+    store = TemplateStore(tmp_path / "templates")
+    store.save(rule)
+    loaded, errors = store.load_all()
+    assert not errors
+    result = convert(source, loaded[0])
+    assert result.datasets[0].rows[0] == ["2026-09", "가", 10]
+    destination = tmp_path / "combined.xlsx"
+    export_excel(result.datasets, destination)
+    wb = load_workbook(destination)
+    try:
+        assert wb.active.cell(2, 1).value == "2026-09"
+    finally:
+        wb.close()
+    column.value_mapping = {"2026-09": "치환"}
+    assert convert(source, rule).datasets[0].rows[0][0] == "치환"
+    column.cell = "D1,E1,Z99"
+    assert convert(source, rule).datasets[0].rows[0][0] == "0-False"
+    column.cell = "Z99,Z98"
+    assert convert(source, rule).datasets[0].rows[0][0] == ""
+    column.cell = "B1,C1"
+    column.separator = ""
+    assert convert(source, rule).datasets[0].rows[0][0] == "202609"
 
 
 def test_value_mapping_roundtrip_batch_and_unmatched_types(tmp_path):

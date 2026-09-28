@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 from openpyxl.utils import get_column_letter
 
-from excel_data_sort.engine import added_column_raw_value, added_column_value, convert, convert_many
+from excel_data_sort.engine import added_column_raw_value, added_column_value, mapped_column_value, convert, convert_many
 from excel_data_sort.branch_lookup import load_branch_data, lookup_branch
 from excel_data_sort.exporter import export_excel
 from excel_data_sort.models import AddedColumn, ColumnRule, Template, TemplateStore, is_empty
@@ -153,6 +153,7 @@ class ExcelDataSortPage(QWidget):
         self.name_edit = QLineEdit()
         self.sheet_combo = QComboBox()
         self.header_spin = self._spin(1, 1_048_575, 1)
+        self.record_rows_spin = self._spin(1, 20, 1)
         self.start_spin = self._spin(2, 1_048_576, 2)
         self.end_spin = self._spin(0, 1_048_576, 0)
         self.end_spin.setSpecialValueText("자동 (마지막 값까지)")
@@ -175,6 +176,7 @@ class ExcelDataSortPage(QWidget):
         for label, widget in (
             ("양식 이름", self.name_edit), ("기준 시트", self.sheet_combo),
             ("헤더행 (원본 행 번호)", self.header_spin), ("데이터 시작행", self.start_spin),
+            ("한 건의 행 수 (헤더·데이터)", self.record_rows_spin),
             ("데이터 끝행 (0 = 자동)", self.end_spin), ("병합 해제 후 값", self.merge_combo),
             ("기준 테이블 첫 열 (A=1)", self.first_column_spin),
             ("기준 테이블 끝 열 (0 = 전체)", self.last_column_spin),
@@ -220,11 +222,12 @@ class ExcelDataSortPage(QWidget):
         self.sheet_combo.currentIndexChanged.connect(self.show_raw)
         self.dataset_combo.currentIndexChanged.connect(self.show_dataset)
         self.header_spin.valueChanged.connect(self._header_changed)
+        self.record_rows_spin.valueChanged.connect(lambda: self._header_changed(self.header_spin.value()))
         for widget in (self.name_edit, self.stop_edit):
             widget.textChanged.connect(self.invalidate)
         for widget in (self.sheet_combo, self.merge_combo, self.table_combo, self.sheet_mode_combo, self.match_combo):
             widget.currentIndexChanged.connect(self.invalidate)
-        for widget in (self.header_spin, self.start_spin, self.end_spin, self.first_column_spin, self.last_column_spin):
+        for widget in (self.header_spin, self.record_rows_spin, self.start_spin, self.end_spin, self.first_column_spin, self.last_column_spin):
             widget.valueChanged.connect(self.invalidate)
         for widget in (self.hidden_rows, self.hidden_columns, self.hidden_sheets, self.blank_stop, self.source_check):
             widget.toggled.connect(self.invalidate)
@@ -246,6 +249,7 @@ class ExcelDataSortPage(QWidget):
         help_label = QLabel(
             "아래 미리보기에서 열을 선택한 뒤 앞/뒤에 추가하세요. 위치는 최종 출력 순서(A=1)입니다.\n"
             "고정값은 모든 행에 동일하게 들어갑니다. 셀 참조는 각 파일의 원본 주소(예: B2)를 읽습니다.\n"
+            "여러 셀은 쉼표로 입력하세요(예: T4,W4). 입력 순서대로 합치며 구분자가 빈칸이면 바로 붙입니다.\n"
             "참조 시트를 비워두면 처리 중인 시트를 사용합니다. 병합 셀은 대표값, 빈 셀은 빈값을 가져옵니다."
         )
         help_label.setWordWrap(True)
@@ -257,8 +261,8 @@ class ExcelDataSortPage(QWidget):
         self._buttons(layout, [("선택 열 앞에 추가", lambda: self.add_column(False)),
                                ("선택 열 뒤에 추가", lambda: self.add_column(True)),
                                ("선택한 추가 컬럼 삭제", self.remove_added_column)])
-        self.added_table = QTableWidget(0, 9)
-        self.added_table.setHorizontalHeaderLabels(["출력 위치 (A=1)", "컬럼명", "값 방식", "고정값", "참조 시트 (빈칸=현재)", "참조 셀", "인식값", "변경 후 값", "값 매핑"])
+        self.added_table = QTableWidget(0, 10)
+        self.added_table.setHorizontalHeaderLabels(["출력 위치 (A=1)", "컬럼명", "값 방식", "고정값", "참조 시트 (빈칸=현재)", "참조 셀 (쉼표 구분)", "인식값", "변경 후 값", "값 매핑", "합칠 때 구분자"])
         self.added_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.added_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         layout.addWidget(self.added_table, 1)
@@ -278,6 +282,7 @@ class ExcelDataSortPage(QWidget):
             cell=self.added_table.item(row, 5).text().strip().upper(),
             value_mapping=deepcopy(self.added_table.item(row, 1).data(Qt.UserRole) or {}),
             branch_lookup=deepcopy(self.added_table.item(row, 1).data(Qt.UserRole + 1) or {}),
+            separator=self.added_table.item(row, 9).text(),
         ) for row in range(self.added_table.rowCount())]
 
     def _set_added_columns(self, columns):
@@ -292,7 +297,7 @@ class ExcelDataSortPage(QWidget):
             mode = self._combo([("고정값", "fixed"), ("원본 셀 값", "cell")])
             mode.setCurrentIndex(mode.findData(column.mode))
             self.added_table.setCellWidget(row, 2, mode)
-            for index, value in ((1, column.name), (3, column.value), (4, column.sheet_name), (5, column.cell)):
+            for index, value in ((1, column.name), (3, column.value), (4, column.sheet_name), (5, column.cell), (9, column.separator)):
                 item = QTableWidgetItem(value)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.added_table.setItem(row, index, item)
@@ -311,24 +316,33 @@ class ExcelDataSortPage(QWidget):
         self.loading = was_loading
         self.invalidate()
 
-    def edit_value_mapping(self, row):
+    def edit_value_mapping(self, row, kind="added"):
         if self.current_index < 0:
             return
         try:
             template = self.editor_template()
             template.validate()
-            column = template.added_columns[row]
+            column = (template.added_columns if kind == "added" else template.columns)[row]
             book = self.entries[self.current_index]["book"]
             source = next((sheet for sheet in book.sheets if sheet.name == template.sheet_name), None)
             if source is None:
                 raise ValueError("기준 시트를 선택해 주세요.")
-            raw = added_column_raw_value(book, source, column)
+            if kind == "added":
+                raw = added_column_raw_value(book, source, column)
+            else:
+                normalized = normalize(source, template)
+                row_number = template.data_start_row + column.row_offset
+                raw = None
+                if row_number in normalized.row_numbers and column.source_column in normalized.column_numbers:
+                    raw = normalized.rows[normalized.row_numbers.index(row_number)][
+                        normalized.column_numbers.index(column.source_column)
+                    ]
         except ValueError as exc:
             self._error(str(exc))
             return
         key = "" if raw is None else str(raw)
         dialog = QDialog(self)
-        dialog.setWindowTitle(f"{column.name} · 값 매핑")
+        dialog.setWindowTitle(f"{column.name if kind == 'added' else column.output_name} · 값 매핑")
         dialog.resize(620, 420)
         layout = QVBoxLayout(dialog)
         label = QLabel(f"현재 인식값: {key if key else '(빈값)'}\n지점 관리에서 인식값과 일치하는 필드로 지점을 찾고, 그 지점의 다른 필드 값을 가져옵니다.")
@@ -389,10 +403,12 @@ class ExcelDataSortPage(QWidget):
             if not check_lookup():
                 error.setText("조회 결과를 확인한 뒤 저장해 주세요.")
                 return
-            self.added_table.blockSignals(True)
-            self.added_table.item(row, 1).setData(Qt.UserRole, {})
-            self.added_table.item(row, 1).setData(Qt.UserRole + 1, settings() if enabled.isChecked() else {})
-            self.added_table.blockSignals(False)
+            table = self.added_table if kind == "added" else self.columns_table
+            item = table.item(row, 1 if kind == "added" else 3)
+            table.blockSignals(True)
+            item.setData(Qt.UserRole, {})
+            item.setData(Qt.UserRole + 1, settings() if enabled.isChecked() else {})
+            table.blockSignals(False)
             self.invalidate()
             dialog.accept()
 
@@ -460,9 +476,14 @@ class ExcelDataSortPage(QWidget):
             selected = [column for column in template.columns if column.enabled]
             names = [column.output_name for column in selected]
             # A small layout sample; the conversion preview provides the full extraction result.
-            rows = [[row[column.source_column - 1] if column.source_column <= len(row) else None
+            normalized = normalize(source, template)
+            by_row = dict(zip(normalized.row_numbers, normalized.rows))
+            by_column = {number: index for index, number in enumerate(normalized.column_numbers)}
+            rows = [[by_row[number + column.row_offset][by_column[column.source_column]]
+                     if number + column.row_offset in by_row and column.source_column in by_column else None
                      for column in selected]
-                    for row in source.rows[template.data_start_row - 1:template.data_start_row + 19]]
+                    for number in range(template.data_start_row, min(len(source.rows) + 1,
+                                        template.data_start_row + 20 * template.record_rows), template.record_rows)]
             for column in sorted(template.added_columns, key=lambda column: column.position):
                 value = added_column_value(book, source, column)
                 names.insert(column.position - 1, column.name)
@@ -619,8 +640,8 @@ class ExcelDataSortPage(QWidget):
             self._refresh_files()
 
     def _header_changed(self, value):
-        if self.start_spin.value() <= value:
-            self.start_spin.setValue(value + 1)
+        if self.start_spin.value() < value + self.record_rows_spin.value():
+            self.start_spin.setValue(value + self.record_rows_spin.value())
 
     def load_editor(self, template):
         self.loading = True
@@ -633,6 +654,7 @@ class ExcelDataSortPage(QWidget):
             index = self.sheet_combo.count() - 1
         self.sheet_combo.setCurrentIndex(index)
         self.header_spin.setValue(template.header_row)
+        self.record_rows_spin.setValue(template.record_rows)
         self.start_spin.setValue(template.data_start_row)
         self.end_spin.setValue(template.data_end_row)
         self.first_column_spin.setValue(template.header_start_column)
@@ -664,13 +686,18 @@ class ExcelDataSortPage(QWidget):
             check.setCheckState(Qt.Checked if column.enabled else Qt.Unchecked)
             self.columns_table.setItem(row, 0, check)
             position = QTableWidgetItem(get_column_letter(column.source_column))
+            if self.record_rows_spin.value() > 1:
+                position.setText(f"{get_column_letter(column.source_column)} · {column.row_offset + 1}번째 행")
             position.setData(Qt.UserRole, column.source_column)
+            position.setData(Qt.UserRole + 1, column.row_offset)
             position.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             self.columns_table.setItem(row, 1, position)
             header = QTableWidgetItem(column.header)
             header.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             self.columns_table.setItem(row, 2, header)
             self.columns_table.setItem(row, 3, QTableWidgetItem(column.output_name))
+            self.columns_table.item(row, 3).setData(Qt.UserRole, deepcopy(column.value_mapping))
+            self.columns_table.item(row, 3).setData(Qt.UserRole + 1, deepcopy(column.branch_lookup))
             for index in range(self.columns_table.columnCount()):
                 self.columns_table.item(row, index).setTextAlignment(Qt.AlignCenter)
         self.columns_table.blockSignals(False)
@@ -681,11 +708,15 @@ class ExcelDataSortPage(QWidget):
             self.columns_table.item(row, 1).data(Qt.UserRole),
             self.columns_table.item(row, 2).text(), self.columns_table.item(row, 3).text().strip(),
             self.columns_table.item(row, 0).checkState() == Qt.Checked,
+            self.columns_table.item(row, 1).data(Qt.UserRole + 1) or 0,
+            deepcopy(self.columns_table.item(row, 3).data(Qt.UserRole) or {}),
+            deepcopy(self.columns_table.item(row, 3).data(Qt.UserRole + 1) or {}),
         ) for row in range(self.columns_table.rowCount())]
         prior = self.entries[self.current_index]["template"] if self.current_index >= 0 else None
         return Template(
             name=self.name_edit.text().strip(), sheet_name=self.sheet_combo.currentText(),
             header_row=self.header_spin.value(), data_start_row=self.start_spin.value(),
+            record_rows=self.record_rows_spin.value(),
             data_end_row=self.end_spin.value(), columns=columns,
             added_columns=self._added_columns(),
             header_start_column=self.first_column_spin.value(), header_end_column=self.last_column_spin.value(),
@@ -710,17 +741,24 @@ class ExcelDataSortPage(QWidget):
         if template.header_row not in sheet.row_numbers:
             self._error("지정한 헤더행이 비어 있거나 숨김 처리되었습니다.")
             return
-        row = sheet.rows[sheet.row_numbers.index(template.header_row)]
         columns, names = [], set()
-        for position, value in zip(sheet.column_numbers, row):
-            if position < template.header_start_column or template.header_end_column and position > template.header_end_column:
-                continue
-            if is_empty(value):
-                continue
-            header = str(value).strip()
-            output = header if header not in names else f"{header}_{get_column_letter(position)}"
-            names.add(output)
-            columns.append(ColumnRule(position, header, output))
+        for offset in range(template.record_rows):
+            number = template.header_row + offset
+            if number not in sheet.row_numbers:
+                self._error("지정한 헤더행이 비어 있거나 숨김 처리되었습니다.")
+                return
+            row = sheet.rows[sheet.row_numbers.index(number)]
+            for position, value in zip(sheet.column_numbers, row):
+                if position < template.header_start_column or template.header_end_column and position > template.header_end_column:
+                    continue
+                if is_empty(value) or offset > 0 and any(r0 < number <= r1 and c0 <= position <= c1
+                                         for r0, r1, c0, c1 in source.merges):
+                    continue
+                header = str(value).strip()
+                suffix = get_column_letter(position) if template.record_rows == 1 else f"{get_column_letter(position)}_{offset + 1}"
+                output = header if header not in names else f"{header}_{suffix}"
+                names.add(output)
+                columns.append(ColumnRule(position, header, output, row_offset=offset))
         self._set_columns(columns)
         self.status.setText("컬럼을 불러왔습니다. 사용할 컬럼과 출력 이름을 지정한 뒤 미리보기를 확인해 주세요.")
 

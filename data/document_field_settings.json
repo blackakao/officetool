@@ -266,7 +266,7 @@
                 "식대 숫자금액 3끼": {
                     "type": "amount",
                     "use_comma": true,
-                    "default_value": "",
+                    "default_value": "18600",
                     "amount_default_type": "field_calculation",
                     "source_amount_field": "식대 단가",
                     "amount_operator": "multiply",
@@ -317,7 +317,7 @@
                 "장기요양기관 인감": {
                     "type": "branch_value",
                     "source_field": "branch_select",
-                    "branch_value_key": "custom_법인인감"
+                    "branch_value_key": "custom_기관직인"
                 },
                 "위탁급식업체 대표자": {
                     "type": "branch_value",

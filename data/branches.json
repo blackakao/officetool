@@ -982,7 +982,7 @@
         "custom_fields": {
             "custom_전화번호": {
                 "type": "text",
-                "value": "070-4131-6868"
+                "value": "031-965-2005"
             },
             "custom_사업자등록번호": {
                 "type": "text",
@@ -1114,11 +1114,11 @@
             },
             "custom_식비": {
                 "type": "text",
-                "value": ""
+                "value": "5000"
             },
             "custom_간식비": {
                 "type": "text",
-                "value": ""
+                "value": "0"
             }
         },
         "login_type": "케어포",
@@ -1144,7 +1144,7 @@
         "custom_fields": {
             "custom_전화번호": {
                 "type": "text",
-                "value": ""
+                "value": "02-522-3357"
             },
             "custom_사업자등록번호": {
                 "type": "text",

@@ -52,6 +52,57 @@ def configure(page):
     page.columns_table.item(0, 3).setText("이름")
 
 
+def test_two_row_headers_ui_save_preview(page, app, tmp_path):
+    path = tmp_path / "two_rows.xlsx"
+    wb = Workbook()
+    sheet = wb.active
+    for row in [["번호", "입소자명", "식별번호"], [None, None, "지급액"],
+                [1, "테스트", "001"], [None, None, 100], ["합계", None, 100]]:
+        sheet.append(row)
+    for area in ("A1:A2", "B1:B2", "A3:A4", "B3:B4"):
+        sheet.merge_cells(area)
+    wb.save(path)
+    wb.close()
+    page.load_paths([path])
+    wait_worker(app, page)
+    page.name_edit.setText("두 행 양식")
+    page.record_rows_spin.setValue(2)
+    page.stop_edit.setText("합계")
+    assert page.start_spin.value() == 3
+    page.read_columns()
+    wait_worker(app, page)
+    assert page.columns_table.rowCount() == 4
+    assert page.result.datasets[0].rows[0][:4] == [1, "테스트", "001", 100]
+    assert page.added_preview.model().index(0, 3).data() == "100"
+    page.save_template()
+    saved = page.store.load_all()[0][0]
+    assert saved.record_rows == 2
+    assert saved.columns[-1].row_offset == 1
+    page.load_editor(saved)
+    assert page.editor_template().columns == saved.columns
+
+
+def test_combined_cells_preview_and_save(page, app, tmp_path):
+    source = tmp_path / "combined.xlsx"
+    create_source(source, "가")
+    page.load_paths([source])
+    wait_worker(app, page)
+    configure(page)
+    page.add_column()
+    page.added_table.item(0, 1).setText("합친 값")
+    page.added_table.cellWidget(0, 2).setCurrentIndex(1)
+    page.added_table.item(0, 5).setText("A2,B2")
+    page.added_table.item(0, 9).setText(" / ")
+    wait_worker(app, page)
+    assert page.added_table.item(0, 6).text() == "가 / 100"
+    assert page.result.datasets[0].rows[0][0] == "가 / 100"
+    page.save_template()
+    saved = page.store.load_all()[0][0]
+    page._set_added_columns(saved.added_columns)
+    assert page.added_table.item(0, 5).text() == "A2,B2"
+    assert page.added_table.item(0, 9).text() == " / "
+
+
 def test_ui_save_recognize_multifile_preview_export(page, app, tmp_path, monkeypatch):
     first, second = tmp_path / "첫째.xlsx", tmp_path / "둘째.xlsx"
     create_source(first, "가")

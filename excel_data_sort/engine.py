@@ -1,14 +1,18 @@
 from collections import Counter, defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Protocol
 
 from .models import ConversionResult, Dataset, Template, header_key, is_empty, text_key
-from .normalize import normalize
+from .normalize import normalize, expand_record_rows
 from .branch_lookup import load_branch_data, lookup_branch
 
 
 def added_column_value(workbook, current_sheet, column, branch_data=None):
     value = added_column_raw_value(workbook, current_sheet, column)
+    return mapped_column_value(value, column, branch_data)
+
+
+def mapped_column_value(value, column, branch_data=None):
     if column.branch_lookup:
         return lookup_branch(value, column.branch_lookup, branch_data)[1]
     return column.value_mapping.get("" if value is None else str(value), value)
@@ -22,14 +26,18 @@ def added_column_raw_value(workbook, current_sheet, column):
     source = next((sheet for sheet in workbook.sheets if sheet.name == column.sheet_name), None) if column.sheet_name else current_sheet
     if source is None:
         raise ValueError(f"추가 컬럼 '{column.name}': 참조 시트 '{column.sheet_name}'가 없습니다.")
-    row, col = coordinate_to_tuple(column.cell)
-    for r0, r1, c0, c1 in source.merges:
-        if r0 <= row <= r1 and c0 <= col <= c1:
-            row, col = r0, c0
-            break
-    if row > len(source.rows) or col > len(source.rows[row - 1]):
-        return None
-    return source.rows[row - 1][col - 1]
+    values = []
+    for address in column.cell_addresses():
+        row, col = coordinate_to_tuple(address)
+        for r0, r1, c0, c1 in source.merges:
+            if r0 <= row <= r1 and c0 <= col <= c1:
+                row, col = r0, c0
+                break
+        value = None if row > len(source.rows) or col > len(source.rows[row - 1]) else source.rows[row - 1][col - 1]
+        values.append(value)
+    if len(values) == 1:
+        return values[0]
+    return column.separator.join(str(value) for value in values if not is_empty(value))
 
 
 @dataclass
@@ -47,16 +55,42 @@ class TableDetector(Protocol):
 
 class RuleTableDetector:
     def locate(self, sheet, template):
+        if template.record_rows > 1:
+            width = len(sheet.column_numbers) // template.record_rows
+            bands = {}
+            for offset in sorted({column.row_offset for column in template.columns
+                                  if template.header_match == "all" or column.enabled}):
+                rules = [replace(column, row_offset=0) for column in template.columns
+                         if column.row_offset == offset]
+                band = replace(sheet, rows=[row[offset * width:(offset + 1) * width] for row in sheet.rows],
+                               column_numbers=sheet.column_numbers[:width])
+                by_row = defaultdict(list)
+                for location in self.locate(band, replace(template, record_rows=1, columns=rules)):
+                    by_row[location.row_index].append(location)
+                bands[offset] = by_row
+            locations = []
+            if not bands:
+                return locations
+            for row_index in sorted(set.intersection(*(set(band) for band in bands.values()))):
+                counts = {len(band[row_index]) for band in bands.values()}
+                if len(counts) != 1:
+                    continue
+                for block in range(counts.pop()):
+                    mapping = {key + offset * 16_384: value + offset * width
+                               for offset, band in bands.items()
+                               for key, value in band[row_index][block].mapping.items()}
+                    locations.append(HeaderLocation(row_index, mapping))
+            return locations
         rules = sorted(
             [column for column in template.columns if template.header_match == "all" or column.enabled],
-            key=lambda column: column.source_column,
+            key=lambda column: column.source_key,
         )
-        required = Counter(header_key(column.header) for column in rules)
+        required = Counter((column.row_offset, header_key(column.header)) for column in rules)
         locations = []
         for row_index, row in enumerate(sheet.rows):
             found = defaultdict(list)
             for column_index, value in enumerate(row):
-                key = header_key(value)
+                key = ((sheet.column_numbers[column_index] - 1) // 16_384, header_key(value))
                 if key not in required:
                     continue
                 # A repeated partial header starts a new candidate block.
@@ -67,8 +101,8 @@ class RuleTableDetector:
                     occurrences = Counter()
                     mapping = {}
                     for rule in rules:
-                        label = header_key(rule.header)
-                        mapping[rule.source_column] = found[label][occurrences[label]]
+                        label = (rule.row_offset, header_key(rule.header))
+                        mapping[rule.source_key] = found[label][occurrences[label]]
                         occurrences[label] += 1
                     locations.append(HeaderLocation(row_index, mapping))
                     found = defaultdict(list)
@@ -81,7 +115,7 @@ def convert(workbook, template, detector=None):
     selected = [column for column in template.columns if column.enabled]
     output_columns = [column.output_name.strip() for column in selected]
     additions = sorted(template.added_columns, key=lambda column: column.position)
-    branch_data = load_branch_data() if any(column.branch_lookup for column in additions) else None
+    branch_data = load_branch_data() if any(column.branch_lookup for column in [*selected, *additions]) else None
     for column in additions:
         output_columns.insert(column.position - 1, column.name.strip())
     if template.include_source:
@@ -98,6 +132,7 @@ def convert(workbook, template, detector=None):
             continue
         sheet = normalize(original, template)
         normalized.append(sheet)
+        sheet = expand_record_rows(sheet, template.record_rows)
         locations = detector.locate(sheet, template)
         if not locations:
             warnings.append(f"{sheet.name}: 일치하는 헤더가 없어 제외")
@@ -109,7 +144,7 @@ def convert(workbook, template, detector=None):
             first_row = sheet.row_numbers[location.row_index] + offset
             end_row = (sheet.row_numbers[location.row_index] + template.data_end_row - template.header_row
                        if template.data_end_row else None)
-            positions = [location.mapping[column.source_column] for column in selected]
+            positions = [location.mapping[column.source_key] for column in selected]
             region = set(location.mapping.values())
             next_header = next((candidate.row_index for candidate in locations
                                 if candidate.row_index > location.row_index
@@ -126,17 +161,26 @@ def convert(workbook, template, detector=None):
                 row_number = sheet.row_numbers[index]
                 if row_number < first_row:
                     continue
+                if (row_number - first_row) % template.record_rows:
+                    continue
                 if end_row and row_number > end_row:
                     break
                 if template.stop_at_blank and any(
                     number in sheet.blank_rows for number in range(previous_row + 1, row_number)
                 ):
                     break
-                previous_row = row_number
+                previous_row = row_number + template.record_rows - 1
                 row = sheet.rows[index]
                 # Check the full matched table, including columns excluded from output.
                 if any(text_key(row[position]) in stop_values for position in region):
                     break
+                if template.record_rows > 1:
+                    last_row = row_number + template.record_rows - 1
+                    boundary = sheet.row_numbers[next_header] if next_header < len(sheet.rows) else len(original.rows) + 1
+                    if last_row >= boundary or end_row and last_row > end_row:
+                        raise ValueError(f"{sheet.name}: {row_number}행의 데이터 묶음이 {template.record_rows}행보다 짧습니다.")
+                    if not template.include_hidden_rows and any(r in original.hidden_rows for r in range(row_number, last_row + 1)):
+                        continue
                 values = [row[position] for position in positions]
                 if all(is_empty(row[position]) for position in region):
                     if template.stop_at_blank:
@@ -144,6 +188,7 @@ def convert(workbook, template, detector=None):
                     continue
                 if all(is_empty(value) for value in values):
                     continue
+                values = [mapped_column_value(value, column, branch_data) for value, column in zip(values, selected)]
                 for column, value in zip(additions, extra_values):
                     values.insert(column.position - 1, value)
                 if template.include_source:

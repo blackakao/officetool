@@ -1,6 +1,22 @@
 from .models import NormalizedSheet, is_empty
 
 
+def expand_record_rows(sheet, count):
+    """Expose each original row and its following rows without shifting blank/hidden rows."""
+    if count == 1:
+        return sheet
+    by_number = dict(zip(sheet.row_numbers, sheet.rows))
+    empty = [None] * len(sheet.column_numbers)
+    return NormalizedSheet(
+        sheet.name,
+        [sum((by_number.get(number + offset, empty) for offset in range(count)), [])
+         for number in sheet.row_numbers],
+        sheet.row_numbers,
+        [column + offset * 16_384 for offset in range(count) for column in sheet.column_numbers],
+        sheet.blank_rows,
+    )
+
+
 def normalize(sheet, template):
     """Unmerge, remove empty rows/columns, then apply visibility options.
 

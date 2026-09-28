@@ -4,7 +4,7 @@ from typing import Protocol
 
 from .engine import RuleTableDetector
 from .models import header_key, text_key
-from .normalize import normalize
+from .normalize import normalize, expand_record_rows
 
 
 def build_signature(workbook, template):
@@ -62,7 +62,7 @@ class RuleRecognizer:
                     continue
                 if template.sheet_mode == "selected" and source.name != template.sheet_name:
                     continue
-                sheet = normalize(source, template)
+                sheet = expand_record_rows(normalize(source, template), template.record_rows)
                 locations = detector.locate(sheet, template)
                 row_index = max(range(len(sheet.rows)), key=lambda i: sum((Counter(expected) & Counter(header_key(value) for value in sheet.rows[i])).values()), default=None)
                 found = Counter(header_key(value) for value in sheet.rows[row_index]) if row_index is not None else Counter()
@@ -74,6 +74,8 @@ class RuleRecognizer:
                     positions = list(location.mapping.values())
                     width = max(positions) - min(positions) + 1
                     column_similarity = min(len(expected), width) / max(len(expected), width)
+                    if template.record_rows > 1:
+                        column_similarity = len(location.mapping) / max(len(expected), 1)
                 merge_similarity = _overlap(
                     [tuple(area) for area in signature.get("merges", [])], source.merges,
                 ) if source.merges or signature.get("merges") else 1.0

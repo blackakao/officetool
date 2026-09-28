@@ -53,6 +53,13 @@ class ColumnRule:
     header: str
     output_name: str
     enabled: bool = True
+    row_offset: int = 0
+    value_mapping: dict[str, str] = field(default_factory=dict)
+    branch_lookup: dict[str, str] = field(default_factory=dict)
+
+    @property
+    def source_key(self):
+        return self.source_column + self.row_offset * 16_384
 
 
 @dataclass
@@ -65,6 +72,10 @@ class AddedColumn:
     cell: str = "A1"
     value_mapping: dict[str, str] = field(default_factory=dict)
     branch_lookup: dict[str, str] = field(default_factory=dict)
+    separator: str = ""
+
+    def cell_addresses(self):
+        return [address.strip() for address in self.cell.split(",")]
 
 
 @dataclass
@@ -90,8 +101,11 @@ class Template:
     signature: dict = field(default_factory=dict)
     version: int = 1
     added_columns: list[AddedColumn] = field(default_factory=list)
+    record_rows: int = 1
 
     def validate(self):
+        if type(self.record_rows) is not int or not 1 <= self.record_rows <= 20:
+            raise ValueError("한 건의 행 수는 1~20이어야 합니다.")
         for name in ("name", "sheet_name", "merge_mode", "table_mode", "sheet_mode", "header_match"):
             if not isinstance(getattr(self, name), str):
                 raise ValueError(f"{name}: 문자열 설정이 필요합니다.")
@@ -106,6 +120,8 @@ class Template:
         ):
             raise ValueError("인식 특징 또는 종료 값 설정을 확인해 주세요.")
         for column in self.columns:
+            if type(column.row_offset) is not int or not 0 <= column.row_offset < self.record_rows:
+                raise ValueError("컬럼의 행 위치가 한 건의 행 수를 벗어났습니다. 헤더에서 컬럼을 다시 불러오세요.")
             if (type(column.source_column) is not int or type(column.enabled) is not bool
                     or not isinstance(column.header, str) or not isinstance(column.output_name, str)):
                 raise ValueError("컬럼 설정의 자료형을 확인해 주세요.")
@@ -124,6 +140,8 @@ class Template:
             raise ValueError("데이터 시작행은 헤더행보다 커야 합니다.")
         if not 1 <= self.header_row < self.data_start_row <= 1_048_576:
             raise ValueError("행 번호는 Excel 범위 안에서 헤더행 < 시작행 순서로 지정해 주세요.")
+        if self.data_start_row < self.header_row + self.record_rows:
+            raise ValueError("데이터 시작행은 여러 행 헤더가 끝난 다음이어야 합니다.")
         if self.data_end_row < 0 or self.data_end_row > 1_048_576:
             raise ValueError("끝행은 0 또는 Excel 범위의 행 번호여야 합니다.")
         if self.data_end_row and self.data_end_row < self.data_start_row:
@@ -145,7 +163,7 @@ class Template:
             raise ValueError("사용할 컬럼을 하나 이상 선택해 주세요.")
         if any(column.source_column < 1 or not column.header.strip() for column in self.columns):
             raise ValueError("원본 컬럼 번호와 헤더명을 확인해 주세요.")
-        positions = [column.source_column for column in self.columns]
+        positions = [column.source_key for column in self.columns]
         if len(set(positions)) != len(positions):
             raise ValueError("원본 컬럼 번호가 중복되었습니다.")
         names = [column.output_name.strip() for column in selected]
@@ -153,7 +171,7 @@ class Template:
         for column in self.added_columns:
             if not isinstance(column, AddedColumn) or any(
                 not isinstance(getattr(column, key), str)
-                for key in ("name", "mode", "value", "sheet_name", "cell")
+                for key in ("name", "mode", "value", "sheet_name", "cell", "separator")
             ):
                 raise ValueError("추가 컬럼 설정의 자료형을 확인해 주세요.")
             if type(column.position) is not int or not 1 <= column.position <= len(selected) + len(self.added_columns):
@@ -163,12 +181,15 @@ class Template:
             if column.mode == "cell":
                 from openpyxl.utils.cell import coordinate_to_tuple
 
-                if not re.fullmatch(r"[A-Za-z]{1,3}[1-9][0-9]{0,6}", column.cell):
-                    raise ValueError("참조 셀은 A1 같은 원본 Excel 주소로 입력해 주세요.")
-                row, col = coordinate_to_tuple(column.cell)
-                if row > 1_048_576 or col > 16_384:
-                    raise ValueError("참조 셀이 Excel 범위를 벗어났습니다.")
+                for address in column.cell_addresses():
+                    if not re.fullmatch(r"[A-Za-z]{1,3}[1-9][0-9]{0,6}", address):
+                        raise ValueError("참조 셀은 A1 같은 주소로 입력하고, 여러 셀은 쉼표로 구분해 주세요.")
+                    row, col = coordinate_to_tuple(address)
+                    if row > 1_048_576 or col > 16_384:
+                        raise ValueError("참조 셀이 Excel 범위를 벗어났습니다.")
             added_positions.append(column.position)
+            names.append(column.name.strip())
+        for column in [*self.columns, *self.added_columns]:
             if not isinstance(column.branch_lookup, dict) or column.branch_lookup and (
                 set(column.branch_lookup) != {"match_field", "return_field"}
                 or any(not isinstance(value, str) or not value for value in column.branch_lookup.values())
@@ -179,7 +200,6 @@ class Template:
                 for key, value in column.value_mapping.items()
             ):
                 raise ValueError("값 매핑은 인식값과 변경값을 문자열로 지정해 주세요.")
-            names.append(column.name.strip())
         if len(set(added_positions)) != len(added_positions):
             raise ValueError("추가 컬럼 위치가 중복되었습니다.")
         if any(not name for name in names) or len(set(names)) != len(names):
