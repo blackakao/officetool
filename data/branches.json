@@ -1080,60 +1080,6 @@
         }
     },
     {
-        "organization_code": "",
-        "organization_name": "평촌시니어타운",
-        "branch_name": "안양점",
-        "corporation_name": "주식회사 평촌시니어타운",
-        "owner_name": "이찬재",
-        "address": "경기도 안양시 동안구 엘에스로 28(호계동)",
-        "active": true,
-        "custom_fields": {
-            "custom_전화번호": {
-                "type": "text",
-                "value": "070-4131-6868"
-            },
-            "custom_사업자등록번호": {
-                "type": "text",
-                "value": "604-86-03778"
-            },
-            "custom_법인등록번호": {
-                "type": "text",
-                "value": "124411-0045933"
-            },
-            "custom_법인인감": {
-                "type": "image",
-                "path": "",
-                "width": 30,
-                "height": 30
-            },
-            "custom_기관직인": {
-                "type": "image",
-                "path": "data\\branch_images\\2dc4ee2ca62b4f118c6b9342c210117e.png",
-                "width": 30,
-                "height": 30
-            },
-            "custom_식비": {
-                "type": "text",
-                "value": "5000"
-            },
-            "custom_간식비": {
-                "type": "text",
-                "value": "0"
-            }
-        },
-        "login_type": "케어포",
-        "credentials": {
-            "carefor": {
-                "login_id": "",
-                "login_password": ""
-            },
-            "longterm": {
-                "certificate_name": "",
-                "certificate_password": ""
-            }
-        }
-    },
-    {
         "organization_code": "11165000238",
         "organization_name": "서초시니어타운",
         "branch_name": "서초점",
@@ -1156,13 +1102,13 @@
             },
             "custom_법인인감": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\354372ffe4ac41a2ad1b3ef10447576d.png",
                 "width": 30,
                 "height": 30
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\369779a561bf46acaacf9282d75738d8.png",
                 "width": 30,
                 "height": 30
             },
@@ -1175,15 +1121,69 @@
                 "value": ""
             }
         },
-        "login_type": "롱텀",
+        "login_type": "케어포",
         "credentials": {
             "carefor": {
-                "login_id": "",
-                "login_password": ""
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
             },
             "longterm": {
                 "certificate_name": "서초시니어레지던스주식회사",
                 "certificate_password": "*wkdtnakst1"
+            }
+        }
+    },
+    {
+        "organization_code": "14117000658",
+        "organization_name": "평촌시니어타운",
+        "branch_name": "안양점",
+        "corporation_name": "주식회사 평촌시니어타운",
+        "owner_name": "이찬재",
+        "address": "경기도 안양시 동안구 엘에스로 28(호계동)",
+        "active": true,
+        "custom_fields": {
+            "custom_전화번호": {
+                "type": "text",
+                "value": "07041316868"
+            },
+            "custom_사업자등록번호": {
+                "type": "text",
+                "value": "604-86-03778"
+            },
+            "custom_법인등록번호": {
+                "type": "text",
+                "value": "124411-0045933"
+            },
+            "custom_법인인감": {
+                "type": "image",
+                "path": "data\\branch_images\\84c29452f21145a1b12d47f3ee513b7f.png",
+                "width": 30,
+                "height": 30
+            },
+            "custom_기관직인": {
+                "type": "image",
+                "path": "data\\branch_images\\715e520aa1044d358c1b1607c4bd6329.png",
+                "width": 30,
+                "height": 30
+            },
+            "custom_식비": {
+                "type": "text",
+                "value": "4500"
+            },
+            "custom_간식비": {
+                "type": "text",
+                "value": "0"
+            }
+        },
+        "login_type": "케어포",
+        "credentials": {
+            "carefor": {
+                "login_id": "이찬재",
+                "login_password": "*wkdtnakst1"
+            },
+            "longterm": {
+                "certificate_name": "",
+                "certificate_password": ""
             }
         }
     }

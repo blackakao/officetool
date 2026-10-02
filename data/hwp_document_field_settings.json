@@ -649,7 +649,7 @@
                 },
                 "신청날짜": {
                     "type": "date",
-                    "date_format": "yyyy-MM-dd",
+                    "date_format": "yyyy년 MM월 dd일",
                     "date_default_type": "today"
                 },
                 "지자체기관": {
