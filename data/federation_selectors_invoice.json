@@ -355,5 +355,13 @@
         "poll_interval": 0.15,
         "batch_visibility": true,
         "wait_for_rows": true
-    }
+    },
+    "iteration": {
+        "kind": "legacy",
+        "start": "",
+        "end": "",
+        "direction": "descending",
+        "step": 1
+    },
+    "dismiss_unexpected_popups": true
 }

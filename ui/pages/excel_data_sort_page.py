@@ -206,6 +206,7 @@ class ExcelDataSortPage(QWidget):
         self.raw_table = self._view()
         right.addTab(self.raw_table, "원본 미리보기")
         self._build_added_tab(right)
+        self._build_arrange_tab(right)
         bottom = QTabWidget()
         vertical.addWidget(bottom)
         self.dataset_combo, self.dataset_table = self._preview_tab(bottom, "Dataset 결과")
@@ -261,8 +262,8 @@ class ExcelDataSortPage(QWidget):
         self._buttons(layout, [("선택 열 앞에 추가", lambda: self.add_column(False)),
                                ("선택 열 뒤에 추가", lambda: self.add_column(True)),
                                ("선택한 추가 컬럼 삭제", self.remove_added_column)])
-        self.added_table = QTableWidget(0, 10)
-        self.added_table.setHorizontalHeaderLabels(["출력 위치 (A=1)", "컬럼명", "값 방식", "고정값", "참조 시트 (빈칸=현재)", "참조 셀 (쉼표 구분)", "인식값", "변경 후 값", "값 매핑", "합칠 때 구분자"])
+        self.added_table = QTableWidget(0, 7)
+        self.added_table.setHorizontalHeaderLabels(["출력 위치 (A=1)", "컬럼명", "값 방식", "고정값", "참조 시트 (빈칸=현재)", "참조 셀 (쉼표 구분)", "합칠 때 구분자"])
         self.added_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.added_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         layout.addWidget(self.added_table, 1)
@@ -271,6 +272,111 @@ class ExcelDataSortPage(QWidget):
         layout.addWidget(self.added_status)
         self.added_table.itemChanged.connect(self.invalidate)
         tabs.addTab(widget, "컬럼 추가")
+
+    def _build_arrange_tab(self, tabs):
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        help_label = QLabel(
+            "최종 출력 순서대로 원본 컬럼과 추가 컬럼을 확인하고 출력명·매핑·행 포함 조건을 설정합니다.\n"
+            "인식값은 기준 시트의 데이터 시작행 예시입니다. 실제 추출 결과는 아래 Dataset에서 확인하세요.\n"
+            "행 조건은 선택한 원본 컬럼에 모두 적용합니다. 제외할 값은 쉼표로 입력하며, 조건에 맞지 않는 행만 건너뜁니다."
+        )
+        help_label.setWordWrap(True)
+        layout.addWidget(help_label)
+        self.arrange_table = QTableWidget(0, 8)
+        self.arrange_table.setHorizontalHeaderLabels([
+            "출력 순서", "출력 컬럼명", "출처", "인식값", "변경 후 값", "값 매핑", "행 포함 조건", "제외할 값 (쉼표 구분)",
+        ])
+        self.arrange_table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.arrange_table.horizontalHeader().setDefaultSectionSize(125)
+        self.arrange_table.horizontalHeader().setStretchLastSection(True)
+        self.arrange_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.arrange_table.itemChanged.connect(self._arrange_item_changed)
+        layout.addWidget(self.arrange_table)
+        self.arrange_status = QLabel()
+        self.arrange_status.setWordWrap(True)
+        layout.addWidget(self.arrange_status)
+        tabs.addTab(widget, "컬럼 정리")
+
+    def _arrange_item_changed(self, item):
+        if item.column() not in (1, 7):
+            return
+        kind, index = self.arrange_table.item(item.row(), 0).data(Qt.UserRole)
+        if kind == "metadata":
+            return
+        target = (self.added_table.item(index, 1) if kind == "added" else self.columns_table.item(index, 3))
+        if item.column() == 1:
+            target.setText(item.text())
+        else:
+            target.setData(Qt.UserRole + 3, [value.strip() for value in item.text().split(",") if value.strip()])
+
+    def _arrange_condition_changed(self, index, value):
+        self.columns_table.item(index, 3).setData(Qt.UserRole + 2, value)
+
+    def refresh_arrange_table(self):
+        self.arrange_table.blockSignals(True)
+        self.arrange_table.setRowCount(0)
+        self.arrange_status.clear()
+        try:
+            if self.current_index < 0:
+                return
+            template = self.editor_template()
+            book = self.entries[self.current_index]["book"]
+            validation_error = ""
+            try:
+                template.validate()
+            except ValueError as exc:
+                validation_error = str(exc)
+            source = next((sheet for sheet in book.sheets if sheet.name == template.sheet_name), None)
+            normalized = normalize(source, template) if source else None
+            by_row = dict(zip(normalized.row_numbers, normalized.rows)) if normalized else {}
+            by_column = {number: index for index, number in enumerate(normalized.column_numbers)} if normalized else {}
+            entries = [("original", index, column) for index, column in enumerate(template.columns) if column.enabled]
+            for index, column in sorted(enumerate(template.added_columns), key=lambda pair: pair[1].position):
+                entries.insert(column.position - 1, ("added", index, column))
+            if template.include_source:
+                entries.extend(("metadata", index, name) for index, name in enumerate(["_원본파일", "_원본시트", "_원본행", "_테이블"]))
+            self.arrange_table.setRowCount(len(entries))
+            for row, (kind, index, column) in enumerate(entries):
+                raw, mapped = "", ""
+                if kind == "metadata":
+                    name, origin = column, "출처 정보"
+                else:
+                    name = column.name if kind == "added" else column.output_name
+                    origin = (f"추가 · {column.cell}" if column.mode == "cell" else "추가 · 고정값") if kind == "added" else f"원본 · {get_column_letter(column.source_column)} · {column.row_offset + 1}번째 행"
+                    try:
+                        if validation_error:
+                            raise ValueError(validation_error)
+                        if source is None:
+                            raise ValueError("기준 시트 없음")
+                        if kind == "added":
+                            raw = added_column_raw_value(book, source, column)
+                        else:
+                            number = template.data_start_row + column.row_offset
+                            raw = by_row[number][by_column[column.source_column]] if number in by_row and column.source_column in by_column else None
+                        mapped = mapped_column_value(raw, column)
+                    except ValueError as exc:
+                        mapped = f"오류: {exc}"
+                values = [get_column_letter(row + 1), name, origin, raw, mapped, "", "", ", ".join(column.excluded_values) if kind == "original" else ""]
+                for col, value in enumerate(values):
+                    item = QTableWidgetItem("" if value is None else str(value))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    if not (kind != "metadata" and col == 1 or kind == "original" and col == 7):
+                        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                    self.arrange_table.setItem(row, col, item)
+                self.arrange_table.item(row, 0).setData(Qt.UserRole, (kind, index))
+                if kind != "metadata":
+                    button = QPushButton("매핑 설정")
+                    button.clicked.connect(lambda _checked=False, i=index, k=kind: self.edit_value_mapping(i, k))
+                    self.arrange_table.setCellWidget(row, 5, button)
+                if kind == "original":
+                    condition = self._combo([("모든 값", "any"), ("빈 값 제외", "not_empty"), ("숫자인 행만", "number")])
+                    condition.setCurrentIndex(condition.findData(column.row_condition))
+                    condition.currentIndexChanged.connect(lambda _value, i=index, combo=condition: self._arrange_condition_changed(i, combo.currentData()))
+                    self.arrange_table.setCellWidget(row, 6, condition)
+            self.arrange_status.setText("출력명·매핑·행 조건을 변경한 후 상단 ‘양식 JSON 저장’을 눌러 보관하세요.")
+        finally:
+            self.arrange_table.blockSignals(False)
 
     def _added_columns(self):
         return [AddedColumn(
@@ -282,7 +388,7 @@ class ExcelDataSortPage(QWidget):
             cell=self.added_table.item(row, 5).text().strip().upper(),
             value_mapping=deepcopy(self.added_table.item(row, 1).data(Qt.UserRole) or {}),
             branch_lookup=deepcopy(self.added_table.item(row, 1).data(Qt.UserRole + 1) or {}),
-            separator=self.added_table.item(row, 9).text(),
+            separator=self.added_table.item(row, 6).text(),
         ) for row in range(self.added_table.rowCount())]
 
     def _set_added_columns(self, columns):
@@ -297,20 +403,12 @@ class ExcelDataSortPage(QWidget):
             mode = self._combo([("고정값", "fixed"), ("원본 셀 값", "cell")])
             mode.setCurrentIndex(mode.findData(column.mode))
             self.added_table.setCellWidget(row, 2, mode)
-            for index, value in ((1, column.name), (3, column.value), (4, column.sheet_name), (5, column.cell), (9, column.separator)):
+            for index, value in ((1, column.name), (3, column.value), (4, column.sheet_name), (5, column.cell), (6, column.separator)):
                 item = QTableWidgetItem(value)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.added_table.setItem(row, index, item)
             self.added_table.item(row, 1).setData(Qt.UserRole, deepcopy(column.value_mapping))
             self.added_table.item(row, 1).setData(Qt.UserRole + 1, deepcopy(column.branch_lookup))
-            for index in (6, 7):
-                item = QTableWidgetItem()
-                item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                item.setTextAlignment(Qt.AlignCenter)
-                self.added_table.setItem(row, index, item)
-            mapping_button = QPushButton("매핑 설정")
-            mapping_button.clicked.connect(lambda _checked=False, r=row: self.edit_value_mapping(r))
-            self.added_table.setCellWidget(row, 8, mapping_button)
             position.valueChanged.connect(self.invalidate)
             mode.currentIndexChanged.connect(self.invalidate)
         self.loading = was_loading
@@ -448,11 +546,6 @@ class ExcelDataSortPage(QWidget):
 
     def refresh_added_preview(self):
         self._set_preview(self.added_preview)
-        self.added_table.blockSignals(True)
-        for row in range(self.added_table.rowCount()):
-            for col in (6, 7):
-                self.added_table.item(row, col).setText("")
-        self.added_table.blockSignals(False)
         self.added_status.clear()
         if self.current_index < 0:
             return
@@ -466,13 +559,6 @@ class ExcelDataSortPage(QWidget):
             source = next((sheet for sheet in book.sheets if sheet.name == template.sheet_name), None)
             if source is None:
                 raise ValueError("기준 시트를 선택해 주세요.")
-            for index, column in enumerate(template.added_columns):
-                raw = added_column_raw_value(book, source, column)
-                mapped = added_column_value(book, source, column)
-                self.added_table.blockSignals(True)
-                self.added_table.item(index, 6).setText("" if raw is None else str(raw))
-                self.added_table.item(index, 7).setText("" if mapped is None else str(mapped))
-                self.added_table.blockSignals(False)
             selected = [column for column in template.columns if column.enabled]
             names = [column.output_name for column in selected]
             # A small layout sample; the conversion preview provides the full extraction result.
@@ -698,6 +784,8 @@ class ExcelDataSortPage(QWidget):
             self.columns_table.setItem(row, 3, QTableWidgetItem(column.output_name))
             self.columns_table.item(row, 3).setData(Qt.UserRole, deepcopy(column.value_mapping))
             self.columns_table.item(row, 3).setData(Qt.UserRole + 1, deepcopy(column.branch_lookup))
+            self.columns_table.item(row, 3).setData(Qt.UserRole + 2, column.row_condition)
+            self.columns_table.item(row, 3).setData(Qt.UserRole + 3, list(column.excluded_values))
             for index in range(self.columns_table.columnCount()):
                 self.columns_table.item(row, index).setTextAlignment(Qt.AlignCenter)
         self.columns_table.blockSignals(False)
@@ -711,6 +799,8 @@ class ExcelDataSortPage(QWidget):
             self.columns_table.item(row, 1).data(Qt.UserRole + 1) or 0,
             deepcopy(self.columns_table.item(row, 3).data(Qt.UserRole) or {}),
             deepcopy(self.columns_table.item(row, 3).data(Qt.UserRole + 1) or {}),
+            self.columns_table.item(row, 3).data(Qt.UserRole + 2) or "any",
+            list(self.columns_table.item(row, 3).data(Qt.UserRole + 3) or []),
         ) for row in range(self.columns_table.rowCount())]
         prior = self.entries[self.current_index]["template"] if self.current_index >= 0 else None
         return Template(
@@ -836,6 +926,7 @@ class ExcelDataSortPage(QWidget):
         self.dataset_combo.clear()
         self._set_preview(self.dataset_table)
         self.refresh_added_preview()
+        self.refresh_arrange_table()
         self.dataset_hint.setText("설정 변경 반영 중…")
         self.preview_timer.start()
 

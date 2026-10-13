@@ -578,7 +578,7 @@
             },
             "custom_기관직인": {
                 "type": "image",
-                "path": "",
+                "path": "data\\branch_images\\8cff3c790d384389911f9ee1e69d496d.png",
                 "width": 30,
                 "height": 30
             },
@@ -1144,7 +1144,7 @@
         "custom_fields": {
             "custom_전화번호": {
                 "type": "text",
-                "value": "07041316868"
+                "value": "010-3405-5322"
             },
             "custom_사업자등록번호": {
                 "type": "text",
@@ -1175,15 +1175,15 @@
                 "value": "0"
             }
         },
-        "login_type": "케어포",
+        "login_type": "롱텀",
         "credentials": {
             "carefor": {
                 "login_id": "이찬재",
                 "login_password": "*wkdtnakst1"
             },
             "longterm": {
-                "certificate_name": "",
-                "certificate_password": ""
+                "certificate_name": "주식회사 평촌시니어타운",
+                "certificate_password": "*wkdtnakst1"
             }
         }
     }

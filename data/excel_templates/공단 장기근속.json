@@ -245,7 +245,8 @@
       "source_column": 41,
       "header": "청구액",
       "output_name": "청구액",
-      "enabled": true
+      "enabled": true,
+      "row_condition": "number"
     },
     {
       "source_column": 42,

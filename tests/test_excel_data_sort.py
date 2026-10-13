@@ -24,6 +24,36 @@ def book(tmp_path, rows, **kwargs):
     return WorkbookData(tmp_path / "input.xlsx", [SheetData("1월", rows, **kwargs)])
 
 
+def test_row_conditions_skip_details_keep_zero_and_roundtrip(tmp_path):
+    source = book(tmp_path, [["직원명", "급여"], ["가", 50_000], ["특정내용", None],
+                             ["나", 0], ["다", "1,000"], ["특정내용", 10], [" ", 30],
+                             ["직원명", "급여"], ["라", 20]])
+    rule = template(added_columns=[AddedColumn("연", value="2026")])
+    rule.columns[0].row_condition = "not_empty"
+    rule.columns[0].excluded_values = ["특정내용"]
+    rule.columns[1].row_condition = "number"
+    rule.columns[1].value_mapping = {"0": "영원"}
+    store = TemplateStore(tmp_path / "templates")
+    store.save(rule)
+    loaded, errors = store.load_all()
+    assert not errors
+    result = convert(source, loaded[0])
+    assert result.datasets[0].rows == [["2026", "가", 50_000], ["2026", "나", "영원"],
+                                       ["2026", "다", "1,000"], ["2026", "라", 20]]
+    assert result.warnings == ["행 포함 조건으로 3행 제외"]
+    rule.columns[0].excluded_values = ["가", "나", "다", "라", "특정내용"]
+    with pytest.raises(ValueError, match="행 포함 조건"):
+        convert(source, rule)
+
+
+@pytest.mark.parametrize("value,accepted", [(0, True), ("0", True), (" 1,000 ", True),
+                                           (None, False), ("", False), (False, False),
+                                           ("NaN", False), (float("inf"), False), ("특정내용", False)])
+def test_numeric_row_condition(value, accepted):
+    from excel_data_sort.engine import column_accepts_row
+    assert column_accepts_row(value, ColumnRule(1, "금액", "금액", row_condition="number")) is accepted
+
+
 def test_two_row_records_blank_values_repeated_headers_and_export(tmp_path):
     source = book(tmp_path, [
         ["이름", "식별번호", "일수"], [None, "지급액", "사유"],

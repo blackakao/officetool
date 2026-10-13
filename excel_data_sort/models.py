@@ -56,6 +56,8 @@ class ColumnRule:
     row_offset: int = 0
     value_mapping: dict[str, str] = field(default_factory=dict)
     branch_lookup: dict[str, str] = field(default_factory=dict)
+    row_condition: str = "any"
+    excluded_values: list[str] = field(default_factory=list)
 
     @property
     def source_key(self):
@@ -120,6 +122,10 @@ class Template:
         ):
             raise ValueError("인식 특징 또는 종료 값 설정을 확인해 주세요.")
         for column in self.columns:
+            if column.row_condition not in ("any", "not_empty", "number"):
+                raise ValueError("행 포함 조건을 확인해 주세요.")
+            if not isinstance(column.excluded_values, list) or any(not isinstance(value, str) for value in column.excluded_values):
+                raise ValueError("제외할 값은 문자열 목록으로 지정해 주세요.")
             if type(column.row_offset) is not int or not 0 <= column.row_offset < self.record_rows:
                 raise ValueError("컬럼의 행 위치가 한 건의 행 수를 벗어났습니다. 헤더에서 컬럼을 다시 불러오세요.")
             if (type(column.source_column) is not int or type(column.enabled) is not bool

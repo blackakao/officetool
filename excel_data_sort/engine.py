@@ -1,10 +1,26 @@
 from collections import Counter, defaultdict
 from dataclasses import dataclass, replace
 from typing import Protocol
+from decimal import Decimal, InvalidOperation
 
 from .models import ConversionResult, Dataset, Template, header_key, is_empty, text_key
 from .normalize import normalize, expand_record_rows
 from .branch_lookup import load_branch_data, lookup_branch
+
+
+def column_accepts_row(value, column):
+    if any(text_key(value) == text_key(excluded) for excluded in column.excluded_values if not is_empty(excluded)):
+        return False
+    if column.row_condition == "not_empty":
+        return not is_empty(value)
+    if column.row_condition == "number":
+        if is_empty(value) or isinstance(value, bool):
+            return False
+        try:
+            return Decimal(str(value).strip().replace(",", "")).is_finite()
+        except InvalidOperation:
+            return False
+    return True
 
 
 def added_column_value(workbook, current_sheet, column, branch_data=None):
@@ -122,6 +138,7 @@ def convert(workbook, template, detector=None):
         output_columns += ["_원본파일", "_원본시트", "_원본행", "_테이블"]
     normalized, grouped = [], {}
     warnings = list(workbook.warnings)
+    filtered_count = 0
     offset = template.data_start_row - template.header_row
     stop_values = {text_key(value) for value in template.stop_values if not is_empty(value)}
     for original in workbook.sheets:
@@ -188,6 +205,9 @@ def convert(workbook, template, detector=None):
                     continue
                 if all(is_empty(value) for value in values):
                     continue
+                if not all(column_accepts_row(value, column) for value, column in zip(values, selected)):
+                    filtered_count += 1
+                    continue
                 values = [mapped_column_value(value, column, branch_data) for value, column in zip(values, selected)]
                 for column, value in zip(additions, extra_values):
                     values.insert(column.position - 1, value)
@@ -196,7 +216,9 @@ def convert(workbook, template, detector=None):
                 dataset.rows.append(values)
     datasets = [dataset for dataset in grouped.values() if dataset.rows]
     if not datasets:
-        raise ValueError("추출된 데이터가 없습니다. 헤더·시트·시작행·숨김 옵션·종료 조건을 확인해 주세요.")
+        raise ValueError("추출된 데이터가 없습니다. 헤더·시트·시작행·숨김 옵션·종료 조건·행 포함 조건을 확인해 주세요.")
+    if filtered_count:
+        warnings.append(f"행 포함 조건으로 {filtered_count}행 제외")
     return ConversionResult(normalized, datasets, warnings)
 
 

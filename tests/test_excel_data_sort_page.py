@@ -52,6 +52,53 @@ def configure(page):
     page.columns_table.item(0, 3).setText("이름")
 
 
+def test_arrange_tab_filters_names_save_switch_and_export(page, app, tmp_path, monkeypatch):
+    first, second = tmp_path / "filter.xlsx", tmp_path / "second.xlsx"
+    wb = Workbook()
+    wb.active.title = "급여"
+    for row in [["직원명", "금액"], ["가", 100], ["특정내용", None], ["나", 0]]:
+        wb.active.append(row)
+    wb.save(first)
+    wb.save(second)
+    wb.close()
+    page.load_paths([first, second])
+    wait_worker(app, page)
+    page.files.setCurrentRow(0)
+    configure(page)
+    page.add_column()
+    page.added_table.item(0, 1).setText("연")
+    page.added_table.item(0, 3).setText("2026")
+    assert page.added_table.columnCount() == 7
+    assert [page.arrange_table.item(i, 1).text() for i in range(3)] == ["연", "이름", "금액"]
+    page.arrange_table.item(1, 1).setText("성명")
+    assert page.columns_table.item(0, 3).text() == "성명"
+    page.arrange_table.item(1, 7).setText("특정내용")
+    combo = page.arrange_table.cellWidget(2, 6)
+    combo.setCurrentIndex(combo.findData("number"))
+    wait_worker(app, page)
+    assert [row[:3] for row in page.result.datasets[0].rows] == [["2026", "가", 100], ["2026", "나", 0]]
+    page.files.setCurrentRow(1)
+    page.files.setCurrentRow(0)
+    assert page.arrange_table.item(1, 7).text() == "특정내용"
+    assert page.arrange_table.cellWidget(2, 6).currentData() == "number"
+    page.save_template()
+    saved = page.store.load_all()[0][0]
+    assert saved.columns[0].excluded_values == ["특정내용"]
+    assert saved.columns[1].row_condition == "number"
+    page.entries[1]["template"] = saved
+    output = tmp_path / "filtered.xlsx"
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *_args: (str(output), ""))
+    wait_worker(app, page)
+    page.export_all()
+    wait_worker(app, page)
+    result = load_workbook(output)
+    try:
+        assert result.active.max_row == 5
+        assert [row[2] for row in list(result.active.values)[1:]] == [100, 0, 100, 0]
+    finally:
+        result.close()
+
+
 def test_two_row_headers_ui_save_preview(page, app, tmp_path):
     path = tmp_path / "two_rows.xlsx"
     wb = Workbook()
@@ -92,15 +139,15 @@ def test_combined_cells_preview_and_save(page, app, tmp_path):
     page.added_table.item(0, 1).setText("합친 값")
     page.added_table.cellWidget(0, 2).setCurrentIndex(1)
     page.added_table.item(0, 5).setText("A2,B2")
-    page.added_table.item(0, 9).setText(" / ")
+    page.added_table.item(0, 6).setText(" / ")
     wait_worker(app, page)
-    assert page.added_table.item(0, 6).text() == "가 / 100"
+    assert page.arrange_table.item(0, 3).text() == "가 / 100"
     assert page.result.datasets[0].rows[0][0] == "가 / 100"
     page.save_template()
     saved = page.store.load_all()[0][0]
     page._set_added_columns(saved.added_columns)
     assert page.added_table.item(0, 5).text() == "A2,B2"
-    assert page.added_table.item(0, 9).text() == " / "
+    assert page.added_table.item(0, 6).text() == " / "
 
 
 def test_ui_save_recognize_multifile_preview_export(page, app, tmp_path, monkeypatch):
@@ -258,7 +305,7 @@ def test_mapping_dialog_recognition_preview_and_save(page, app, tmp_path, monkey
     page.added_table.item(0, 1).setText("지점명")
     page.added_table.item(0, 5).setText("B2")
     page.added_table.cellWidget(0, 2).setCurrentIndex(1)
-    assert page.added_table.item(0, 6).text() == "100"
+    assert page.arrange_table.item(0, 3).text() == "100"
 
     def edit_dialog():
         dialog = app.activeModalWidget()
@@ -267,9 +314,9 @@ def test_mapping_dialog_recognition_preview_and_save(page, app, tmp_path, monkey
         dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.Save).click()
 
     QTimer.singleShot(0, edit_dialog)
-    page.edit_value_mapping(0)
-    assert page.added_table.item(0, 6).text() == "100"
-    assert page.added_table.item(0, 7).text() == "Company"
+    page.arrange_table.cellWidget(0, 5).click()
+    assert page.arrange_table.item(0, 3).text() == "100"
+    assert page.arrange_table.item(0, 4).text() == "Company"
     page.save_template()
     assert page.store.load_all()[0][0].added_columns[0].branch_lookup == {"match_field": "organization_code", "return_field": "corporation_name"}
     page.preview()
