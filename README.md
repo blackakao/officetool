@@ -215,6 +215,44 @@ python -m attendance_analysis.predict dataset/files/attendance_001.jpg --checkpo
 
 ## 주요 데이터와 폴더
 
+### Git 기본 데이터와 사용자 데이터 분리
+
+사용자 저장 경로는 실행한 현재 디렉터리가 아니라 프로젝트 루트 기준 `data/runtime/`입니다.
+UI, Excel 지점 조회, 공단 실행 스크립트는 공통 모듈 [data_paths.py](data_paths.py)을 사용합니다.
+JSON 구조와 화면의 저장·불러오기 동작은 그대로 유지합니다.
+
+| 분류 | 파일·폴더 | Git 정책 |
+| --- | --- | --- |
+| 기본 데이터 | `data/defaults/*.json` | 추적. 개인정보 없는 빈 지점·메모·업무·이력·사용자 설정, 기본 월간 업무 목록, 기본 수가·인건비율 |
+| 사용자 데이터 | `branches.json`, `branch_fields.json`, `branch_task_settings.json`, `memos.json`, `monthly_work_check.json`, `incomplete_tasks.json` | `data/runtime/`에 저장, 제외 |
+| 사용자 문서 설정·이력 | `document_field_settings.json`, `hwp_document_field_settings.json`, `document_generation_history.json`, `table_lists.json` | `data/runtime/`에 저장, 제외. 필드 프리셋·입력 기본값도 사용자 데이터 |
+| 사용자 수정 가능한 정보·환경 설정 | `service_fee.json`, `labor_cost_ratio.json`, `log_settings.json` | 기본값은 `data/defaults/`에서 추적, 화면에서 변경하는 사본은 `data/runtime/`에서 제외 |
+| 사용자 이미지 | 신규 `data/runtime/branch_images/`, 기존 `data/branch_images/` | 모두 제외. 기존 JSON에 기록된 이미지 경로를 보존하기 위해 원본 이미지는 원래 위치에 유지 |
+| 로그·캐시·임시 데이터 | `data/login.log`, 기타 `*.log`, `data/chrome_profiles/`, `data/runtime/*.tmp` | 제외. 로그·브라우저 프로필의 기존 위치 유지 |
+| Excel 양식 | `data/excel_templates/*.json` | 프로젝트 설정으로 계속 추적 |
+| 자동화 작업·매크로 | `data/federation_tasks.json`, `data/carefor_tasks.json`, `data/federation_selectors*.json`, `data/carefor_selectors_work.json` | 프로젝트 설정으로 계속 추적 |
+| 추가 자동화 설정 | `data/content_download.json`, `data/get_payexcel.json`, `data/test.json` | selector·browser·timeout 구조의 매크로 설정이므로 추적 유지. `test.json`은 테스트 fixture가 아님 |
+| 테스트 fixture | `tests/` 내 테스트 코드·fixture | 계속 추적. 테스트 데이터는 임시 디렉터리에 생성 |
+
+최초 접근 시 해당 runtime 파일이 없으면 같은 이름의 기존 `data/<파일명>`을 먼저 복사합니다.
+기존 파일도 없으면 `data/defaults/<파일명>`을 복사합니다. 새 PC에서는 지점·메모·미비 업무와 작성 이력은 비어 있고,
+월간 업무 목록 및 수가·인건비율 기본값은 제공됩니다. 사용자 데이터를 기본 파일에 넣지 않습니다.
+runtime 파일이 이미 있으면 내용이 비어 있거나 JSON이 손상되어 있어도 초기값으로 덮어쓰지 않습니다.
+이전 과정은 바이트 그대로 복사하므로 알 수 없는 필드·공백·문자 인코딩도 보존되며, 읽기 실패 시 기본값으로 대체하지 않고 오류를 전달합니다.
+완성된 임시 사본을 하드 링크로 게시해 동시 최초 실행에서도 기존 파일을 교체하지 않습니다(Windows NTFS 등 하드 링크 지원 파일시스템 필요).
+
+**기존 설치 업데이트:** 추적 해제 커밋을 다른 PC에서 pull하면 Git이 깨끗한 기존 추적 파일을 제거할 수 있습니다.
+따라서 업데이트 **전에** 앱을 종료하고 기존 `data/`를 별도 위치에 백업하세요.
+업데이트 후 백업의 사용자 JSON을 원래 `data/<파일명>` 위치에 없는 경우에만 복원하면 최초 접근 시 자동 이전됩니다.
+이미 runtime 파일이 있으면 자동 병합하지 않으므로 두 사본 중 사용할 데이터를 확인해야 합니다.
+현재 작업 PC에서는 추적 해제 전에 사용자 JSON 사본을 생성하고, 기존 JSON·이미지 파일은 삭제하지 않습니다.
+이 정책은 과거 Git 이력에서 데이터를 제거하는 작업은 포함하지 않습니다.
+
+백업·PC 이전 시에는 `data/runtime/`와 `data/branch_images/`를 함께 보관합니다.
+문서 설정에 저장한 외부 이미지·문서의 절대 경로는 기존과 동일하게 사용하므로 새 PC에서는 해당 경로도 확인하세요.
+기존 `data/<사용자 파일명>`은 이전 원본으로 남으며 이후 저장은 runtime에만 반영됩니다.
+Excel 양식이나 매크로를 편집하면 프로젝트 설정 변경이므로 Git 변경사항이 표시되는 것이 정상입니다.
+
 | 경로 | 용도 |
 | --- | --- |
 | `main.py`, `ui/pages/` | 앱 실행 진입점과 업무별 화면 |
@@ -227,16 +265,16 @@ python -m attendance_analysis.predict dataset/files/attendance_001.jpg --checkpo
 | `tests/` | 문서 처리, 업무 관리, 출근부 정답 처리, 자동화 관련 테스트 |
 | `document/` | Word 원본 양식 |
 | `document_hwp/` | 한글 원본 양식 |
-| `data/branches.json` | 지점 정보 |
-| `data/branch_fields.json` | 지점 사용자 정의 항목 정의 |
-| `data/branch_task_settings.json` | 업무별로 표시할 지점 설정 |
-| `data/document_field_settings.json` | Word 문서별 필드 설정 |
-| `data/hwp_document_field_settings.json` | 한글 문서별 필드 설정 |
-| `data/document_generation_history.json` | 문서별 최근 작성 3건의 입력값과 지점 선택 |
-| `data/table_lists.json` | 문서용 테이블 목록 |
-| `data/monthly_work_check.json` | 월간 업무 데이터 |
-| `data/memos.json` | 메모와 태그 데이터 |
-| `data/incomplete_tasks.json` | 미비된일 내용, 생성일 및 완료일 |
+| `data/runtime/branches.json` | 지점 정보 |
+| `data/runtime/branch_fields.json` | 지점 사용자 정의 항목 정의 |
+| `data/runtime/branch_task_settings.json` | 업무별로 표시할 지점 설정 |
+| `data/runtime/document_field_settings.json` | Word 문서별 필드 설정 |
+| `data/runtime/hwp_document_field_settings.json` | 한글 문서별 필드 설정 |
+| `data/runtime/document_generation_history.json` | 문서별 최근 작성 3건의 입력값과 지점 선택 |
+| `data/runtime/table_lists.json` | 문서용 테이블 목록 |
+| `data/runtime/monthly_work_check.json` | 월간 업무 데이터 |
+| `data/runtime/memos.json` | 메모와 태그 데이터 |
+| `data/runtime/incomplete_tasks.json` | 미비된일 내용, 생성일 및 완료일 |
 | `data/login.log` | 작업 로그 |
 
 원본 문서는 직접 덮어쓰지 않습니다. 생성 결과는 각 원본 문서 폴더 아래의 `maked` 폴더에 저장됩니다.
@@ -249,7 +287,7 @@ Git 업로드 제외 정책:
 
 - 모든 `maked/` 폴더와 그 하위 폴더에서 생성되는 PDF는 제외합니다. 기존 `document/maked/` 전체 제외 규칙도 유지합니다.
 - `.log`로 끝나는 로그 파일은 위치에 관계없이 제외합니다.
-- `.json` 설정 파일은 계속 Git 관리 대상으로 유지합니다.
+- JSON은 용도별로 관리합니다. `data/defaults/`와 프로젝트 양식·자동화 설정은 추적하고, `data/runtime/` 및 이전 사용자 파일은 제외합니다.
 - 이미 추적 중인 제외 대상 파일은 로컬 파일을 보존하고 Git 추적만 해제합니다.
 
 - 메뉴, 사용자 기능, 필드 명명 규칙 또는 데이터 저장 정책이 변경되면 같은 작업에서 이 README도 함께 갱신합니다.

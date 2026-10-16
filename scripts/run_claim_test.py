@@ -9,6 +9,8 @@ sys.path.insert(0, str(workspace_root))
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
+from data_paths import user_data_path
+
 from ui.pages.federation_tool import FederationTool
 
 
@@ -17,7 +19,7 @@ def main():
     tool = FederationTool()
     target_branch_name = sys.argv[1] if len(sys.argv) > 1 else "화성점"
 
-    data_file = Path(__file__).resolve().parents[1] / "data" / "branches.json"
+    data_file = user_data_path("branches.json")
     if not data_file.exists():
         print("branches.json 파일을 찾을 수 없습니다:", data_file)
         return

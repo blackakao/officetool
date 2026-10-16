@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 from datetime import datetime
 from pathlib import Path
@@ -130,8 +131,8 @@ class MonthlyWorkCheckPage(QWidget):
         super().__init__()
 
         self.base_dir = Path(__file__).resolve().parents[2]
-        self.data_file = self.base_dir / "data" / "monthly_work_check.json"
-        self.branches_file = self.base_dir / "data" / "branches.json"
+        self.data_file = user_data_path("monthly_work_check.json", root=self.base_dir)
+        self.branches_file = user_data_path("branches.json", root=self.base_dir)
         self.is_summary_mode = False
 
         layout = QVBoxLayout()
@@ -224,7 +225,7 @@ class MonthlyWorkCheckPage(QWidget):
 
         with open(self.branches_file, "r", encoding="utf-8") as f:
             return filter_branches_for_task(
-                json.load(f), "monthly_work", self.base_dir / "data" / "branch_task_settings.json"
+                json.load(f), "monthly_work", user_data_path("branch_task_settings.json", root=self.base_dir)
             )
 
     def _load_tasks_to_combo(self):

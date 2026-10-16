@@ -12,3 +12,20 @@
 # Python bytecode cache
 __pycache__/
 *.py[cod]
+
+# User runtime data and preserved legacy files (not project templates)
+/data/runtime/
+/data/branch_images/
+/data/branch_fields.json
+/data/branch_task_settings.json
+/data/branches.json
+/data/document_field_settings.json
+/data/document_generation_history.json
+/data/hwp_document_field_settings.json
+/data/incomplete_tasks.json
+/data/labor_cost_ratio.json
+/data/log_settings.json
+/data/memos.json
+/data/monthly_work_check.json
+/data/service_fee.json
+/data/table_lists.json

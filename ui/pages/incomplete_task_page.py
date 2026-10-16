@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -97,7 +98,7 @@ class IncompleteTaskEditorDialog(QDialog):
 class IncompleteTaskPage(QWidget):
     def __init__(self):
         super().__init__()
-        self.data_file = Path(__file__).resolve().parents[2] / "data" / "incomplete_tasks.json"
+        self.data_file = user_data_path("incomplete_tasks.json")
 
         self.search_edit = QLineEdit()
         self.search_edit.setPlaceholderText("제목, 내용 검색")

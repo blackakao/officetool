@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 from pathlib import Path
 
@@ -50,8 +51,8 @@ class BranchTaskSettingsPage(QWidget):
     def __init__(self):
         super().__init__()
         root = Path(__file__).resolve().parents[2]
-        self.branches_path = root / "data" / "branches.json"
-        self.settings_path = root / "data" / "branch_task_settings.json"
+        self.branches_path = user_data_path("branches.json", root=root)
+        self.settings_path = user_data_path("branch_task_settings.json", root=root)
 
         layout = QVBoxLayout(self)
         description = QLabel(

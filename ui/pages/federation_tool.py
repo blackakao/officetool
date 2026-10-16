@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 import re
 import time
@@ -69,7 +70,7 @@ class FederationTool(QWidget):
         self.login_thread_class = login_thread_class
         self.login_label = login_label
         self.log_source = log_source
-        self.data_file = root / "data" / "branches.json"
+        self.data_file = user_data_path("branches.json", root=root)
         self.task_config_file = root / "data" / task_config_name
         self.legacy_selector_config_file = root / "data" / legacy_selector_name
         self.deleted_task_keys = set()
@@ -614,7 +615,7 @@ class FederationTool(QWidget):
             with open(self.data_file, "r", encoding="utf-8") as f:
                 task_key = "carefor" if self.tool_name == "케어포툴" else "federation"
                 return filter_branches_for_task(
-                    json.load(f), task_key, self.root / "data" / "branch_task_settings.json"
+                    json.load(f), task_key, user_data_path("branch_task_settings.json", root=self.root)
                 )
         except FileNotFoundError:
             return []

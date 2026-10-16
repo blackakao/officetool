@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 from pathlib import Path
 from datetime import datetime
@@ -60,7 +61,7 @@ class ServiceFeePage(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.data_file = Path(__file__).resolve().parents[2] / "data" / "service_fee.json"
+        self.data_file = user_data_path("service_fee.json")
         self.current_type = "시설"
         current_year = datetime.now().year
         self.current_year = str(current_year if 2021 <= current_year <= 2026 else 2026)

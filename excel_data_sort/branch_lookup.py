@@ -1,8 +1,9 @@
 import json
-from pathlib import Path
+
+from data_paths import user_data_path
 
 
-DATA_DIRECTORY = Path(__file__).resolve().parents[1] / "data"
+DATA_DIRECTORY = None  # Optional explicit directory for isolated consumers/tests.
 BASE_FIELDS = {
     "organization_code": "기관기호", "organization_name": "기관명",
     "branch_name": "지점명", "corporation_name": "법인명",
@@ -12,8 +13,9 @@ BASE_FIELDS = {
 
 def load_branch_data():
     try:
-        branches = json.loads((DATA_DIRECTORY / "branches.json").read_text(encoding="utf-8"))
-        path = DATA_DIRECTORY / "branch_fields.json"
+        branches_path = DATA_DIRECTORY / "branches.json" if DATA_DIRECTORY is not None else user_data_path("branches.json")
+        branches = json.loads(branches_path.read_text(encoding="utf-8"))
+        path = DATA_DIRECTORY / "branch_fields.json" if DATA_DIRECTORY is not None else user_data_path("branch_fields.json")
         custom = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
         if not isinstance(branches, list) or any(not isinstance(row, dict) for row in branches):
             raise ValueError("지점 목록 형식이 올바르지 않습니다.")

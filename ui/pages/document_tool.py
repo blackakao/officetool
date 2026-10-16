@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 import sys
 import subprocess
@@ -317,7 +318,7 @@ class DocumentTool(QWidget):
 
     def _settings_path(self):
         filename = getattr(self, "settings_filename", "document_field_settings.json")
-        return Path(__file__).resolve().parents[2] / "data" / filename
+        return user_data_path(filename)
 
     def _create_dialog(self, file_path, mode):
         doc = Document(file_path)
@@ -351,7 +352,7 @@ class DocumentTool(QWidget):
 
     def _excel_headers(self, file_path, settings=None):
         settings = settings or self._load_document_settings(file_path)
-        tables = read_json_file(self.document_folder.parent / "data" / "table_lists.json", {}).get("tables", [])
+        tables = read_json_file(user_data_path("table_lists.json", root=self.document_folder.parent), {}).get("tables", [])
         table_names = {table.get("id", ""): table.get("name", "테이블 목록") for table in tables}
         def field_type_name(field_setting):
             field_type = field_setting.get("type", "text")
@@ -714,20 +715,20 @@ class ContentControlDialog(QDialog):
         self.doc = doc
         self.file_path = file_path
         self.root = Path(__file__).resolve().parents[2]
-        self.settings_path = self.root / "data" / getattr(
+        self.settings_path = user_data_path(getattr(
             self,
             "settings_filename",
             "document_field_settings.json",
-        )
-        self.branches_path = self.root / "data" / "branches.json"
-        self.branch_fields_path = self.root / "data" / "branch_fields.json"
-        self.table_lists_path = self.root / "data" / "table_lists.json"
+        ), root=self.root)
+        self.branches_path = user_data_path("branches.json", root=self.root)
+        self.branch_fields_path = user_data_path("branch_fields.json", root=self.root)
+        self.table_lists_path = user_data_path("table_lists.json", root=self.root)
         self.all_settings = read_json_file(self.settings_path, {"version": 1, "fields": {}, "documents": {}})
         self.settings = self.settings_for_file(self.all_settings, file_path)
         self.branches = filter_branches_for_task(
             read_json_file(self.branches_path, []),
             "document",
-            self.root / "data" / "branch_task_settings.json",
+            user_data_path("branch_task_settings.json", root=self.root),
         )
         self.branch_fields = read_json_file(self.branch_fields_path, [])
         self.table_lists = read_json_file(self.table_lists_path, {"version": 1, "tables": []}).get("tables", [])
@@ -833,7 +834,7 @@ class ContentControlDialog(QDialog):
         self.setLayout(layout)
 
     def _history_path(self):
-        return self.root / "data" / "document_generation_history.json"
+        return user_data_path("document_generation_history.json", root=self.root)
 
     def _history_key(self):
         return f"{getattr(self, 'settings_filename', 'document_field_settings.json')}::{self.file_path.name}"

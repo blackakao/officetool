@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 import os
 import time
@@ -22,7 +23,7 @@ class LoginTool(QWidget):
     def __init__(self):
         super().__init__()
         
-        self.data_file = Path(__file__).resolve().parents[2] / "data" / "branches.json"
+        self.data_file = user_data_path("branches.json")
         self.log_file = Path(__file__).resolve().parents[2] / "data" / "login.log"
         self.log_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -138,7 +139,7 @@ class LoginTool(QWidget):
         try:
             with open(self.data_file, "r", encoding="utf-8") as f:
                 return filter_branches_for_task(
-                    json.load(f), "login", self.data_file.parent / "branch_task_settings.json"
+                    json.load(f), "login", user_data_path("branch_task_settings.json")
                 )
         except FileNotFoundError:
             return []

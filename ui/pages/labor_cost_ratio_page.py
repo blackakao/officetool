@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import json
 from pathlib import Path
 from datetime import datetime
@@ -61,7 +62,7 @@ class LaborCostRatioPage(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.data_file = Path(__file__).resolve().parents[2] / "data" / "labor_cost_ratio.json"
+        self.data_file = user_data_path("labor_cost_ratio.json")
         current_year = datetime.now().year
         self.current_year = str(current_year if 2021 <= current_year <= 2026 else 2026)
         self.selected_row = -1

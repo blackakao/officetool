@@ -1,10 +1,11 @@
+from data_paths import user_data_path
 from datetime import datetime
 import json
 from pathlib import Path
 
 LOG_FILE = Path(__file__).resolve().parents[2] / "data" / "login.log"
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
-LOG_SETTINGS_FILE = LOG_FILE.parent / "log_settings.json"
+LOG_SETTINGS_FILE = user_data_path("log_settings.json")
 
 DETAIL_LOG_PREFIXES = (
     "[table_click]",

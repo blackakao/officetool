@@ -1,3 +1,4 @@
+from data_paths import user_data_path
 import uuid
 from pathlib import Path
 
@@ -200,7 +201,7 @@ class TableEditorDialog(QDialog):
 class TableListPage(QWidget):
     def __init__(self):
         super().__init__()
-        self.data_file = Path(__file__).resolve().parents[2] / "data" / "table_lists.json"
+        self.data_file = user_data_path("table_lists.json")
 
         add_button = QPushButton("추가")
         delete_button = QPushButton("삭제")

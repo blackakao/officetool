@@ -1,3 +1,4 @@
+from data_paths import user_data_path, user_image_directory
 import json
 import shutil
 import uuid
@@ -126,7 +127,7 @@ class BranchDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("지점 추가" if branch_data is None else "지점 수정")
         self.custom_fields = custom_fields or []
-        self.image_dir = image_dir or Path(__file__).resolve().parents[2] / "data" / "branch_images"
+        self.image_dir = image_dir or user_image_directory()
         self.custom_field_widgets = {}
 
         self.organization_code_edit = QLineEdit()
@@ -420,9 +421,9 @@ class BranchPage(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.data_file = Path(__file__).resolve().parents[2] / "data" / "branches.json"
-        self.fields_file = Path(__file__).resolve().parents[2] / "data" / "branch_fields.json"
-        self.image_dir = Path(__file__).resolve().parents[2] / "data" / "branch_images"
+        self.data_file = user_data_path("branches.json")
+        self.fields_file = user_data_path("branch_fields.json")
+        self.image_dir = user_image_directory()
         self.selected_row = -1
 
         layout = QVBoxLayout()
