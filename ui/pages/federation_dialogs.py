@@ -15,6 +15,7 @@ from ui.pages.federation_config import (
     ACTION_TYPES, BY_TYPES, PROCESS_ACTIONS, PROCESS_TYPES, REPEAT_MODES,
     SELECTOR_TEMPLATE, english_task_stem, ensure_selector_config, save_selector_config,
 )
+from ui.pages.federation_workflow import validate_workflow_structure
 
 
 class SelectorTableWidget(QTableWidget):
@@ -642,42 +643,11 @@ class SelectorConfigDialog(QDialog):
                 self.table.selectRow(min(min(delete_indices), len(remaining_rows) - 1))
 
     def _validate_repeat_pairs(self, rows):
-        stack = []
-        for key, selector in rows:
-            process_type = selector.get("type", "element")
-            if process_type == "repeat_start":
-                stack.append(("repeat_start", key))
-            elif process_type == "condition_start":
-                stack.append(("condition_start", key))
-            elif process_type == "condition_true":
-                if not stack or stack[-1][0] != "condition_start":
-                    QMessageBox.warning(self, "저장 실패", f"조건처리의 조건 없이 참 구역이 나타났습니다: {key}")
-                    return False
-                stack.append(("condition_true", key))
-            elif process_type == "condition_false":
-                if not stack or stack[-1][0] != "condition_true":
-                    QMessageBox.warning(self, "저장 실패", f"조건처리-참 없이 거짓 구역이 나타났습니다: {key}")
-                    return False
-                stack.pop()
-                stack.append(("condition_false", key))
-            elif process_type == "repeat_end":
-                if not stack or stack[-1][0] != "repeat_start":
-                    QMessageBox.warning(self, "저장 실패", f"반복지점 종료에 맞는 시작이 없습니다: {key}")
-                    return False
-                stack.pop()
-            elif process_type == "condition_end":
-                if not stack or stack[-1][0] != "condition_false":
-                    QMessageBox.warning(self, "저장 실패", f"조건처리-거짓 없이 종료가 나타났습니다: {key}")
-                    return False
-                stack.pop()
-                if not stack or stack[-1][0] != "condition_start":
-                    QMessageBox.warning(self, "저장 실패", f"조건처리 시작에 맞는 종료가 아닙니다: {key}")
-                    return False
-                stack.pop()
-        if stack:
-            QMessageBox.warning(self, "저장 실패", f"시작에 맞는 종료가 없습니다: {stack[-1][1]}")
+        try:
+            return validate_workflow_structure(rows)
+        except ValueError as exc:
+            QMessageBox.warning(self, "저장 실패", str(exc))
             return False
-        return True
 
     def save(self):
         selectors = {}

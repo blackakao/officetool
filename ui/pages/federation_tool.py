@@ -47,6 +47,9 @@ from ui.pages.federation_config import (
     apply_runtime_context, build_locator, english_task_stem,
     ensure_selector_config, normalize_task_configs, save_selector_config, task_template,
 )
+from ui.pages.federation_workflow import (
+    evaluate_condition, find_condition_indices, find_repeat_end_index, parse_repeat_count,
+)
 from ui.pages.federation_dialogs import (
     SelectorConfigDialog, SelectorTableWidget, TaskConfigDialog,
 )
@@ -1788,13 +1791,7 @@ class InvoiceProcessor:
             element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
             value = (element.text or element.get_attribute("value") or "").strip()
 
-        match = re.search(r"-?[\d,]+", value)
-        if not match:
-            raise ValueError(f"반복 횟수를 숫자로 변환할 수 없습니다: {key}={value}")
-        count = int(match.group(0).replace(",", ""))
-        if count < 0:
-            raise ValueError(f"반복 횟수는 0 이상이어야 합니다: {key}={count}")
-        return count
+        return parse_repeat_count(key, value)
 
     def input_field_text(self, key, selector, context=None):
         expected = self.runtime_text_value(selector.get("expected_value", ""), context)
@@ -1832,36 +1829,10 @@ class InvoiceProcessor:
         return True
 
     def find_repeat_end_index(self, items, start_index):
-        depth = 0
-        for index in range(start_index, len(items)):
-            process_type = items[index][1].get("type", "element")
-            if process_type == "repeat_start":
-                depth += 1
-            elif process_type == "repeat_end":
-                depth -= 1
-                if depth == 0:
-                    return index
-        raise ValueError(f"반복지점 종료를 찾을 수 없습니다: {items[start_index][0]}")
+        return find_repeat_end_index(items, start_index)
 
     def find_condition_indices(self, items, start_index):
-        depth = 0
-        true_index = None
-        false_index = None
-        for index in range(start_index, len(items)):
-            process_type = items[index][1].get("type", "element")
-            if process_type == "condition_start":
-                depth += 1
-            elif process_type == "condition_true" and depth == 1:
-                true_index = index
-            elif process_type == "condition_false" and depth == 1:
-                false_index = index
-            elif process_type == "condition_end":
-                if depth == 1:
-                    if true_index is None or false_index is None:
-                        raise ValueError(f"조건처리 참/거짓 구역을 찾을 수 없습니다: {items[start_index][0]}")
-                    return true_index, false_index, index
-                depth -= 1
-        raise ValueError(f"조건처리 종료를 찾을 수 없습니다: {items[start_index][0]}")
+        return find_condition_indices(items, start_index)
 
     def runtime_text_value(self, value, context=None):
         return apply_runtime_context({"value": str(value or "")}, context).get("value", "")
@@ -2025,22 +1996,7 @@ class InvoiceProcessor:
         expected = self.runtime_text_value(selector.get("expected_value", ""), context).strip()
         repeat_number = str((context or {}).get("repeat_number", "")).strip()
 
-        if action == "field_empty":
-            result = not actual
-        elif action == "field_not_empty":
-            result = bool(actual)
-        elif action == "text_exists":
-            result = bool(actual)
-        elif action == "equals_value":
-            result = actual == expected
-        elif action == "contains_value":
-            result = bool(expected) and expected in actual
-        elif action == "equals_repeat_number":
-            result = actual == repeat_number
-        elif action == "contains_repeat_number":
-            result = bool(repeat_number) and repeat_number in actual
-        else:
-            raise ValueError(f"지원하지 않는 조건처리 동작입니다: {key} ({action})")
+        result = evaluate_condition(key, action, actual, expected, repeat_number)
 
         self._log(
             f"[condition] {key}: action={action} result={result} "

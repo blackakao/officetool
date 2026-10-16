@@ -151,17 +151,20 @@ python -m attendance_analysis.predict dataset/files/attendance_001.jpg --checkpo
 
 ### 공단툴 내부 모듈 구조
 
-1차 구조 분리에서는 기존 함수·클래스의 동작을 유지하고 정의 위치만 이동했습니다.
+1차에서는 설정과 편집 UI를 분리했고, 2차에서는 브라우저와 무관한 워크플로 구조 검증·값 해석을 분리했습니다. 기존 실행 동작과 검증 시점은 유지합니다.
 
 | 모듈 | 책임 |
 | --- | --- |
 | [federation_tool.py](ui/pages/federation_tool.py) | `FederationTool` 화면·로그인 연결, `TimedWebDriverWait`, `InvoiceProcessor` 자동화 실행, `ClaimProcessThread` |
 | [federation_config.py](ui/pages/federation_config.py) | 설정 상수·기본 템플릿, 작업 설정 정규화, JSON 읽기·저장, 작업명 변환, locator·반복값 치환 함수 |
 | [federation_dialogs.py](ui/pages/federation_dialogs.py) | `SelectorTableWidget`, `SelectorConfigDialog`, `TaskConfigDialog`: 단계 편집·드래그 이동·작업 추가 UI |
+| [federation_workflow.py](ui/pages/federation_workflow.py) | 저장 시 반복·조건 구조 검증, 실행 시 중첩 경계 탐색, 반복 횟수 문자열 해석, 읽어 온 값의 조건 비교. Qt·Selenium 의존성 없음 |
 | [federation_batch.py](ui/pages/federation_batch.py) | 기존 다중 지점 선택·순차 실행 |
 | [macro_ranges.py](ui/pages/macro_ranges.py), [macro_popup_recovery.py](ui/pages/macro_popup_recovery.py) | 기존 범위값 생성, 팝업 복구·창/프레임 탐색 |
 
 의존 방향은 실행 화면 → 편집 대화상자 → 설정 모듈이며, 실행 화면도 설정 모듈을 직접 사용합니다. 설정 모듈은 Qt·로그인·업무 실행부에 의존하지 않으며 Selenium의 `By` 상수만 참조합니다. 기존 `ui.pages.federation_tool` 경로에서도 이동한 함수·상수·클래스를 계속 import할 수 있습니다. 케어포툴의 상속 경로, 설정 JSON 형식·저장 위치 및 자동화 동작은 유지합니다.
+
+실행부와 편집 대화상자는 순수 워크플로 모듈을 사용합니다. 편집 저장의 엄격한 구조 검증과 실행 중 필요한 구간만 탐색하는 해석은 기존 허용 범위가 다르므로 별도로 유지하며, 새로운 실행 전 전체 검증이나 action 규칙을 추가하지 않습니다. 기존 `InvoiceProcessor`의 경계 탐색 메서드도 유지합니다. 요소 읽기·대기·조건 및 반복 실행 순서·브라우저 조작은 계속 실행부가 담당합니다.
 
 ## 문서 필드 형태
 
