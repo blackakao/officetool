@@ -149,6 +149,20 @@ python -m attendance_analysis.predict dataset/files/attendance_001.jpg --checkpo
 
 테스트중 메뉴는 개발 중인 자동화 기능이므로 실제 업무 적용 전에 결과를 확인해야 합니다.
 
+### 공단툴 내부 모듈 구조
+
+1차 구조 분리에서는 기존 함수·클래스의 동작을 유지하고 정의 위치만 이동했습니다.
+
+| 모듈 | 책임 |
+| --- | --- |
+| [federation_tool.py](ui/pages/federation_tool.py) | `FederationTool` 화면·로그인 연결, `TimedWebDriverWait`, `InvoiceProcessor` 자동화 실행, `ClaimProcessThread` |
+| [federation_config.py](ui/pages/federation_config.py) | 설정 상수·기본 템플릿, 작업 설정 정규화, JSON 읽기·저장, 작업명 변환, locator·반복값 치환 함수 |
+| [federation_dialogs.py](ui/pages/federation_dialogs.py) | `SelectorTableWidget`, `SelectorConfigDialog`, `TaskConfigDialog`: 단계 편집·드래그 이동·작업 추가 UI |
+| [federation_batch.py](ui/pages/federation_batch.py) | 기존 다중 지점 선택·순차 실행 |
+| [macro_ranges.py](ui/pages/macro_ranges.py), [macro_popup_recovery.py](ui/pages/macro_popup_recovery.py) | 기존 범위값 생성, 팝업 복구·창/프레임 탐색 |
+
+의존 방향은 실행 화면 → 편집 대화상자 → 설정 모듈이며, 실행 화면도 설정 모듈을 직접 사용합니다. 설정 모듈은 Qt·로그인·업무 실행부에 의존하지 않으며 Selenium의 `By` 상수만 참조합니다. 기존 `ui.pages.federation_tool` 경로에서도 이동한 함수·상수·클래스를 계속 import할 수 있습니다. 케어포툴의 상속 경로, 설정 JSON 형식·저장 위치 및 자동화 동작은 유지합니다.
+
 ## 문서 필드 형태
 
 한글은 누름틀 이름, Word는 콘텐츠 컨트롤의 태그를 필드 이름으로 사용합니다. 동일한 이름이 여러 번 나오면 같은 값을 함께 적용합니다.
