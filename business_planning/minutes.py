@@ -6,7 +6,6 @@ import tempfile
 import uuid
 from datetime import datetime
 from pathlib import Path
-from urllib import request, error, parse
 
 from data_paths import runtime_directory
 
@@ -119,33 +118,6 @@ def parse_response(content, meeting):
             lines.append(f"{person['name']}({person['position']}): {text}")
         result[key] = '\n\n'.join(lines)
     return result
-
-
-def generate(meeting, endpoint, model, api_key, opener=request.urlopen):
-    validate(meeting)
-    if parse.urlparse(endpoint).scheme != 'https' or not model or not api_key:
-        raise ValueError('HTTPS API 주소, 모델, 환경변수 MYTOOL_AI_API_KEY를 설정하세요.')
-    payload_meeting = copy.deepcopy(meeting)
-    for agenda in payload_meeting['agendas']:
-        agenda.pop('draft', None)
-        agenda.pop('final', None)
-    body = json.dumps(dict(model=model, messages=[
-        dict(role='system', content=SYSTEM_PROMPT),
-        dict(role='user', content=json.dumps(payload_meeting, ensure_ascii=False))],
-        response_format={'type': 'json_object'})).encode('utf-8')
-    req = request.Request(endpoint, data=body, headers={
-        'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json'})
-    try:
-        with opener(req, timeout=60) as response:
-            data = json.loads(response.read(2_000_000).decode('utf-8'))
-        return parse_response(data['choices'][0]['message']['content'], meeting)
-    except error.HTTPError as exc:
-        messages = {401: 'AI 인증 실패', 403: 'AI 접근 권한 없음', 429: 'AI 사용량 제한'}
-        raise ValueError(messages.get(exc.code, f'AI 요청 실패 (HTTP {exc.code})')) from None
-    except (error.URLError, TimeoutError):
-        raise ValueError('AI 연결 실패 또는 시간 초과입니다. 입력 내용은 유지됩니다.') from None
-    except (KeyError, TypeError, json.JSONDecodeError):
-        raise ValueError('AI 응답 형식이 올바르지 않습니다.') from None
 
 
 def document_text(meeting):

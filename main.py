@@ -14,8 +14,7 @@ from PySide6.QtWidgets import (
 from ui.pages.branch_list import BranchPage
 from ui.pages.login_tool import LoginTool
 from ui.pages.login_log import LoginLogPage
-from ui.pages.document_tool import DocumentTool
-from ui.pages.hwp_document_tool import HwpDocumentTool
+from ui.pages.document_tool import UnifiedDocumentTool
 from ui.pages.table_list_page import TableListPage
 from ui.pages.federation_tool import FederationTool
 from ui.pages.carefor_tool import CareforTool
@@ -90,8 +89,7 @@ class MainWindow(QMainWindow):
         self.branch_page = BranchPage()
         self.login_page = LoginTool()
         self.login_log_page = LoginLogPage()
-        self.document_page = DocumentTool()
-        self.hwp_document_page = HwpDocumentTool()
+        self.document_page = UnifiedDocumentTool()
         self.table_list_page = TableListPage()
         self.federation_page = FederationTool()
         self.carefor_page = CareforTool()
@@ -116,8 +114,7 @@ class MainWindow(QMainWindow):
             (
                 "문서작성툴",
                 (
-                    ("문서작성툴(한글)", self.hwp_document_page),
-                    ("문서작성툴(워드)", self.document_page),
+                    ("문서작성툴", self.document_page),
                     ("테이블 목록 관리", self.table_list_page),
                 ),
             ),

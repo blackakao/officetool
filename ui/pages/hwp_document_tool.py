@@ -169,6 +169,11 @@ class HwpAutomation:
         if saved is False:
             raise RuntimeError(f"PDF로 저장하지 못했습니다: {output_path}")
 
+    def save_native(self, output_path):
+        saved = self.hwp.SaveAs(str(Path(output_path).resolve()), "HWP", "")
+        if saved is False:
+            raise RuntimeError(f"한글 문서로 저장하지 못했습니다: {output_path}")
+
 
 class HwpContentControlDialog(ContentControlDialog):
     settings_filename = "hwp_document_field_settings.json"
@@ -235,7 +240,13 @@ class HwpContentControlDialog(ContentControlDialog):
                 )
         return values
 
-    def _create_pdf(self, values_dict, output_title=None, ask_on_duplicate=False, status_callback=None):
+    def _create_native(self, values_dict, **kwargs):
+        return self._create_hwp_output(values_dict, native=True, **kwargs)
+
+    def _create_pdf(self, values_dict, **kwargs):
+        return self._create_hwp_output(values_dict, **kwargs)
+
+    def _create_hwp_output(self, values_dict, output_title=None, ask_on_duplicate=False, status_callback=None, native=False):
         def report(step, message):
             if status_callback:
                 status_callback(step, message)
@@ -248,6 +259,7 @@ class HwpContentControlDialog(ContentControlDialog):
             maked_folder,
             output_title or f"{self.file_path.stem}_filled",
             ask_on_duplicate,
+            ".hwp" if native else ".pdf",
         )
         if output_path is None:
             return None
@@ -265,11 +277,14 @@ class HwpContentControlDialog(ContentControlDialog):
                     automation.put_image(field_name, value)
                 else:
                     automation.put_text(field_name, value)
-            report(3, "한글에서 PDF로 저장하고 있습니다...")
-            automation.save_pdf(output_path)
+            report(3, "한글 문서를 저장하고 있습니다..." if native else "한글에서 PDF로 저장하고 있습니다...")
+            if native:
+                automation.save_native(output_path)
+            else:
+                automation.save_pdf(output_path)
 
-        report(4, "PDF 저장을 완료하고 있습니다...")
-        log("HwpDocumentTool", f"PDF 생성 완료: {output_path}", level="INFO")
+        report(4, "문서 저장을 완료하고 있습니다...")
+        log("HwpDocumentTool", f"문서 생성 완료: {output_path}", level="INFO")
         return output_path
 
 

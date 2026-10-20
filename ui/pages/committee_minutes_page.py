@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 import uuid
 
 from PySide6.QtCore import QDate, QTime, QThread, Signal
@@ -12,9 +11,10 @@ from PySide6.QtWidgets import (
 )
 
 from business_planning.minutes import (
-    NOTICE, MinutesStore, new_meeting, new_agenda, generate, validate,
-    document_text, export_docx, atomic_json,
+    NOTICE, MinutesStore, new_meeting, new_agenda, validate,
+    document_text, export_docx,
 )
+from business_planning.local_ai import generate_local, download_model, model_ready
 from data_paths import user_data_path
 from ui.pages.branch_task_settings import branch_key
 
@@ -30,6 +30,7 @@ class PlannedPage(QWidget):
 class MinutesWorker(QThread):
     result = Signal(object)
     failed = Signal(str)
+    progress = Signal(str)
 
     def __init__(self, meeting, settings, parent=None):
         super().__init__(parent)
@@ -37,9 +38,12 @@ class MinutesWorker(QThread):
 
     def run(self):
         try:
-            result = generate(self.meeting, self.settings.get('endpoint', ''),
-                              self.settings.get('model', ''), os.environ.get('MYTOOL_AI_API_KEY', ''))
-            self.result.emit(result)
+            if self.settings.get('download'):
+                download_model(self.settings['directory'], self.progress.emit)
+            else:
+                result = generate_local(self.meeting, self.settings['directory'],
+                                        self.progress.emit, self.isInterruptionRequested)
+                self.result.emit(result)
         except Exception as exc:
             self.failed.emit(str(exc))
 
@@ -134,8 +138,12 @@ class CommitteeMinutesPage(QWidget):
             b.clicked.connect(callback)
             bottom.addWidget(b)
         layout.addLayout(bottom)
-        self.status = QLabel('AI 미설정 상태에서도 입력·편집·저장이 가능합니다.')
+        self.status = QLabel('내장 AI: 최초 1회 모델 다운로드 후 인터넷 없이 작성합니다.')
         root.addWidget(self.status)
+        self.cancel_button = QPushButton('AI 작성 취소')
+        self.cancel_button.setEnabled(False)
+        self.cancel_button.clicked.connect(self.cancel_generation)
+        root.addWidget(self.cancel_button)
         self.agenda_combo.currentIndexChanged.connect(self.select_agenda)
         self.people.itemChanged.connect(self.changed)
         for widget in [self.title, self.place, self.session]:
@@ -345,28 +353,32 @@ class CommitteeMinutesPage(QWidget):
             self.error(exc)
 
     def settings(self):
-        path = self.store.directory / 'ai_settings.json'
-        return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+        # Legacy external endpoint/key settings are deliberately never read.
+        return {'directory': self.store.directory / 'models' / 'qwen3-0.6b'}
 
     def configure(self):
         try:
             settings = self.settings()
             dialog = QDialog(self)
-            dialog.setWindowTitle('AI 서비스 설정')
+            dialog.setWindowTitle('내장 AI')
             form = QFormLayout(dialog)
-            endpoint = QLineEdit(settings.get('endpoint', ''))
-            model = QLineEdit(settings.get('model', ''))
-            form.addRow('Chat Completions 호환 HTTPS 전체 URL', endpoint)
-            form.addRow('모델', model)
-            form.addRow(QLabel('인증키는 MYTOOL_AI_API_KEY 환경변수로 설정 후 앱을 다시 실행하세요.\n'
-                               '주소와 모델만 저장합니다. 요청 시 사용료가 발생할 수 있습니다.'))
-            buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-            buttons.accepted.connect(dialog.accept)
+            ready = model_ready(settings['directory'])
+            form.addRow(QLabel('Qwen3-0.6B · PC 내부 CPU 실행 · API 키/사용료 없음\n'
+                               '회의 내용은 외부로 전송하지 않습니다.\n'
+                               '최초 모델 다운로드 약 1.5GB / 실행 메모리 약 4GB 이상 여유 권장\n'
+                               '소형 모델이므로 발언과 수치는 반드시 검토하세요.'))
+            form.addRow('상태', QLabel('모델 파일 준비됨' if ready else '모델 다운로드 필요'))
+            form.addRow('저장 위치', QLabel(str(settings['directory'])))
+            form.addRow(QLabel('실행 패키지가 없는 경우:\npython -m pip install -r requirements-local-ai.txt'))
+            download = QPushButton('모델 다시 확인 / 다운로드' if ready else '내장 모델 다운로드')
+            download.clicked.connect(dialog.accept)
+            form.addRow(download)
+            buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
             buttons.rejected.connect(dialog.reject)
             form.addRow(buttons)
             if dialog.exec():
-                atomic_json(self.store.directory / 'ai_settings.json',
-                            dict(endpoint=endpoint.text().strip(), model=model.text().strip()))
+                settings['download'] = True
+                self.start_worker(MinutesWorker({}, settings, self), downloading=True)
         except Exception as exc:
             self.error(exc)
 
@@ -375,24 +387,31 @@ class CommitteeMinutesPage(QWidget):
             meeting = self.collect()
             validate(meeting)
             settings = self.settings()
-            if not settings.get('endpoint') or not settings.get('model') or not os.environ.get('MYTOOL_AI_API_KEY'):
-                raise ValueError('AI 설정과 MYTOOL_AI_API_KEY 환경변수를 확인하세요.')
+            if not model_ready(settings['directory']):
+                raise ValueError('AI 설정에서 내장 모델을 먼저 다운로드하세요.')
             if any(a['final'] for a in meeting['agendas']) and not self.ask(
                     '재생성하면 현재 안건별 편집 내용을 교체합니다. 계속할까요?'):
                 return
-            if not self.ask(f"{settings['endpoint']}\n모델: {settings['model']}\n"
-                            '회의 기본 정보, 참석자 성명·직책, 안건과 의견을 외부 AI로 전송합니다. '
-                            '서비스 사용료가 발생할 수 있습니다. 전송할까요?'):
-                return
-            self.worker = MinutesWorker(meeting, settings, self)
-            self.worker.result.connect(self.apply_result)
-            self.worker.failed.connect(self.error)
-            self.worker.finished.connect(self.worker_finished)
-            self.body.setEnabled(False)
-            self.status.setText('AI 회의록 작성 중…')
-            self.worker.start()
+            self.start_worker(MinutesWorker(meeting, settings, self))
         except Exception as exc:
             self.error(exc)
+
+    def start_worker(self, worker, downloading=False):
+        self.worker = worker
+        worker.result.connect(self.apply_result)
+        worker.failed.connect(self.error)
+        worker.progress.connect(self.status.setText)
+        worker.finished.connect(self.worker_finished)
+        self.body.setEnabled(False)
+        self.cancel_button.setEnabled(not downloading)
+        self.status.setText('내장 AI 준비 중…')
+        worker.start()
+
+    def cancel_generation(self):
+        if self.worker:
+            self.worker.requestInterruption()
+            self.cancel_button.setEnabled(False)
+            self.status.setText('취소 중… 모델 로딩 또는 현재 계산 완료 후 중단합니다.')
 
     def apply_result(self, result):
         for a in self.meeting['agendas']:
@@ -404,7 +423,8 @@ class CommitteeMinutesPage(QWidget):
         self.worker.deleteLater()
         self.worker = None
         self.body.setEnabled(True)
-        self.status.setText('AI 요청이 종료되었습니다. 내용을 검토해 주세요.')
+        self.cancel_button.setEnabled(False)
+        self.status.setText('내장 AI 작업이 종료되었습니다. 결과 또는 오류 안내를 확인하세요.')
 
     def preview(self):
         dialog = QDialog(self)

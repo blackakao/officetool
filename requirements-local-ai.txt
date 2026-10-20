@@ -1,0 +1,2 @@
+# Reuses torch from requirements.txt.
+transformers==4.57.1

@@ -264,12 +264,12 @@ class DocumentTool(QWidget):
         if not self.document_folder.exists():
             return
         
-        docx_files = list(self.document_folder.glob(self.document_pattern))
+        docx_files = self._document_files()
         self.table.setRowCount(len(docx_files))
         
         for row, file_path in enumerate(docx_files):
             # 파일명
-            filename_item = QTableWidgetItem(file_path.name)
+            filename_item = QTableWidgetItem(self._document_label(file_path))
             filename_item.setFlags(filename_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.table.setItem(row, 0, filename_item)
             
@@ -288,6 +288,12 @@ class DocumentTool(QWidget):
             upload_btn = QPushButton("엑셀업로드")
             upload_btn.clicked.connect(lambda _, f=file_path: self.upload_excel_values(f))
             self.table.setCellWidget(row, 4, upload_btn)
+
+    def _document_files(self):
+        return list(self.document_folder.glob(self.document_pattern))
+
+    def _document_label(self, file_path):
+        return file_path.name
 
     def open_document_folder(self):
         if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.document_folder))):
@@ -522,7 +528,10 @@ class DocumentTool(QWidget):
                     "설정된 필드가 현재 문서에 없습니다:\n" + "\n".join(missing_fields),
                 )
                 return
-            outputs = dialog.create_documents_from_rows(rows)
+            output_format = dialog._choose_output_format()
+            if output_format is None:
+                return
+            outputs = dialog.create_documents_from_rows(rows, output_format=output_format)
             QMessageBox.information(self, "완료", f"{len(outputs)}개 문서를 생성했습니다.")
         except Exception as e:
             log("DocumentTool", f"엑셀 업로드 생성 실패: {e}", level="ERROR")
@@ -2381,8 +2390,38 @@ class ContentControlDialog(QDialog):
         except Exception as e:
             raise RuntimeError(f"docx2pdf 설치 실패: {e}") from e
 
+    def _choose_output_format(self):
+        native = "한글 문서 (*.hwp)" if self.file_path.suffix.lower() == ".hwp" else "Word 문서 (*.docx)"
+        selected, accepted = QInputDialog.getItem(
+            self, "생성 형식 선택", "입력값을 적용한 새 파일의 형식을 선택하세요.",
+            ["PDF 문서 (*.pdf)", native], 0, False,
+        )
+        if not accepted:
+            return None
+        return "pdf" if selected == "PDF 문서 (*.pdf)" else "native"
+
+    def _create_output(self, values_dict, output_format="pdf", **kwargs):
+        if output_format == "native":
+            return self._create_native(values_dict, **kwargs)
+        return self._create_pdf(values_dict, **kwargs)
+
+    def _create_native(self, values_dict, output_title=None, ask_on_duplicate=False, status_callback=None):
+        folder = self.file_path.parent / "maked"
+        folder.mkdir(exist_ok=True)
+        output = self._resolve_output_pdf_path(
+            folder, output_title or f"{self.file_path.stem}_filled", ask_on_duplicate, ".docx",
+        )
+        if output is None:
+            return None
+        document = Document(self.file_path)
+        self._apply_values_to_doc(document, values_dict)
+        if status_callback:
+            status_callback(3, "Word 문서를 저장하고 있습니다...")
+        document.save(str(output))
+        return output
+
     def create_from_controls(self):
-        """입력한 값으로 새 문서를 생성(PDF 변환). 원본은 변경하지 않음."""
+        """입력한 값으로 선택한 형식의 새 문서를 생성한다. 원본은 변경하지 않는다."""
         log("DocumentTool", f"문서 생성 시도: {self.file_path.name}", level="INFO")
         try:
             title = self.title_edit.text().strip() if self.title_edit else self.file_path.stem
@@ -2401,6 +2440,9 @@ class ContentControlDialog(QDialog):
                 QMessageBox.warning(self, "설정 필요", "생성할 콘텐츠 컨트롤 필드가 없습니다.")
                 return
 
+            output_format = self._choose_output_format()
+            if output_format is None:
+                return
             progress = self._show_progress("문서 생성", "문서 값을 적용하고 있습니다...", 4)
 
             def update_progress(step, message):
@@ -2409,8 +2451,9 @@ class ContentControlDialog(QDialog):
                 QApplication.processEvents()
 
             try:
-                out_pdf = self._create_pdf(
+                out_pdf = self._create_output(
                     values_dict,
+                    output_format=output_format,
                     output_title=title,
                     ask_on_duplicate=True,
                     status_callback=update_progress,
@@ -2420,16 +2463,16 @@ class ContentControlDialog(QDialog):
             if out_pdf is None:
                 return
             self._save_recent_generation(title, values_dict)
-            QMessageBox.information(self, '완료', f'PDF 생성 완료:\n{out_pdf}\n\n')
+            QMessageBox.information(self, '완료', f'문서 생성 완료:\n{out_pdf}\n\n')
 
             self.accept()
         except Exception as e:
             log("DocumentTool", f"문서 생성 오류: {e}", level="ERROR")
             QMessageBox.critical(self, "오류", f"생성 중 오류: {e}")
 
-    def create_documents_from_rows(self, rows):
+    def create_documents_from_rows(self, rows, output_format="pdf"):
         outputs = []
-        progress = self._show_progress("문서 일괄 생성", f"PDF 문서를 생성하고 있습니다... (0/{len(rows)})", len(rows))
+        progress = self._show_progress("문서 일괄 생성", f"문서를 생성하고 있습니다... (0/{len(rows)})", len(rows))
         try:
             for index, values_dict in enumerate(rows, 1):
                 values_dict = self._prepare_excel_row_values(values_dict, row_number=index + 1)
@@ -2441,14 +2484,15 @@ class ContentControlDialog(QDialog):
                     QApplication.processEvents()
 
                 outputs.append(
-                    self._create_pdf(
+                    self._create_output(
                         values_dict,
+                        output_format=output_format,
                         output_title=output_title,
                         ask_on_duplicate=False,
                         status_callback=update_batch_status,
                     )
                 )
-                progress.setLabelText(f"PDF 문서를 생성하고 있습니다... ({index}/{len(rows)})")
+                progress.setLabelText(f"문서를 생성하고 있습니다... ({index}/{len(rows)})")
                 progress.setValue(index)
                 QApplication.processEvents()
         finally:
@@ -2593,18 +2637,20 @@ class ContentControlDialog(QDialog):
 
     def _safe_filename(self, title):
         invalid_chars = '<>:"/\\|?*'
-        if title.lower().endswith(".pdf"):
-            title = title[:-4]
+        for extension in (".pdf", ".docx", ".hwp"):
+            if title.lower().endswith(extension):
+                title = title[:-len(extension)]
+                break
         safe = ''.join("_" if ch in invalid_chars else ch for ch in title).strip().rstrip(".")
         return safe or self.file_path.stem
 
-    def _resolve_output_pdf_path(self, folder, title, ask_on_duplicate):
+    def _resolve_output_pdf_path(self, folder, title, ask_on_duplicate, extension=".pdf"):
         safe_title = self._safe_filename(title)
-        candidate = folder / f"{safe_title}.pdf"
+        candidate = folder / f"{safe_title}{extension}"
         if not candidate.exists():
             return candidate
 
-        numbered = self._next_numbered_path(folder, safe_title)
+        numbered = self._next_numbered_path(folder, safe_title, extension)
         if ask_on_duplicate:
             answer = QMessageBox.question(
                 self,
@@ -2616,10 +2662,10 @@ class ContentControlDialog(QDialog):
                 return None
         return numbered
 
-    def _next_numbered_path(self, folder, safe_title):
+    def _next_numbered_path(self, folder, safe_title, extension=".pdf"):
         number = 1
         while True:
-            candidate = folder / f"{safe_title}({number}).pdf"
+            candidate = folder / f"{safe_title}({number}){extension}"
             if not candidate.exists():
                 return candidate
             number += 1
@@ -2761,3 +2807,40 @@ class ContentControlDialog(QDialog):
             width=Mm(int(value.get("width", 30) or 30)),
             height=Mm(int(value.get("height", 30) or 30)),
         )
+
+
+class UnifiedDocumentTool(DocumentTool):
+    tool_title = "문서 작성 도구"
+
+    def _document_files(self):
+        hwp_folder = self.document_folder.parent / "document_hwp"
+        hwp_folder.mkdir(exist_ok=True)
+        return sorted(
+            [*self.document_folder.glob("*.docx"), *hwp_folder.glob("*.hwp")],
+            key=lambda path: (path.stem.casefold(), path.suffix),
+        )
+
+    def _document_label(self, file_path):
+        mark = "한글" if file_path.suffix.lower() == ".hwp" else "Word"
+        return f"[{mark}] {file_path.name}"
+
+    def _create_dialog(self, file_path, mode):
+        if file_path.suffix.lower() == ".hwp":
+            from ui.pages.hwp_document_tool import HwpContentControlDialog
+            return HwpContentControlDialog(self, None, file_path, mode=mode)
+        return super()._create_dialog(file_path, mode)
+
+    def _load_document_settings(self, file_path):
+        filename = "hwp_document_field_settings.json" if file_path.suffix.lower() == ".hwp" else "document_field_settings.json"
+        settings = read_json_file(user_data_path(filename), {"version": 1, "fields": {}, "documents": {}})
+        return ContentControlDialog.settings_for_file(settings, file_path)
+
+    def open_document_folder(self):
+        selected, accepted = QInputDialog.getItem(
+            self, "문서 폴더 열기", "열 폴더를 선택하세요.", ["한글", "Word"], 0, False,
+        )
+        if not accepted:
+            return
+        folder = self.document_folder.parent / "document_hwp" if selected == "한글" else self.document_folder
+        if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder))):
+            QMessageBox.warning(self, "오류", f"문서 폴더를 열 수 없습니다:\n{folder}")
