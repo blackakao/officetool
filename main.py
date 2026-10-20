@@ -28,6 +28,7 @@ from ui.pages.incomplete_task_page import IncompleteTaskPage
 from ui.pages.branch_task_settings import BranchTaskSettingsPage
 from ui.pages.attendance_analysis_page import AttendanceAnalysisPage
 from ui.pages.excel_data_sort_page import ExcelDataSortPage
+from ui.pages.committee_minutes_page import CommitteeMinutesPage, PlannedPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -103,9 +104,15 @@ class MainWindow(QMainWindow):
         self.branch_task_settings_page = BranchTaskSettingsPage()
         self.attendance_analysis_page = AttendanceAnalysisPage()
         self.excel_data_sort_page = ExcelDataSortPage()
+        self.committee_minutes_page = CommitteeMinutesPage()
 
         menu_groups = (
             ("필수도구", (("로그인툴", self.login_page),)),
+            ("사업기획", (
+                ("예산편성 (예정)", PlannedPage("예산편성")),
+                ("사업계획 (예정)", PlannedPage("사업계획")),
+                ("운영위원회 회의록 작성", self.committee_minutes_page),
+            )),
             (
                 "문서작성툴",
                 (
@@ -189,6 +196,14 @@ class MainWindow(QMainWindow):
             self.stacked_widget.setCurrentWidget(page)
 
     def closeEvent(self, event):
+        if self.committee_minutes_page.worker is not None:
+            self.stacked_widget.setCurrentWidget(self.committee_minutes_page)
+            self.committee_minutes_page.status.setText("AI 요청이 진행 중입니다. 완료 후 닫아 주세요.")
+            event.ignore()
+            return
+        if not self.committee_minutes_page.may_replace():
+            event.ignore()
+            return
         for page in self.findChildren(FederationTool):
             if page.batch_thread is not None:
                 page.stop_batch()

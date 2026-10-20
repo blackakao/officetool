@@ -9,6 +9,7 @@
 | 프로젝트 | 위치 / 실행 | 주요 기능 |
 | --- | --- | --- |
 | 요양원 업무툴 | `main.py`, `ui/pages/` / `python main.py` | 지점·로그인 관리, 문서 생성, 개인 업무, 정보 조회, 웹 자동화 |
+| 사업기획 | `business_planning/`, `ui/pages/committee_minutes_page.py` / 앱의 `사업기획` 메뉴 | 운영위원회 회의록 입력·AI 초안·이력·DOCX 출력. [상세 안내](business_planning/README.md) |
 | 출근부 분석 모델 | `attendance_analysis/` / 앱의 `문서 분석 > 출근부 분석` 또는 CLI | 이미지·정답 데이터 학습, 출근부 이미지 분석, XLSX 결과 저장. [상세 안내](attendance_analysis/README.md) |
 | 엑셀 데이터 정렬 | `excel_data_sort/` / 앱의 `문서 분석 > 엑셀 데이터 정렬` 또는 `python -m excel_data_sort` | XLSX·XLS를 JSON 양식에 따라 정규화하고 정형 Dataset으로 변환. [상세 안내](excel_data_sort/README.md) |
 
@@ -35,6 +36,21 @@ python main.py
 ### 필수도구
 
 - 로그인툴: 지점별 공단·케어포 로그인 실행
+
+### 사업기획
+
+- 예산편성 (예정), 사업계획 (예정): 준비 중 안내
+- 운영위원회 회의록 작성: 기존 지점 연동, 복수 참석자·안건, 지점별 명단·작성 이력 저장 및 복원
+- 안건별 AI 초안과 편집 내용 분리, 직접 작성, 개회·폐회 편집, 재생성 전 교체 확인
+- AI 설정에서 사용자가 선택한 Chat Completions 호환 HTTPS 전체 URL과 모델 지정,
+  `MYTOOL_AI_API_KEY` 환경변수로 인증키 설정. 서비스 미설정 상태에서도 수동 편집·저장·출력 가능
+- 실제 AI 요청 전 외부 전송·요금 가능성 확인, 비동기 처리, 인증·사용량·응답 오류 안내
+- 실제 회의 내용 검토 확인 후 미리보기·DOCX 출력. 원본의 항목 구조와 별도 빈 서명 목록을 재구성하며
+  HWP 원본의 정확한 서식 보존 및 직접 HWP/PDF 출력은 지원하지 않음
+- 데이터: `data/runtime/business_planning/`의 `meetings/`, `rosters.json`, `ai_settings.json`;
+  문서 기본 위치: `outputs/`. 원본 및 기존 출력 파일은 덮어쓰지 않음
+
+사용 방법과 원본 양식 분석·출력 제한은 [사업기획 README](business_planning/README.md)를 참고합니다.
 
 ### 문서작성툴
 
