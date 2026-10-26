@@ -13,7 +13,7 @@ from business_planning.minutes import (
 @pytest.fixture
 def meeting():
     m = new_meeting()
-    m.update(branch_id='branch-1', branch_name='테스트 지점', title='운영회의', place='회의실')
+    m.update(version=1, branch_id='branch-1', branch_name='테스트 지점', title='운영회의', place='회의실')
     m['attendees'] = [dict(id='p1', name='위원1', position='시설장', role='진행', present=True),
                       dict(id='p2', name='위원2', position='대표', role='위원', present=True),
                       dict(id='p3', name='위원3', position='대표', role='위원', present=False)]
@@ -119,21 +119,25 @@ def test_page_edits_roundtrip_and_confirmation_reset(app, tmp_path, meeting, mon
     monkeypatch.setattr(page_module, 'user_data_path', lambda _: path)
     page = page_module.CommitteeMinutesPage(MinutesStore(tmp_path))
     page.display(meeting)
-    page.agenda_fields['final'].setPlainText('사용자 수정')
-    page.agenda_combo.setCurrentIndex(1)
-    page.agenda_fields['final'].setPlainText('두 번째 수정')
+    assert page.prompt.toPlainText()
+    assert '검토 중입니다.' in page.final_text.toPlainText()
+    page.prompt.setPlainText('위원1은 진행자, 위원2는 질문을 합니다.')
+    page.final_text.setPlainText('사용자 수정')
+    page.quarter.setCurrentIndex(2)
     page.confirmed.setChecked(True)
     page.save()
     restored = page.store.load(meeting['id'])
-    assert restored['agendas'][0]['final'] == '사용자 수정'
-    assert restored['agendas'][1]['final'] == '두 번째 수정'
+    assert restored['final'] == '사용자 수정'
+    assert restored['quarter'] == 3
+    assert restored['legacy_source']['agendas'] == meeting['agendas']
+    assert restored['prompt'] == '위원1은 진행자, 위원2는 질문을 합니다.'
     assert restored['confirmed']
     page.title.setText('주제 변경')
     assert not page.confirmed.isChecked()
     page.display(restored)
     assert page.collect()['attendees'] == meeting['attendees']
-    page.apply_result(parse_response(response(meeting), meeting))
-    assert page.collect()['agendas'][0]['draft'] == page.collect()['agendas'][0]['final']
+    page.apply_result('위원1: 안녕하세요.\n위원2: 감사합니다.')
+    assert page.collect()['draft'] == page.collect()['final']
     assert not page.confirmed.isChecked()
     page.deleteLater()
 
@@ -237,3 +241,91 @@ def test_model_loader_never_uses_remote_code_or_network(tmp_path, monkeypatch):
     load_engine(tmp_path)
     assert all(c['local_files_only'] and not c['trust_remote_code'] for c in calls)
     assert calls[1]['use_safetensors']
+
+
+def test_prompt_ui_only_has_simplified_inputs(app, tmp_path, monkeypatch):
+    from ui.pages import committee_minutes_page as module
+    branches = tmp_path / 'branches.json'
+    branches.write_text('[]', encoding='utf-8')
+    monkeypatch.setattr(module, 'user_data_path', lambda _: branches)
+    page = module.CommitteeMinutesPage(MinutesStore(tmp_path))
+    assert [page.tabs.tabText(i) for i in range(page.tabs.count())] == ['참석자', '프롬프트 / 회의록']
+    assert not hasattr(page, 'year') and not hasattr(page, 'session')
+    assert not hasattr(page, 'agenda_fields') and not hasattr(page, 'opening')
+    assert [page.quarter.itemText(i) for i in range(4)] == ['1분기', '2분기', '3분기', '4분기']
+    page.deleteLater()
+
+
+def test_prompt_generation_obeys_roles_and_excludes_absentees(meeting, tmp_path):
+    from business_planning.local_ai import generate_local
+    from business_planning.minutes import prompt_meeting
+    m = prompt_meeting(meeting)
+    m['prompt'] = '위원1은 공손한 진행자, 위원2는 질문과 감사를 한다. 2026년 예산 적법성 검토.'
+    original = copy.deepcopy(m)
+    def complete(*args):
+        prompt = args[2][1]['content']
+        assert m['prompt'] in prompt
+        assert '위원3' not in prompt
+        if '이어서 위원1 님이' in prompt:
+            return '예산 심사를 시작하겠습니다. 검토 자료 확인이 필요합니다.'
+        assert '예산 심사를 시작하겠습니다.' in prompt
+        return '검토 자료가 있습니까? 안내 감사합니다.'
+    result = generate_local(m, tmp_path, loader=lambda _: (None, None), completion=complete)
+    assert '검토 자료가 있습니까?' in result
+    assert '위원3' not in result
+    assert m == original
+
+
+@pytest.mark.parametrize('content', ['', '미등록인: 제가 승인합니다.', '{"speeches": []}'])
+def test_prompt_rejects_invalid_turn(meeting, content):
+    from business_planning.local_ai import generate_local
+    from business_planning.minutes import prompt_meeting
+    m = prompt_meeting(meeting)
+    original = copy.deepcopy(m)
+    with pytest.raises(ValueError, match='발언 형식'):
+        generate_local(m, loader=lambda _: (None, None), completion=lambda *_: content)
+    assert m == original
+
+
+def test_prompt_docx_and_migration_preserve_old_data(tmp_path, meeting):
+    from docx import Document
+    from business_planning.minutes import prompt_meeting, document_text
+    original = copy.deepcopy(meeting)
+    m = prompt_meeting(meeting)
+    assert meeting == original and m['legacy_source'] == original
+    m.update(quarter=4, final='위원1: 확인하겠습니다.\n위원2: 감사합니다.', confirmed=True)
+    path = tmp_path / 'prompt.docx'
+    export_docx(m, path)
+    text = '\n'.join(p.text for p in Document(path).paragraphs)
+    assert '4분기' in text and m['final'] in text
+    assert '개회선언' not in text and '검토 중입니다.' not in text
+    assert m['final'] in document_text(m)
+    store = MinutesStore(tmp_path)
+    store.save(m)
+    assert store.load(m['id'])['legacy_source'] == original
+
+
+def test_prompt_accepts_single_speech_envelope_and_assigns_registered_speakers(meeting):
+    from business_planning.local_ai import generate_local
+    from business_planning.minutes import prompt_meeting
+    m = prompt_meeting(meeting)
+    count = []
+    def completion(*args):
+        person = '위원1' if len(count) % 2 == 0 else '위원2'
+        count.append(person)
+        return '```json\n' + json.dumps({'name': person, 'content': '자료를 확인하겠습니다.'}) + '\n```'
+    text = generate_local(m, loader=lambda _: (None, None), completion=completion)
+    assert count == ['위원1', '위원2'] * 3
+    assert text.count('위원1(시설장):') == 3
+    assert text.count('위원2(대표):') == 3
+
+
+def test_prompt_requires_input_before_model_load(meeting):
+    from business_planning.local_ai import generate_local
+    from business_planning.minutes import prompt_meeting
+    m = prompt_meeting(meeting)
+    m['prompt'] = ' '
+    def no_load(_):
+        pytest.fail('빈 프롬프트에서는 모델을 로딩하지 않아야 합니다.')
+    with pytest.raises(ValueError, match='프롬프트'):
+        generate_local(m, loader=no_load)

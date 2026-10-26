@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
 )
 from ui.pages.logging_util import log
 from ui.pages.branch_task_settings import filter_branches_for_task
+from ui.pages.document_storage import unified_document_folder
 
 
 FIELD_TYPES = {
@@ -2813,10 +2814,10 @@ class UnifiedDocumentTool(DocumentTool):
     tool_title = "문서 작성 도구"
 
     def _document_files(self):
-        hwp_folder = self.document_folder.parent / "document_hwp"
-        hwp_folder.mkdir(exist_ok=True)
+        unified_document_folder(self.document_folder.parent)
         return sorted(
-            [*self.document_folder.glob("*.docx"), *hwp_folder.glob("*.hwp")],
+            [path for path in self.document_folder.iterdir()
+             if path.is_file() and path.suffix.lower() in {".docx", ".hwp"}],
             key=lambda path: (path.stem.casefold(), path.suffix),
         )
 
@@ -2836,11 +2837,5 @@ class UnifiedDocumentTool(DocumentTool):
         return ContentControlDialog.settings_for_file(settings, file_path)
 
     def open_document_folder(self):
-        selected, accepted = QInputDialog.getItem(
-            self, "문서 폴더 열기", "열 폴더를 선택하세요.", ["한글", "Word"], 0, False,
-        )
-        if not accepted:
-            return
-        folder = self.document_folder.parent / "document_hwp" if selected == "한글" else self.document_folder
-        if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder))):
-            QMessageBox.warning(self, "오류", f"문서 폴더를 열 수 없습니다:\n{folder}")
+        unified_document_folder(self.document_folder.parent)
+        super().open_document_folder()

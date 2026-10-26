@@ -14,9 +14,10 @@ NOTICE = "작성 보조용 가상 초안입니다. 실제 회의 내용과 참�
 
 
 def new_meeting():
-    return dict(version=1, id=uuid.uuid4().hex, branch_id="", branch_name="",
+    return dict(version=2, id=uuid.uuid4().hex, branch_id="", branch_name="",
                 fiscal_year=datetime.now().year, date=datetime.now().date().isoformat(),
                 start="10:00", end="11:00", place="", title="", session="제1차",
+                quarter=(datetime.now().month - 1) // 3 + 1, prompt="", draft="", final="",
                 attendees=[], agendas=[], opening="", closing="", confirmed=False)
 
 
@@ -27,15 +28,67 @@ def new_agenda():
 
 def validate(meeting):
     if not meeting['branch_id'] or not meeting['title'].strip() or not meeting['place'].strip():
-        raise ValueError("지점, 회의주제, 장소를 입력하세요.")
+        raise ValueError("지점, 제목, 장소를 입력하세요.")
     datetime.strptime(meeting['date'], '%Y-%m-%d')
     if meeting['start'] >= meeting['end']:
         raise ValueError("종료 시간은 시작 시간보다 늦어야 합니다.")
     present = [p for p in meeting['attendees'] if p['present']]
     if not present or any(not p['name'].strip() for p in meeting['attendees']):
         raise ValueError("참석자 성명과 참석 여부를 확인하세요.")
-    if not meeting['agendas'] or any(not a['title'].strip() for a in meeting['agendas']):
+    if meeting.get('version', 1) == 2:
+        if meeting.get('quarter') not in (1, 2, 3, 4):
+            raise ValueError("분기를 선택하세요.")
+    elif not meeting['agendas'] or any(not a['title'].strip() for a in meeting['agendas']):
         raise ValueError("안건명을 입력하세요.")
+
+
+def legacy_body(meeting, field='final'):
+    lines = []
+    if meeting.get('opening'):
+        lines.extend(['■ 개회선언', meeting['opening']])
+    for a in meeting.get('agendas', []):
+        lines.extend(['■ ' + a['title'], a.get(field, '')])
+        if a.get('decision'):
+            lines.append('결정사항: ' + a['decision'])
+        if a.get('follow_up'):
+            lines.append('후속 조치 / 반영내용: ' + a['follow_up'])
+    if meeting.get('closing'):
+        lines.extend(['■ 폐회선언', meeting['closing']])
+    return '\n\n'.join(lines)
+
+
+def prompt_meeting(meeting):
+    """Convert old input for display only; preserve every original field."""
+    result = copy.deepcopy(meeting)
+    if result.get('version', 1) == 1:
+        result['legacy_source'] = copy.deepcopy(meeting)
+        result.update(version=2, confirmed=False,
+                      quarter=(datetime.strptime(meeting['date'], '%Y-%m-%d').month - 1) // 3 + 1,
+                      final=legacy_body(meeting), draft=legacy_body(meeting, 'draft'))
+        parts = []
+        for a in meeting.get('agendas', []):
+            parts.append('안건: ' + a['title'])
+            for key, label in [('notes', '주요 논의'), ('opinions', '참석자별 의견'),
+                               ('decision', '결정사항'), ('follow_up', '후속 조치'),
+                               ('reference', '참고사항')]:
+                if a.get(key):
+                    parts.append(label + ': ' + a[key])
+        result['prompt'] = '\n\n'.join(parts)
+    return result
+
+
+def period_label(meeting):
+    if meeting.get('version', 1) == 2:
+        return f"{meeting['date'][:4]}년 {meeting['quarter']}분기"
+    return f"{meeting['fiscal_year']}년도 {meeting['session']}"
+
+
+def meeting_body(meeting):
+    return meeting.get('final', '') if meeting.get('version', 1) == 2 else legacy_body(meeting)
+
+
+def attendee_label(person):
+    return person['name'] + (f"({person['position']})" if person['position'].strip() else '')
 
 
 def atomic_json(path, data):
@@ -69,7 +122,7 @@ class MinutesStore:
 
     def load(self, identifier):
         data = json.loads(self._path(identifier).read_text(encoding='utf-8'))
-        if data.get('version') != 1 or data.get('id') != identifier:
+        if data.get('version') not in (1, 2) or data.get('id') != identifier:
             raise ValueError('지원하지 않거나 손상된 회의 데이터입니다.')
         return data
 
@@ -115,24 +168,20 @@ def parse_response(content, meeting):
             text = speech['text']
             if person is None or not isinstance(text, str) or not text.strip():
                 raise ValueError('AI 응답에 미등록 발언자 또는 빈 발언이 있습니다.')
-            lines.append(f"{person['name']}({person['position']}): {text}")
+            lines.append(f"{attendee_label(person)}: {text}")
         result[key] = '\n\n'.join(lines)
     return result
 
 
 def document_text(meeting):
-    lines = ['운영 위원회 회의록', f"{meeting['fiscal_year']}년도 {meeting['session']}",
+    lines = ['운영 위원회 회의록', period_label(meeting),
              meeting['branch_name'], meeting['title'],
              f"{meeting['date']} ({meeting['start']} ~ {meeting['end']})", meeting['place']]
     present = [p for p in meeting['attendees'] if p['present']]
-    lines.append('참석자: ' + ', '.join(f"{p['name']}({p['position']})" for p in present))
+    lines.append('참석자: ' + ', '.join(attendee_label(p) for p in present))
     if not meeting['confirmed']:
         lines.append(NOTICE)
-    lines.extend(['■ 개회선언', meeting['opening']])
-    for a in meeting['agendas']:
-        lines.extend(['■ ' + a['title'], a['final'], '결정사항: ' + a['decision'],
-                      '후속 조치 / 반영내용: ' + a['follow_up']])
-    lines.extend(['■ 폐회선언', meeting['closing']])
+    lines.append(meeting_body(meeting))
     lines.append('운영 위원회 회의 서명 목록')
     lines.extend(f"{i}. {p['position']} / {p['name']} / 서명: __________"
                  for i, p in enumerate(present, 1))
@@ -143,8 +192,10 @@ def export_docx(meeting, destination):
     from docx import Document
     from docx.shared import Pt
     validate(meeting)
-    if not meeting['confirmed'] or any(not a['final'].strip() for a in meeting['agendas']):
-        raise ValueError('안건별 최종 내용을 작성하고 실제 회의 내용 확인을 체크하세요.')
+    missing_content = (not meeting_body(meeting).strip() if meeting.get('version', 1) == 2
+                       else any(not a['final'].strip() for a in meeting['agendas']))
+    if not meeting['confirmed'] or missing_content:
+        raise ValueError('회의록 내용을 작성하고 실제 회의 내용 확인을 체크하세요.')
     destination = Path(destination)
     if destination.suffix.lower() != '.docx':
         raise ValueError('DOCX 확장자로 저장하세요.')
@@ -152,26 +203,17 @@ def export_docx(meeting, destination):
     doc.styles['Normal'].font.name = '맑은 고딕'
     doc.styles['Normal'].font.size = Pt(10)
     doc.add_heading('운영 위원회 회의록', 0)
-    doc.add_paragraph(f"{meeting['fiscal_year']}년도 {meeting['session']} / {meeting['branch_name']}")
+    doc.add_paragraph(f"{period_label(meeting)} / {meeting['branch_name']}")
     present = [p for p in meeting['attendees'] if p['present']]
     when = f"{meeting['date']} ({meeting['start']} ~ {meeting['end']})"
     table = doc.add_table(rows=0, cols=2)
     table.style = 'Table Grid'
-    for label, value in [('회의주제', meeting['title']), ('회의일시', when),
+    for label, value in [('제목', meeting['title']), ('회의일시', when),
                          ('회의장소', meeting['place']), ('참석자명', ', '.join(
-                             f"{p['name']}({p['position']})" for p in present))]:
+                             attendee_label(p) for p in present))]:
         cells = table.add_row().cells
         cells[0].text, cells[1].text = label, value
-    doc.add_heading('개회선언', 1)
-    doc.add_paragraph(meeting['opening'])
-    for a in meeting['agendas']:
-        doc.add_heading(a['title'], 1)
-        doc.add_paragraph(a['final'])
-    doc.add_heading('폐회선언', 1)
-    doc.add_paragraph(meeting['closing'])
-    doc.add_heading('회의결과 및 반영내용', 1)
-    for a in meeting['agendas']:
-        doc.add_paragraph(f"{a['title']}\n결정사항: {a['decision']}\n반영내용: {a['follow_up']}")
+    doc.add_paragraph(meeting_body(meeting))
     doc.add_page_break()
     doc.add_heading('운영 위원회 회의 서명 목록', 0)
     doc.add_paragraph(f"{meeting['branch_name']}\n주제: {meeting['title']}\n회의일시: {when}\n"

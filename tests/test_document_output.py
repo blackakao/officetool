@@ -139,7 +139,7 @@ def test_unified_list_and_settings_remain_separate(tmp_path, monkeypatch):
     hwp.touch()
     (hwp_folder / "maked").mkdir()
     (hwp_folder / "maked" / "output.hwp").touch()
-    assert set(tool._document_files()) == {word, hwp}
+    assert set(tool._document_files()) == {word, tool.document_folder / hwp.name}
     assert tool._document_label(word) == "[Word] same.docx"
     assert tool._document_label(hwp) == "[한글] same.hwp"
     monkeypatch.setattr(document_tool, "user_data_path", lambda name: tmp_path / name)

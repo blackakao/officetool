@@ -5,13 +5,13 @@ import uuid
 from PySide6.QtCore import QDate, QTime, QThread, Signal
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QLabel, QPushButton,
-    QComboBox, QDateEdit, QTimeEdit, QLineEdit, QSpinBox, QTabWidget,
+    QComboBox, QDateEdit, QTimeEdit, QLineEdit, QTabWidget,
     QTableWidget, QTableWidgetItem, QHeaderView, QPlainTextEdit, QCheckBox,
     QMessageBox, QDialog, QDialogButtonBox, QFileDialog, QInputDialog,
 )
 
 from business_planning.minutes import (
-    NOTICE, MinutesStore, new_meeting, new_agenda, validate,
+    NOTICE, MinutesStore, new_meeting, prompt_meeting, validate,
     document_text, export_docx,
 )
 from business_planning.local_ai import generate_local, download_model, model_ready
@@ -54,7 +54,6 @@ class CommitteeMinutesPage(QWidget):
         self.store = store or MinutesStore()
         self.worker = None
         self.meeting = new_meeting()
-        self.agenda_index = -1
         self.dirty = False
         self.loading = False
         root = QVBoxLayout(self)
@@ -77,11 +76,12 @@ class CommitteeMinutesPage(QWidget):
         self.date.setCalendarPopup(True)
         self.date.setDisplayFormat('yyyy-MM-dd')
         self.start, self.end = QTimeEdit(QTime(10, 0)), QTimeEdit(QTime(11, 0))
-        self.year = QSpinBox()
-        self.year.setRange(2000, 2200)
-        self.title, self.place, self.session = QLineEdit(), QLineEdit(), QLineEdit()
-        for label, widget in [('지점', self.branch), ('회계연도', self.year), ('차수', self.session),
-                              ('회의주제', self.title), ('회의일자', self.date), ('시작시간', self.start),
+        self.quarter = QComboBox()
+        for number in range(1, 5):
+            self.quarter.addItem(f'{number}분기', number)
+        self.title, self.place = QLineEdit(), QLineEdit()
+        for label, widget in [('지점', self.branch), ('분기', self.quarter),
+                              ('제목', self.title), ('회의일자', self.date), ('시작시간', self.start),
                               ('종료시간', self.end), ('회의장소', self.place)]:
             form.addRow(label, widget)
         layout.addLayout(form)
@@ -101,34 +101,20 @@ class CommitteeMinutesPage(QWidget):
             buttons.addWidget(b)
         pl.addLayout(buttons)
         self.tabs.addTab(people, '참석자')
-        agenda = QWidget()
-        al = QVBoxLayout(agenda)
-        row = QHBoxLayout()
-        self.agenda_combo = QComboBox()
-        row.addWidget(self.agenda_combo, 1)
-        for text, callback in [('안건 추가', self.add_agenda), ('안건 삭제', self.remove_agenda)]:
-            b = QPushButton(text)
-            b.clicked.connect(callback)
-            row.addWidget(b)
-        al.addLayout(row)
-        self.agenda_fields = {}
-        inner = QTabWidget()
-        for key, label in [('title', '안건명'), ('notes', '주요 논의'), ('opinions', '참석자별 의견'),
-                           ('decision', '결정사항'), ('follow_up', '후속 조치'), ('reference', '참고사항'),
-                           ('final', '내용 편집'), ('draft', 'AI 원본 초안')]:
-            editor = QPlainTextEdit()
-            editor.setReadOnly(key == 'draft')
-            editor.textChanged.connect(self.changed)
-            self.agenda_fields[key] = editor
-            inner.addTab(editor, label)
-        al.addWidget(inner)
-        self.tabs.addTab(agenda, '안건 및 내용 편집')
-        declarations = QWidget()
-        dl = QFormLayout(declarations)
-        self.opening, self.closing = QPlainTextEdit(), QPlainTextEdit()
-        dl.addRow('개회선언', self.opening)
-        dl.addRow('폐회선언', self.closing)
-        self.tabs.addTab(declarations, '개회 / 폐회')
+        writing = QWidget()
+        wl = QVBoxLayout(writing)
+        wl.addWidget(QLabel('프롬프트 — 참석자의 역할·말투와 회의 내용을 자유롭게 적어 주세요.'))
+        self.prompt = QPlainTextEdit()
+        self.prompt.setPlaceholderText(
+            '예: A는 공손한 진행자입니다. B는 외부 인사로 질문과 감사 인사를 합니다. '
+            '2026년 예산의 적법성을 검토하는 회의입니다. 두 사람이 의견을 주고받도록 작성해 주세요.')
+        wl.addWidget(self.prompt, 1)
+        wl.addWidget(QLabel('생성된 회의록 — 직접 수정한 뒤 확인하고 저장하세요.'))
+        self.final_text = QPlainTextEdit()
+        self.final_text.setPlaceholderText('AI가 작성한 대화형 회의록이 표시됩니다. 직접 작성할 수도 있습니다.')
+        wl.addWidget(self.final_text, 2)
+        self.tabs.addTab(writing, '프롬프트 / 회의록')
+        self.tabs.setCurrentWidget(writing)
         self.confirmed = QCheckBox('실제 회의 내용과 참석자 발언·결정사항을 확인하고 수정했습니다.')
         layout.addWidget(self.confirmed)
         bottom = QHBoxLayout()
@@ -144,16 +130,15 @@ class CommitteeMinutesPage(QWidget):
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(self.cancel_generation)
         root.addWidget(self.cancel_button)
-        self.agenda_combo.currentIndexChanged.connect(self.select_agenda)
         self.people.itemChanged.connect(self.changed)
-        for widget in [self.title, self.place, self.session]:
+        for widget in [self.title, self.place]:
             widget.textChanged.connect(self.changed)
-        for widget in [self.opening, self.closing]:
+        for widget in [self.prompt, self.final_text]:
             widget.textChanged.connect(self.changed)
         self.date.dateChanged.connect(self.changed)
         self.start.timeChanged.connect(self.changed)
         self.end.timeChanged.connect(self.changed)
-        self.year.valueChanged.connect(self.changed)
+        self.quarter.currentIndexChanged.connect(self.changed)
         self.branch.currentIndexChanged.connect(self.changed)
         self.confirmed.toggled.connect(lambda: self.mark_dirty())
         self.refresh_branches()
@@ -226,76 +211,36 @@ class CommitteeMinutesPage(QWidget):
                      role=self.people.item(r, 2).text(), present=self.people.cellWidget(r, 3).isChecked())
                 for r in range(self.people.rowCount())]
 
-    def stash_agenda(self):
-        if 0 <= self.agenda_index < len(self.meeting['agendas']):
-            for key, widget in self.agenda_fields.items():
-                self.meeting['agendas'][self.agenda_index][key] = widget.toPlainText()
-            title = self.meeting['agendas'][self.agenda_index]['title'] or '새 안건'
-            self.agenda_combo.setItemText(self.agenda_index, f'{self.agenda_index + 1}. {title}')
-
-    def select_agenda(self, index):
-        self.stash_agenda()
-        self.agenda_index = index
-        old = self.loading
-        self.loading = True
-        for key, editor in self.agenda_fields.items():
-            editor.setPlainText(self.meeting['agendas'][index][key] if index >= 0 else '')
-            editor.setEnabled(index >= 0)
-        self.loading = old
-
-    def refresh_agendas(self, index=0):
-        self.agenda_combo.blockSignals(True)
-        self.agenda_combo.clear()
-        for i, a in enumerate(self.meeting['agendas'], 1):
-            self.agenda_combo.addItem(f"{i}. {a['title'] or '새 안건'}")
-        self.agenda_index = -1
-        index = min(index, len(self.meeting['agendas']) - 1)
-        self.agenda_combo.setCurrentIndex(index)
-        self.agenda_combo.blockSignals(False)
-        self.select_agenda(index)
-
-    def add_agenda(self):
-        self.stash_agenda()
-        self.meeting['agendas'].append(new_agenda())
-        self.refresh_agendas(len(self.meeting['agendas']) - 1)
-        self.changed()
-
-    def remove_agenda(self):
-        if self.agenda_index >= 0 and self.ask('선택 안건과 작성 내용을 삭제할까요?'):
-            del self.meeting['agendas'][self.agenda_index]
-            self.refresh_agendas()
-            self.changed()
-
     def collect(self):
-        self.stash_agenda()
         self.meeting.update(branch_id=self.branch.currentData() or '', branch_name=self.branch.currentText(),
-                            fiscal_year=self.year.value(), date=self.date.date().toString('yyyy-MM-dd'),
+                            fiscal_year=self.date.date().year(), quarter=self.quarter.currentData(),
+                            date=self.date.date().toString('yyyy-MM-dd'),
                             start=self.start.time().toString('HH:mm'), end=self.end.time().toString('HH:mm'),
-                            place=self.place.text(), title=self.title.text(), session=self.session.text(),
-                            attendees=self.attendees(), opening=self.opening.toPlainText(),
-                            closing=self.closing.toPlainText(), confirmed=self.confirmed.isChecked())
+                            place=self.place.text(), title=self.title.text(),
+                            attendees=self.attendees(), prompt=self.prompt.toPlainText(),
+                            final=self.final_text.toPlainText(), confirmed=self.confirmed.isChecked())
         return copy.deepcopy(self.meeting)
 
     def display(self, meeting):
         self.loading = True
-        self.meeting = copy.deepcopy(meeting)
+        meeting = prompt_meeting(meeting)
+        self.meeting = meeting
         index = self.branch.findData(meeting['branch_id'])
         if index < 0:
             self.branch.addItem(meeting['branch_name'] + ' (보관된 지점)', meeting['branch_id'])
             index = self.branch.count() - 1
         self.branch.setCurrentIndex(index)
-        self.year.setValue(meeting['fiscal_year'])
+        self.quarter.setCurrentIndex(self.quarter.findData(meeting['quarter']))
         self.date.setDate(QDate.fromString(meeting['date'], 'yyyy-MM-dd'))
         self.start.setTime(QTime.fromString(meeting['start'], 'HH:mm'))
         self.end.setTime(QTime.fromString(meeting['end'], 'HH:mm'))
-        for key in ['title', 'place', 'session']:
+        for key in ['title', 'place']:
             getattr(self, key).setText(meeting[key])
-        self.opening.setPlainText(meeting['opening'])
-        self.closing.setPlainText(meeting['closing'])
+        self.prompt.setPlainText(meeting['prompt'])
+        self.final_text.setPlainText(meeting['final'])
         self.people.setRowCount(0)
         for p in meeting['attendees']:
             self.add_person(person=p)
-        self.refresh_agendas()
         self.confirmed.setChecked(meeting['confirmed'])
         self.loading = False
         self.dirty = False
@@ -389,8 +334,10 @@ class CommitteeMinutesPage(QWidget):
             settings = self.settings()
             if not model_ready(settings['directory']):
                 raise ValueError('AI 설정에서 내장 모델을 먼저 다운로드하세요.')
-            if any(a['final'] for a in meeting['agendas']) and not self.ask(
-                    '재생성하면 현재 안건별 편집 내용을 교체합니다. 계속할까요?'):
+            if not meeting['prompt'].strip():
+                raise ValueError('회의 내용과 참석자 역할을 프롬프트에 입력하세요.')
+            if meeting['final'].strip() and not self.ask(
+                    '재생성하면 현재 회의록 편집 내용을 교체합니다. 계속할까요?'):
                 return
             self.start_worker(MinutesWorker(meeting, settings, self))
         except Exception as exc:
@@ -414,9 +361,10 @@ class CommitteeMinutesPage(QWidget):
             self.status.setText('취소 중… 모델 로딩 또는 현재 계산 완료 후 중단합니다.')
 
     def apply_result(self, result):
-        for a in self.meeting['agendas']:
-            a['draft'] = a['final'] = result[a['id']]
-        self.refresh_agendas()
+        if self.worker and self.worker.isInterruptionRequested():
+            return
+        self.meeting['draft'] = result
+        self.final_text.setPlainText(result)
         self.changed()
 
     def worker_finished(self):

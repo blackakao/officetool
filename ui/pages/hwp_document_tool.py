@@ -289,10 +289,15 @@ class HwpContentControlDialog(ContentControlDialog):
 
 
 class HwpDocumentTool(DocumentTool):
-    document_folder_name = "document_hwp"
+    document_folder_name = "document"
     document_pattern = "*.hwp"
     settings_filename = "hwp_document_field_settings.json"
     tool_title = "문서 작성 도구(한글)"
+
+    def _document_files(self):
+        from ui.pages.document_storage import unified_document_folder
+        unified_document_folder(self.document_folder.parent)
+        return super()._document_files()
 
     def _create_dialog(self, file_path, mode):
         return HwpContentControlDialog(self, None, file_path, mode=mode)
