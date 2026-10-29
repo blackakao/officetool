@@ -158,7 +158,9 @@ class SelectorConfigDialog(QDialog):
             "짧은 대기는 레거시 동작에서 설정합니다. 반복지점 시작은 특정값 방식으로 고정되며, 동작에서 고정 반복/증가 반복을 고르고 메인값에 반복 횟수 셀렉터를 입력합니다. "
             "조건처리는 메인값에 조건 대상 셀렉터를, 보조값에 비교값을 입력합니다. "
             "텍스트 검증은 요소의 text/value를 읽어 반복번호와 비교하며, XPath에는 {repeat_number+32} 같은 반복식도 사용할 수 있습니다. "
-            "테이블은 기준 행 XPath의 숫자 인덱스를 1씩 올리며 텍스트 숫자를 검증하고 클릭합니다."
+            "테이블은 기준 행 XPath의 숫자 인덱스를 1씩 올리며 텍스트 숫자를 검증하고 클릭합니다. "
+            "테이블 데이터 추출은 메인값에 표 영역 XPath, 보조값에 출력 이름을 입력합니다. "
+            "표 내부를 맨 위부터 끝까지 묶음 스크롤하여 한 작업 XLSX에 표별 시트를 추가합니다. 작업 완료 시 열기를 선택할 수 있습니다."
         )
         guide.setWordWrap(True)
         layout.addWidget(guide)
@@ -184,6 +186,8 @@ class SelectorConfigDialog(QDialog):
             name: selector[name] for name in (
                 "dropdown_xpath", "expected_visible_xpath", "selection_method",
                 "max_key_steps", "timeout", "wait_for_download", "download_timeout",
+                "scroll", "max_scrolls", "skip_empty",
+                "navigation_attempts", "navigation_retry_wait", "stop_branch_on_alert",
             ) if name in selector
         })
 
@@ -212,6 +216,8 @@ class SelectorConfigDialog(QDialog):
             extra_value = selector.get("expected_value", "")
         elif selector.get("type") == "url_navigation":
             extra_value = selector.get("payload", "")
+        elif selector.get("type") == "table_extract":
+            extra_value = selector.get("output_name", "")
         self.table.setItem(row, 4, QTableWidgetItem(extra_value))
 
         action_combo = QComboBox()
@@ -245,7 +251,7 @@ class SelectorConfigDialog(QDialog):
             action_combo = self.table.cellWidget(row, 5)
             is_range = process_type == "repeat_start" and action_combo and action_combo.currentData() == "range"
             by_combo.setEnabled(
-                not is_range and (process_type in {"element", "table", "text_assert", "condition_start"}
+                not is_range and (process_type in {"element", "table", "table_extract", "text_assert", "condition_start"}
                 or process_type == "repeat_start")
             )
             if is_range:
@@ -253,9 +259,11 @@ class SelectorConfigDialog(QDialog):
         if number_cell_item:
             number_cell_item.setFlags(
                 number_cell_item.flags() | Qt.ItemFlag.ItemIsEditable
-                if process_type in {"table", "condition_start", "url_navigation", "element"}
+                if process_type in {"table", "table_extract", "condition_start", "url_navigation", "element"}
                 else number_cell_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
+            if process_type == "table_extract":
+                number_cell_item.setToolTip("작업 XLSX 안의 시트 이름(생략하면 단계 이름). 저장 위치: data/runtime/macro_exports. 작업 완료 시 파일 하나를 엽니다.")
 
     def _row_data(self, row):
         label_item = self.table.item(row, 0)
@@ -285,14 +293,17 @@ class SelectorConfigDialog(QDialog):
             selector["expected_value"] = number_cell_selector
         if process_type == "url_navigation":
             selector["payload"] = number_cell_selector
+        if process_type == "table_extract":
+            selector["output_name"] = number_cell_selector
         metadata = label_item.data(Qt.ItemDataRole.UserRole) if label_item else {}
         if metadata:
             selector.update({
                 name: metadata[name]
-                for name in ("timeout", "wait_for_download", "download_timeout")
+                for name in ("timeout", "wait_for_download", "download_timeout", "scroll", "max_scrolls", "skip_empty",
+                             "navigation_attempts", "navigation_retry_wait", "stop_branch_on_alert")
                 if name in metadata
             })
-        if process_type == "element" and action in {"select_text", "pointer_click"} and label_item:
+        if process_type == "element" and action in {"select_text", "pointer_click", "hover_click"} and label_item:
             selector.update({
                 key: value for key, value in (metadata or {}).items()
                 if key != "timeout"

@@ -1,4 +1,5 @@
 from copy import deepcopy
+import os
 
 from PySide6.QtCore import QThread, Qt, Signal
 from PySide6.QtWidgets import (
@@ -59,7 +60,7 @@ class BranchBatchThread(QThread):
     status_signal = Signal(str)
     summary_signal = Signal(object)
 
-    def __init__(self, branches, login_class, process_class, config_path, template, start_number, invoice=False):
+    def __init__(self, branches, login_class, process_class, config_path, template, start_number, invoice=False, background_mode=False):
         super().__init__()
         self.branches = deepcopy(branches)
         self.login_class = login_class
@@ -68,9 +69,11 @@ class BranchBatchThread(QThread):
         self.template = deepcopy(template)
         self.start_number = start_number
         self.invoice = invoice
+        self.background_mode = background_mode
 
     def run(self):
         results = []
+        export_session = {}
         for index, branch in enumerate(self.branches, 1):
             if self.isInterruptionRequested():
                 break
@@ -82,12 +85,16 @@ class BranchBatchThread(QThread):
             try:
                 # Run both stages in this worker, waiting for run() to fully return.
                 login = self.login_class(branch)
+                login.background_mode = self.background_mode
+                login.require_work_window = True
                 login.finished_signal.connect(lambda message, ok: outcome.__setitem__(slice(None), [message, ok]), Qt.DirectConnection)
                 login.run()
                 if not outcome[1] or not getattr(login, "driver", None):
                     raise ValueError(outcome[0])
                 process = self.process_class(login.driver, branch, self.config_path, self.template,
                                              use_invoice_fallback=self.invoice, start_number=self.start_number)
+                process.export_session = export_session
+                process.background_mode = self.background_mode
                 outcome[:] = ["매크로 결과를 받지 못했습니다.", False]
                 process.status_signal.connect(self.status_signal.emit, Qt.DirectConnection)
                 process.finished_signal.connect(lambda message, ok: outcome.__setitem__(slice(None), [message, ok]), Qt.DirectConnection)
@@ -105,6 +112,20 @@ class BranchBatchThread(QThread):
                         outcome[:] = [f"브라우저 종료 실패, 다음 지점 실행 중단: {exc}", False]
             results.append({"branch": name, "success": outcome[1], "message": outcome[0]})
             self.status_signal.emit(f"[{name}] {'완료' if outcome[1] else '실패'}: {outcome[0]}")
+            if login is not None and getattr(login, 'environment_error', False):
+                self.status_signal.emit('[batch_environment_error] PC 보안 프로그램/브라우저 연결 문제로 남은 지점 실행을 중단합니다.')
+                break
             if close_failed:
                 break
+        workbook = export_session.get('workbook')
+        if workbook is not None and workbook.datasets:
+            self.status_signal.emit(f"[batch_export] 다중 지점 누적 XLSX 저장: {workbook.path}")
+            if self.background_mode:
+                self.status_signal.emit(f"[table_open] 백그라운드 실행: 자동 열기 생략, 저장 위치: {workbook.path}")
+            elif export_session.get('open_requested'):
+                try:
+                    os.startfile(str(workbook.path))
+                    self.status_signal.emit(f"[table_open] 다중 지점 XLSX 열기 요청 완료: {workbook.path}")
+                except OSError as exc:
+                    self.status_signal.emit(f"[table_open] XLSX는 저장되었으나 열지 못했습니다: {workbook.path} ({exc})")
         self.summary_signal.emit(results)

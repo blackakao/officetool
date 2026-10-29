@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re
+from datetime import date, timedelta
 from pathlib import Path
 
 from selenium.webdriver.common.by import By
@@ -34,6 +35,7 @@ PROCESS_TYPES = {
     "url_navigation": "URL 이동",
     "element": "엘레멘트",
     "table": "테이블",
+    "table_extract": "테이블 데이터 추출",
     "text_assert": "텍스트 검증",
     "alert": "alert",
     "confirm": "confirm",
@@ -52,6 +54,7 @@ PROCESS_ACTIONS = {
     "url_navigation": {"navigate": "이동"},
     "element": {**ACTION_TYPES, "input_text": "값 입력 (검증)", "select_text": "텍스트로 옵션 선택 (검증)", "pointer_click": "마우스로 클릭 후 화면 확인"},
     "table": {"verify_click_increment": "증가 검증 후 클릭"},
+    "table_extract": {"save_xlsx": "작업 XLSX에 시트 추가", "save_xlsx_open": "시트 추가 후 작업 완료 시 XLSX 열기"},
     "text_assert": {
         "equals_repeat_number": "반복번호와 일치",
         "contains_repeat_number": "반복번호 포함",
@@ -80,6 +83,7 @@ PROCESS_ACTIONS = {
         "contains_value": "조건값 포함",
         "equals_repeat_number": "반복번호와 일치",
         "contains_repeat_number": "반복번호 포함",
+        "element_clickable": "클릭 가능한 요소 있음 (없으면 거짓)",
     },
     "condition_true": {"branch": "참 구역"},
     "condition_false": {"branch": "거짓 구역"},
@@ -293,6 +297,7 @@ def apply_runtime_context(selector: dict, context: dict | None = None) -> dict:
             value,
         )
         replacements = {
+            "{selected_month}": str(context.get("selected_month", "{selected_month}")),
             "{repeat_value}": str(context.get("repeat_value", context.get("repeat_number", ""))),
             "{repeat_index}": str(context.get("repeat_index", 0)),
             "{repeat_number}": str(context.get("repeat_number", 1)),
@@ -301,6 +306,17 @@ def apply_runtime_context(selector: dict, context: dict | None = None) -> dict:
             value = value.replace(placeholder, replacement)
         result["value"] = value
     return result
+
+
+def selected_month_value(value=None, today=None):
+    """A missing choice means the previous calendar month, including January."""
+    if not value:
+        current = today or date.today()
+        return (current.replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
+    if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}", value):
+        raise ValueError(f"특정월 형식은 YYYY-MM이어야 합니다: {value}")
+    date.fromisoformat(value + "-01")
+    return value
 
 
 def english_task_stem(label):

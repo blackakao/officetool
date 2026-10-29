@@ -18,6 +18,12 @@
             "config_file": "federation_selectors_payroll_download.json",
             "template_name": "selector",
             "implemented": true
+        },
+        "adjustment_analysis": {
+            "label": "가감산 데이터 분석하기",
+            "config_file": "federation_selectors_adjustment_analysis.json",
+            "template_name": "empty",
+            "implemented": true
         }
     },
     "deleted_task_keys": []

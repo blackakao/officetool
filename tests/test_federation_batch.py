@@ -42,7 +42,7 @@ def test_branch_selection_defaults_all_in_display_order(app):
     dialog.close()
 
 
-@pytest.mark.parametrize("failure", [None, "login", "macro", "close", "stop"])
+@pytest.mark.parametrize("failure", [None, "login", "macro", "close", "stop", "environment"])
 def test_batch_order_cleanup_failures_and_stop(app, failure):
     events, summaries = [], []
 
@@ -66,7 +66,8 @@ def test_batch_order_cleanup_failures_and_stop(app, failure):
         def run(self):
             name = self.branch["branch_name"]
             events.append((name, "login"))
-            self.finished_signal.emit("login", not (failure == "login" and name == "A"))
+            self.environment_error = failure == 'environment'
+            self.finished_signal.emit("login", not (failure in {"login", "environment"} and name == "A"))
 
     class Process(QThread):
         finished_signal = Signal(str, bool)
@@ -96,14 +97,14 @@ def test_batch_order_cleanup_failures_and_stop(app, failure):
     assert summaries
     assert events[0] == ("A", "login")
     assert ("A", "quit") in events
-    if failure in {"close", "stop"}:
+    if failure in {"close", "stop", "environment"}:
         assert not any(event[0] == "B" for event in events)
     else:
         assert events.index(("A", "quit")) < events.index(("B", "login"))
         assert events[-1] == ("B", "quit")
-    if failure != "login":
+    if failure not in {"login", "environment"}:
         assert ("A", "macro", 7) in events
-    if failure in {"login", "macro", "close"}:
+    if failure in {"login", "macro", "close", "environment"}:
         assert not summaries[0][0]["success"]
 
 
@@ -141,6 +142,65 @@ def test_open_batch_cancel_does_not_launch(app, tmp_path, monkeypatch):
     page.open_batch_dialog()
     assert page.batch_thread is None
     page.close()
+
+
+@pytest.mark.parametrize('background', [False, True])
+def test_batch_shares_workbook_preserves_failed_branch_and_opens_once(app, tmp_path, monkeypatch, background):
+    from unittest.mock import Mock
+    from openpyxl import load_workbook
+    from ui.pages import federation_batch as batch_module
+    from ui.pages.macro_table_extract import TableWorkbook
+
+    opened = Mock()
+    monkeypatch.setattr(batch_module.os, 'startfile', opened)
+    sessions, summaries = [], []
+
+    class Login(QThread):
+        finished_signal = Signal(str, bool)
+
+        def __init__(self, branch):
+            super().__init__()
+            self.driver = Mock()
+
+        def run(self):
+            assert self.background_mode == background
+            self.finished_signal.emit('ok', True)
+
+    class Process(QThread):
+        status_signal = Signal(str)
+        finished_signal = Signal(str, bool)
+
+        def __init__(self, driver, branch, *args, **kwargs):
+            super().__init__()
+            self.name = branch['branch_name']
+
+        def run(self):
+            assert self.background_mode == background
+            sessions.append(self.export_session)
+            if 'workbook' not in self.export_session:
+                self.export_session['workbook'] = TableWorkbook(tmp_path, 'batch')
+            self.export_session['workbook'].add_branch({'rows': [['001']]}, '직원', 'staff', self.name)
+            self.export_session['open_requested'] = True
+            self.finished_signal.emit('partial' if self.name == 'B' else 'ok', self.name != 'B')
+
+    worker = BranchBatchThread([{'branch_name': name} for name in ['A', 'B', 'C']],
+                               Login, Process, Path('unused.json'), {}, 1, background_mode=background)
+    worker.summary_signal.connect(summaries.append)
+    worker.run()
+    assert all(session is sessions[0] for session in sessions)
+    assert [result['success'] for result in summaries[0]] == [True, False, True]
+    files = list(tmp_path.glob('*.xlsx'))
+    assert len(files) == 1
+    if background:
+        opened.assert_not_called()
+    else:
+        opened.assert_called_once_with(str(files[0]))
+    saved = load_workbook(files[0])
+    try:
+        assert len(saved.sheetnames) == 1
+        assert list(saved.active.values) == [('지점명', '열 1'), ('A', '001'), ('B', '001'), ('C', '001')]
+    finally:
+        saved.close()
 
 
 @pytest.mark.parametrize("accepted,confirmed", [(False, False), (True, False), (True, True)])

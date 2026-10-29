@@ -1,6 +1,7 @@
 from data_paths import user_data_path
 import json
 import os
+import subprocess
 import time
 from urllib.parse import urlsplit
 from pathlib import Path
@@ -179,10 +180,15 @@ class BaseLoginThread(QThread):
         self.driver = None
         self.profile_path = profile_path
         self.keep_browser_on_error = False
+        self.background_mode = False
 
     def _create_driver(self):
         options = webdriver.ChromeOptions()
-        options.add_argument("--start-maximized")
+        if self.background_mode:
+            options.add_argument("--headless=new")
+            options.add_argument("--window-size=1920,1080")
+        else:
+            options.add_argument("--start-maximized")
         download_dir = Path.home() / "Downloads"
         download_dir.mkdir(parents=True, exist_ok=True)
         options.add_experimental_option("prefs", {
@@ -194,8 +200,9 @@ class BaseLoginThread(QThread):
         })
 
         if self.profile_path:
-            self.profile_path.mkdir(parents=True, exist_ok=True)
-            options.add_argument(f"--user-data-dir={self.profile_path}")
+            profile = self.profile_path.with_name(self.profile_path.name + '_headless') if self.background_mode else self.profile_path
+            profile.mkdir(parents=True, exist_ok=True)
+            options.add_argument(f"--user-data-dir={profile}")
 
         driver_path = Path(ChromeDriverManager().install())
         if not driver_path.name.lower().endswith(".exe"):
@@ -209,13 +216,14 @@ class BaseLoginThread(QThread):
                 else:
                     raise FileNotFoundError(f"chromedriver 실행 파일을 찾을 수 없습니다: {driver_path.parent}")
 
-        return webdriver.Chrome(
-            service=ChromeService(str(driver_path)),
-            options=options,
-        )
+        service = ChromeService(str(driver_path))
+        if self.background_mode and os.name == 'nt':
+            service.creation_flags = subprocess.CREATE_NO_WINDOW
+        return webdriver.Chrome(service=service, options=options)
 
     def run(self):
         self.success = False
+        self.environment_error = False
         try:
             self.driver = self._create_driver()
             self.prepare_browser()
@@ -223,12 +231,20 @@ class BaseLoginThread(QThread):
             wait = WebDriverWait(self.driver, 30)
             self.perform_login(wait)
             self.success = True
+        except LoginSecurityUnavailable as e:
+            self.environment_error = True
+            self.finished_signal.emit(str(e), False)
         except TimeoutException:
             self.finished_signal.emit("페이지 로딩 또는 입력 필드 활성화에 실패했습니다.", False)
         except FileNotFoundError as e:
             self.finished_signal.emit(f"ChromeDriver 실행 파일을 찾을 수 없습니다: {e}", False)
         except WebDriverException as e:
-            self.finished_signal.emit(f"Chrome 자동화 실패: {e}", False)
+            text = getattr(e, 'alert_text', '') or str(e)
+            if security_install_notice(text):
+                self.environment_error = True
+                self.finished_signal.emit(security_unavailable_message(self.background_mode), False)
+            else:
+                self.finished_signal.emit(f"Chrome 자동화 실패: {e}", False)
         except Exception as e:
             self.finished_signal.emit(f"알 수 없는 오류: {e}", False)
         finally:
@@ -508,6 +524,21 @@ class CareforLoginThread(BaseLoginThread):
         self.finished_signal.emit("케어포 로그인 필드 입력 및 버튼 클릭을 완료했습니다.", True)
 
 
+class LoginSecurityUnavailable(RuntimeError):
+    """The PC/browser environment cannot communicate with certificate security."""
+
+
+def security_install_notice(text):
+    return 'anysign' in str(text).lower() and '설치' in str(text)
+
+
+def security_unavailable_message(background):
+    mode = '백그라운드' if background else '화면 표시'
+    return (f"[{mode}] AnySign 인증 보안 프로그램 연결을 확인하지 못했습니다. "
+            "실제 미설치 또는 브라우저의 로컬 보안 프로그램 연결 차단일 수 있습니다. "
+            "설치 페이지로 반복 이동하지 않고 중단합니다. 화면 표시 모드에서 보안 프로그램과 사이트 권한을 확인하세요.")
+
+
 class LongtermLoginThread(BaseLoginThread):
     def __init__(self, branch: dict):
         profile_path = Path(__file__).resolve().parents[2] / "data" / "chrome_profiles" / "gongdan"
@@ -525,6 +556,8 @@ class LongtermLoginThread(BaseLoginThread):
 
         try:
             alert = wait.until(EC.alert_is_present())
+            if security_install_notice(alert.text):
+                raise LoginSecurityUnavailable(security_unavailable_message(self.background_mode))
             alert.accept()
         except TimeoutException:
             pass
@@ -550,12 +583,48 @@ class LongtermLoginThread(BaseLoginThread):
         webdriver.ActionChains(self.driver).send_keys_to_element(user_pwd, certificate_password).perform()
 
         self._wait_and_click(wait, (By.ID, 'xwup_OkButton'))
-        try:
-            WebDriverWait(self.driver, 2).until(
-                lambda d: d.find_elements(By.XPATH, "//*[contains(@id, 'mainframe.VFrameSet.frameTop')]")
-            )
-        except TimeoutException:
-            log("LoginTool", "공단 메인 프레임 확인 대기 2초 초과 - 자동화 단계로 계속 진행합니다.", level="WARNING")
+        if getattr(self, 'require_work_window', False):
+            self._wait_for_work_window()
+        else:
+            try:
+                WebDriverWait(self.driver, 2).until(
+                    lambda d: d.find_elements(By.XPATH, "//*[contains(@id, 'mainframe.VFrameSet.frameTop')]")
+                )
+            except TimeoutException:
+                log("LoginTool", "공단 메인 프레임 확인 대기 2초 초과 - 로그인 절차를 완료합니다.", level="WARNING")
 
         self.finished_signal.emit("롱텀 공단 로그인 절차를 완료했습니다.", True)
+
+    def _wait_for_work_window(self):
+        visited = set()
+        selected = [None]
+
+        def ready(driver):
+            handles = driver.window_handles
+            if selected[0] not in handles:
+                selected[0] = None
+            if selected[0] is None and '/npbs/xui/manage.html' in driver.current_url:
+                selected[0] = driver.current_window_handle
+            if selected[0] is None:
+                for handle in handles:
+                    if handle in visited:
+                        continue
+                    visited.add(handle)
+                    if driver.current_window_handle != handle:
+                        driver.switch_to.window(handle)
+                    if '/npbs/xui/manage.html' in driver.current_url:
+                        selected[0] = handle
+                        break
+            if selected[0] is None:
+                return False
+            if driver.current_window_handle != selected[0]:
+                driver.switch_to.window(selected[0])
+            elements = driver.find_elements(By.XPATH, "//*[contains(@id, 'mainframe.VFrameSet.frameTop')]")
+            if any(element.is_displayed() for element in elements):
+                driver._longterm_work_handle = selected[0]
+                return True
+            return False
+
+        WebDriverWait(self.driver, 60, poll_frequency=0.25).until(
+            ready, '공단 업무 창이 준비되지 않아 로그인 완료로 처리하지 않습니다.')
 

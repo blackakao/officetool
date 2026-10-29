@@ -144,12 +144,14 @@ def test_explicit_dropdown_xpath_is_used():
 def test_pointer_click_checks_hit_target_and_sends_mouse_sequence():
     from unittest.mock import patch
     runner = processor(field())
+    runner.timeout = 2
     target = field()
     runner.driver.execute_script.return_value = {'ready': True}
     with patch('ui.pages.federation_tool.ActionChains') as actions:
         InvoiceProcessor.pointer_click(runner, target, 'dropdown')
     actions.return_value.move_to_element.assert_called_once_with(target)
-    actions.return_value.move_to_element.return_value.click_and_hold.assert_called_once()
+    actions.return_value.move_to_element.return_value.perform.assert_called_once()
+    actions.return_value.click_and_hold.assert_called_once_with()
 
 
 def test_generation_waits_for_next_screen_after_pointer_click():

@@ -1,17 +1,24 @@
 from data_paths import user_data_path
 import json
+import os
 import re
 import time
 from copy import deepcopy
 from contextlib import contextmanager
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, Signal
+from ui.pages.macro_table_extract import (
+    GRID_ROOT_SCRIPT, SCROLL_SCRIPT, TABLE_SCRIPT, TableWorkbook, collect_scrolled_table,
+    table_wheel_events,
+)
+
+from PySide6.QtCore import QDate, Qt, QThread, Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QCheckBox,
     QDialog,
     QDialogButtonBox,
+    QDateEdit,
     QGridLayout,
     QHBoxLayout,
     QLabel,
@@ -25,6 +32,7 @@ from PySide6.QtWidgets import (
 )
 
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, UnexpectedAlertPresentException, ElementClickInterceptedException, NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
@@ -33,6 +41,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from ui.pages.login_tool import BrowserCloseMonitor, LongtermLoginThread
+from ui.pages.federation_config import selected_month_value
 from ui.pages.logging_util import log, should_log_message
 from ui.pages.branch_task_settings import filter_branches_for_task
 from ui.pages.federation_batch import BranchBatchDialog, BranchBatchThread
@@ -130,9 +139,21 @@ class FederationTool(QWidget):
         self.run_start_number_spin.setToolTip("지점 버튼을 누르기 전에 지정하세요. 전체 실행은 1입니다.")
         toolbar.addWidget(self.run_start_number_spin)
         self.run_start_number_spin.valueChanged.connect(self.save_start_number)
+        toolbar.addWidget(QLabel("특정월"))
+        self.selected_month_edit = QDateEdit()
+        self.selected_month_edit.setDisplayFormat("yyyy-MM")
+        self.selected_month_edit.setCalendarPopup(True)
+        self.selected_month_edit.setDate(QDate.fromString(selected_month_value() + "-01", "yyyy-MM-dd"))
+        self.selected_month_edit.setToolTip("달력에서 선택한 연월을 {selected_month}로 사용합니다. 미설정 시 전월이 기본값입니다.")
+        toolbar.addWidget(self.selected_month_edit)
+        self.selected_month_edit.dateChanged.connect(self.save_selected_month)
         self.batch_button = QPushButton("다중 지점 선택")
         self.batch_button.clicked.connect(self.open_batch_dialog)
         toolbar.addWidget(self.batch_button)
+        self.background_check = QCheckBox("백그라운드 실행")
+        self.background_check.setToolTip("로그인부터 화면 없는 Chrome으로 실행합니다. 완료 후 파일 자동 열기를 생략하고 브라우저를 종료합니다.")
+        self.background_check.toggled.connect(self.save_background_mode)
+        toolbar.addWidget(self.background_check)
         toolbar.addStretch()
         l2_layout.addLayout(toolbar)
         self.popup_recovery_check = QCheckBox("예상치 못한 팝업/얼렛/프롬프트를 닫고 계속 진행")
@@ -317,7 +338,32 @@ class FederationTool(QWidget):
             config["dismiss_unexpected_popups"] = checked
             save_selector_config(self._selector_config_path(self.current_task), config)
 
+    def save_selected_month(self, *_args):
+        if not self.current_task:
+            return
+        path = self._selector_config_path(self.current_task)
+        config = ensure_selector_config(path, self.task_configs[self.current_task]["template"])
+        config["selected_month"] = self.selected_month_edit.date().toString("yyyy-MM")
+        save_selector_config(path, config)
+
+    def save_background_mode(self, checked):
+        if not self.current_task:
+            return
+        path = self._selector_config_path(self.current_task)
+        config = ensure_selector_config(path, self.task_configs[self.current_task]['template'])
+        config.setdefault('browser', {})['headless'] = bool(checked)
+        save_selector_config(path, config)
+
     def load_range_settings(self, config):
+        self.background_check.blockSignals(True)
+        self.background_check.setChecked(bool(config.get('browser', {}).get('headless', False)))
+        self.background_check.blockSignals(False)
+        self.selected_month_edit.blockSignals(True)
+        try:
+            month = selected_month_value(config.get("selected_month"))
+            self.selected_month_edit.setDate(QDate.fromString(month + "-01", "yyyy-MM-dd"))
+        finally:
+            self.selected_month_edit.blockSignals(False)
         self.popup_recovery_check.blockSignals(True)
         self.popup_recovery_check.setChecked(bool(config.get("dismiss_unexpected_popups", False)))
         self.popup_recovery_check.blockSignals(False)
@@ -361,6 +407,7 @@ class FederationTool(QWidget):
             self.range_hint.setText(str(exc))
 
     def validate_run_range(self):
+        self.save_selected_month()
         self.save_range_settings()
         config = ensure_selector_config(self._selector_config_path(self.current_task), self.task_configs[self.current_task]["template"])
         if any(step.get("repeat_mode") == "range" for step in config["selectors"].values()):
@@ -387,6 +434,7 @@ class FederationTool(QWidget):
             dialog.selected_branches(), self.login_thread_class, ClaimProcessThread,
             self._selector_config_path(self.current_task), task["template"], self.run_start_number_spin.value(),
             invoice=self.current_task == "invoice",
+            background_mode=self.background_check.isChecked(),
         )
         self.batch_thread.status_signal.connect(self._log)
         self.batch_thread.summary_signal.connect(self._batch_summary)
@@ -549,6 +597,9 @@ class FederationTool(QWidget):
         selected_config_file = self.selector_config_file
 
         login_thread = self.login_thread_class(branch)
+        login_thread.background_mode = self.background_check.isChecked()
+        login_thread.require_work_window = True
+        self._log("로그인부터 백그라운드 실행을 시작합니다." if login_thread.background_mode else "화면 표시 모드로 실행합니다.")
         login_thread.macro_start_number = self.run_start_number_spin.value()
         self._log(f"이번 실행 시작번호: {login_thread.macro_start_number}")
         login_thread.finished_signal.connect(
@@ -578,6 +629,7 @@ class FederationTool(QWidget):
             use_invoice_fallback=(task == "invoice"),
             start_number=getattr(login_thread, "macro_start_number", None),
         )
+        claim_thread.background_mode = getattr(login_thread, 'background_mode', False)
         self._log(f"윈도우 전환 준비: handles={driver.window_handles}, current_url={driver.current_url}")
 
         def _update_status(s):
@@ -587,7 +639,14 @@ class FederationTool(QWidget):
         def _on_finished(m, ok):
             self.status_label.setText(m)
             self._log(m, level=("INFO" if ok else "ERROR"))
-            self._watch_browser(driver)
+            if claim_thread.background_mode:
+                try:
+                    driver.quit()
+                    self._log("백그라운드 브라우저를 종료했습니다.")
+                except Exception as exc:
+                    self._log(f"백그라운드 브라우저 종료 실패: {exc}", level='ERROR')
+            else:
+                self._watch_browser(driver)
 
         claim_thread.status_signal.connect(_update_status)
         claim_thread.finished_signal.connect(_on_finished)
@@ -633,6 +692,10 @@ class FederationTool(QWidget):
             scroll_bar.setValue(scroll_bar.maximum())
 
 
+class BranchWorkflowStopped(Exception):
+    """A configured notice ends only the current branch's remaining workflow."""
+
+
 class TimedWebDriverWait(WebDriverWait):
     def __init__(self, owner, timeout):
         interval = float(owner.config.get("performance", {}).get("poll_interval", 0.5))
@@ -643,12 +706,14 @@ class TimedWebDriverWait(WebDriverWait):
         with self.owner.measure_time("element_wait", f"timeout={self._timeout}s"):
             def guarded(driver):
                 try:
+                    self.owner.check_branch_stop_alert()
                     if getattr(self.owner, "_popup_recovery_active", False) and getattr(self.owner, "_popup_recovery_count", 0) < 3:
                         if dismiss_native_alert(driver, self.owner._log):
                             self.owner._popup_recovery_count += 1
                             return False
                     return method(driver)
                 except UnexpectedAlertPresentException as exc:
+                    self.owner.check_branch_stop_alert(getattr(exc, 'alert_text', None))
                     if getattr(self.owner, "_popup_recovery_active", False) and getattr(self.owner, "_popup_recovery_count", 0) < 3:
                         self.owner._log("[popup_recovery] WebDriver가 예상하지 못한 대화상자를 보고했습니다. 닫힘 상태 확인 후 요소 탐색을 계속합니다.")
                         self.owner.recover_unexpected_popups()
@@ -676,6 +741,7 @@ class InvoiceProcessor:
         self.last_table_selector = None
         self.last_table_expected_number = None
         self.download_dir = Path.home() / "Downloads"
+        self.export_workbook_name = config_path.stem
 
     def _log(self, message):
         self.status_callback(message)
@@ -1014,6 +1080,9 @@ class InvoiceProcessor:
                     return element
             except (NoSuchElementException, StaleElementReferenceException):
                 pass
+            if getattr(self, 'config', {}).get('performance', {}).get('context_scope') == 'current':
+                log_context(f"[context_pinned] {key}: 현재 업무 창·프레임에서만 대기합니다.")
+                return False
             now = time.monotonic()
             if now - last_scan[0] < scan_interval:
                 return False
@@ -1042,7 +1111,9 @@ class InvoiceProcessor:
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
         try:
             element.click()
-        except Exception:
+        except Exception as exc:
+            if isinstance(exc, UnexpectedAlertPresentException):
+                self.check_branch_stop_alert(getattr(exc, 'alert_text', None))
             self.driver.execute_script("arguments[0].click();", element)
 
     def download_state(self):
@@ -1084,8 +1155,19 @@ class InvoiceProcessor:
 
     def pointer_click(self, element, key):
         last_state = None
+        clicked = False
+        stable_since = None
+        stable_rect = None
+        moved = False
         def ready(driver):
-            nonlocal last_state
+            nonlocal last_state, stable_since, stable_rect, moved, clicked
+            completion_xpath = getattr(self, '_pointer_completion_xpath', None)
+            if completion_xpath:
+                try:
+                    if EC.visibility_of_element_located((By.XPATH, completion_xpath))(driver):
+                        return True
+                except (NoSuchElementException, StaleElementReferenceException):
+                    pass
             state = driver.execute_script("""
                 const el = arguments[0], r = el.getBoundingClientRect();
                 const hit = document.elementFromPoint(r.left + r.width/2, r.top + r.height/2);
@@ -1093,16 +1175,39 @@ class InvoiceProcessor:
                 for (let p = el; p; p = p.parentElement) {
                     if (p.getAttribute('aria-disabled') === 'true' || p.getAttribute('status') === 'disabled') disabled = true;
                 }
-                return {ready: !!hit && !disabled && (hit === el || el.contains(hit)),
+                return {ready: el.isConnected && !!hit && !disabled && r.width > 0 && r.height > 0 && (hit === el || el.contains(hit)),
+                        rect: [r.left, r.top, r.width, r.height].map(v => Math.round(v)),
                         target: el.id, hit: hit ? hit.id : '', disabled};
             """, element)
             if state != last_state:
                 self._log(f"[pointer_ready] {key}: {state}")
                 last_state = state
-            return state.get("ready") and element.is_enabled()
+            if not state.get("ready") or not element.is_enabled():
+                stable_since = None
+                moved = False
+                return False
+            now = time.monotonic()
+            rect = state.get("rect")
+            if stable_since is None or rect != stable_rect:
+                stable_since, stable_rect, moved = now, rect, False
+                return False
+            if now - stable_since < 0.4:
+                return False
+            if not moved:
+                ActionChains(self.driver).move_to_element(element).perform()
+                self._log(f"[pointer_hover] {key}: 마우스 이동 후 대상 안정 상태 재확인")
+                stable_since = time.monotonic()
+                moved = True
+                return False
+            # No second move: mouseover can trigger another redraw/loading mask.
+            # This poll has just verified the hit target and its stable position.
+            ActionChains(self.driver, duration=0).click_and_hold().pause(0.08).release().perform()
+            clicked = True
+            return True
         TimedWebDriverWait(self, self.timeout).until(ready)
-        ActionChains(self.driver).move_to_element(element).click_and_hold().pause(0.08).release().perform()
-        self._log(f"[pointer_click] {key}: mouse down/up completed")
+        self._log(f"[pointer_click] {key}: mouse down/up completed" if clicked else
+                  f"[pointer_skip] {key}: 다음 화면이 이미 표시되어 배경 버튼 클릭 생략")
+        return clicked
 
     def perform_action(self, key, element):
         action = self.config.get("selectors", {}).get(key, {}).get("action", "click")
@@ -1113,8 +1218,18 @@ class InvoiceProcessor:
         elif action == "hover_click":
             self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
             ActionChains(self.driver).move_to_element(element).perform()
-            self.sleep(0.2)
-            self.click_element(element)
+            expected = self.config.get('selectors', {}).get(key, {}).get('expected_visible_xpath')
+            if expected:
+                target = EC.visibility_of_element_located((By.XPATH, expected))
+                try:
+                    TimedWebDriverWait(self, self.timeouts.get('short', 3)).until(target)
+                    self._log(f"[menu_ready] {key}: 호버로 메뉴 표시됨, 토글 클릭 생략")
+                except TimeoutException:
+                    self.click_element(element)
+                    TimedWebDriverWait(self, self.timeout).until(target)
+            else:
+                self.sleep(0.2)
+                self.click_element(element)
         else:
             self.click_element(element)
         self._log(f"[action] {key}: {action}")
@@ -1704,12 +1819,15 @@ class InvoiceProcessor:
         return success_count
 
     def run_selector_step(self, key, selector, context=None):
+        if selector.get('stop_branch_on_alert'):
+            self._branch_stop_alert_text = selector['stop_branch_on_alert']
+        self.check_branch_stop_alert()
         previous = getattr(self, "_timing_step", "-")
         self._timing_step = key
         self._popup_recovery_active = self.config.get("dismiss_unexpected_popups", False) and selector.get("type", "element") not in {"alert", "confirm", "prompt", "window"}
         self._popup_recovery_count = 0
         if self._popup_recovery_active:
-            self._popup_target_locator = build_locator(apply_runtime_context(selector, context)) if selector.get("type", "element") in {"element", "table", "text_assert"} else None
+            self._popup_target_locator = build_locator(apply_runtime_context(selector, context)) if selector.get("type", "element") in {"element", "table", "table_extract", "text_assert"} else None
             if not hasattr(self, "_popup_known_handles"):
                 self._popup_known_handles = set(self.driver.window_handles)
             self._popup_protected_handles = self._popup_known_handles
@@ -1721,12 +1839,36 @@ class InvoiceProcessor:
                     if not self.recover_unexpected_popups():
                         raise
                     return self._run_selector_step(key, selector, context)
+                except UnexpectedAlertPresentException as exc:
+                    self.check_branch_stop_alert(getattr(exc, 'alert_text', None))
+                    raise
         finally:
             self._timing_step = previous
             self._popup_recovery_active = False
 
+    def check_branch_stop_alert(self, reported_text=None):
+        keyword = getattr(self, '_branch_stop_alert_text', None)
+        if not keyword:
+            return
+        alert = None
+        try:
+            alert = EC.alert_is_present()(self.driver)
+            text = alert.text if alert else (reported_text or '')
+        except NoAlertPresentException:
+            text = reported_text or ''
+        if keyword not in text:
+            return
+        if alert:
+            alert.accept()
+            self._log(f"[branch_stop_alert] 확인 클릭: {text}")
+        else:
+            self._log(f"[branch_stop_alert] WebDriver가 보고한 알림 감지: {text}")
+        raise BranchWorkflowStopped(text)
+
     def _run_selector_step(self, key, selector, context=None):
         process_type = selector.get("type", "element")
+        if process_type == "table_extract":
+            return self.extract_table(key, selector, context)
         if process_type == "url_navigation":
             base_url = str(selector.get("value", "")).strip()
             payload = str(selector.get("payload", ""))
@@ -1740,20 +1882,7 @@ class InvoiceProcessor:
             if selector.get("action") == "input_text":
                 return self.input_field_text(key, selector, context)
             if selector.get("action") == "pointer_click":
-                locator = build_locator(apply_runtime_context(selector, context))
-                element = self.wait_clickable_context(
-                    key,
-                    locator,
-                    self.selector_timeout(selector),
-                )
-                self.pointer_click(element, key)
-                expected_xpath = selector.get("expected_visible_xpath")
-                if expected_xpath:
-                    self._log(f"[screen_wait] {key}: click sent, waiting for next screen")
-                    TimedWebDriverWait(self, self.timeouts.get("long", 60)).until(
-                        EC.visibility_of_element_located((By.XPATH, expected_xpath)))
-                    self._log(f"[screen_ready] {key}: next screen visible")
-                return True
+                return self.run_pointer_step(key, selector, context)
             if selector.get("action") == "select_text":
                 return self.select_field_text(key, selector, context)
             download_state = self.download_state() if selector.get("wait_for_download") else None
@@ -1780,6 +1909,45 @@ class InvoiceProcessor:
             self._log(f"[workflow_skip] {key}: repeat marker")
             return None
         raise ValueError(f"지원하지 않는 처리 종류입니다: {key} ({process_type})")
+
+    def run_pointer_step(self, key, selector, context=None):
+        locator = build_locator(apply_runtime_context(selector, context))
+        expected_xpath = selector.get('expected_visible_xpath')
+        label = selector.get('label', key)
+        attempts = max(1, min(3, int(selector.get('navigation_attempts', 1)))) if expected_xpath else 1
+        timeout = float(self.timeouts.get('long', 60))
+        retry_wait = min(float(selector.get('navigation_retry_wait', 5)), timeout / attempts)
+        for attempt in range(attempts):
+            if attempt:
+                self.check_branch_stop_alert()
+                try:
+                    if EC.visibility_of_element_located((By.XPATH, expected_xpath))(self.driver):
+                        return True
+                except (NoSuchElementException, StaleElementReferenceException):
+                    pass
+                self._log(f"[navigation_retry] {key} ({label}): 다음 화면 미표시, 이동 재시도 {attempt + 1}/{attempts}")
+            element = self.wait_clickable_context(key, locator, self.selector_timeout(selector))
+            previous_completion = getattr(self, '_pointer_completion_xpath', None)
+            self._pointer_completion_xpath = expected_xpath if attempts > 1 else None
+            try:
+                self.pointer_click(element, key)
+            finally:
+                self._pointer_completion_xpath = previous_completion
+            if not expected_xpath:
+                return True
+            wait = retry_wait if attempt < attempts - 1 else timeout - retry_wait * (attempts - 1)
+            self._log(f"[screen_wait] {key} ({label}): click sent, waiting for next screen xpath={expected_xpath}")
+            try:
+                TimedWebDriverWait(self, wait).until(EC.visibility_of_element_located((By.XPATH, expected_xpath)))
+            except TimeoutException as exc:
+                if attempt < attempts - 1:
+                    continue
+                raise TimeoutException(
+                    f"{key} ({label}) 이동 {attempts}회 시도 후 다음 화면이 표시되지 않았습니다. "
+                    f"확인 대상 XPath: {expected_xpath}"
+                ) from exc
+            self._log(f"[screen_ready] {key}: next screen visible")
+            return True
 
     def repeat_count(self, key, selector, context=None):
         action = selector.get("action", "element_text")
@@ -1835,6 +2003,8 @@ class InvoiceProcessor:
         return find_condition_indices(items, start_index)
 
     def runtime_text_value(self, value, context=None):
+        if "{selected_month}" in str(value):
+            context = {"selected_month": selected_month_value(getattr(self, 'config', {}).get('selected_month')), **(context or {})}
         return apply_runtime_context({"value": str(value or "")}, context).get("value", "")
 
     def field_text(self, element):
@@ -1987,8 +2157,16 @@ class InvoiceProcessor:
         if not locator:
             raise ValueError(f"조건처리 대상 셀렉터가 비어 있습니다: {key}")
 
-        element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
         action = selector.get("action", "text_exists")
+        if action == 'element_clickable':
+            try:
+                TimedWebDriverWait(self, self.selector_timeout(selector)).until(EC.element_to_be_clickable(locator))
+            except TimeoutException:
+                self._log(f"[condition] {key}: 클릭 가능한 요소 없음, 거짓 구역으로 진행")
+                return False
+            self._log(f"[condition] {key}: 클릭 가능한 요소 있음, 참 구역으로 진행")
+            return True
+        element = TimedWebDriverWait(self, self.timeout).until(EC.presence_of_element_located(locator))
         actual = (self.field_text(element) if action in {"field_empty", "field_not_empty"}
                   else (element.text or element.get_attribute("value") or "").strip())
         if action in {"field_empty", "field_not_empty"}:
@@ -2007,6 +2185,7 @@ class InvoiceProcessor:
     def run_workflow_items_once(self, items, context=None):
         index = 0
         while index < len(items):
+            self.check_branch_stop_alert()
             key, selector = items[index]
             if selector.get("type", "element") == "repeat_start":
                 end_index = self.find_repeat_end_index(items, index)
@@ -2068,10 +2247,136 @@ class InvoiceProcessor:
             self.run_selector_step(key, selector, context=context)
             index += 1
 
+    def extract_table(self, key, selector, context=None):
+        locator = build_locator(apply_runtime_context(selector, context))
+        if not locator:
+            raise ValueError(f"테이블 추출 XPath가 비어 있습니다: {key}")
+
+        timeout = self.selector_timeout(selector)
+        element = TimedWebDriverWait(self, timeout).until(EC.visibility_of_element_located(locator))
+        root = self.driver.execute_script(GRID_ROOT_SCRIPT + "return root;", element)
+        last_snapshot = {}
+        empty_snapshot = False
+
+        def read_table():
+            nonlocal last_snapshot, empty_snapshot
+            result = self.driver.execute_script(TABLE_SCRIPT, root)
+            rows = result.get('rows', []) if isinstance(result, dict) else []
+            data_rows = rows[1:] if result and result.get('header') else rows
+            has_data = any(str(cell or '').strip() for row in data_rows for cell in row)
+            empty_snapshot = isinstance(result, dict) and 'rows' in result and not has_data
+            if not has_data:
+                return False
+            result['scroll'] = self.driver.execute_script(SCROLL_SCRIPT, root, 0)
+            last_snapshot = result
+            return result
+
+        def move(direction):
+            state = self.driver.execute_script(SCROLL_SCRIPT, root, direction)
+            if state.get('kind') == 'wheel':
+                origin = ScrollOrigin.from_viewport(state['x'], state['y'])
+                events = table_wheel_events(last_snapshot, direction)
+                actions = ActionChains(self.driver)
+                for _ in range(events):
+                    actions.scroll_from_origin(origin, 0, direction * state['delta'])
+                actions.perform()
+                self._log(f"[table_scroll] 휠 {events}회 묶음 이동")
+
+        def settle(previous):
+            started = time.monotonic()
+            last = None
+            stable_since = started
+
+            def settled(_driver):
+                nonlocal last, stable_since
+                current = read_table()
+                if not current:
+                    last = None
+                    stable_since = time.monotonic()
+                    return False
+                now = time.monotonic()
+                if current != last:
+                    last, stable_since = current, now
+                    return False
+                # Let virtual grids finish recycling rows; a no-op wheel also
+                # receives time to process before it counts toward the boundary.
+                if now - stable_since >= 0.1 and (current != previous or now - started >= 0.6):
+                    return current
+                return False
+
+            # Extraction polls faster without changing click/input waits.
+            return WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(settled)
+
+        try:
+            first = TimedWebDriverWait(self, timeout).until(lambda _driver: read_table())
+        except TimeoutException:
+            # Only an existing, visible table with a successful empty DOM read
+            # may be skipped. Missing screens and driver errors remain failures.
+            if selector.get('skip_empty', False) and empty_snapshot and root.is_displayed():
+                self.check_branch_stop_alert()
+                self._log(f"[table_skip_empty] {key} ({selector.get('label', key)}): 대기 후에도 데이터 행이 없어 추출을 생략하고 다음 단계로 진행합니다.")
+                return None
+            raise
+        if selector.get('scroll', True):
+            initial = [first]
+            result = collect_scrolled_table(
+                lambda: initial.pop(), move, settle, self._log,
+                max_scrolls=max(1, int(selector.get('max_scrolls', 500))),
+            )
+        else:
+            result = first
+        name = self.runtime_text_value(selector.get("output_name") or selector.get("label") or key, context)
+        prefix = getattr(self, "export_name_prefix", "")
+        output_dir = Path(__file__).resolve().parents[2] / "data" / "runtime" / "macro_exports"
+        export_session = getattr(self, 'export_session', None)
+        if export_session is not None and 'workbook' in export_session:
+            self.table_workbook = export_session['workbook']
+        if not hasattr(self, 'table_workbook'):
+            title = self.config.get('export_name') or getattr(self, 'export_workbook_name', '매크로 추출 결과')
+            file_title = f"다중지점_{title}" if export_session is not None else (f"{prefix}_{title}" if prefix else title)
+            self.table_workbook = TableWorkbook(output_dir, file_title)
+            if export_session is not None:
+                export_session['workbook'] = self.table_workbook
+        if export_session is not None:
+            path, columns, rows = self.table_workbook.add_branch(
+                result, name, key, getattr(self, 'export_branch_name', prefix))
+        else:
+            path, columns, rows = self.table_workbook.add(result, name)
+        if not hasattr(self, "extracted_tables"):
+            self.extracted_tables = {}
+            self.extracted_files_to_open = []
+        self.extracted_tables[key] = {"columns": columns, "rows": rows, "path": str(path)}
+        if selector.get("action") == "save_xlsx_open" and path not in self.extracted_files_to_open:
+            if export_session is not None:
+                export_session['open_requested'] = True
+            else:
+                self.extracted_files_to_open.append(path)
+        self._log(f"[table_extract] {key}: {len(rows)}행 {len(columns)}열, 시트 {len(self.table_workbook.datasets)}개 XLSX 저장: {path}")
+        self._log(f"[table_extract] 추출 범위: {result.get('scope', 'rendered_dom')}")
+        return path
+
+    def open_extracted_files(self):
+        for path in getattr(self, "extracted_files_to_open", []):
+            if getattr(self, 'background_mode', False):
+                self._log(f"[table_open] 백그라운드 실행: 자동 열기 생략, 저장 위치: {path}")
+                continue
+            try:
+                os.startfile(str(path))
+                self._log(f"[table_open] XLSX 열기 요청 완료: {path}")
+            except OSError as exc:
+                self._log(f"[table_open] XLSX는 저장되었으나 연결 프로그램으로 열지 못했습니다: {path} ({exc})")
+        self.extracted_files_to_open = []
+
     def run_configured_workflow(self):
         self._log("[workflow] 설정 순서 실행 시작")
-        self.run_workflow_items_once(list(self.config.get("selectors", {}).items()))
+        try:
+            self.run_workflow_items_once(list(self.config.get("selectors", {}).items()))
+            self.check_branch_stop_alert()
+        except BranchWorkflowStopped as exc:
+            self.workflow_stop_reason = str(exc)
+            self._log(f"[branch_stop] 해당 지점의 남은 작업 종료: {exc}")
         self._log("[workflow] 설정 순서 실행 완료")
+        self.open_extracted_files()
 
     def wait_loading_done(self):
         locator = self.locator("loading_canvas", required=False)
@@ -2288,6 +2593,12 @@ class ClaimProcessThread(QThread):
 
     def switch_window(self):
         try:
+            preferred = getattr(self.driver, '_longterm_work_handle', None)
+            if preferred in self.driver.window_handles:
+                if self.driver.current_window_handle != preferred:
+                    self.driver.switch_to.window(preferred)
+                self.status_signal.emit('로그인에서 확인한 공단 업무 창을 사용합니다.')
+                return
             config = ensure_selector_config(self.config_path, self.template)
             window_index = int(config.get("browser", {}).get("window_index", -1))
             if window_index > 0:
@@ -2302,7 +2613,8 @@ class ClaimProcessThread(QThread):
             self.status_signal.emit(f"브라우저 윈도우/탭 {target_index + 1}번으로 전환했습니다.")
             self.driver.switch_to.window(handles[target_index])
             try:
-                self.driver.maximize_window()
+                if not getattr(self, 'background_mode', False):
+                    self.driver.maximize_window()
             except Exception:
                 pass
         except Exception:
@@ -2314,13 +2626,18 @@ class ClaimProcessThread(QThread):
             self.switch_window()
 
             processor = InvoiceProcessor(self.driver, self.config_path, self.template, status_callback=self.status_signal.emit)
+            processor.background_mode = getattr(self, 'background_mode', False)
+            processor.export_name_prefix = self.branch.get("branch_name") or self.branch.get("name", "")
+            processor.export_branch_name = processor.export_name_prefix
+            processor.export_session = getattr(self, 'export_session', None)
             if self.start_number is not None:
                 processor.config["start_number"] = self.start_number
             processor.snapshot("초기 상태")
             if processor.config.get("selectors"):
                 self.status_signal.emit("[단계] 설정 요소 한 번 실행")
                 processor.run_configured_workflow()
-                self.finished_signal.emit("설정된 요소 자동화 작업이 완료되었습니다.", True)
+                reason = getattr(processor, 'workflow_stop_reason', '')
+                self.finished_signal.emit(f"해당 지점의 남은 작업 종료: {reason}" if reason else "설정된 요소 자동화 작업이 완료되었습니다.", True)
                 return
 
             if not self.use_invoice_fallback:
