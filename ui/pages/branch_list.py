@@ -28,7 +28,9 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QSpinBox,
     QScrollArea,
+    QTabWidget,
 )
+from ui.pages.hope_accounts import HopeAccountsPage
 
 
 LOGIN_TYPES = ["케어포", "롱텀"]
@@ -428,6 +430,13 @@ class BranchPage(QWidget):
 
         layout = QVBoxLayout()
         self.setLayout(layout)
+
+        tabs = QTabWidget()
+        layout.addWidget(tabs)
+        branch_tab = QWidget()
+        tabs.addTab(branch_tab, "지점 관리")
+        tabs.addTab(HopeAccountsPage(), "희망이음 대표자 설정")
+        layout = QVBoxLayout(branch_tab)
 
         # =================================================
         # 상단 버튼 영역

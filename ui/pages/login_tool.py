@@ -2,6 +2,7 @@ from data_paths import user_data_path
 import json
 import os
 import time
+from urllib.parse import urlsplit
 from pathlib import Path
 from datetime import datetime
 
@@ -9,7 +10,10 @@ from PySide6.QtCore import QThread, Signal, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel
 
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException, WebDriverException
+from selenium.common.exceptions import (
+    TimeoutException, WebDriverException, ElementClickInterceptedException,
+    ElementNotInteractableException, StaleElementReferenceException,
+)
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -17,6 +21,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from ui.pages.logging_util import log
 from ui.pages.branch_task_settings import filter_branches_for_task
+from ui.pages.hope_accounts import load_hope_accounts
+from ui.pages.hope_installer import wait_for_installer, install_nprotect
 
 
 class LoginTool(QWidget):
@@ -43,7 +49,7 @@ class LoginTool(QWidget):
         self.main_layout.addWidget(login_type_label)
 
         login_type_layout = QHBoxLayout()
-        for login_type in ["케어포", "롱텀"]:
+        for login_type in ["케어포", "롱텀", "희망이음"]:
             button = QPushButton(login_type)
             button.setCheckable(True)
             button.clicked.connect(self.on_login_type_clicked)
@@ -65,11 +71,18 @@ class LoginTool(QWidget):
             if child.widget():
                 child.widget().deleteLater()
 
-        branches = self._load_branches()
+        if self.current_login_type == "희망이음":
+            try:
+                branches = load_hope_accounts()
+            except (OSError, ValueError):
+                self._log("희망이음 계정 설정을 읽을 수 없습니다.", level="ERROR")
+                return
+        else:
+            branches = self._load_branches()
         for index, branch in enumerate(branches):
             row = index // 5
             col = index % 5
-            button = QPushButton(branch["branch_name"])
+            button = QPushButton(branch["owner_name"] if self.current_login_type == "희망이음" else branch["branch_name"])
             button.clicked.connect(lambda _, b=branch: self.on_branch_clicked(b))
             self.branch_grid_layout.addWidget(button, row, col)
     
@@ -79,6 +92,7 @@ class LoginTool(QWidget):
         if sender:
             self.current_login_type = sender.text()
             self._update_login_type_buttons()
+            self.refresh_buttons()
     
     def _update_login_type_buttons(self):
         """로그인 유형 버튼 상태 업데이트"""
@@ -91,12 +105,20 @@ class LoginTool(QWidget):
     def on_branch_clicked(self, branch):
         """지점 버튼 클릭 시 로그인 페이지를 열고 로그인 필드를 채웁니다."""
         branch_code = branch.get("organization_code", "")
-        if not branch_code:
+        if self.current_login_type == "희망이음":
+            if not all(branch.get(key) for key in (
+                "login_id", "login_password", "certificate_name", "certificate_password"
+            )):
+                self._log("지점관리에서 희망이음 대표자 계정 정보를 입력해주세요.", level="WARNING")
+                return
+        elif not branch_code:
             self._log(f"지점 '{branch.get('branch_name','')}'의 기관기호가 없습니다.", level="WARNING")
             return
 
         self._log(f"[{branch.get('branch_name','')}] 로그인 시도, 기관기호={branch_code}, 타입={self.current_login_type}")
-        if self.current_login_type == "롱텀":
+        if self.current_login_type == "희망이음":
+            login_thread = HopeLoginThread(branch)
+        elif self.current_login_type == "롱텀":
             login_thread = LongtermLoginThread(branch)
         else:
             login_thread = CareforLoginThread(branch)
@@ -112,7 +134,9 @@ class LoginTool(QWidget):
     def on_login_finished(self, message, success, login_thread=None):
         level = "INFO" if success else "ERROR"
         self._log(message, level=level)
-        if success and login_thread and login_thread.driver:
+        if login_thread and login_thread.driver and (
+            success or login_thread.keep_browser_on_error
+        ):
             self.watch_browser(login_thread.driver)
 
     def watch_browser(self, driver):
@@ -154,6 +178,7 @@ class BaseLoginThread(QThread):
         self.url = url
         self.driver = None
         self.profile_path = profile_path
+        self.keep_browser_on_error = False
 
     def _create_driver(self):
         options = webdriver.ChromeOptions()
@@ -193,6 +218,7 @@ class BaseLoginThread(QThread):
         self.success = False
         try:
             self.driver = self._create_driver()
+            self.prepare_browser()
             self.driver.get(self.url)
             wait = WebDriverWait(self.driver, 30)
             self.perform_login(wait)
@@ -206,11 +232,15 @@ class BaseLoginThread(QThread):
         except Exception as e:
             self.finished_signal.emit(f"알 수 없는 오류: {e}", False)
         finally:
-            if self.driver and not getattr(self, "success", False):
+            if (self.driver and not getattr(self, "success", False)
+                    and not self.keep_browser_on_error):
                 try:
                     self.driver.quit()
                 except Exception:
                     pass
+
+    def prepare_browser(self):
+        """사이트 이동 전에 필요한 준비 작업을 수행합니다."""
 
     def _wait_and_click(self, wait, locator):
         element = wait.until(EC.element_to_be_clickable(locator))
@@ -295,6 +325,146 @@ class BrowserCloseMonitor(QThread):
             process.wait(timeout=2)
         except Exception:
             pass
+
+
+class HopeInstallationRestart(Exception):
+    """보안 프로그램 설치 후 로그인 페이지부터 다시 시작합니다."""
+
+
+class HopeLoginThread(BaseLoginThread):
+    def __init__(self, account: dict):
+        path = Path(__file__).resolve().parents[2] / "data" / "hope_selectors.json"
+        with open(path, encoding="utf-8") as stream:
+            self.selectors = json.load(stream)
+        super().__init__(account, self.selectors["url"])
+        self.keep_browser_on_error = True
+
+    def prepare_browser(self):
+        if not self.selectors.get("auto_install_security", True):
+            return
+        log("LoginTool", "희망이음 접속 전 다운로드 폴더의 설치 파일을 확인합니다.")
+        download_directory = Path.home() / "Downloads"
+        if not any(download_directory.glob("nos_setup*.exe")):
+            raise RuntimeError(
+                f"다운로드 폴더({download_directory})에 nos_setup 설치 파일이 없습니다. "
+                "설치 파일을 다운로드한 뒤 대표자 버튼을 다시 눌러주세요."
+            )
+        try:
+            installer = wait_for_installer(download_directory, 0, timeout=10)
+        except TimeoutException as error:
+            raise RuntimeError("nos_setup 파일이 다운로드 중이거나 사용 가능한 상태가 아닙니다.") from error
+        log("LoginTool", f"자동 설치에 사용할 파일: {installer.name}")
+        self._installation_attempted = True
+        install_nprotect(installer, lambda message: log("LoginTool", message))
+        log("LoginTool", "보안 프로그램 설치 완료: 희망이음 URL로 이동합니다.")
+
+    def _create_driver(self):
+        self._download_started_at = time.time()
+        driver = super()._create_driver()
+        try:
+            # 브라우저 권한 팝업은 DOM 요소가 아니므로 접속 전에 CDP로 허용합니다.
+            url = urlsplit(self.url)
+            origin = f"{url.scheme}://{url.netloc}"
+            driver.execute_cdp_cmd("Browser.grantPermissions", {
+                "origin": origin,
+                "permissions": ["localNetworkAccess"],
+            })
+        except Exception:
+            driver.quit()
+            raise
+        return driver
+
+    def _click_after_popups(self, wait, target_key):
+        """팝업을 위에서부터 닫고 다음 입력 요소를 실제로 클릭할 때까지 기다립니다."""
+        def close_or_continue(driver):
+            if self._handle_install_page():
+                raise HopeInstallationRestart()
+            try:
+                for xpath in self.selectors.get("popup_close_buttons", []):
+                    for button in driver.find_elements(By.XPATH, xpath):
+                        if button.is_displayed() and button.is_enabled():
+                            button.click()
+                            return False  # DOM이 갱신된 다음 남은 팝업을 다시 확인합니다.
+                for target in driver.find_elements(By.XPATH, self.selectors[target_key]):
+                    if target.is_displayed() and target.is_enabled():
+                        target.click()
+                        return target
+            except (ElementClickInterceptedException, ElementNotInteractableException,
+                    StaleElementReferenceException):
+                # 로딩 마스크나 닫힘 애니메이션이 끝나기 전에는 강제 클릭하지 않습니다.
+                return False
+            return False
+
+        return wait.until(close_or_continue)
+
+    def _handle_install_page(self):
+        original = self.driver.current_window_handle
+        for handle in self.driver.window_handles:
+            self.driver.switch_to.window(handle)
+            current = urlsplit(self.driver.current_url)
+            if (current.hostname == "www.ssis.go.kr" or current.hostname == "ssis.go.kr") and current.path.endswith("/nppfs.install.html"):
+                if not self.selectors.get("auto_install_security", True):
+                    raise RuntimeError(
+                        "보안 프로그램 설치가 필요해 자동 로그인을 중지했습니다. "
+                        "브라우저는 유지됩니다. 다운로드된 nos_setup을 직접 설치한 뒤 "
+                        "로그인툴에서 대표자 버튼을 다시 눌러주세요."
+                    )
+                if getattr(self, "_installation_attempted", False):
+                    raise RuntimeError("보안 프로그램 설치 후에도 설치 안내가 표시됩니다. 설치 상태를 확인하고 로그인을 다시 실행해주세요.")
+                self._installation_attempted = True
+                log("LoginTool", "보안 프로그램 설치 안내 감지: 다운로드 완료를 기다립니다.")
+                installer = wait_for_installer(Path.home() / "Downloads", self._download_started_at)
+                log("LoginTool", "다운로드 완료: 설치 파일을 검증하고 자동 설치를 진행합니다.")
+                install_nprotect(installer, lambda message: log("LoginTool", message))
+                if handle != original:
+                    self.driver.close()
+                    self.driver.switch_to.window(original)
+                self.driver.get(self.url)
+                return True
+        self.driver.switch_to.window(original)
+        return False
+
+    def perform_login(self, wait):
+        if not hasattr(self, "_download_started_at"):
+            self._download_started_at = time.time()
+        def locator(key):
+            return By.XPATH, self.selectors[key]
+
+        # 다운로드와 Windows 설치 대기는 별도 제한(120초/300초)을 사용합니다.
+        # 설치가 끝나면 새 페이지의 로그인 버튼부터 다시 진행합니다.
+        while True:
+            try:
+                self._click_after_popups(WebDriverWait(self.driver, 30), "login_page")
+                self._click_after_popups(WebDriverWait(self.driver, 30), "login_id")
+                break
+            except HopeInstallationRestart:
+                continue
+        for key in ("login_id", "login_password"):
+            field = wait.until(EC.element_to_be_clickable(locator(key)))
+            field.clear()
+            field.send_keys(self.branch[key])
+        self._wait_and_click(wait, locator("login_button"))
+
+        def find_certificate(driver):
+            for table in driver.find_elements(*locator("certificates")):
+                for row in table.find_elements(By.CSS_SELECTOR, "tr"):
+                    if not row.is_displayed() or not row.is_enabled():
+                        continue
+                    for cell in row.find_elements(By.CSS_SELECTOR, "td, [title]"):
+                        if self.branch["certificate_name"] in (
+                            cell.text.strip(), (cell.get_attribute("title") or "").strip()
+                        ):
+                            return row
+            return False
+
+        wait.until(find_certificate).click()
+        password = wait.until(EC.element_to_be_clickable(locator("certificate_password")))
+        password.clear()
+        password.send_keys(self.branch["certificate_password"])
+        self._wait_and_click(wait, locator("confirm"))
+        self.finished_signal.emit(
+            f"{self.branch['owner_name']} 희망이음 로그인 입력 및 인증서 확인 클릭을 완료했습니다.", True
+        )
 
 
 class CareforLoginThread(BaseLoginThread):

@@ -142,7 +142,9 @@ def test_page_edits_roundtrip_and_confirmation_reset(app, tmp_path, meeting, mon
     page.deleteLater()
 
 
-def test_menu_pages_and_existing_navigation(app, monkeypatch):
+def test_menu_pages_and_existing_navigation(app, monkeypatch, tmp_path):
+    import data_paths
+    monkeypatch.setattr(data_paths, "PROJECT_ROOT", tmp_path)
     import main
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QWidget
@@ -151,17 +153,54 @@ def test_menu_pages_and_existing_navigation(app, monkeypatch):
              'TableListPage', 'FederationTool', 'CareforTool', 'LaborCostRatioPage',
              'ServiceFeePage', 'AnnualLeavePage', 'MonthlyWorkCheckPage', 'MemoPage',
              'IncompleteTaskPage', 'BranchTaskSettingsPage', 'AttendanceAnalysisPage',
-             'ExcelDataSortPage', 'CommitteeMinutesPage']
+             'ExcelDataSortPage', 'CommitteeMinutesPage', 'BusinessPlanPage', 'BudgetPage']
     for name in names:
         monkeypatch.setattr(main, name, QWidget)
     window = main.MainWindow()
-    entries = {window.menu.item(i).text().strip(): window.menu.item(i)
-               for i in range(window.menu.count())}
-    assert entries['사업기획'].data(Qt.UserRole) is None
-    assert isinstance(entries['예산편성 (예정)'].data(Qt.UserRole), PlannedPage)
-    for label in ['사업계획 (예정)', '운영위원회 회의록 작성', '로그인툴', '문서작성툴']:
+    groups = [window.menu.topLevelItem(i) for i in range(window.menu.topLevelItemCount())]
+    entries = {item.text(0): item for group in groups
+               for item in [group] + [group.child(i) for i in range(group.childCount())]}
+    assert len(groups) == 9
+    assert sum(group.childCount() for group in groups) == 20
+    assert groups[0].isExpanded()
+    assert not entries['사업기획'].isExpanded()
+    window.on_menu_clicked(entries['사업기획'])
+    assert entries['사업기획'].isExpanded()
+    window.on_menu_clicked(entries['사업기획'])
+    assert not entries['사업기획'].isExpanded()
+    assert entries['사업기획'].data(0, Qt.UserRole) is None
+    assert isinstance(entries['예산편성'].data(0, Qt.UserRole), QWidget)
+    for label in ['사업계획', '운영위원회 회의록 작성', '로그인툴', '문서작성툴']:
         window.on_menu_clicked(entries[label])
-        assert window.stacked_widget.currentWidget() is entries[label].data(Qt.UserRole)
+        assert window.tabs.currentWidget() is entries[label].data(0, Qt.UserRole)
+    count = window.tabs.count()
+    window.on_menu_clicked(entries['로그인툴'])
+    assert window.tabs.count() == count
+    page = window.tabs.currentWidget()
+    from PySide6.QtWidgets import QLineEdit
+    editor = QLineEdit(page)
+    editor.setText('작성 중인 내용')
+    window.close_tab(window.tabs.currentIndex())
+    assert window.tabs.indexOf(page) == -1
+    assert page.parent() is window.page_storage
+    window.on_menu_clicked(entries['로그인툴'])
+    assert window.tabs.currentWidget() is page
+    assert editor.text() == '작성 중인 내용'
+    window.tabs.tabBar().moveTab(window.tabs.currentIndex(), window.tabs.count() - 1)
+    assert window.menu.currentItem() is entries['로그인툴']
+    assert window.close_all_tabs_button.isEnabled()
+    opened = [window.tabs.widget(i) for i in range(window.tabs.count())]
+    window.close_all_tabs_button.click()
+    assert window.tabs.count() == 0
+    assert all(widget.parent() is window.page_storage for widget in opened)
+    assert not window.close_all_tabs_button.isEnabled()
+    window.close_all_tabs()
+    assert window.menu.currentItem() is None
+    window.open_page(page)
+    assert window.tabs.count() == 1
+    assert window.tabs.currentWidget() is page
+    assert window.close_all_tabs_button.isEnabled()
+    assert editor.text() == '작성 중인 내용'
     window.deleteLater()
 
 

@@ -8,11 +8,11 @@ import tempfile
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULTS_DIRECTORY = PROJECT_ROOT / "data" / "defaults"
 USER_DATA_FILES = frozenset({
-    "branches.json", "branch_fields.json", "branch_task_settings.json",
+    "branches.json", "branch_fields.json", "branch_task_settings.json", "hope_accounts.json",
     "memos.json", "monthly_work_check.json", "incomplete_tasks.json",
     "document_field_settings.json", "hwp_document_field_settings.json",
     "document_generation_history.json", "table_lists.json",
-    "labor_cost_ratio.json", "service_fee.json", "log_settings.json",
+    "labor_cost_ratio.json", "service_fee.json", "log_settings.json", "menu_layout.json",
 })
 
 

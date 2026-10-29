@@ -60,6 +60,10 @@ class CommitteeMinutesPage(QWidget):
         warning = QLabel(NOTICE)
         warning.setWordWrap(True)
         root.addWidget(warning)
+        required_hint = QLabel('* 필수 항목입니다. 프롬프트는 AI 작성 시, 회의록 내용과 확인 체크는 최종 문서 저장 시 필요합니다.\n'
+                               '일반 저장은 지점만 선택해도 가능합니다.')
+        required_hint.setWordWrap(True)
+        root.addWidget(required_hint)
         self.body = QWidget()
         root.addWidget(self.body)
         layout = QVBoxLayout(self.body)
@@ -83,14 +87,15 @@ class CommitteeMinutesPage(QWidget):
         for label, widget in [('지점', self.branch), ('분기', self.quarter),
                               ('제목', self.title), ('회의일자', self.date), ('시작시간', self.start),
                               ('종료시간', self.end), ('회의장소', self.place)]:
-            form.addRow(label, widget)
+            form.addRow(label + ' *', widget)
         layout.addLayout(form)
         self.tabs = QTabWidget()
         layout.addWidget(self.tabs, 1)
         people = QWidget()
         pl = QVBoxLayout(people)
+        pl.addWidget(QLabel('참석자 * — 성명을 입력하고 최소 1명을 참석으로 선택하세요. 직책과 역할은 선택 입력입니다.'))
         self.people = QTableWidget(0, 4)
-        self.people.setHorizontalHeaderLabels(['성명', '직책 / 위원 구분', '회의 내 역할', '참석'])
+        self.people.setHorizontalHeaderLabels(['성명 *', '직책 / 위원 구분', '회의 내 역할', '참석'])
         self.people.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         pl.addWidget(self.people)
         buttons = QHBoxLayout()
@@ -103,19 +108,19 @@ class CommitteeMinutesPage(QWidget):
         self.tabs.addTab(people, '참석자')
         writing = QWidget()
         wl = QVBoxLayout(writing)
-        wl.addWidget(QLabel('프롬프트 — 참석자의 역할·말투와 회의 내용을 자유롭게 적어 주세요.'))
+        wl.addWidget(QLabel('프롬프트 * (AI 작성 시 필수) — 참석자의 역할·말투와 회의 내용을 자유롭게 적어 주세요.'))
         self.prompt = QPlainTextEdit()
         self.prompt.setPlaceholderText(
             '예: A는 공손한 진행자입니다. B는 외부 인사로 질문과 감사 인사를 합니다. '
             '2026년 예산의 적법성을 검토하는 회의입니다. 두 사람이 의견을 주고받도록 작성해 주세요.')
         wl.addWidget(self.prompt, 1)
-        wl.addWidget(QLabel('생성된 회의록 — 직접 수정한 뒤 확인하고 저장하세요.'))
+        wl.addWidget(QLabel('생성된 회의록 * (최종 문서 저장 시 필수) — 직접 수정한 뒤 확인하고 저장하세요.'))
         self.final_text = QPlainTextEdit()
         self.final_text.setPlaceholderText('AI가 작성한 대화형 회의록이 표시됩니다. 직접 작성할 수도 있습니다.')
         wl.addWidget(self.final_text, 2)
         self.tabs.addTab(writing, '프롬프트 / 회의록')
         self.tabs.setCurrentWidget(writing)
-        self.confirmed = QCheckBox('실제 회의 내용과 참석자 발언·결정사항을 확인하고 수정했습니다.')
+        self.confirmed = QCheckBox('실제 회의 내용과 참석자 발언·결정사항을 확인하고 수정했습니다. * (최종 문서 저장 시 필수)')
         layout.addWidget(self.confirmed)
         bottom = QHBoxLayout()
         for text, callback in [('AI 회의록 작성 / 재생성', self.generate), ('미리보기', self.preview),

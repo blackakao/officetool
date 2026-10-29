@@ -1,0 +1,17 @@
+{
+    "url": "https://www.ssis.go.kr/ssis-ceu/index.do",
+    "auto_install_security": true,
+    "popup_close_buttons": [
+        "/html/body/div[1]/div[4]/div[4]/div[2]/div/div[2]/div/div/div[1]/div/div/div[1]/div/div[2]/div/div/div[2]/a/div",
+        "/html/body/div[1]/div[4]/div[3]/div[2]/div/div[2]/div/div/div[1]/div/div/div[1]/div/div[2]/div/div/div[2]/a/div",
+        "/html/body/div[1]/div[4]/div[2]/div[2]/div/div[2]/div/div/div[1]/div/div/div[1]/div/div[2]/div/div/div[2]/a/div",
+        "/html/body/div[1]/div[4]/div/div/div[1]/div/div[1]/div[1]/div/div[2]/div/div/div/div[4]/div/div/div/div/a/div"
+    ],
+    "login_page": "/html/body/div[2]/div[1]/div/div[6]/div/div[2]/div/div/div/div[1]/div/div/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[2]/div/div/div[1]/a/div",
+    "login_id": "/html/body/div[2]/div[1]/div/div[6]/div/div[2]/div[2]/div/div/div[1]/div/div[2]/div[1]/div/div[2]/div[1]/div/div[1]/div[1]/div/div[2]/div[1]/div/div[1]/div/input",
+    "login_password": "/html/body/div[2]/div[1]/div/div[6]/div/div[2]/div[2]/div/div/div[1]/div/div[2]/div[1]/div/div[2]/div[1]/div/div[1]/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div[1]/div/input",
+    "login_button": "/html/body/div[2]/div[1]/div/div[6]/div/div[2]/div[2]/div/div/div[1]/div/div[2]/div[1]/div/div[2]/div[1]/div/div[1]/div[1]/div/div[4]/div[1]/div/div[1]/a/div",
+    "certificates": "/html/body/div[1]/div[3]/div/div[1]/div[3]/div/div[2]/div[3]/table/tbody",
+    "certificate_password": "/html/body/div[1]/div[3]/div/div[1]/div[3]/div/div[2]/div[6]/table/tbody/tr/td[2]/form/div[2]/input[1]",
+    "confirm": "/html/body/div[1]/div[3]/div/div[1]/div[3]/div/div[2]/div[8]/button[1]"
+}
