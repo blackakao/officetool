@@ -1,3 +1,4 @@
+from excel_data_sort.federation_export import sort_federation_export
 from copy import deepcopy
 import os
 
@@ -120,12 +121,19 @@ class BranchBatchThread(QThread):
         workbook = export_session.get('workbook')
         if workbook is not None and workbook.datasets:
             self.status_signal.emit(f"[batch_export] 다중 지점 누적 XLSX 저장: {workbook.path}")
-            if self.background_mode:
-                self.status_signal.emit(f"[table_open] 백그라운드 실행: 자동 열기 생략, 저장 위치: {workbook.path}")
-            elif export_session.get('open_requested'):
+            output_path = workbook.path
+            if export_session.get('sort_templates'):
                 try:
-                    os.startfile(str(workbook.path))
-                    self.status_signal.emit(f"[table_open] 다중 지점 XLSX 열기 요청 완료: {workbook.path}")
+                    output_path = sort_federation_export(workbook.path, export_session['sort_templates'], self.status_signal.emit)
+                except Exception as exc:
+                    self.status_signal.emit(f"[table_sort_warning] 정렬 실패: {exc}; 원본 추출 파일을 유지합니다.")
+            if self.background_mode:
+                self.status_signal.emit(f"[table_open] 백그라운드 실행: 자동 열기 생략, 저장 위치: {output_path}")
+            elif (export_session.get('open_requested') or self.isInterruptionRequested()
+                  or any(not result['success'] for result in results)):
+                try:
+                    os.startfile(str(output_path))
+                    self.status_signal.emit(f"[table_open] 다중 지점 XLSX 열기 요청 완료: {output_path}")
                 except OSError as exc:
                     self.status_signal.emit(f"[table_open] XLSX는 저장되었으나 열지 못했습니다: {workbook.path} ({exc})")
         self.summary_signal.emit(results)

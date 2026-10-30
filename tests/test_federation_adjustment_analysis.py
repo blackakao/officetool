@@ -136,3 +136,30 @@ def test_adjustment_screen_guards_reject_background_grids():
     staff = config['selectors']['table_extract_007']['value']
     assert not staff.startswith('/html/body')
     assert ' Grid ' in staff and '생년월일' in staff and '입력여부' in staff
+
+
+def test_missing_detail_waits_three_seconds_and_requests_close_after_completion(monkeypatch):
+    path = Path(__file__).resolve().parents[1] / 'data' / 'federation_selectors_adjustment_analysis.json'
+    step = json.loads(path.read_text(encoding='utf-8'))['selectors']['detail_available']
+    runner = module.InvoiceProcessor.__new__(module.InvoiceProcessor)
+    runner.timeout = 20
+    runner.driver = Mock()
+    runner._log = Mock()
+    class Wait:
+        def __init__(self, owner, timeout):
+            assert timeout == 3
+        def until(self, condition):
+            raise TimeoutException()
+    monkeypatch.setattr(module, 'TimedWebDriverWait', Wait)
+    assert runner._condition_result('detail_available', step) is False
+    assert runner.close_browser_on_complete is True
+    runner.driver.quit.assert_not_called()
+
+
+def test_work_hours_targets_entire_grid_including_scrollbar():
+    path = Path(__file__).resolve().parents[1] / 'data' / 'federation_selectors_adjustment_analysis.json'
+    steps = json.loads(path.read_text(encoding='utf-8'))['selectors']
+    xpath = steps['table_extract_work_hours']['value']
+    assert not xpath.startswith('/html/body')
+    assert ' Grid ' in xpath and '총계' in xpath and '특례' in xpath
+    assert steps['element_008']['expected_visible_xpath'] == xpath

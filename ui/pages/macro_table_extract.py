@@ -108,7 +108,12 @@ const rows = bands.map(b => {
     }
     return row;
 });
-return {rows, header: !!bands.length && bands[0].cells.some(c => c.header), mode, scope: 'rendered_dom'};
+let headerRows = 0;
+for (const band of bands) {
+    if (!band.cells.some(c => c.header)) break;
+    headerRows++;
+}
+return {rows, header: headerRows > 0, header_rows: headerRows, mode, scope: 'rendered_dom'};
 """
 
 
@@ -171,9 +176,11 @@ def merge_table_rows(existing, incoming):
     return existing + incoming
 
 
-def collect_scrolled_table(read, move, settle, log, max_scrolls=500):
+def collect_scrolled_table(read, move, settle, log, max_scrolls=500, on_progress=None):
     """Rewind to the start, then gather overlapping slices to the scrollbar end."""
     snapshot = read()
+    if on_progress:
+        on_progress(dict(snapshot))
     for direction in (-1, 1):
         unchanged = 0
         edge_confirmations = 0
@@ -187,6 +194,8 @@ def collect_scrolled_table(read, move, settle, log, max_scrolls=500):
                         header = page[:1]
                     page = page[1:]
                 rows = merge_table_rows(rows, page)
+                if on_progress:
+                    on_progress({**snapshot, 'rows': header + rows, 'header': bool(header), 'scope': 'partial_scrolled'})
                 log(f"[table_scroll] 아래로 수집 {index}회, 누적 {len(rows)}행")
             edge = 'top' if direction < 0 else 'bottom'
             state = snapshot.get('scroll', {})
@@ -314,3 +323,22 @@ def table_wheel_events(snapshot, direction):
         return 8
     count = len(snapshot.get('rows', [])) - int(bool(snapshot.get('header')))
     return max(1, min(6, (count - 3) // 4))
+
+
+def normalize_table_headers(result):
+    """Flatten leading header bands while retaining every data row and column."""
+    count = int(result.get('header_rows', int(bool(result.get('header')))))
+    rows = result.get('rows', [])
+    if count <= 1:
+        return result
+    headers = rows[:count]
+    width = max((len(row) for row in headers), default=0)
+    columns = []
+    for index in range(width):
+        labels = []
+        for row in headers:
+            value = str(row[index]).strip() if index < len(row) else ''
+            if value and value not in labels:
+                labels.append(value)
+        columns.append(' / '.join(labels))
+    return {**result, 'header_rows': 1, 'header': True, 'rows': [columns] + rows[count:]}

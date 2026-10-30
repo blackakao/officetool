@@ -283,9 +283,11 @@ class ExcelDataSortPage(QWidget):
         )
         help_label.setWordWrap(True)
         layout.addWidget(help_label)
-        self.arrange_table = QTableWidget(0, 8)
+        self.arrange_table = QTableWidget(0, 10)
         self.arrange_table.setHorizontalHeaderLabels([
             "출력 순서", "출력 컬럼명", "출처", "인식값", "변경 후 값", "값 매핑", "행 포함 조건", "제외할 값 (쉼표 구분)",
+            "생년월일 조정",
+            "값 변환",
         ])
         self.arrange_table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.arrange_table.horizontalHeader().setDefaultSectionSize(125)
@@ -312,6 +314,14 @@ class ExcelDataSortPage(QWidget):
 
     def _arrange_condition_changed(self, index, value):
         self.columns_table.item(index, 3).setData(Qt.UserRole + 2, value)
+
+    def _birthdate_changed(self, kind, index, value):
+        item = self.added_table.item(index, 1) if kind == "added" else self.columns_table.item(index, 3)
+        item.setData(Qt.UserRole + 4, value)
+
+    def _transform_changed(self, kind, index, value):
+        item = self.added_table.item(index, 1) if kind == "added" else self.columns_table.item(index, 3)
+        item.setData(Qt.UserRole + 5, value)
 
     def refresh_arrange_table(self):
         self.arrange_table.blockSignals(True)
@@ -369,6 +379,16 @@ class ExcelDataSortPage(QWidget):
                     button = QPushButton("매핑 설정")
                     button.clicked.connect(lambda _checked=False, i=index, k=kind: self.edit_value_mapping(i, k))
                     self.arrange_table.setCellWidget(row, 5, button)
+                    birthdate = self._combo([("사용 안 함", "off"), ("조정 · 최근 100년", "recent100"), ("조정 · 두 자리 연도 19xx", "1900")])
+                    birthdate.setCurrentIndex(birthdate.findData(column.birthdate_mode))
+                    birthdate.setToolTip("연-월-일, 연월일, 점·슬래시·한글 날짜를 yyyy-mm-dd로 변환합니다. 최근 100년은 실행 시점의 연도를 기준으로 두 자리 연도를 보정합니다.")
+                    birthdate.currentIndexChanged.connect(lambda _value, i=index, k=kind, combo=birthdate: self._birthdate_changed(k, i, combo.currentData()))
+                    self.arrange_table.setCellWidget(row, 8, birthdate)
+                    transform = self._combo([("사용 안 함", "off"), ("글자만 추출", "letters"), ("시간·분 → 숫자(시간)", "hours")])
+                    transform.setCurrentIndex(transform.findData(column.value_transform))
+                    transform.setToolTip("글자만 추출: 숫자·기호 및 끝의 숫자+급을 제거합니다. 시간·분: 시간 + 분/60을 소수 둘째 자리로 반올림합니다.")
+                    transform.currentIndexChanged.connect(lambda _value, i=index, k=kind, combo=transform: self._transform_changed(k, i, combo.currentData()))
+                    self.arrange_table.setCellWidget(row, 9, transform)
                 if kind == "original":
                     condition = self._combo([("모든 값", "any"), ("빈 값 제외", "not_empty"), ("숫자인 행만", "number")])
                     condition.setCurrentIndex(condition.findData(column.row_condition))
@@ -389,6 +409,8 @@ class ExcelDataSortPage(QWidget):
             value_mapping=deepcopy(self.added_table.item(row, 1).data(Qt.UserRole) or {}),
             branch_lookup=deepcopy(self.added_table.item(row, 1).data(Qt.UserRole + 1) or {}),
             separator=self.added_table.item(row, 6).text(),
+            birthdate_mode=self.added_table.item(row, 1).data(Qt.UserRole + 4) or "off",
+            value_transform=self.added_table.item(row, 1).data(Qt.UserRole + 5) or "off",
         ) for row in range(self.added_table.rowCount())]
 
     def _set_added_columns(self, columns):
@@ -409,6 +431,8 @@ class ExcelDataSortPage(QWidget):
                 self.added_table.setItem(row, index, item)
             self.added_table.item(row, 1).setData(Qt.UserRole, deepcopy(column.value_mapping))
             self.added_table.item(row, 1).setData(Qt.UserRole + 1, deepcopy(column.branch_lookup))
+            self.added_table.item(row, 1).setData(Qt.UserRole + 4, column.birthdate_mode)
+            self.added_table.item(row, 1).setData(Qt.UserRole + 5, column.value_transform)
             position.valueChanged.connect(self.invalidate)
             mode.currentIndexChanged.connect(self.invalidate)
         self.loading = was_loading
@@ -786,6 +810,8 @@ class ExcelDataSortPage(QWidget):
             self.columns_table.item(row, 3).setData(Qt.UserRole + 1, deepcopy(column.branch_lookup))
             self.columns_table.item(row, 3).setData(Qt.UserRole + 2, column.row_condition)
             self.columns_table.item(row, 3).setData(Qt.UserRole + 3, list(column.excluded_values))
+            self.columns_table.item(row, 3).setData(Qt.UserRole + 4, column.birthdate_mode)
+            self.columns_table.item(row, 3).setData(Qt.UserRole + 5, column.value_transform)
             for index in range(self.columns_table.columnCount()):
                 self.columns_table.item(row, index).setTextAlignment(Qt.AlignCenter)
         self.columns_table.blockSignals(False)
@@ -801,6 +827,8 @@ class ExcelDataSortPage(QWidget):
             deepcopy(self.columns_table.item(row, 3).data(Qt.UserRole + 1) or {}),
             self.columns_table.item(row, 3).data(Qt.UserRole + 2) or "any",
             list(self.columns_table.item(row, 3).data(Qt.UserRole + 3) or []),
+            self.columns_table.item(row, 3).data(Qt.UserRole + 4) or "off",
+            self.columns_table.item(row, 3).data(Qt.UserRole + 5) or "off",
         ) for row in range(self.columns_table.rowCount())]
         prior = self.entries[self.current_index]["template"] if self.current_index >= 0 else None
         return Template(

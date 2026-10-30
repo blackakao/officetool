@@ -6,6 +6,8 @@ from decimal import Decimal, InvalidOperation
 from .models import ConversionResult, Dataset, Template, header_key, is_empty, text_key
 from .normalize import normalize, expand_record_rows
 from .branch_lookup import load_branch_data, lookup_branch
+from .birthdate import normalize_birthdate
+from .value_transforms import transform_value
 
 
 def column_accepts_row(value, column):
@@ -30,8 +32,20 @@ def added_column_value(workbook, current_sheet, column, branch_data=None):
 
 def mapped_column_value(value, column, branch_data=None):
     if column.branch_lookup:
-        return lookup_branch(value, column.branch_lookup, branch_data)[1]
-    return column.value_mapping.get("" if value is None else str(value), value)
+        value = lookup_branch(value, column.branch_lookup, branch_data)[1]
+    else:
+        value = column.value_mapping.get("" if value is None else str(value), value)
+    if column.birthdate_mode != "off":
+        try:
+            value = normalize_birthdate(value, column.birthdate_mode)
+        except ValueError as exc:
+            name = column.output_name if hasattr(column, "output_name") else column.name
+            raise ValueError(f"{name}: {exc}") from exc
+    try:
+        return transform_value(value, column.value_transform)
+    except ValueError as exc:
+        name = column.output_name if hasattr(column, "output_name") else column.name
+        raise ValueError(f"{name}: {exc}") from exc
 
 
 def added_column_raw_value(workbook, current_sheet, column):

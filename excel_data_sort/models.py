@@ -58,6 +58,8 @@ class ColumnRule:
     branch_lookup: dict[str, str] = field(default_factory=dict)
     row_condition: str = "any"
     excluded_values: list[str] = field(default_factory=list)
+    birthdate_mode: str = "off"
+    value_transform: str = "off"
 
     @property
     def source_key(self):
@@ -75,6 +77,8 @@ class AddedColumn:
     value_mapping: dict[str, str] = field(default_factory=dict)
     branch_lookup: dict[str, str] = field(default_factory=dict)
     separator: str = ""
+    birthdate_mode: str = "off"
+    value_transform: str = "off"
 
     def cell_addresses(self):
         return [address.strip() for address in self.cell.split(",")]
@@ -196,6 +200,12 @@ class Template:
             added_positions.append(column.position)
             names.append(column.name.strip())
         for column in [*self.columns, *self.added_columns]:
+            if column.value_transform not in ("off", "letters", "hours"):
+                raise ValueError("값 변환 방식을 확인해 주세요.")
+            if column.value_transform != "off" and column.birthdate_mode != "off":
+                raise ValueError("생년월일 조정과 글자·시간 변환은 같은 컬럼에 함께 적용할 수 없습니다.")
+            if column.birthdate_mode not in ("off", "recent100", "1900"):
+                raise ValueError("생년월일 조정 방식을 확인해 주세요.")
             if not isinstance(column.branch_lookup, dict) or column.branch_lookup and (
                 set(column.branch_lookup) != {"match_field", "return_field"}
                 or any(not isinstance(value, str) or not value for value in column.branch_lookup.values())

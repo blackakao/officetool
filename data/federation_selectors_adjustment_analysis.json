@@ -91,14 +91,14 @@
             "required": true,
             "action": "pointer_click",
             "stop_branch_on_alert": "퇴직특례",
-            "expected_visible_xpath": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div/div[2]/div/div[4]/div/div[1]/div/div/div/div[3]/div[ancestor-or-self::*[contains(@id, '.npfa100m01.')]]"
+            "expected_visible_xpath": "//*[contains(@id, '.npfa100m01.') and (contains(concat(' ', normalize-space(@class), ' '), ' Grid ') or @role='grid') and descendant::*[normalize-space(.)='성명'] and descendant::*[normalize-space(.)='총계'] and descendant::*[normalize-space(.)='특례']]"
         },
         "table_extract_work_hours": {
             "label": "종사자 근무시간 입력상태 테이블 추출",
             "type": "table_extract",
             "repeat_mode": "fixed",
             "by": "xpath",
-            "value": "/html/body/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div/div[2]/div/div[4]/div/div[1]/div/div/div/div[3]/div[ancestor-or-self::*[contains(@id, '.npfa100m01.')]]",
+            "value": "//*[contains(@id, '.npfa100m01.') and (contains(concat(' ', normalize-space(@class), ' '), ' Grid ') or @role='grid') and descendant::*[normalize-space(.)='성명'] and descendant::*[normalize-space(.)='총계'] and descendant::*[normalize-space(.)='특례']]",
             "required": true,
             "action": "save_xlsx_open",
             "output_name": "종사자 근무시간 입력상태",
@@ -155,9 +155,9 @@
             "type": "element",
             "repeat_mode": "fixed",
             "by": "xpath",
-            "value": "/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[1]/div[1]/div[2]/div/div/div[6]/div/div/div[2]/div[2]",
+            "value": "//*[contains(@id, '.npfa100m01.') and contains(@id, '.grid_menu.body.') and contains(@id, ':text') and normalize-space(.)='결정내용조회']",
             "required": true,
-            "action": "click"
+            "action": "pointer_click"
         },
         "detail_available": {
             "label": "상세보기 가능 여부",
@@ -167,7 +167,8 @@
             "value": "/html/body/div[2]/div[2]/div/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div/div[3]/div[1]/div[2]/div/div/div[1]/div/div/div[7]/div/div[2]",
             "required": true,
             "action": "element_clickable",
-            "timeout": 20
+            "timeout": 3,
+            "close_browser_if_false": true
         },
         "detail_available_true": {
             "label": "상세보기가 있으면 상세 표 추출",
@@ -286,8 +287,16 @@
         "step": 1
     },
     "export_name": "가감산 데이터 분석",
-    "selected_month": "2026-10",
+    "selected_month": "2026-09",
     "performance": {
         "context_scope": "current"
+    },
+    "sort_templates": {
+        "종사자 입사보고": "공단 종사자",
+        "종사자 근무시간 입력상태": "공단 근무시간",
+        "보험 및 위탁급식 현황 1": "공단 보험",
+        "보험 및 위탁급식 현황 2": "공단 위탁급식",
+        "가산현황 2": "공단 가산점수",
+        "가산현황 3": "공단 근무인원"
     }
 }

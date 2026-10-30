@@ -186,7 +186,7 @@ class SelectorConfigDialog(QDialog):
             name: selector[name] for name in (
                 "dropdown_xpath", "expected_visible_xpath", "selection_method",
                 "max_key_steps", "timeout", "wait_for_download", "download_timeout",
-                "scroll", "max_scrolls", "skip_empty",
+                "scroll", "max_scrolls", "skip_empty", "close_browser_if_false",
                 "navigation_attempts", "navigation_retry_wait", "stop_branch_on_alert",
             ) if name in selector
         })
@@ -299,7 +299,7 @@ class SelectorConfigDialog(QDialog):
         if metadata:
             selector.update({
                 name: metadata[name]
-                for name in ("timeout", "wait_for_download", "download_timeout", "scroll", "max_scrolls", "skip_empty",
+                for name in ("timeout", "wait_for_download", "download_timeout", "scroll", "max_scrolls", "skip_empty", "close_browser_if_false",
                              "navigation_attempts", "navigation_retry_wait", "stop_branch_on_alert")
                 if name in metadata
             })

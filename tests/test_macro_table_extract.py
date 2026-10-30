@@ -82,7 +82,7 @@ def test_extract_queues_file_until_workflow_finishes(tmp_path, monkeypatch):
     owner.run_workflow_items_once = Mock(side_effect=ValueError("later step failed"))
     with pytest.raises(ValueError):
         owner.run_configured_workflow()
-    opened.assert_not_called()
+    opened.assert_called_once_with(str(path))
     owner.run_workflow_items_once = Mock()
     owner.run_configured_workflow()
     opened.assert_called_once_with(str(path))
@@ -362,3 +362,22 @@ def test_bottom_rechecks_include_delayed_last_four_rows_in_xlsx(tmp_path, kind):
         assert book.active['B46'].value == '직원45'
     finally:
         book.close()
+
+
+@pytest.mark.parametrize('data', [[], [['1', '직원', '160', '8']]])
+def test_multilevel_work_hours_headers_are_not_data(tmp_path, data):
+    from ui.pages.macro_table_extract import normalize_table_headers
+    header = [['NO', '성명', '특례', '특례'], ['', '', '휴가', '교육']]
+    result = normalize_table_headers({'rows': header + data, 'header': True, 'header_rows': 2})
+    assert result['rows'] == [['NO', '성명', '특례 / 휴가', '특례 / 교육']] + data
+    assert result['header_rows'] == 1
+    if data:
+        path, columns, rows = save_extracted_table(result, tmp_path, '근무시간')
+        assert rows == data
+        book = load_workbook(path, read_only=True)
+        try:
+            assert list(book.active.values)[1] == tuple(data[0])
+        finally:
+            book.close()
+    else:
+        assert len(result['rows']) == 1

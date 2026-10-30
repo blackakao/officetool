@@ -1,3 +1,4 @@
+from excel_data_sort.federation_export import sort_federation_export
 from data_paths import user_data_path
 import json
 import os
@@ -8,6 +9,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from ui.pages.macro_table_extract import (
+    normalize_table_headers,
     GRID_ROOT_SCRIPT, SCROLL_SCRIPT, TABLE_SCRIPT, TableWorkbook, collect_scrolled_table,
     table_wheel_events,
 )
@@ -639,12 +641,12 @@ class FederationTool(QWidget):
         def _on_finished(m, ok):
             self.status_label.setText(m)
             self._log(m, level=("INFO" if ok else "ERROR"))
-            if claim_thread.background_mode:
+            if claim_thread.background_mode or (ok and getattr(claim_thread, "close_browser_on_complete", False)):
                 try:
                     driver.quit()
-                    self._log("백그라운드 브라우저를 종료했습니다.")
+                    self._log("작업 브라우저를 종료했습니다.")
                 except Exception as exc:
-                    self._log(f"백그라운드 브라우저 종료 실패: {exc}", level='ERROR')
+                    self._log(f"작업 브라우저 종료 실패: {exc}", level='ERROR')
             else:
                 self._watch_browser(driver)
 
@@ -2162,6 +2164,9 @@ class InvoiceProcessor:
             try:
                 TimedWebDriverWait(self, self.selector_timeout(selector)).until(EC.element_to_be_clickable(locator))
             except TimeoutException:
+                if selector.get('close_browser_if_false', False):
+                    self.close_browser_on_complete = True
+                    self._log(f"[close_on_complete] {key}: 상세 요소가 없어 결과 저장 후 브라우저를 종료합니다.")
                 self._log(f"[condition] {key}: 클릭 가능한 요소 없음, 거짓 구역으로 진행")
                 return False
             self._log(f"[condition] {key}: 클릭 가능한 요소 있음, 참 구역으로 진행")
@@ -2261,6 +2266,8 @@ class InvoiceProcessor:
         def read_table():
             nonlocal last_snapshot, empty_snapshot
             result = self.driver.execute_script(TABLE_SCRIPT, root)
+            if isinstance(result, dict):
+                result = normalize_table_headers(result)
             rows = result.get('rows', []) if isinstance(result, dict) else []
             data_rows = rows[1:] if result and result.get('header') else rows
             has_data = any(str(cell or '').strip() for row in data_rows for cell in row)
@@ -2319,16 +2326,31 @@ class InvoiceProcessor:
             raise
         if selector.get('scroll', True):
             initial = [first]
-            result = collect_scrolled_table(
-                lambda: initial.pop(), move, settle, self._log,
-                max_scrolls=max(1, int(selector.get('max_scrolls', 500))),
-            )
+            partial = [first]
+            try:
+                result = collect_scrolled_table(
+                    lambda: initial.pop(), move, settle, self._log,
+                    max_scrolls=max(1, int(selector.get('max_scrolls', 500))),
+                    on_progress=lambda snapshot: partial.__setitem__(0, snapshot),
+                )
+            except Exception:
+                try:
+                    self._save_table_result(key, selector, partial[0], context)
+                    self._log(f"[table_partial] {key}: 추출 중단, 읽은 행까지만 저장했습니다. 전체 결과가 아닙니다.")
+                except Exception as save_error:
+                    self._log(f"[table_partial_error] {key}: 부분 결과 저장 실패: {save_error}")
+                raise
         else:
             result = first
+        return self._save_table_result(key, selector, result, context)
+
+    def _save_table_result(self, key, selector, result, context=None):
         name = self.runtime_text_value(selector.get("output_name") or selector.get("label") or key, context)
         prefix = getattr(self, "export_name_prefix", "")
         output_dir = Path(__file__).resolve().parents[2] / "data" / "runtime" / "macro_exports"
         export_session = getattr(self, 'export_session', None)
+        if export_session is not None and self.config.get('sort_templates'):
+            export_session['sort_templates'] = self.config['sort_templates']
         if export_session is not None and 'workbook' in export_session:
             self.table_workbook = export_session['workbook']
         if not hasattr(self, 'table_workbook'):
@@ -2355,8 +2377,23 @@ class InvoiceProcessor:
         self._log(f"[table_extract] 추출 범위: {result.get('scope', 'rendered_dom')}")
         return path
 
-    def open_extracted_files(self):
+    def open_extracted_files(self, partial=False):
+        if partial:
+            workbook = getattr(self, 'table_workbook', None)
+            if workbook is not None and workbook.datasets:
+                self._log(f"[table_partial] 중단 전 추출 결과: {workbook.path}")
+                session = getattr(self, 'export_session', None)
+                if session is not None:
+                    session['open_requested'] = True
+                else:
+                    self.extracted_files_to_open = [workbook.path]
         for path in getattr(self, "extracted_files_to_open", []):
+            if getattr(self, 'config', {}).get('sort_templates'):
+                try:
+                    path = sort_federation_export(path, self.config['sort_templates'], self._log,
+                                                  getattr(self, 'export_branch_name', ''))
+                except Exception as exc:
+                    self._log(f"[table_sort_warning] 정렬 실패: {exc}; 원본 추출 파일을 유지합니다.")
             if getattr(self, 'background_mode', False):
                 self._log(f"[table_open] 백그라운드 실행: 자동 열기 생략, 저장 위치: {path}")
                 continue
@@ -2375,6 +2412,9 @@ class InvoiceProcessor:
         except BranchWorkflowStopped as exc:
             self.workflow_stop_reason = str(exc)
             self._log(f"[branch_stop] 해당 지점의 남은 작업 종료: {exc}")
+        except Exception:
+            self.open_extracted_files(partial=True)
+            raise
         self._log("[workflow] 설정 순서 실행 완료")
         self.open_extracted_files()
 
@@ -2636,6 +2676,7 @@ class ClaimProcessThread(QThread):
             if processor.config.get("selectors"):
                 self.status_signal.emit("[단계] 설정 요소 한 번 실행")
                 processor.run_configured_workflow()
+                self.close_browser_on_complete = getattr(processor, 'close_browser_on_complete', False)
                 reason = getattr(processor, 'workflow_stop_reason', '')
                 self.finished_signal.emit(f"해당 지점의 남은 작업 종료: {reason}" if reason else "설정된 요소 자동화 작업이 완료되었습니다.", True)
                 return

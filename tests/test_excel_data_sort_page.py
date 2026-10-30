@@ -52,6 +52,71 @@ def configure(page):
     page.columns_table.item(0, 3).setText("이름")
 
 
+def test_value_transform_ui_preview_and_save(page, app, tmp_path):
+    path = tmp_path / "hours.xlsx"
+    wb = Workbook()
+    wb.active.append(["직종", "총계"])
+    wb.active.append(["11.요양보호사 1급", "160시간20분"])
+    wb.save(path)
+    wb.close()
+    page.load_paths([path])
+    wait_worker(app, page)
+    page.name_edit.setText("근무시간")
+    page.read_columns()
+    combo = page.arrange_table.cellWidget(0, 9)
+    combo.setCurrentIndex(combo.findData("letters"))
+    combo = page.arrange_table.cellWidget(1, 9)
+    combo.setCurrentIndex(combo.findData("hours"))
+    wait_worker(app, page)
+    assert page.arrange_table.item(0, 4).text() == "요양보호사"
+    assert page.arrange_table.item(1, 4).text() == "160.33"
+    assert page.result.datasets[0].rows[0][:2] == ["요양보호사", 160.33]
+    page.save_template()
+    saved = page.store.load_all()[0][0]
+    page.load_editor(saved)
+    assert page.arrange_table.cellWidget(0, 9).currentData() == "letters"
+    assert page.arrange_table.cellWidget(1, 9).currentData() == "hours"
+
+
+def test_birthdate_adjustment_save_switch_and_export(page, app, tmp_path, monkeypatch):
+    first, second = tmp_path / "birth.xlsx", tmp_path / "birth2.xlsx"
+    wb = Workbook()
+    wb.active.title = "급여"
+    for row in [["직원명", "생년월일"], ["가", "62-01-01"], ["나", "1975.1.5"], ["다", 19610419]]:
+        wb.active.append(row)
+    wb.save(first)
+    wb.save(second)
+    wb.close()
+    page.load_paths([first, second])
+    wait_worker(app, page)
+    page.files.setCurrentRow(0)
+    configure(page)
+    combo = page.arrange_table.cellWidget(1, 8)
+    combo.setCurrentIndex(combo.findData("recent100"))
+    wait_worker(app, page)
+    assert page.arrange_table.item(1, 3).text() == "62-01-01"
+    assert page.arrange_table.item(1, 4).text() == "1962-01-01"
+    expected = ["1962-01-01", "1975-01-05", "1961-04-19"]
+    assert [row[1] for row in page.result.datasets[0].rows] == expected
+    page.files.setCurrentRow(1)
+    page.files.setCurrentRow(0)
+    assert page.arrange_table.cellWidget(1, 8).currentData() == "recent100"
+    page.save_template()
+    saved = page.store.load_all()[0][0]
+    assert saved.columns[1].birthdate_mode == "recent100"
+    page.entries[1]["template"] = saved
+    wait_worker(app, page)
+    output = tmp_path / "dates.xlsx"
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *_args: (str(output), ""))
+    page.export_all()
+    wait_worker(app, page)
+    result = load_workbook(output)
+    try:
+        assert [row[1] for row in list(result.active.values)[1:]] == expected * 2
+    finally:
+        result.close()
+
+
 def test_arrange_tab_filters_names_save_switch_and_export(page, app, tmp_path, monkeypatch):
     first, second = tmp_path / "filter.xlsx", tmp_path / "second.xlsx"
     wb = Workbook()

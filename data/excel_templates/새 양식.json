@@ -1,0 +1,94 @@
+{
+  "name": "새 양식",
+  "sheet_name": "종사자 입사보고",
+  "header_row": 1,
+  "data_start_row": 2,
+  "data_end_row": 0,
+  "header_start_column": 1,
+  "header_end_column": 0,
+  "columns": [
+    {
+      "source_column": 1,
+      "header": "NO",
+      "output_name": "NO",
+      "enabled": false,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": []
+    },
+    {
+      "source_column": 2,
+      "header": "성명",
+      "output_name": "성명",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": []
+    },
+    {
+      "source_column": 3,
+      "header": "생년월일",
+      "output_name": "생년월일",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": []
+    },
+    {
+      "source_column": 4,
+      "header": "사복\n가산\n제외",
+      "output_name": "사복\n가산\n제외",
+      "enabled": false,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": []
+    },
+    {
+      "source_column": 5,
+      "header": "입력\n여부",
+      "output_name": "입력\n여부",
+      "enabled": false,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": []
+    }
+  ],
+  "merge_mode": "fill",
+  "include_hidden_rows": false,
+  "include_hidden_columns": false,
+  "include_hidden_sheets": false,
+  "table_mode": "merge",
+  "sheet_mode": "matching",
+  "header_match": "all",
+  "stop_at_blank": false,
+  "stop_values": [],
+  "include_source": false,
+  "signature": {
+    "headers": [
+      "no",
+      "성명",
+      "생년월일",
+      "사복가산제외",
+      "입력여부"
+    ],
+    "column_count": 5,
+    "merges": [],
+    "sheet_names": [
+      "종사자 입사보고"
+    ],
+    "sheet_count": 1
+  },
+  "version": 1,
+  "added_columns": [],
+  "record_rows": 1
+}

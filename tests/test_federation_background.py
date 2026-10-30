@@ -58,7 +58,8 @@ def test_background_extraction_never_opens_external_excel(monkeypatch):
     assert owner.extracted_files_to_open == []
 
 
-def test_single_background_run_closes_browser_after_macro(tmp_path, monkeypatch):
+@pytest.mark.parametrize('background', [False, True])
+def test_single_background_run_closes_browser_after_macro(tmp_path, monkeypatch, background):
     app = QApplication.instance() or QApplication([])
     monkeypatch.setattr(module, '__file__', str(tmp_path / 'ui' / 'pages' / 'federation_tool.py'))
     page = module.FederationTool()
@@ -75,11 +76,12 @@ def test_single_background_run_closes_browser_after_macro(tmp_path, monkeypatch)
             super().__init__()
 
         def start(self):
-            assert self.background_mode
+            assert self.background_mode == background
+            self.close_browser_on_complete = True
             self.finished_signal.emit('done', True)
 
     monkeypatch.setattr(module, 'ClaimProcessThread', Process)
-    login = SimpleNamespace(driver=driver, branch={}, background_mode=True, macro_start_number=1)
+    login = SimpleNamespace(driver=driver, branch={}, background_mode=background, macro_start_number=1)
     page._on_longterm_finished('ok', True, login, 'invoice', tmp_path / 'macro.json')
     driver.quit.assert_called_once()
     page._watch_browser.assert_not_called()

@@ -1,0 +1,125 @@
+{
+  "name": "공단 가산점수",
+  "sheet_name": "가산현황 2",
+  "header_row": 1,
+  "data_start_row": 2,
+  "data_end_row": 0,
+  "header_start_column": 1,
+  "header_end_column": 0,
+  "columns": [
+    {
+      "source_column": 1,
+      "header": "필수인력 배치(실제)",
+      "output_name": "필수인력 배치(실제)",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    },
+    {
+      "source_column": 3,
+      "header": "인력추가배치",
+      "output_name": "인력추가배치",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    },
+    {
+      "source_column": 5,
+      "header": "야간직원배치강화",
+      "output_name": "야간직원배치강화",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    },
+    {
+      "source_column": 10,
+      "header": "간호사 배치",
+      "output_name": "간호사 배치",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    },
+    {
+      "source_column": 13,
+      "header": "맞춤형 서비스 제공",
+      "output_name": "맞춤형 서비스 제공",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    },
+    {
+      "source_column": 15,
+      "header": "가산\n총점",
+      "output_name": "가산\n총점",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    },
+    {
+      "source_column": 16,
+      "header": "적용\n총점",
+      "output_name": "적용\n총점",
+      "enabled": true,
+      "row_offset": 0,
+      "value_mapping": {},
+      "branch_lookup": {},
+      "row_condition": "any",
+      "excluded_values": [],
+      "birthdate_mode": "off"
+    }
+  ],
+  "merge_mode": "fill",
+  "include_hidden_rows": false,
+  "include_hidden_columns": false,
+  "include_hidden_sheets": false,
+  "table_mode": "merge",
+  "sheet_mode": "matching",
+  "header_match": "all",
+  "stop_at_blank": false,
+  "stop_values": [],
+  "include_source": false,
+  "signature": {
+    "headers": [
+      "필수인력배치(실제)",
+      "인력추가배치",
+      "야간직원배치강화",
+      "간호사배치",
+      "맞춤형서비스제공",
+      "가산총점",
+      "적용총점"
+    ],
+    "column_count": 7,
+    "merges": [],
+    "sheet_names": [
+      "가산현황 2"
+    ],
+    "sheet_count": 1
+  },
+  "version": 1,
+  "added_columns": [],
+  "record_rows": 1
+}
